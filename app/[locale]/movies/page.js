@@ -1,13 +1,11 @@
 import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/resolver';
-import CardFeatured from '@/components/CardFeatured';
-import CardDefault from '@/components/CardDefault';
+import PagedList from '@/components/PagedList';
 
-export default async function MoviesPage({ params, searchParams }) {
+export default async function MoviesPage({ params }) {
   const locale = params.locale;
-  const { messages } = getLocaleText(locale);
+  const { messages, titles } = getLocaleText(locale);
   const apiKey = process.env.TMDB_API_KEY;
-  const lastPage = Math.max(1, Number(searchParams?.page ?? 1) || 1);
 
   if (!apiKey) {
     return <main className="ui container fluid movies-page"><p>{messages.apiKeyMissing}</p></main>;
@@ -17,16 +15,12 @@ export default async function MoviesPage({ params, searchParams }) {
 
   let featured = null;
   let cards = [];
+  let hasMore = false;
   let error = null;
 
   try {
-    const pages = await Promise.all(
-      Array.from({ length: lastPage }, (_, i) => api.getTrendingMovies(i + 1))
-    );
-
-    const firstPage = pages[0];
-    const source =
-      firstPage?.results?.[1] ?? firstPage?.results?.[2] ?? firstPage?.results?.[0] ?? null;
+    const result = await api.getTrendingMovies(1);
+    const source = result?.results?.[1] ?? result?.results?.[2] ?? result?.results?.[0] ?? null;
 
     if (source) {
       try {
@@ -48,36 +42,35 @@ export default async function MoviesPage({ params, searchParams }) {
     }
 
     cards = Array.from(
-      new Map(
-        pages.flatMap((r) => r.results ?? []).map((c) => [`${c.id}-${c.mediaType}`, c])
-      ).values()
+      new Map((result.results ?? []).map((c) => [`${c.id}-${c.mediaType}`, c])).values()
     );
+    hasMore = result.hasMore === true;
   } catch (e) {
     console.error('Failed to load movies:', e);
     error = messages.moviesLoadError;
   }
 
+  const initialData = { featured, cards, page: 1, hasMore, error };
+
   return (
     <main className="ui container fluid movies-page">
-      {error && <p className="ui error message">{error}</p>}
-
-      <h2 className="ui dividing header">{messages.movies}</h2>
-
-      {featured && <CardFeatured {...featured} />}
-
-      <h2 className="ui dividing header">{messages.topRatedProductions}</h2>
-
-      {cards.length > 0 ? (
-        <ul className="ui four doubling cards media-card-list">
-          {cards.map((item, index) => (
-            <li key={`movies-${item.mediaType}-${item.id}`} style={{ '--stagger-delay': `${index * 90}ms` }}>
-              <CardDefault {...item} scrollId={`movie-card-${index + 1}`} />
-            </li>
-          ))}
-        </ul>
-      ) : !error ? (
-        <p>{messages.noMoviesFound}</p>
-      ) : null}
+      <PagedList
+        initialData={initialData}
+        apiPath="movies"
+        storageKey="movies-page"
+        cardIdPrefix="movie-card"
+        listKeyPrefix="page-movies"
+        headingSlot={
+          <>
+            <h2 className={`ui dividing header${titles.movies ? '' : ' u-not-available'}`}>
+              {titles.movies}
+            </h2>
+            <h2 className={`ui dividing header${titles.topRatedProductions ? '' : ' u-not-available'}`}>
+              {titles.topRatedProductions}
+            </h2>
+          </>
+        }
+      />
     </main>
   );
 }

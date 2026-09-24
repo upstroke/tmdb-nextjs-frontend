@@ -1,13 +1,11 @@
 import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/resolver';
-import CardFeatured from '@/components/CardFeatured';
-import CardDefault from '@/components/CardDefault';
+import PagedList from '@/components/PagedList';
 
 export default async function HomePage({ params, searchParams }) {
   const locale = params.locale;
-  const { messages } = getLocaleText(locale);
+  const { messages, titles } = getLocaleText(locale);
   const apiKey = process.env.TMDB_API_KEY;
-  const lastPage = Math.max(1, Number(searchParams?.page ?? 1) || 1);
 
   if (!apiKey) {
     return <main className="ui container fluid home-page"><p>{messages.apiKeyMissing}</p></main>;
@@ -17,23 +15,18 @@ export default async function HomePage({ params, searchParams }) {
 
   let featured = null;
   let cards = [];
+  let hasMore = false;
   let error = null;
 
   try {
-    const pages = await Promise.all(
-      Array.from({ length: lastPage }, (_, i) => api.getTrendingAll(i + 1))
-    );
-
-    const firstPage = pages[0];
-    const source = firstPage?.results?.[0] ?? firstPage?.results?.[1] ?? null;
+    const result = await api.getTrendingAll(1);
+    const source = result?.results?.[0] ?? result?.results?.[1] ?? null;
 
     if (source) {
       try {
-        const details =
-          source.mediaType === 'tv'
-            ? await api.getTVShowDetails(source.id)
-            : await api.getMovieDetails(source.id);
-
+        const details = source.mediaType === 'tv'
+          ? await api.getTVShowDetails(source.id)
+          : await api.getMovieDetails(source.id);
         featured = {
           id: details.id,
           mediaType: details.mediaType,
@@ -50,36 +43,29 @@ export default async function HomePage({ params, searchParams }) {
       }
     }
 
-    cards = pages.flatMap((result) => result.results ?? []);
+    cards = result.results ?? [];
+    hasMore = result.hasMore === true;
   } catch (e) {
     console.error('Failed to load homepage:', e);
     error = messages.contentLoadError;
   }
 
+  const initialData = { featured, cards, page: 1, hasMore, error };
+
   return (
     <main className="ui container fluid home-page">
-      {error && <p className="ui error message">{error}</p>}
-
-      {featured && (
-        <>
-          <h2 className="ui dividing header">{messages.featuredToday}</h2>
-          <CardFeatured {...featured} />
-        </>
-      )}
-
-      <h2 className="ui dividing header">{messages.trendingToday}</h2>
-
-      {cards.length > 0 ? (
-        <ul className="ui four doubling cards media-card-list">
-          {cards.map((item, index) => (
-            <li key={`home-${item.mediaType}-${item.id}`} style={{ '--stagger-delay': `${index * 90}ms` }}>
-              <CardDefault {...item} scrollId={`home-card-${index + 1}`} />
-            </li>
-          ))}
-        </ul>
-      ) : !error ? (
-        <p>{messages.noContent}</p>
-      ) : null}
+      <PagedList
+        initialData={initialData}
+        apiPath="trending"
+        storageKey="home-page"
+        cardIdPrefix="home-card"
+        listKeyPrefix="page-home"
+        headingSlot={
+          <h2 className={`ui dividing header${titles.trendingToday ? '' : ' u-not-available'}`}>
+            {titles.trendingToday}
+          </h2>
+        }
+      />
     </main>
   );
 }

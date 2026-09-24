@@ -1,13 +1,11 @@
 import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/resolver';
-import CardFeatured from '@/components/CardFeatured';
-import CardDefault from '@/components/CardDefault';
+import PagedList from '@/components/PagedList';
 
-export default async function TvShowsPage({ params, searchParams }) {
+export default async function TvShowsPage({ params }) {
   const locale = params.locale;
-  const { messages } = getLocaleText(locale);
+  const { messages, titles } = getLocaleText(locale);
   const apiKey = process.env.TMDB_API_KEY;
-  const lastPage = Math.max(1, Number(searchParams?.page ?? 1) || 1);
 
   if (!apiKey) {
     return <main className="ui container fluid tv-shows-page"><p>{messages.apiKeyMissing}</p></main>;
@@ -17,16 +15,12 @@ export default async function TvShowsPage({ params, searchParams }) {
 
   let featured = null;
   let cards = [];
+  let hasMore = false;
   let error = null;
 
   try {
-    const pages = await Promise.all(
-      Array.from({ length: lastPage }, (_, i) => api.getTrendingTVShows(i + 1))
-    );
-
-    const firstPage = pages[0];
-    const source =
-      firstPage?.results?.[1] ?? firstPage?.results?.[2] ?? firstPage?.results?.[0] ?? null;
+    const result = await api.getTrendingTVShows(1);
+    const source = result?.results?.[1] ?? result?.results?.[2] ?? result?.results?.[0] ?? null;
 
     if (source) {
       try {
@@ -43,41 +37,40 @@ export default async function TvShowsPage({ params, searchParams }) {
           posterUrl: details.posterUrl,
         };
       } catch (e) {
-        console.error('Featured TV show details could not be loaded:', e);
+        console.error('Featured tv show details could not be loaded:', e);
       }
     }
 
     cards = Array.from(
-      new Map(
-        pages.flatMap((r) => r.results ?? []).map((c) => [`${c.id}-${c.mediaType}`, c])
-      ).values()
+      new Map((result.results ?? []).map((c) => [`${c.id}-${c.mediaType}`, c])).values()
     );
+    hasMore = result.hasMore === true;
   } catch (e) {
     console.error('Failed to load tv shows:', e);
     error = messages.tvShowsLoadError;
   }
 
+  const initialData = { featured, cards, page: 1, hasMore, error };
+
   return (
     <main className="ui container fluid tv-shows-page">
-      {error && <p className="ui error message">{error}</p>}
-
-      <h2 className="ui dividing header">{messages.tvShows}</h2>
-
-      {featured && <CardFeatured {...featured} />}
-
-      <h2 className="ui dividing header">{messages.topRatedProductions}</h2>
-
-      {cards.length > 0 ? (
-        <ul className="ui four doubling cards media-card-list">
-          {cards.map((item, index) => (
-            <li key={`tv-${item.mediaType}-${item.id}`} style={{ '--stagger-delay': `${index * 90}ms` }}>
-              <CardDefault {...item} scrollId={`tv-card-${index + 1}`} />
-            </li>
-          ))}
-        </ul>
-      ) : !error ? (
-        <p>{messages.noTvShowsFound}</p>
-      ) : null}
+      <PagedList
+        initialData={initialData}
+        apiPath="tv-shows"
+        storageKey="tv-shows-page"
+        cardIdPrefix="tv-card"
+        listKeyPrefix="page-tv"
+        headingSlot={
+          <>
+            <h2 className={`ui dividing header${titles.tvShows ? '' : ' u-not-available'}`}>
+              {titles.tvShows}
+            </h2>
+            <h2 className={`ui dividing header${titles.topRatedProductions ? '' : ' u-not-available'}`}>
+              {titles.topRatedProductions}
+            </h2>
+          </>
+        }
+      />
     </main>
   );
 }
