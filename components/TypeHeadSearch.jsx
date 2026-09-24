@@ -1,6 +1,5 @@
 'use client';
 
-import styles from './TypeHeadSearch.module.scss';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { deduplicateById } from '@/lib/utils/deduplicateById';
@@ -142,10 +141,10 @@ export default function TypeHeadSearch() {
   });
 
   return (
-    <search id="typeahead-search" className={styles['typeahead-search']}>
+    <search id="typeahead-search" className="typeahead-search">
       <form id="typeahead-search-form" onSubmit={(e) => e.preventDefault()} role="search">
         <label className="u-sr-only" htmlFor="typeahead-search-input">{labels.searchInput}</label>
-        <div className={styles['input-wrapper']}>
+        <div className="input-wrapper">
           <input
             ref={inputRef} id="typeahead-search-input" type="search" autoComplete="off"
             role="combobox" aria-autocomplete="list" aria-controls={resultsId}
@@ -167,7 +166,7 @@ export default function TypeHeadSearch() {
           )}
         </div>
         {hasResults && (
-          <div id={resultsId} role="listbox" aria-label={messages.searchResults} aria-live="polite" aria-atomic={false} className={styles['results-dropdown']} style={{ display: resultsClosed ? 'none' : undefined }}>
+          <div id={resultsId} role="listbox" aria-label={messages.searchResults} aria-live="polite" aria-atomic={false} className="results-dropdown" style={{ display: resultsClosed ? 'none' : undefined }}>
             {movies.length > 0 && (
               <div role="group" aria-labelledby="typeahead-movies-heading">
                 <h2 id="typeahead-movies-heading" className={`typeahead-results-heading ui label blue${titles.movies ? '' : ' u-not-available'}`}>{titles.movies}</h2>
