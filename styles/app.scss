@@ -2,20 +2,20 @@
    GLOBAL & IMPORTS
    ============================================ */
 
-@use 'fomantic-ui-css/components/reset.css';
-@use 'fomantic-ui-css/components/site.css';
-@use 'fomantic-ui-css/components/container.css';
-@use 'fomantic-ui-css/components/grid.css';
-@use 'fomantic-ui-css/components/menu.css';
-@use 'fomantic-ui-css/components/header.css';
-@use 'fomantic-ui-css/components/card.css';
-@use 'fomantic-ui-css/components/list.css';
-@use 'fomantic-ui-css/components/button.css';
-@use 'fomantic-ui-css/components/label.css';
-@use 'fomantic-ui-css/components/icon.css';
-@use 'fomantic-ui-css/components/image.css';
-@use 'fomantic-ui-css/components/tab.css';
-@use 'fomantic-ui-css/components/segment.css';
+@import 'fomantic-ui-css/components/reset.css';
+@import 'fomantic-ui-css/components/site.css';
+@import 'fomantic-ui-css/components/container.css';
+@import 'fomantic-ui-css/components/grid.css';
+@import 'fomantic-ui-css/components/menu.css';
+@import 'fomantic-ui-css/components/header.css';
+@import 'fomantic-ui-css/components/card.css';
+@import 'fomantic-ui-css/components/list.css';
+@import 'fomantic-ui-css/components/button.css';
+@import 'fomantic-ui-css/components/label.css';
+@import 'fomantic-ui-css/components/icon.css';
+@import 'fomantic-ui-css/components/image.css';
+@import 'fomantic-ui-css/components/tab.css';
+@import 'fomantic-ui-css/components/segment.css';
 
 @use './variables';
 @use './mixins' as *;
