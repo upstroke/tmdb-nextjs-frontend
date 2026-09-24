@@ -1,35 +1,19 @@
-'use client';
-
-import styles from './DialogMessage.module.scss';
-import { useEffect, useRef } from 'react';
-import { useI18n } from '@/lib/stores/locale';
-
-export default function DialogMessage({ message, title, onClose }) {
-  const { messages } = useI18n();
-  const dialogRef = useRef(null);
-  const resolvedTitle = title ?? messages.dialogErrorTitle;
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog || !message) return;
-    if (!dialog.open) dialog.showModal();
-  }, [message]);
+export default function DialogMessage({ type = 'info', message, title }) {
+  const iconMap = {
+    info: 'info circle',
+    warning: 'exclamation triangle',
+    error: 'times circle',
+    success: 'check circle',
+  };
+  const icon = iconMap[type] ?? iconMap.info;
 
   return (
-    <dialog
-      ref={dialogRef}
-      aria-labelledby="dialog-message-title"
-      aria-live="assertive"
-      className={styles['dialog-message']}
-      onClose={onClose}
-    >
-      <div className={styles['dialog-message-content']}>
-        <strong id="dialog-message-title">{resolvedTitle}</strong>
-        <p>{message}</p>
-        <form className={styles['dialog-message-actions']} method="dialog">
-          <button className="ui button primary right floated" type="submit">{messages.dialogOk}</button>
-        </form>
+    <div className={`ui message dialog-message dialog-message--${type}`}>
+      <i className={`${icon} icon`} aria-hidden="true" />
+      <div className="content">
+        {title && <div className="header">{title}</div>}
+        {message && <p>{message}</p>}
       </div>
-    </dialog>
+    </div>
   );
 }

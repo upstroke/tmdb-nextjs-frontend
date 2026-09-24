@@ -1,38 +1,31 @@
-'use client';
-
-import styles from './DetailsHero.module.scss';
+import Image from 'next/image';
 import { useI18n } from '@/lib/stores/locale';
 
-export default function DetailsHero({ title, backdrop, posterUrl, productionCompanies = [], emptyLabel = '' }) {
+export default function DetailsHero({ title, backdropUrl, posterUrl, tagline }) {
   const { fallbacks } = useI18n();
   const notAvailableText = fallbacks.notAvailable;
-  const fallbackImage = backdrop || posterUrl || '/not-available.png';
-  const resolvedPosterUrl = posterUrl || '/not-available.png';
-  const resolvedTitle = title?.trim() || notAvailableText;
-  const resolvedEmptyLabel = emptyLabel?.trim() || notAvailableText;
+  const heroTitle = title?.trim() || notAvailableText;
+  const heroTagline = tagline?.trim() || '';
 
   return (
-    <section
-      aria-labelledby="details-hero-title"
-      className={styles['details-hero']}
-      style={{ '--details-hero-backdrop': `url('${fallbackImage}')` }}
-    >
-      <div className={styles['details-hero-overlay']}>
-        <div className={styles['details-hero-content']}>
-          <div aria-hidden="true" className={styles['details-hero-poster']}>
-            <img alt="" src={resolvedPosterUrl} />
-          </div>
-          <h1 className={styles['details-hero-title']} id="details-hero-title">{resolvedTitle}</h1>
-          <section aria-labelledby="details-hero-companies-heading" className={styles['details-hero-companies']}>
-            <h2 className="u-sr-only" id="details-hero-companies-heading">Produktionsfirmen</h2>
-            <ul>
-              {productionCompanies.length > 0
-                ? productionCompanies.map((company) => (<li key={`header-company-${company.id ?? company.name}`} className={styles['details-hero-company']}>{company.name}</li>))
-                : <li className={styles['details-hero-company']}>{resolvedEmptyLabel}</li>}
-            </ul>
-          </section>
+    <div className="details-hero">
+      {backdropUrl && (
+        <div className="details-hero-backdrop">
+          <Image src={backdropUrl} alt="" fill style={{ objectFit: 'cover' }} priority />
+          <div className="details-hero-backdrop-overlay" />
+        </div>
+      )}
+      <div className="details-hero-body">
+        {posterUrl && (
+          <figure className="details-hero-poster">
+            <Image src={posterUrl} alt={`${heroTitle} Poster`} width={185} height={278} />
+          </figure>
+        )}
+        <div className="details-hero-text">
+          <h1 className={`details-hero-title${heroTitle ? '' : ' u-not-available'}`}>{heroTitle}</h1>
+          {heroTagline && <p className="details-hero-tagline">{heroTagline}</p>}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

@@ -1,18 +1,21 @@
 'use client';
 
-import styles from './LoadMore.module.scss';
 import { useI18n } from '@/lib/stores/locale';
 
-export default function LoadMore({ hasMore = false, loading = false, onLoad = null }) {
-  const { messages: texts } = useI18n();
+export default function LoadMore({ onClick, isLoading = false, hasMore = true }) {
+  const { labels } = useI18n();
+
+  if (!hasMore) return null;
 
   return (
-    <div className={styles['load-more']} aria-live="polite">
-      {loading ? (
-        <button className="ui primary button loading" type="button" onClick={() => onLoad?.()} disabled aria-busy>{texts.loadMoreLoading}</button>
-      ) : (
-        <button className="ui primary button" type="button" onClick={() => onLoad?.()} disabled={!hasMore} aria-busy={false}>{texts.loadMore}</button>
-      )}
+    <div className="load-more">
+      <button
+        className={`ui button load-more-button${isLoading ? ' loading' : ''}`}
+        onClick={onClick}
+        disabled={isLoading}
+      >
+        {labels.loadMore}
+      </button>
     </div>
   );
 }
