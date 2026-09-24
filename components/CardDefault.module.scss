@@ -1,0 +1,138 @@
+@use '../styles/variables';
+@use '../styles/mixins' as *;
+
+.default-card {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
+	text-decoration: none;
+	color: inherit;
+	transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+	&:hover,
+	&:focus-visible {
+		outline: 2px solid var(--focus-ring-blue);
+		outline-offset: 2px;
+	}
+
+	:global(figure.image) {
+		margin: 0;
+		position: relative;
+		overflow: hidden;
+		aspect-ratio: 2 / 3;
+		background-color: #e0e0e0;
+
+		:global(.image-stage) {
+			width: 100%;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			position: relative;
+
+			&:global(.is-loading)::after {
+				content: '';
+				position: absolute;
+				inset: 0;
+				background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+				background-size: 200% 100%;
+				animation: card-shimmer 1.4s ease-in-out infinite;
+				transition: opacity 0.3s ease;
+			}
+
+			&:global(.is-ready) img {
+				animation: card-fade-in var(--image-delay, 0ms) 0.35s both;
+			}
+
+			img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				display: block;
+				opacity: 0;
+				transition: opacity 0.3s ease;
+			}
+		}
+	}
+
+	&:global(.image-loaded) :global(figure.image) :global(.image-stage) img {
+		opacity: 1;
+	}
+
+	&:global(.image-error) :global(figure.image) {
+		background-color: #c8c8c8;
+		&::after {
+			content: '🎬';
+			font-size: 2rem;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+	}
+
+	:global(.content) {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		padding: 0.75rem;
+
+		:global(.header) {
+			font-size: 0.9rem;
+			font-weight: 600;
+			margin: 0 0 0.25rem;
+			line-height: 1.3;
+			display: -webkit-box;
+			-webkit-line-clamp: 2;
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+		}
+
+		:global(.u-spacer) {
+			flex: 1;
+		}
+
+		:global(.card-meta) {
+			display: flex;
+			flex-direction: column;
+			gap: 0.15rem;
+			margin-top: 0.5rem;
+			font-size: 0.8rem;
+			color: var(--color-text-muted);
+		}
+	}
+
+	:global(footer.extra.content) {
+		padding: 0.5rem 0.75rem;
+		font-size: 0.85rem;
+		color: var(--color-text-muted);
+
+		:global(.rating-value) {
+			color: #000;
+			font-weight: 700;
+		}
+	}
+
+	&:global(.is-loading) {
+		pointer-events: none;
+
+		:global(.content) :global(.header),
+		:global(.content) :global(.card-meta),
+		:global(footer.extra.content) {
+			background: #e0e0e0;
+			color: transparent;
+			border-radius: 4px;
+		}
+	}
+}
+
+@keyframes card-shimmer {
+	0% { background-position: 200% 0; }
+	100% { background-position: -200% 0; }
+}
+
+@keyframes card-fade-in {
+	from { opacity: 0; }
+	to   { opacity: 1; }
+}

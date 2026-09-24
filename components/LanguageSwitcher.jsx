@@ -1,13 +1,10 @@
 'use client';
 
-import './LanguageSwitcher.scss';
+import styles from './LanguageSwitcher.module.scss';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useI18n, useLocale, setLocale } from '@/lib/stores/locale';
 import { getSupportedLocales, resolveLocale } from '@/lib/i18n/helpers';
 
-/**
- * Provides the language selector in the header.
- */
 export default function LanguageSwitcher() {
   const { labels } = useI18n();
   const router = useRouter();
@@ -15,10 +12,7 @@ export default function LanguageSwitcher() {
   const searchParams = useSearchParams();
   const currentLocale = useLocale();
 
-  const locales = getSupportedLocales().map((code) => ({
-    value: code,
-    label: code.split('-')[0].toUpperCase(),
-  }));
+  const locales = getSupportedLocales().map((code) => ({ value: code, label: code.split('-')[0].toUpperCase() }));
 
   function handleChange(event) {
     const nextLocale = resolveLocale(event.currentTarget.value);
@@ -29,21 +23,10 @@ export default function LanguageSwitcher() {
   }
 
   return (
-    <div className="language-switcher">
-      <label htmlFor="language-select" className="u-sr-only">
-        {labels.languageSelect}
-      </label>
-      <select
-        id="language-select"
-        value={currentLocale}
-        aria-label={labels.languageSelect}
-        onChange={handleChange}
-      >
-        {locales.map((locale) => (
-          <option key={locale.value} value={locale.value}>
-            {locale.label}
-          </option>
-        ))}
+    <div className={styles['language-switcher']}>
+      <label htmlFor="language-select" className="u-sr-only">{labels.languageSelect}</label>
+      <select id="language-select" value={currentLocale} aria-label={labels.languageSelect} onChange={handleChange}>
+        {locales.map((locale) => (<option key={locale.value} value={locale.value}>{locale.label}</option>))}
       </select>
     </div>
   );

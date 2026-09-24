@@ -1,25 +1,12 @@
 'use client';
 
-import './HeaderMain.scss';
+import styles from './HeaderMain.module.scss';
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useI18n } from '@/lib/stores/locale';
 
-/**
- * @param {{
- *   navItems?: Array<{
- *     id: string,
- *     label: string,
- *     icon: string,
- *     path: string,
- *     storageKey: string,
- *     active: (pathname: string) => boolean
- *   }>,
- *   children?: import('react').ReactNode
- * }} props
- */
 export default function HeaderMain({ navItems = [], children }) {
   const { labels, titles } = useI18n();
   const pathname = usePathname();
@@ -27,11 +14,7 @@ export default function HeaderMain({ navItems = [], children }) {
 
   function getStoredPage(key) {
     if (typeof window === 'undefined' || !key) return 1;
-    try {
-      return Math.max(1, Number(sessionStorage.getItem(key) ?? '1') || 1);
-    } catch {
-      return 1;
-    }
+    try { return Math.max(1, Number(sessionStorage.getItem(key) ?? '1') || 1); } catch { return 1; }
   }
 
   function getNavHref(path, storageKey) {
@@ -44,25 +27,22 @@ export default function HeaderMain({ navItems = [], children }) {
   }
 
   return (
-    <header className="header" id="menuHeader">
+    <header className={styles['header']} id="menuHeader">
       <button
-        className="burger-icon"
+        className={styles['burger-icon']}
         type="button"
         aria-label={labels.navigationToggle}
         aria-expanded={menuOpen ? 'true' : 'false'}
         aria-controls="navmenu"
         onPointerDown={() => setMenuOpen((v) => !v)}
       >
-        <span />
-        <span />
-        <span />
+        <span /><span /><span />
       </button>
-
-      <div className="nav-wrapper">
+      <div className={styles['nav-wrapper']}>
         <nav id="navmenu" aria-label={labels.mainNavigation}>
-          <ul className="nav-list">
+          <ul className={styles['nav-list']}>
             {navItems.map((item) => (
-              <li key={item.id} className="nav-item" id={item.id}>
+              <li key={item.id} className={styles['nav-item']} id={item.id}>
                 <Link
                   className={item.active(pathname) ? 'link-active' : undefined}
                   href={getNavHref(item.path, item.storageKey)}
@@ -75,7 +55,6 @@ export default function HeaderMain({ navItems = [], children }) {
             ))}
           </ul>
         </nav>
-
         {children}
         <LanguageSwitcher />
       </div>

@@ -1,0 +1,100 @@
+@use '../styles/variables';
+@use '../styles/mixins' as *;
+
+.tab-bar {
+	:global(button.item) {
+		background: none;
+		border: none;
+		border-bottom: 2px solid transparent;
+		margin-bottom: -2px;
+		padding: 0.75rem 1rem;
+		cursor: pointer;
+		font-size: 0.95rem;
+		color: var(--color-text-muted);
+		transition: color 0.15s ease, border-color 0.15s ease;
+
+		&:hover {
+			color: #333;
+			border-bottom-color: #bbb;
+		}
+
+		&:global(.active) {
+			color: #1b1c1d;
+			border-bottom-color: #1b1c1d;
+			font-weight: 600;
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--focus-ring-blue);
+			outline-offset: 2px;
+		}
+	}
+}
+
+.tab-panel {
+	border: none;
+	padding: 1rem 0;
+	margin: 0;
+	box-shadow: none;
+
+	&:not(:global(.active)) {
+		display: none;
+	}
+
+	:global(p[aria-live]) {
+		color: var(--color-text-muted);
+		font-style: italic;
+	}
+}
+
+.episodes-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+
+	.episode-item {
+		padding: 0.75rem;
+		border-radius: 6px;
+		cursor: default;
+		transition: background-color 0.12s ease;
+		outline: none;
+
+		&:hover,
+		&:focus-visible {
+			background-color: #f5f5f5;
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--focus-ring-blue);
+			outline-offset: 2px;
+		}
+
+		.episode-title {
+			font-size: 0.9rem;
+			font-weight: 600;
+			margin: 0 0 0.25rem;
+			color: #222;
+		}
+
+		.episode-air-date {
+			font-size: 0.78rem;
+			color: var(--color-text-muted);
+			display: block;
+			margin-bottom: 0.35rem;
+		}
+
+		.episode-overview {
+			font-size: 0.85rem;
+			color: #555;
+			margin: 0;
+			line-height: 1.5;
+			display: -webkit-box;
+			-webkit-line-clamp: 3;
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+		}
+	}
+}
