@@ -1,8 +1,7 @@
 'use client';
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { useI18n } from '@/lib/stores/i18n';
-import { useLocale, setLocale } from '@/lib/stores/locale';
+import { useI18n, useLocale, setLocale } from '@/lib/stores/locale';
 import { getSupportedLocales, resolveLocale } from '@/lib/i18n/helpers';
 
 /**

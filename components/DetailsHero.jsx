@@ -1,4 +1,6 @@
-import { useI18n } from '@/lib/stores/i18n';
+'use client';
+
+import { useI18n } from '@/lib/stores/locale';
 
 /**
  * @param {{ title: string, backdrop: string, posterUrl: string, productionCompanies?: {id?: number|string, name?: string, logoPath?: string}[], emptyLabel?: string }} props

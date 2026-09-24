@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useI18n } from '@/lib/stores/i18n';
-import { useLocale } from '@/lib/stores/locale';
+import { useI18n, useLocale } from '@/lib/stores/locale';
 import { formatDate } from '@/lib/utils/formatDate';
 
 /**

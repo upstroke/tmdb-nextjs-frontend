@@ -1,6 +1,6 @@
 'use client';
 
-import { useI18n } from '@/lib/stores/i18n';
+import { useI18n } from '@/lib/stores/locale';
 
 /**
  * @param {{ hasMore?: boolean, loading?: boolean, onLoad?: (() => void) | null }} props

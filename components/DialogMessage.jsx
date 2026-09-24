@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { useI18n } from '@/lib/stores/localeStore';
+import { useI18n } from '@/lib/stores/locale';
 
 /**
  * @param {{ message: string, title?: string, onClose?: () => void }} props

@@ -1,4 +1,6 @@
-import { useI18n } from '@/lib/stores/i18n';
+'use client';
+
+import { useI18n } from '@/lib/stores/locale';
 
 /**
  * @param {{ mediaType: 'movie'|'tv'|string|null|undefined, className?: string }} props
