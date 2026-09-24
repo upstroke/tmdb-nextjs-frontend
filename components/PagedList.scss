@@ -1,0 +1,27 @@
+@use '../styles/variables';
+@use '../styles/mixins' as *;
+
+.paged-list {
+	padding: 1rem 0;
+
+	> h2.ui.dividing.header {
+		margin-bottom: 1.25rem;
+	}
+
+	.paged-list-cards {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+
+	.ui.four.doubling.cards.media-card-list {
+		margin-top: 1.5rem;
+	}
+
+	> p {
+		margin-top: 2rem;
+		text-align: center;
+		color: var(--color-text-muted);
+		font-size: 1rem;
+	}
+}

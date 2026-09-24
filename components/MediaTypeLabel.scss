@@ -1,0 +1,24 @@
+@use '../styles/variables';
+
+.ui.label {
+	&.blue {
+		background-color: var(--mediatype-label-blue);
+		color: #fff;
+	}
+
+	&.teal {
+		background-color: var(--mediatype-label-teal);
+		color: #fff;
+	}
+
+	&.top.right.attached {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+		font-size: 0.68rem;
+		padding: 0.25em 0.5em;
+		border-radius: 4px;
+		z-index: 1;
+		pointer-events: none;
+	}
+}
