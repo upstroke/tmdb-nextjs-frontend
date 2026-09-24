@@ -8,8 +8,8 @@ export function generateStaticParams() {
   return SUPPORTED_LOCALES.map((locale) => ({ locale }));
 }
 
-export default function LocaleLayout({ children, params }) {
-  const locale = params?.locale ?? DEFAULT_LOCALE;
+export default async function LocaleLayout({ children, params }) {
+  const { locale = DEFAULT_LOCALE } = await params;
 
   if (!SUPPORTED_LOCALES.includes(locale)) notFound();
 
