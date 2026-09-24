@@ -56,7 +56,7 @@ export default async function TvShowsPage({ params }) {
     <main className="ui container fluid tv-shows-page">
       <PagedList
         initialData={initialData}
-        apiPath="tv-shows"
+        apiPath="api/${locale}/tv-shows"
         storageKey="tv-shows-page"
         cardIdPrefix="tv-card"
         listKeyPrefix="page-tv"
