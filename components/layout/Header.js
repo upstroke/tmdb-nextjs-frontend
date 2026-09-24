@@ -1,31 +1,53 @@
 'use client';
 
-import Link from 'next/link';
-import { useLocale } from '@/lib/stores/localeStore';
+import { useLocale } from '@/lib/stores/locale';
+import HeaderMain from '@/components/HeaderMain';
+import TypeHeadSearch from '@/components/TypeHeadSearch';
 
-export default function Header() {
-  const { locale, setLocale, SUPPORTED_LOCALES } = useLocale();
+const NAV_ITEMS = [
+  {
+    id: 'nav-home',
+    labelKey: 'home',
+    icon: 'home',
+    getPath: (locale) => `/${locale}`,
+    storageKey: null,
+    active: (pathname, locale) => pathname === `/${locale}` || pathname === `/${locale}/`,
+  },
+  {
+    id: 'nav-movies',
+    labelKey: 'movies',
+    icon: 'film',
+    getPath: (locale) => `/${locale}/movies`,
+    storageKey: 'movies-page',
+    active: (pathname, locale) => pathname.startsWith(`/${locale}/movies`),
+  },
+  {
+    id: 'nav-tv',
+    labelKey: 'tvShows',
+    icon: 'tv',
+    getPath: (locale) => `/${locale}/tv-shows`,
+    storageKey: 'tv-shows-page',
+    active: (pathname, locale) => pathname.startsWith(`/${locale}/tv-shows`),
+  },
+];
+
+export function Header() {
+  const locale = useLocale();
+
+  const navItems = NAV_ITEMS.map((item) => ({
+    id: item.id,
+    label: item.labelKey,
+    icon: item.icon,
+    path: item.getPath(locale),
+    storageKey: item.storageKey ?? '',
+    active: (pathname) => item.active(pathname, locale),
+  }));
 
   return (
-    <div className="ui fixed menu">
-      <div className="ui container">
-        <Link href="/" className="header item">TMDB</Link>
-        <Link href="/movies" className="item">Movies</Link>
-        <Link href="/tv" className="item">TV Shows</Link>
-        <div className="right menu">
-          <div className="item">
-            {SUPPORTED_LOCALES.map((loc) => (
-              <button
-                key={loc}
-                className={`ui button ${locale === loc ? 'primary' : 'basic'} tiny`}
-                onClick={() => setLocale(loc)}
-              >
-                {loc.toUpperCase()}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
+    <HeaderMain navItems={navItems}>
+      <TypeHeadSearch />
+    </HeaderMain>
   );
 }
+
+export default Header;
