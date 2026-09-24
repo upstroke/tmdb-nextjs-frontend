@@ -2,6 +2,9 @@
    GLOBAL & IMPORTS
    ============================================ */
 
+@use './variables';
+@use './mixins' as *;
+
 @import 'fomantic-ui-css/components/reset.css';
 @import 'fomantic-ui-css/components/site.css';
 @import 'fomantic-ui-css/components/container.css';
@@ -16,9 +19,6 @@
 @import 'fomantic-ui-css/components/image.css';
 @import 'fomantic-ui-css/components/tab.css';
 @import 'fomantic-ui-css/components/segment.css';
-
-@use './variables';
-@use './mixins' as *;
 
 html {
 	scroll-behavior: smooth;
