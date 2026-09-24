@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useI18n } from '@/lib/stores/locale';
-import { useLocale } from '@/lib/stores/locale';
+import { useI18n, useLocale } from '@/lib/stores/locale';
 import { restorePagedList, storeCurrentPage } from '@/lib/utils/pageStateRestore';
 import { deduplicateMedia, getMediaKey } from '@/lib/utils/deduplicateMedia';
 import CardDefault from '@/components/CardDefault';
@@ -15,11 +14,12 @@ import DialogMessage from '@/components/DialogMessage';
  *
  * @param {{
  *   initialData: { featured?: object|null, cards?: object[], page?: number, hasMore?: boolean, error?: string|null },
- *   apiPath: string,       // e.g. 'trending' | 'movies' | 'tv-shows'
+ *   apiPath: string,
  *   storageKey: string,
- *   cardIdPrefix: string,  // e.g. 'home-card' | 'movie-card' | 'tv-card'
- *   listKeyPrefix: string, // e.g. 'page-home' | 'page-movies' | 'page-tv'
- *   headingSlot: React.ReactNode,  // rendered above the grid
+ *   cardIdPrefix: string,
+ *   listKeyPrefix: string,
+ *   headingSlot: import('react').ReactNode,
+ *   emptyMessageKey?: string,
  * }} props
  */
 export default function PagedList({
@@ -29,6 +29,7 @@ export default function PagedList({
   cardIdPrefix,
   listKeyPrefix,
   headingSlot,
+  emptyMessageKey = 'noContent',
 }) {
   const { messages } = useI18n();
   const locale = useLocale();
@@ -144,6 +145,8 @@ export default function PagedList({
     }
   }
 
+  const emptyMessage = messages[emptyMessageKey] ?? messages.noContent;
+
   return (
     <>
       {error && <DialogMessage message={error} />}
@@ -170,7 +173,7 @@ export default function PagedList({
           <LoadMore hasMore={hasMore} loading={loading} onLoad={loadMore} />
         </>
       ) : !error ? (
-        <p className="u-not-available">{messages.noContent}</p>
+        <p className={emptyMessage ? '' : 'u-not-available'}>{emptyMessage}</p>
       ) : null}
     </>
   );
