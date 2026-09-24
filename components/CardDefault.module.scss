@@ -16,14 +16,14 @@
 		outline-offset: 2px;
 	}
 
-	:global(figure.image) {
+	figure.image {
 		margin: 0;
 		position: relative;
 		overflow: hidden;
 		aspect-ratio: 2 / 3;
 		background-color: #e0e0e0;
 
-		:global(.image-stage) {
+		.image-stage {
 			width: 100%;
 			height: 100%;
 			display: flex;
@@ -31,7 +31,7 @@
 			justify-content: center;
 			position: relative;
 
-			&:global(.is-loading)::after {
+			&.is-loading::after {
 				content: '';
 				position: absolute;
 				inset: 0;
@@ -41,7 +41,7 @@
 				transition: opacity 0.3s ease;
 			}
 
-			&:global(.is-ready) img {
+			&.is-ready img {
 				animation: card-fade-in var(--image-delay, 0ms) 0.35s both;
 			}
 
@@ -56,11 +56,11 @@
 		}
 	}
 
-	&:global(.image-loaded) :global(figure.image) :global(.image-stage) img {
+	&.image-loaded figure.image .image-stage img {
 		opacity: 1;
 	}
 
-	&:global(.image-error) :global(figure.image) {
+	&.image-error figure.image {
 		background-color: #c8c8c8;
 		&::after {
 			content: '🎬';
@@ -72,13 +72,13 @@
 		}
 	}
 
-	:global(.content) {
+	.content {
 		display: flex;
 		flex-direction: column;
 		flex: 1;
 		padding: 0.75rem;
 
-		:global(.header) {
+		.header {
 			font-size: 0.9rem;
 			font-weight: 600;
 			margin: 0 0 0.25rem;
@@ -89,11 +89,11 @@
 			overflow: hidden;
 		}
 
-		:global(.u-spacer) {
+		.u-spacer {
 			flex: 1;
 		}
 
-		:global(.card-meta) {
+		.card-meta {
 			display: flex;
 			flex-direction: column;
 			gap: 0.15rem;
@@ -103,23 +103,23 @@
 		}
 	}
 
-	:global(footer.extra.content) {
+	footer.extra.content {
 		padding: 0.5rem 0.75rem;
 		font-size: 0.85rem;
 		color: var(--color-text-muted);
 
-		:global(.rating-value) {
+		.rating-value {
 			color: #000;
 			font-weight: 700;
 		}
 	}
 
-	&:global(.is-loading) {
+	&.is-loading {
 		pointer-events: none;
 
-		:global(.content) :global(.header),
-		:global(.content) :global(.card-meta),
-		:global(footer.extra.content) {
+		.content .header,
+		.content .card-meta,
+		footer.extra.content {
 			background: #e0e0e0;
 			color: transparent;
 			border-radius: 4px;
