@@ -148,7 +148,7 @@ export default function PagedList({
   const emptyMessage = messages[emptyMessageKey] ?? messages.noContent;
 
   return (
-    <>
+    <div className="paged-list">
       {error && <DialogMessage message={error} />}
 
       {headingSlot}
@@ -156,7 +156,7 @@ export default function PagedList({
       {featured && <CardFeatured {...featured} />}
 
       {cards.length > 0 ? (
-        <>
+        <div className="paged-list-cards">
           <ul className="ui four doubling cards media-card-list">
             {cards.map((item, index) => (
               <li
@@ -171,10 +171,10 @@ export default function PagedList({
             ))}
           </ul>
           <LoadMore hasMore={hasMore} loading={loading} onLoad={loadMore} />
-        </>
+        </div>
       ) : !error ? (
         <p className={emptyMessage ? '' : 'u-not-available'}>{emptyMessage}</p>
       ) : null}
-    </>
+    </div>
   );
 }
