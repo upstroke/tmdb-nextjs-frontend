@@ -1,0 +1,425 @@
+'use client';
+
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { deduplicateById } from '@/lib/utils/deduplicateById';
+import { useI18n } from '@/lib/stores/i18n';
+import { useLocale } from '@/lib/stores/locale';
+import notAvailable from '@/lib/assets/not-available.png';
+
+interface SearchResult {
+  id: number | string;
+  mediaType: 'movie' | 'tv';
+  title: string;
+  date?: string;
+  rating?: number | null;
+  posterUrl?: string;
+  imageUrl?: string;
+}
+
+function formatRating(value: number | null | undefined): string {
+  return Number(value ?? 0).toFixed(1);
+}
+
+function formatYear(value: string | undefined): string {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return String(date.getFullYear());
+}
+
+/**
+ * Accessible typeahead search for movies and TV shows.
+ * Fetches from /api/search?q=...&locale=... with debounce.
+ *
+ * NOTE: The SvelteKit version fetches /search — in Next.js this
+ * maps to an API route at app/api/search/route.ts.
+ */
+export default function TypeHeadSearch() {
+  const { labels, messages, formats, titles, fallbacks } = useI18n();
+  const locale = useLocale();
+  const router = useRouter();
+
+  const [query, setQuery] = useState('');
+  const [movies, setMovies] = useState<SearchResult[]>([]);
+  const [tvShows, setTvShows] = useState<SearchResult[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
+  const [resultsClosed, setResultsClosed] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [announcement, setAnnouncement] = useState('');
+  const [focusedResultId, setFocusedResultId] = useState<string | null>(null);
+  const [lastSelectedResultId, setLastSelectedResultId] = useState<string | null>(null);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const loadingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const announcementTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const controllerRef = useRef<AbortController | null>(null);
+  const prevLocale = useRef<string | null>(null);
+
+  const searchHintId = 'typeahead-search-hint';
+  const resultsId = 'typeahead-search-results';
+
+  const hasResults = movies.length > 0 || tvShows.length > 0;
+  const hasSearchTerm = query.trim().length >= 4;
+  const resultsVisible = !resultsClosed && (hasResults || loading || !!error);
+  const hasStatusMessage =
+    !resultsClosed && (showLoading || !!error || (hasSearchTerm && !hasResults));
+
+  function getAllResultIds(): string[] {
+    return [
+      ...movies.map((m) => `movie-${m.id}`),
+      ...tvShows.map((t) => `tv-${t.id}`),
+    ];
+  }
+
+  function focusResult(resultId: string) {
+    setFocusedResultId(resultId);
+    requestAnimationFrame(() => {
+      (document.querySelector('a.result[aria-selected="true"]') as HTMLElement | null)
+        ?.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+    });
+  }
+
+  function focusNextResult() {
+    const ids = getAllResultIds();
+    if (!ids.length) return;
+    const idx = ids.indexOf(focusedResultId ?? '');
+    focusResult(ids[idx === -1 ? 0 : Math.min(idx + 1, ids.length - 1)]);
+  }
+  function focusPreviousResult() {
+    const ids = getAllResultIds();
+    if (!ids.length) return;
+    const idx = ids.indexOf(focusedResultId ?? '');
+    focusResult(ids[idx === -1 ? 0 : Math.max(idx - 1, 0)]);
+  }
+  function focusFirstResult() {
+    const ids = getAllResultIds();
+    if (ids.length) focusResult(ids[0]);
+  }
+  function focusLastResult() {
+    const ids = getAllResultIds();
+    if (ids.length) focusResult(ids[ids.length - 1]);
+  }
+
+  function clearAnnouncementFn() {
+    if (announcementTimer.current) clearTimeout(announcementTimer.current);
+    setAnnouncement('');
+  }
+  function scheduleAnnouncement(msg: string) {
+    if (announcementTimer.current) clearTimeout(announcementTimer.current);
+    setAnnouncement('');
+    if (!msg) return;
+    announcementTimer.current = setTimeout(() => {
+      requestAnimationFrame(() => setAnnouncement(msg));
+    }, 500);
+  }
+  function resetResults() {
+    if (loadingTimer.current) clearTimeout(loadingTimer.current);
+    clearAnnouncementFn();
+    setShowLoading(false);
+    setLoading(false);
+    setResultsClosed(false);
+    setFocusedResultId(null);
+    setMovies([]);
+    setTvShows([]);
+    setError(null);
+  }
+
+  function resultHref(item: SearchResult): string {
+    const base =
+      item.mediaType === 'movie' ? `/movies/${item.id}` : `/tv-shows/${item.id}`;
+    return `${base}?locale=${locale}`;
+  }
+
+  const search = useCallback(
+    async (term: string) => {
+      controllerRef.current?.abort();
+      if (loadingTimer.current) clearTimeout(loadingTimer.current);
+      clearAnnouncementFn();
+      setFocusedResultId(null);
+      setShowLoading(false);
+      controllerRef.current = new AbortController();
+      setLoading(true);
+      setError(null);
+      loadingTimer.current = setTimeout(() => setShowLoading(true), 300);
+      try {
+        // NOTE: SvelteKit uses /search, Next.js uses /api/search
+        const res = await fetch(
+          `/api/search?q=${encodeURIComponent(term)}&locale=${encodeURIComponent(locale)}`,
+          { signal: controllerRef.current.signal }
+        );
+        if (!res.ok) {
+          setError(messages.searchError);
+          scheduleAnnouncement(messages.searchError);
+          return;
+        }
+        const data = await res.json();
+        const dedupMovies = deduplicateById(data.movies ?? []) as SearchResult[];
+        const dedupTv = deduplicateById(data.tvShows ?? []) as SearchResult[];
+        setMovies(dedupMovies);
+        setTvShows(dedupTv);
+        const count = dedupMovies.length + dedupTv.length;
+        if (count > 0) {
+          scheduleAnnouncement(messages.searchResultsCount.replace('{count}', String(count)));
+        } else if (term.length >= 4) {
+          scheduleAnnouncement(messages.searchNoResults);
+        }
+      } catch (ex: unknown) {
+        if (ex instanceof Error && ex.name === 'AbortError') return;
+        setError(messages.searchError);
+        scheduleAnnouncement(messages.searchError);
+      } finally {
+        if (loadingTimer.current) clearTimeout(loadingTimer.current);
+        setShowLoading(false);
+        setLoading(false);
+      }
+    },
+    [locale, messages]
+  );
+
+  // Re-search when locale changes
+  useEffect(() => {
+    if (prevLocale.current === null) { prevLocale.current = locale; return; }
+    if (locale === prevLocale.current) return;
+    prevLocale.current = locale;
+    const term = query.trim();
+    if (term.length >= 4) void search(term);
+  }, [locale, query, search]);
+
+  function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.currentTarget.value;
+    setQuery(val);
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    clearAnnouncementFn();
+    setFocusedResultId(null);
+    const term = val.trim();
+    if (term.length < 4) { resetResults(); return; }
+    setResultsClosed(false);
+    debounceTimer.current = setTimeout(() => search(term), 300);
+  }
+
+  function closeResults({ restoreFocus = false } = {}) {
+    clearAnnouncementFn();
+    setResultsClosed(true);
+    if (focusedResultId) setLastSelectedResultId(focusedResultId);
+    setFocusedResultId(null);
+    if (restoreFocus) inputRef.current?.focus();
+  }
+
+  function showResultsPanel() {
+    if (query.trim().length >= 4 && (hasResults || loading || error)) {
+      setResultsClosed(false);
+      if (lastSelectedResultId) {
+        const allIds = getAllResultIds();
+        if (allIds.includes(lastSelectedResultId)) {
+          setFocusedResultId(lastSelectedResultId);
+          return;
+        }
+      }
+      if (hasResults) {
+        const first = getAllResultIds()[0];
+        if (first) focusResult(first);
+      }
+    }
+  }
+
+  // Global click to close
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (!(e.target as Element).closest('#typeahead-search')) closeResults();
+    }
+    window.addEventListener('click', handleClick);
+    return () => window.removeEventListener('click', handleClick);
+  });
+
+  // Global keydown
+  useEffect(() => {
+    function handleKeydown(event: KeyboardEvent) {
+      if (!resultsVisible || !hasResults) {
+        if (event.key === 'Escape') { event.preventDefault(); closeResults({ restoreFocus: true }); }
+        return;
+      }
+      switch (event.key) {
+        case 'ArrowDown': event.preventDefault(); focusNextResult(); break;
+        case 'ArrowUp': event.preventDefault(); focusPreviousResult(); break;
+        case 'Enter':
+          event.preventDefault();
+          if (focusedResultId) {
+            (document.querySelector('a.result[aria-selected="true"]') as HTMLElement | null)?.click();
+          }
+          break;
+        case 'Escape': event.preventDefault(); closeResults({ restoreFocus: true }); break;
+        case 'Home': event.preventDefault(); focusFirstResult(); break;
+        case 'End': event.preventDefault(); focusLastResult(); break;
+      }
+    }
+    window.addEventListener('keydown', handleKeydown);
+    return () => window.removeEventListener('keydown', handleKeydown);
+  });
+
+  return (
+    <search id="typeahead-search">
+      <form id="typeahead-search-form" onSubmit={(e) => e.preventDefault()} role="search">
+        <label className="u-sr-only" htmlFor="typeahead-search-input">
+          {labels.searchInput}
+        </label>
+        <div className="input-wrapper">
+          <input
+            ref={inputRef}
+            id="typeahead-search-input"
+            type="search"
+            autoComplete="off"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-controls={resultsId}
+            aria-describedby={searchHintId}
+            aria-expanded={resultsVisible && hasResults}
+            aria-haspopup="listbox"
+            aria-activedescendant={focusedResultId ?? undefined}
+            value={query}
+            onFocus={showResultsPanel}
+            onChange={handleInput}
+            placeholder={labels.searchInput}
+          />
+          <i aria-hidden="true" className="search icon" />
+          <p className="u-sr-only" id={searchHintId}>{messages.searchHint}</p>
+          {hasStatusMessage && (
+            <div id="status-messages-layer">
+              <section
+                id="status-messages"
+                role={error ? 'alert' : 'status'}
+                aria-live={error ? 'assertive' : 'polite'}
+                aria-atomic
+              >
+                {error ? (
+                  <div className="search-error-panel"><p className="result result-error">{error}</p></div>
+                ) : loading ? (
+                  <p className="result">{messages.searchLoading}</p>
+                ) : hasSearchTerm && !hasResults ? (
+                  <div className="search-empty-state"><p className="result">{messages.searchNoResults}</p></div>
+                ) : null}
+              </section>
+            </div>
+          )}
+        </div>
+
+        {hasResults && (
+          <div
+            id={resultsId}
+            role="listbox"
+            aria-label={messages.searchResults}
+            aria-live="polite"
+            aria-atomic={false}
+            style={{ display: resultsClosed ? 'none' : undefined }}
+          >
+            {movies.length > 0 && (
+              <div role="group" aria-labelledby="typeahead-movies-heading">
+                <h2
+                  id="typeahead-movies-heading"
+                  className={`typeahead-results-heading ui label blue${titles.movies ? '' : ' u-not-available'}`}
+                >
+                  {titles.movies}
+                </h2>
+                {movies.map((item) => (
+                  <a
+                    key={item.id}
+                    role="option"
+                    id={`movie-${item.id}`}
+                    className={`result${focusedResultId === `movie-${item.id}` ? ' result-focused' : ''}`}
+                    data-result-link="true"
+                    href={resultHref(item)}
+                    onClick={() => closeResults()}
+                    aria-selected={focusedResultId === `movie-${item.id}` ? 'true' : 'false'}
+                    aria-labelledby={`typeahead-result-type-movie-${item.id} typeahead-result-content-movie-${item.id}`}
+                    tabIndex={focusedResultId === `movie-${item.id}` ? 0 : -1}
+                  >
+                    <figure className="image" aria-hidden="true">
+                      <img src={item.posterUrl || item.imageUrl || notAvailable.src} alt="" />
+                    </figure>
+                    <div className="content">
+                      <span className="u-sr-only" id={`typeahead-result-type-movie-${item.id}`}>{titles.movies}</span>
+                      <div id={`typeahead-result-content-movie-${item.id}`}>
+                        <header className="result-header">
+                          <h3 className={`title${item.title ? '' : ' u-not-available'}`}>{item.title}</h3>
+                        </header>
+                        <p className="description">
+                          <time className={item.date ? '' : 'u-not-available'} dateTime={item.date}>{formatYear(item.date)}</time>
+                          <span aria-hidden="true"> · </span>
+                          <span className="rating">
+                            {item.rating !== null && item.rating !== undefined ? (
+                              <><i className="yellow star icon" aria-hidden="true" />
+                              <span className="u-sr-only">{labels.rating}</span>
+                              <span className={`rating-value${item.rating ? '' : ' u-not-available'}`}>{formatRating(item.rating)}</span>
+                              <span className="u-sr-only">{formats.outOfTen}</span></>
+                            ) : (
+                              <span className="u-not-available">{fallbacks.notAvailable}</span>
+                            )}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
+
+            {tvShows.length > 0 && (
+              <div role="group" aria-labelledby="typeahead-tv-heading">
+                <h2
+                  id="typeahead-tv-heading"
+                  className={`typeahead-results-heading ui label teal${titles.tvShows ? '' : ' u-not-available'}`}
+                >
+                  {titles.tvShows}
+                </h2>
+                {tvShows.map((item) => (
+                  <a
+                    key={item.id}
+                    role="option"
+                    id={`tv-${item.id}`}
+                    className={`result${focusedResultId === `tv-${item.id}` ? ' result-focused' : ''}`}
+                    data-result-link="true"
+                    href={resultHref(item)}
+                    onClick={() => closeResults()}
+                    aria-selected={focusedResultId === `tv-${item.id}` ? 'true' : 'false'}
+                    aria-labelledby={`typeahead-result-type-tv-${item.id} typeahead-result-content-tv-${item.id}`}
+                    tabIndex={focusedResultId === `tv-${item.id}` ? 0 : -1}
+                  >
+                    <figure className="image" aria-hidden="true">
+                      <img src={item.posterUrl || item.imageUrl || notAvailable.src} alt="" />
+                    </figure>
+                    <div className="content">
+                      <span className="u-sr-only" id={`typeahead-result-type-tv-${item.id}`}>{titles.tvShows}</span>
+                      <div id={`typeahead-result-content-tv-${item.id}`}>
+                        <header className="result-header">
+                          <h3 className={`title${item.title ? '' : ' u-not-available'}`}>{item.title}</h3>
+                        </header>
+                        <p className="description">
+                          <time className={item.date ? '' : 'u-not-available'} dateTime={item.date}>{formatYear(item.date)}</time>
+                          <span aria-hidden="true"> · </span>
+                          <span className="rating">
+                            {item.rating !== null && item.rating !== undefined ? (
+                              <><i className="yellow star icon" aria-hidden="true" />
+                              <span className="u-sr-only">{labels.rating}</span>
+                              <span className={`rating-value${item.rating ? '' : ' u-not-available'}`}>{formatRating(item.rating)}</span>
+                              <span className="u-sr-only">{formats.outOfTen}</span></>
+                            ) : (
+                              <span className="u-not-available">{fallbacks.notAvailable}</span>
+                            )}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </form>
+
+      <div className="u-sr-only" aria-live="polite" aria-atomic>{announcement}</div>
+    </search>
+  );
+}
