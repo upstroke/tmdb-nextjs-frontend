@@ -63,10 +63,10 @@ export default async function TvShowsPage({ params }) {
         emptyMessageKey="noTvShows"
         headingSlot={
           <>
-            <h2 className={`ui dividing header${titles.tvShows ? '' : ' u-not-available'}`}>
+            <h2 key="tv-title" className={`ui dividing header${titles.tvShows ? '' : ' u-not-available'}`}>
               {titles.tvShows}
             </h2>
-            <h2 className={`ui dividing header${titles.topRatedProductions ? '' : ' u-not-available'}`}>
+            <h2 key="tv-top-rated" className={`ui dividing header${titles.topRatedProductions ? '' : ' u-not-available'}`}>
               {titles.topRatedProductions}
             </h2>
           </>
