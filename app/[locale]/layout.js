@@ -16,7 +16,7 @@ export default async function LocaleLayout({ children, params }) {
   return (
     <AppLocaleProvider initialLocale={locale}>
       <Header />
-      <main>{children}</main>
+      {children}
       <Footer />
     </AppLocaleProvider>
   );
