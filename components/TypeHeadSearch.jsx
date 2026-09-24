@@ -3,8 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { deduplicateById } from '@/lib/utils/deduplicateById';
-import { useI18n } from '@/lib/stores/i18n';
-import { useLocale } from '@/lib/stores/locale';
+import { useI18n, useLocale } from '@/lib/stores/locale';
 
 function formatRating(value) {
   return Number(value ?? 0).toFixed(1);
@@ -114,8 +113,8 @@ export default function TypeHeadSearch() {
 
   function resultHref(item) {
     const base =
-      item.mediaType === 'movie' ? `/movies/${item.id}` : `/tv-shows/${item.id}`;
-    return `${base}?locale=${locale}`;
+      item.mediaType === 'movie' ? `/${locale}/movies/${item.id}` : `/${locale}/tv-shows/${item.id}`;
+    return base;
   }
 
   const search = useCallback(
@@ -131,7 +130,7 @@ export default function TypeHeadSearch() {
       loadingTimer.current = setTimeout(() => setShowLoading(true), 300);
       try {
         const res = await fetch(
-          `/api/search?q=${encodeURIComponent(term)}&locale=${encodeURIComponent(locale)}`,
+          `/api/${encodeURIComponent(locale)}/search?q=${encodeURIComponent(term)}`,
           { signal: controllerRef.current.signal }
         );
         if (!res.ok) {
