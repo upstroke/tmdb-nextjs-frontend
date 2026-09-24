@@ -1,5 +1,5 @@
 import { fetchMovies } from '@/lib/services/tmdb';
-import { MovieCard } from '@/components/media/MovieCard';
+import CardDefault from '@/components/CardDefault';
 
 export default async function MoviesPage({ params, searchParams }) {
   const { locale } = params;
@@ -13,7 +13,14 @@ export default async function MoviesPage({ params, searchParams }) {
       <ul>
         {data.results.map((movie) => (
           <li key={movie.id}>
-            <MovieCard movie={movie} locale={locale} />
+            <CardDefault
+              id={movie.id}
+              mediaType="movie"
+              title={movie.title}
+              date={movie.release_date}
+              rating={movie.vote_average}
+              imageUrl={movie.poster_path ? `https://image.tmdb.org/t/p/w342${movie.poster_path}` : ''}
+            />
           </li>
         ))}
       </ul>

@@ -2,8 +2,7 @@
 
 import Link from 'next/link';
 import { formatDate } from '@/lib/utils/formatDate';
-import { useI18n } from '@/lib/stores/i18n';
-import { useLocale } from '@/lib/stores/locale';
+import { useI18n, useLocale } from '@/lib/stores/locale';
 
 /**
  * @param {{ id: number|string, mediaType: 'movie'|'tv', title: string, releaseDate?: string, overview?: string, homepage?: string, genres?: {id?: number|string, name: string}[], imageUrl?: string, posterUrl?: string }} props
@@ -27,9 +26,9 @@ export default function CardFeatured({
 
   const detailsHref =
     normalizedType === 'movie'
-      ? `/movies/${id}?locale=${locale}`
+      ? `/${locale}/movies/${id}`
       : normalizedType === 'tv'
-        ? `/tv-shows/${id}?locale=${locale}`
+        ? `/${locale}/tv/${id}`
         : undefined;
 
   const notAvailableText = fallbacks.notAvailable;

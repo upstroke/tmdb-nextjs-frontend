@@ -5,8 +5,7 @@ import { useState, useEffect } from 'react';
 import MediaTypeLabel from './MediaTypeLabel';
 import { getCertificationMeta } from '@/lib/utils/certificationMeta';
 import { formatDate } from '@/lib/utils/formatDate';
-import { useI18n } from '@/lib/stores/i18n';
-import { useLocale } from '@/lib/stores/locale';
+import { useI18n, useLocale } from '@/lib/stores/locale';
 
 /**
  * @param {{ id: number|string, mediaType: 'movie'|'tv', title: string, date?: string, rating?: number, certification?: string|number, genres?: {name:string}[], imageUrl?: string, scrollId?: string, isLoading?: boolean }} props
@@ -44,8 +43,8 @@ export default function CardDefault({
 
   const detailsHref =
     normalizedType === 'movie'
-      ? `/movies/${id}?locale=${locale}`
-      : `/tv-shows/${id}?locale=${locale}`;
+      ? `/${locale}/movies/${id}`
+      : `/${locale}/tv/${id}`;
 
   const genreText = (genres ?? []).map((g) => g.name).join(' / ');
   const notAvailableText = fallbacks.notAvailable;
