@@ -1,12 +1,13 @@
-:root {
-	--header-height: 45px;
-	--footer-height: 60px;
-	--typeahead-search-results-gap: 0.5rem;
-	--typeahead-search-results-width: 530px;
-	--typeahead-search-results-position-right: 32px;
-	--scroll-offset: 20px;
-	--mediatype-label-blue: #1769aa;
-	--mediatype-label-teal: #007a75;
-	--focus-ring-blue: #2185d0;
-	--color-text-muted: #666;
-}
+// SCSS variables only — no :root here.
+// CSS custom properties (--*) are defined in app.scss.
+
+$header-height: 45px;
+$footer-height: 60px;
+$typeahead-search-results-gap: 0.5rem;
+$typeahead-search-results-width: 530px;
+$typeahead-search-results-position-right: 32px;
+$scroll-offset: 20px;
+$mediatype-label-blue: #1769aa;
+$mediatype-label-teal: #007a75;
+$focus-ring-blue: #2185d0;
+$color-text-muted: #666;
