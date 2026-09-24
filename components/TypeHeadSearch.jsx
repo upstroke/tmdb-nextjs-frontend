@@ -1,5 +1,6 @@
 'use client';
 
+import './TypeHeadSearch.scss';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { deduplicateById } from '@/lib/utils/deduplicateById';

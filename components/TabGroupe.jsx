@@ -1,5 +1,6 @@
 'use client';
 
+import './TabGroupe.scss';
 import { useState, useRef, useEffect } from 'react';
 import { useI18n, useLocale } from '@/lib/stores/locale';
 import { formatDate } from '@/lib/utils/formatDate';

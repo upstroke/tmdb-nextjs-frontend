@@ -1,5 +1,6 @@
 'use client';
 
+import './LanguageSwitcher.scss';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useI18n, useLocale, setLocale } from '@/lib/stores/locale';
 import { getSupportedLocales, resolveLocale } from '@/lib/i18n/helpers';

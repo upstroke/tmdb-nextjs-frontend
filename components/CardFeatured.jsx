@@ -1,5 +1,6 @@
 'use client';
 
+import './CardFeatured.scss';
 import Link from 'next/link';
 import { formatDate } from '@/lib/utils/formatDate';
 import { useI18n, useLocale } from '@/lib/stores/locale';

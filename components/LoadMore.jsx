@@ -1,5 +1,6 @@
 'use client';
 
+import './LoadMore.scss';
 import { useI18n } from '@/lib/stores/locale';
 
 /**

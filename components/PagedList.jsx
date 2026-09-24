@@ -1,5 +1,6 @@
 'use client';
 
+import './PagedList.scss';
 import { useState, useEffect, useRef } from 'react';
 import { useI18n, useLocale } from '@/lib/stores/locale';
 import { restorePagedList, storeCurrentPage } from '@/lib/utils/pageStateRestore';

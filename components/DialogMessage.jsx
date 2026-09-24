@@ -1,5 +1,6 @@
 'use client';
 
+import './DialogMessage.scss';
 import { useEffect, useRef } from 'react';
 import { useI18n } from '@/lib/stores/locale';
 

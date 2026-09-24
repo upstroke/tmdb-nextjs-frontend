@@ -1,3 +1,5 @@
+import './FooterMain.scss';
+
 /**
  * Renders the static footer of the application.
  */
