@@ -28,7 +28,7 @@ export default function CardFeatured({
     normalizedType === 'movie'
       ? `/${locale}/movies/${id}`
       : normalizedType === 'tv'
-        ? `/${locale}/tv/${id}`
+        ? `/${locale}/tv-shows/${id}`
         : undefined;
 
   const notAvailableText = fallbacks.notAvailable;

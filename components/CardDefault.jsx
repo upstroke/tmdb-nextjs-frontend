@@ -44,7 +44,7 @@ export default function CardDefault({
   const detailsHref =
     normalizedType === 'movie'
       ? `/${locale}/movies/${id}`
-      : `/${locale}/tv/${id}`;
+      : `/${locale}/tv-shows/${id}`;
 
   const genreText = (genres ?? []).map((g) => g.name).join(' / ');
   const notAvailableText = fallbacks.notAvailable;
