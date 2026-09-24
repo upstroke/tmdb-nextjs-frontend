@@ -1,0 +1,23 @@
+import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from '@/lib/i18n/config';
+import { AppLocaleProvider } from '@/components/providers/LocaleProvider';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
+import { notFound } from 'next/navigation';
+
+export function generateStaticParams() {
+  return SUPPORTED_LOCALES.map((locale) => ({ locale }));
+}
+
+export default function LocaleLayout({ children, params }) {
+  const locale = params?.locale ?? DEFAULT_LOCALE;
+
+  if (!SUPPORTED_LOCALES.includes(locale)) notFound();
+
+  return (
+    <AppLocaleProvider initialLocale={locale}>
+      <Header />
+      <main>{children}</main>
+      <Footer />
+    </AppLocaleProvider>
+  );
+}
