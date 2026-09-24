@@ -1,31 +1,37 @@
-import Image from 'next/image';
+'use client';
+
 import { useI18n } from '@/lib/stores/locale';
 
-export default function DetailsHero({ title, backdropUrl, posterUrl, tagline }) {
+export default function DetailsHero({ title, backdrop, posterUrl, productionCompanies = [], emptyLabel = '' }) {
   const { fallbacks } = useI18n();
   const notAvailableText = fallbacks.notAvailable;
-  const heroTitle = title?.trim() || notAvailableText;
-  const heroTagline = tagline?.trim() || '';
+  const fallbackImage = backdrop || posterUrl || '/not-available.png';
+  const resolvedPosterUrl = posterUrl || '/not-available.png';
+  const resolvedTitle = title?.trim() || notAvailableText;
+  const resolvedEmptyLabel = emptyLabel?.trim() || notAvailableText;
 
   return (
-    <div className="details-hero">
-      {backdropUrl && (
-        <div className="details-hero-backdrop">
-          <Image src={backdropUrl} alt="" fill style={{ objectFit: 'cover' }} priority />
-          <div className="details-hero-backdrop-overlay" />
-        </div>
-      )}
-      <div className="details-hero-body">
-        {posterUrl && (
-          <figure className="details-hero-poster">
-            <Image src={posterUrl} alt={`${heroTitle} Poster`} width={185} height={278} />
-          </figure>
-        )}
-        <div className="details-hero-text">
-          <h1 className={`details-hero-title${heroTitle ? '' : ' u-not-available'}`}>{heroTitle}</h1>
-          {heroTagline && <p className="details-hero-tagline">{heroTagline}</p>}
+    <section
+      aria-labelledby="details-hero-title"
+      className="details-hero"
+      style={{ '--details-hero-backdrop': `url('${fallbackImage}')` }}
+    >
+      <div className="details-hero-overlay">
+        <div className="details-hero-content">
+          <div aria-hidden="true" className="details-hero-poster">
+            <img alt="" src={resolvedPosterUrl} />
+          </div>
+          <h1 className="details-hero-title" id="details-hero-title">{resolvedTitle}</h1>
+          <section aria-labelledby="details-hero-companies-heading" className="details-hero-companies">
+            <h2 className="u-sr-only" id="details-hero-companies-heading">Produktionsfirmen</h2>
+            <ul>
+              {productionCompanies.length > 0
+                ? productionCompanies.map((company) => (<li key={`header-company-${company.id ?? company.name}`} className="details-hero-company">{company.name}</li>))
+                : <li className="details-hero-company">{resolvedEmptyLabel}</li>}
+            </ul>
+          </section>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
