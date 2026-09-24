@@ -1,6 +1,5 @@
 'use client';
 
-import styles from './CardDefault.module.scss';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import MediaTypeLabel from './MediaTypeLabel';
@@ -45,7 +44,7 @@ export default function CardDefault({
   return (
     <Link
       id={scrollId || undefined}
-      className={`ui card ${styles['default-card']}${isLoading ? ' is-loading' : ''}${imageLoaded ? ' image-loaded' : ''}${imageErrored ? ' image-error' : ''}`}
+      className={`ui card default-card${isLoading ? ' is-loading' : ''}${imageLoaded ? ' image-loaded' : ''}${imageErrored ? ' image-error' : ''}`}
       href={detailsHref}
     >
       <figure className="image">
