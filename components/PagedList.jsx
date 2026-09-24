@@ -18,7 +18,7 @@ import DialogMessage from '@/components/DialogMessage';
  *   storageKey: string,
  *   cardIdPrefix: string,
  *   listKeyPrefix: string,
- *   headingSlot: import('react').ReactNode,
+ *   heading?: string,
  *   emptyMessageKey?: string,
  * }} props
  */
@@ -28,7 +28,7 @@ export default function PagedList({
   storageKey,
   cardIdPrefix,
   listKeyPrefix,
-  headingSlot,
+  heading,
   emptyMessageKey = 'noContent',
 }) {
   const { messages } = useI18n();
@@ -44,7 +44,6 @@ export default function PagedList({
   const [scrollTargetId, setScrollTargetId] = useState(null);
   const observerRef = useRef(null);
 
-  // Restore paged list on mount
   useEffect(() => {
     if (initialized) return;
     setInitialized(true);
@@ -75,7 +74,6 @@ export default function PagedList({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Scroll to first new card
   useEffect(() => {
     if (!scrollTargetId) return;
 
@@ -151,7 +149,9 @@ export default function PagedList({
     <div className="paged-list">
       {error && <DialogMessage message={error} />}
 
-      {headingSlot}
+      {heading && (
+        <h2 className={`ui dividing header`}>{heading}</h2>
+      )}
 
       {featured && <CardFeatured {...featured} />}
 

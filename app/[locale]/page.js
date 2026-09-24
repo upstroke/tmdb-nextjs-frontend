@@ -60,11 +60,7 @@ export default async function HomePage({ params, searchParams }) {
         storageKey="home-page"
         cardIdPrefix="home-card"
         listKeyPrefix="page-home"
-        headingSlot={
-          <h2 className={`ui dividing header${titles.trendingToday ? '' : ' u-not-available'}`}>
-            {titles.trendingToday}
-          </h2>
-        }
+        heading={titles.trendingToday}
       />
     </main>
   );

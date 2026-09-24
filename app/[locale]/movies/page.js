@@ -61,16 +61,7 @@ export default async function MoviesPage({ params }) {
         cardIdPrefix="movie-card"
         listKeyPrefix="page-movies"
         emptyMessageKey="noMoviesFound"
-        headingSlot={
-          <>
-            <h2 key="movies-title" className={`ui dividing header${titles.movies ? '' : ' u-not-available'}`}>
-              {titles.movies}
-            </h2>
-            <h2 key="movies-top-rated" className={`ui dividing header${titles.topRatedProductions ? '' : ' u-not-available'}`}>
-              {titles.topRatedProductions}
-            </h2>
-          </>
-        }
+        heading={titles.movies}
       />
     </main>
   );
