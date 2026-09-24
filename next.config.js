@@ -2,6 +2,7 @@
 const isDev = process.env.NODE_ENV === 'development';
 
 const nextConfig = {
+  allowedDevOrigins: ['192.168.178.60'],
   images: {
     remotePatterns: [
       {
