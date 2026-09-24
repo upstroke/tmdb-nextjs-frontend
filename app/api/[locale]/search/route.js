@@ -3,7 +3,7 @@ import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/resolver';
 
 export async function GET(request, { params }) {
-  const locale = params.locale;
+  const { locale } = await params;
   const { messages } = getLocaleText(locale);
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q')?.trim();

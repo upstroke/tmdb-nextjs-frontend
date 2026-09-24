@@ -3,7 +3,7 @@ import { getLocaleText } from '@/lib/i18n/resolver';
 import PagedList from '@/components/PagedList';
 
 export default async function MoviesPage({ params }) {
-  const locale = params.locale;
+  const { locale } = await params;
   const { messages, titles } = getLocaleText(locale);
   const apiKey = process.env.TMDB_API_KEY;
 
@@ -56,7 +56,7 @@ export default async function MoviesPage({ params }) {
     <main className="ui container fluid movies-page">
       <PagedList
         initialData={initialData}
-        apiPath="api/${locale}/movies"
+        apiPath={`api/${locale}/movies`}
         storageKey="movies-page"
         cardIdPrefix="movie-card"
         listKeyPrefix="page-movies"

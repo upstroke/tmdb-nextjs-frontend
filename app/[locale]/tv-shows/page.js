@@ -3,7 +3,7 @@ import { getLocaleText } from '@/lib/i18n/resolver';
 import PagedList from '@/components/PagedList';
 
 export default async function TvShowsPage({ params }) {
-  const locale = params.locale;
+  const { locale } = await params;
   const { messages, titles } = getLocaleText(locale);
   const apiKey = process.env.TMDB_API_KEY;
 
@@ -56,7 +56,7 @@ export default async function TvShowsPage({ params }) {
     <main className="ui container fluid tv-shows-page">
       <PagedList
         initialData={initialData}
-        apiPath="api/${locale}/tv-shows"
+        apiPath={`api/${locale}/tv-shows`}
         storageKey="tv-shows-page"
         cardIdPrefix="tv-card"
         listKeyPrefix="page-tv"

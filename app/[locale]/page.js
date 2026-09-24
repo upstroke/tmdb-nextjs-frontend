@@ -3,7 +3,7 @@ import { getLocaleText } from '@/lib/i18n/resolver';
 import PagedList from '@/components/PagedList';
 
 export default async function HomePage({ params, searchParams }) {
-  const locale = params.locale;
+  const { locale } = await params;
   const { messages, titles } = getLocaleText(locale);
   const apiKey = process.env.TMDB_API_KEY;
 
@@ -56,7 +56,7 @@ export default async function HomePage({ params, searchParams }) {
     <main className="ui container fluid home-page">
       <PagedList
         initialData={initialData}
-        apiPath="trending"
+        apiPath={`api/${locale}/trending`}
         storageKey="home-page"
         cardIdPrefix="home-card"
         listKeyPrefix="page-home"

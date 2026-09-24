@@ -3,9 +3,10 @@ import { getLocaleText } from '@/lib/i18n/resolver';
 import CardDefault from '@/components/CardDefault';
 
 export default async function SearchPage({ params, searchParams }) {
-  const locale = params.locale;
+  const { locale } = await params;
   const { messages } = getLocaleText(locale);
-  const query = searchParams?.q?.trim() ?? '';
+  const resolvedSearchParams = await searchParams;
+  const query = resolvedSearchParams?.q?.trim() ?? '';
   const apiKey = process.env.TMDB_API_KEY;
 
   if (!query || query.length < 4) {
