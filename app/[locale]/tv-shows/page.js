@@ -60,6 +60,7 @@ export default async function TvShowsPage({ params }) {
         storageKey="tv-shows-page"
         cardIdPrefix="tv-card"
         listKeyPrefix="page-tv"
+        emptyMessageKey="noTvShows"
         headingSlot={
           <>
             <h2 className={`ui dividing header${titles.tvShows ? '' : ' u-not-available'}`}>
