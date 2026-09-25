@@ -239,8 +239,8 @@ export default function TypeHeadSearch() {
           )}
         </div>
 
-        {hasResults && !resultsClosed && (
-          <div id={resultsId} role="listbox" aria-label={messages.searchResults} aria-live="polite" aria-atomic={false} className="results-dropdown">
+        {hasResults && (
+          <div id={resultsId} role="listbox" aria-label={messages.searchResults} aria-live="polite" aria-atomic={false} className="results-dropdown" hidden={resultsClosed}>
             {movies.length > 0 && (
               <div role="group" aria-labelledby="typeahead-movies-heading">
                 <h2 id="typeahead-movies-heading" className={`typeahead-results-heading ui label blue${titles.movies ? '' : ' u-not-available'}`}>{titles.movies}</h2>
