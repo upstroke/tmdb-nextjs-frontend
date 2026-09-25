@@ -53,7 +53,8 @@ export default function TypeHeadSearch() {
   const [tvShows, setTvShows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
-  const [resultsClosed, setResultsClosed] = useState(false);
+  // Start closed so the layer never flashes open before sessionStorage is read.
+  const [resultsClosed, setResultsClosed] = useState(true);
   const [error, setError] = useState(null);
   const [announcement, setAnnouncement] = useState('');
   const [focusedResultId, setFocusedResultId] = useState(null);
@@ -65,7 +66,7 @@ export default function TypeHeadSearch() {
   const announcementTimer = useRef(null);
   const controllerRef = useRef(null);
   const prevLocale = useRef(null);
-  const resultsClosedRef = useRef(false);
+  const resultsClosedRef = useRef(true);
 
   const searchHintId = 'typeahead-search-hint';
   const resultsId = 'typeahead-search-results';
@@ -74,7 +75,7 @@ export default function TypeHeadSearch() {
     const storedQuery = readStorage(STORAGE_KEY_QUERY, '');
     const storedMovies = readStorage(STORAGE_KEY_MOVIES, []);
     const storedTv = readStorage(STORAGE_KEY_TV, []);
-    const storedClosed = readStorage(STORAGE_KEY_CLOSED, false);
+    const storedClosed = readStorage(STORAGE_KEY_CLOSED, true);
     if (storedQuery) setQuery(storedQuery);
     if (storedMovies.length) setMovies(storedMovies);
     if (storedTv.length) setTvShows(storedTv);
