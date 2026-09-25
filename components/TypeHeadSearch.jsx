@@ -5,6 +5,34 @@ import { useRouter } from 'next/navigation';
 import { deduplicateById } from '@/lib/utils/deduplicateById';
 import { useI18n, useLocale } from '@/lib/stores/locale';
 
+const STORAGE_KEY_QUERY = 'search-query';
+const STORAGE_KEY_MOVIES = 'search-movies';
+const STORAGE_KEY_TV = 'search-tv';
+
+function readStorage(key, fallback) {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    const raw = sessionStorage.getItem(key);
+    return raw !== null ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function writeStorage(key, value) {
+  if (typeof window === 'undefined') return;
+  try { sessionStorage.setItem(key, JSON.stringify(value)); } catch { /* ignore */ }
+}
+
+function clearStorage() {
+  if (typeof window === 'undefined') return;
+  try {
+    sessionStorage.removeItem(STORAGE_KEY_QUERY);
+    sessionStorage.removeItem(STORAGE_KEY_MOVIES);
+    sessionStorage.removeItem(STORAGE_KEY_TV);
+  } catch { /* ignore */ }
+}
+
 function formatRating(value) { return Number(value ?? 0).toFixed(1); }
 function formatYear(value) {
   if (!value) return '';
@@ -18,9 +46,9 @@ export default function TypeHeadSearch() {
   const locale = useLocale();
   const router = useRouter();
 
-  const [query, setQuery] = useState('');
-  const [movies, setMovies] = useState([]);
-  const [tvShows, setTvShows] = useState([]);
+  const [query, setQuery] = useState(() => readStorage(STORAGE_KEY_QUERY, ''));
+  const [movies, setMovies] = useState(() => readStorage(STORAGE_KEY_MOVIES, []));
+  const [tvShows, setTvShows] = useState(() => readStorage(STORAGE_KEY_TV, []));
   const [loading, setLoading] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
   const [resultsClosed, setResultsClosed] = useState(false);
@@ -57,7 +85,13 @@ export default function TypeHeadSearch() {
     if (!msg) return;
     announcementTimer.current = setTimeout(() => { requestAnimationFrame(() => setAnnouncement(msg)); }, 500);
   }
-  function resetResults() { if (loadingTimer.current) clearTimeout(loadingTimer.current); clearAnnouncementFn(); setShowLoading(false); setLoading(false); setResultsClosed(false); setFocusedResultId(null); setMovies([]); setTvShows([]); setError(null); }
+  function resetResults() {
+    if (loadingTimer.current) clearTimeout(loadingTimer.current);
+    clearAnnouncementFn();
+    setShowLoading(false); setLoading(false); setResultsClosed(false);
+    setFocusedResultId(null); setMovies([]); setTvShows([]); setError(null);
+    clearStorage();
+  }
   function resultHref(item) { return item.mediaType === 'movie' ? `/${locale}/movies/${item.id}` : `/${locale}/tv-shows/${item.id}`; }
 
   const search = useCallback(async (term) => {
@@ -75,6 +109,9 @@ export default function TypeHeadSearch() {
       const dedupMovies = deduplicateById(data.movies ?? []);
       const dedupTv = deduplicateById(data.tvShows ?? []);
       setMovies(dedupMovies); setTvShows(dedupTv);
+      writeStorage(STORAGE_KEY_QUERY, term);
+      writeStorage(STORAGE_KEY_MOVIES, dedupMovies);
+      writeStorage(STORAGE_KEY_TV, dedupTv);
       const count = dedupMovies.length + dedupTv.length;
       if (count > 0) { scheduleAnnouncement(messages.searchResultsCount.replace('{count}', String(count))); }
       else if (term.length >= 4) { scheduleAnnouncement(messages.searchNoResults); }
@@ -98,7 +135,7 @@ export default function TypeHeadSearch() {
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
     clearAnnouncementFn(); setFocusedResultId(null);
     const term = val.trim();
-    if (term.length < 4) { resetResults(); return; }
+    if (term.length < 4) { resetResults(); setQuery(val); return; }
     setResultsClosed(false);
     debounceTimer.current = setTimeout(() => search(term), 300);
   }
@@ -165,6 +202,7 @@ export default function TypeHeadSearch() {
             </div>
           )}
         </div>
+
         {hasResults && (
           <div id={resultsId} role="listbox" aria-label={messages.searchResults} aria-live="polite" aria-atomic={false} className="results-dropdown" style={{ display: resultsClosed ? 'none' : undefined }}>
             {movies.length > 0 && (
