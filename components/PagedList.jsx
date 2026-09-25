@@ -30,7 +30,7 @@ export default function PagedList({ initialData, apiPath, storageKey, cardIdPref
     restorePagedList({
       storageKey, initialData,
       fetchPageData: async (pageNumber) => {
-        const res = await fetch(`/${locale}/${apiPath}?page=${pageNumber}`, { headers: { accept: 'application/json' } });
+        const res = await fetch(`/${locale}/api/${locale}/${apiPath}?page=${pageNumber}`, { headers: { accept: 'application/json' } });
         if (!res.ok) throw new Error(messages.loadMoreError);
         return res.json();
       },
@@ -61,7 +61,7 @@ export default function PagedList({ initialData, apiPath, storageKey, cardIdPref
     const timeoutId = setTimeout(() => controller.abort(), 15000);
     try {
       const nextPage = currentPage + 1;
-      const res = await fetch(`/${locale}/${apiPath}?page=${nextPage}`, { headers: { accept: 'application/json' }, signal: controller.signal });
+      const res = await fetch(`/${locale}/api/${locale}/${apiPath}?page=${nextPage}`, { headers: { accept: 'application/json' }, signal: controller.signal });
       if (!res.ok) { setError(messages.loadMoreError); return; }
       const result = await res.json();
       const existingKeys = new Set(cards.map(getMediaKey).filter(Boolean));

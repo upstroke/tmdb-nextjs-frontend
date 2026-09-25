@@ -56,7 +56,7 @@ export default async function MoviesPage({ params }) {
     <main className="ui container fluid movies-page">
       <PagedList
         initialData={initialData}
-        apiPath={`api/${locale}/movies`}
+        apiPath="movies"
         storageKey="movies-page"
         cardIdPrefix="movie-card"
         listKeyPrefix="page-movies"

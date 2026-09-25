@@ -56,7 +56,7 @@ export default async function HomePage({ params, searchParams }) {
     <main className="ui container fluid home-page">
       <PagedList
         initialData={initialData}
-        apiPath={`api/${locale}/trending`}
+        apiPath="trending"
         storageKey="home-page"
         cardIdPrefix="home-card"
         listKeyPrefix="page-home"
