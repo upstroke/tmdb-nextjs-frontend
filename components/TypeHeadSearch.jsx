@@ -65,6 +65,9 @@ export default function TypeHeadSearch() {
   const announcementTimer = useRef(null);
   const controllerRef = useRef(null);
   const prevLocale = useRef(null);
+  // Ref that always mirrors resultsClosed so silent fetches can restore it
+  // reliably without depending on stale closure values.
+  const resultsClosedRef = useRef(false);
 
   const searchHintId = 'typeahead-search-hint';
   const resultsId = 'typeahead-search-results';
@@ -78,6 +81,7 @@ export default function TypeHeadSearch() {
     if (storedQuery) setQuery(storedQuery);
     if (storedMovies.length) setMovies(storedMovies);
     if (storedTv.length) setTvShows(storedTv);
+    resultsClosedRef.current = storedClosed;
     setResultsClosed(storedClosed);
   }, []);
 
@@ -102,6 +106,7 @@ export default function TypeHeadSearch() {
   function resetResults() {
     if (loadingTimer.current) clearTimeout(loadingTimer.current);
     clearAnnouncementFn();
+    resultsClosedRef.current = false;
     setShowLoading(false); setLoading(false); setResultsClosed(false);
     setFocusedResultId(null); setMovies([]); setTvShows([]); setError(null);
     clearStorage();
@@ -138,7 +143,12 @@ export default function TypeHeadSearch() {
       setMovies(dedupMovies); setTvShows(dedupTv);
       writeStorage(STORAGE_KEY_MOVIES, dedupMovies);
       writeStorage(STORAGE_KEY_TV, dedupTv);
-      if (!silent) {
+      if (silent) {
+        // Restore the open/closed state the user left before the fetch,
+        // since setMovies/setTvShows would otherwise cause hasResults to
+        // flip and re-open the layer unintentionally.
+        setResultsClosed(resultsClosedRef.current);
+      } else {
         writeStorage(STORAGE_KEY_QUERY, term);
         const count = dedupMovies.length + dedupTv.length;
         if (count > 0) { scheduleAnnouncement(messages.searchResultsCount.replace('{count}', String(count))); }
@@ -155,8 +165,6 @@ export default function TypeHeadSearch() {
     if (locale === prevLocale.current) return;
     prevLocale.current = locale;
     const term = query.trim();
-    // Re-fetch silently on locale change: update results in background,
-    // keep the layer open/closed exactly as the user left it.
     if (term.length >= 4) void search(term, { silent: true });
   }, [locale, query, search]);
 
@@ -167,12 +175,15 @@ export default function TypeHeadSearch() {
     clearAnnouncementFn(); setFocusedResultId(null);
     const term = val.trim();
     if (term.length < 4) { resetResults(); return; }
+    resultsClosedRef.current = false;
     setResultsClosed(false);
     debounceTimer.current = setTimeout(() => search(term), 300);
   }
 
   function closeResults({ restoreFocus = false } = {}) {
-    clearAnnouncementFn(); setResultsClosed(true);
+    clearAnnouncementFn();
+    resultsClosedRef.current = true;
+    setResultsClosed(true);
     if (focusedResultId) setLastSelectedResultId(focusedResultId);
     setFocusedResultId(null);
     if (restoreFocus) inputRef.current?.focus();
@@ -180,6 +191,7 @@ export default function TypeHeadSearch() {
 
   function showResultsPanel() {
     if (query.trim().length >= 4 && (hasResults || loading || error)) {
+      resultsClosedRef.current = false;
       setResultsClosed(false);
       if (lastSelectedResultId) { const allIds = getAllResultIds(); if (allIds.includes(lastSelectedResultId)) { setFocusedResultId(lastSelectedResultId); return; } }
       if (hasResults) { const first = getAllResultIds()[0]; if (first) focusResult(first); }
