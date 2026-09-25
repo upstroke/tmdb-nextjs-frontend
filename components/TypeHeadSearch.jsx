@@ -122,9 +122,6 @@ export default function TypeHeadSearch() {
   }, [resultsClosed]);
 
   const search = useCallback(async (term, { silent = false } = {}) => {
-    // Snapshot the closed state immediately — before any async gap or re-render
-    // can mutate resultsClosedRef — so silent fetches always restore the correct value.
-    const wasClosedSnapshot = resultsClosedRef.current;
     controllerRef.current?.abort();
     if (loadingTimer.current) clearTimeout(loadingTimer.current);
     clearAnnouncementFn();
@@ -143,7 +140,10 @@ export default function TypeHeadSearch() {
       writeStorage(STORAGE_KEY_MOVIES, dedupMovies);
       writeStorage(STORAGE_KEY_TV, dedupTv);
       if (silent) {
-        setResultsClosed(wasClosedSnapshot);
+        // After a locale change the results are new — always close the layer
+        // so the user consciously re-opens it for the updated language results.
+        resultsClosedRef.current = true;
+        setResultsClosed(true);
       } else {
         writeStorage(STORAGE_KEY_QUERY, term);
         const count = dedupMovies.length + dedupTv.length;
