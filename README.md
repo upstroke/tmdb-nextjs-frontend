@@ -2,6 +2,54 @@
 
 A Next.js frontend for browsing movies and TV shows from the TMDB API.
 
+The application provides a media catalog with trending sections, paginated lists, detail pages, localized typeahead search, and fallback mechanisms for missing data.
+
+## Project Goal
+
+This project serves as a frontend for a TMDB-based media catalog.
+
+Its focus is on:
+
+- clear presentation of movies and TV shows
+- reusable React components
+- robust handling of incomplete API data
+- clean separation of UI, utility logic, and service layers
+- a maintainable and testable architecture
+- accessibility compliance (WCAG 2.2 AA)
+
+## Features
+
+- Homepage with trending movies and TV shows
+- Separate overview pages for movies and TV shows
+- Detail pages with images, metadata, cast, and production information
+- Typeahead search for movies and TV shows
+- Localized interface
+- Language switching through the global header
+- Locale propagation through internal navigation and server-side data requests
+- Restoration of the last visited page in paginated lists
+- Duplicate removal when loading additional data
+- Shared error dialog for API and loading errors
+- Reusable components for cards, search, pagination, and error states
+
+## Internationalization
+
+Translation catalogs for UI text and rating formats are stored in:
+
+- `lib/i18n/ui.json`
+- `lib/i18n/ratings.json`
+
+Locale logic is located in:
+
+- `lib/i18n/helpers.js` for supported locales and fallbacks
+- `lib/i18n/config.js` for locale configuration
+- `lib/i18n/resolver.js` for resolving the active locale per request
+
+The current route is preserved when the language changes.
+
+## Streaming Data
+
+The displayed streaming providers and watch links are supplied through the TMDB API. The streaming data comes from JustWatch and is labeled "Provided by JustWatch" on movie and TV show detail pages.
+
 ## Tech Stack
 
 - Next.js 15 (App Router)
@@ -53,6 +101,7 @@ lib/
   utils/          # Utility functions
   schemas/        # Zod validation schemas + JSDoc typedefs
 styles/           # Sass styles (Fomantic UI)
+docs/             # Project documentation
 ```
 
 ## Environment Variables
@@ -67,6 +116,13 @@ cp .env.example .env.local
 |------------------------------|-------------------------------|
 | `TMDB_API_KEY`               | API key for the TMDB API      |
 | `NEXT_PUBLIC_DEFAULT_LOCALE` | Default locale (e.g. `en-US`) |
+
+## TMDB API Key
+
+You can create your own API key in your TMDB account:
+
+- [TMDB API Settings](https://www.themoviedb.org/settings/api)
+- [TMDB Getting Started](https://developer.themoviedb.org/docs/getting-started)
 
 ## Requirements
 
@@ -94,9 +150,16 @@ Tests cover:
 - API mapper logic with mocked fetch (`lib/services/tmdb-api.test.js`)
 - `TMDBError` thrown on failed requests
 
+The testing overview, commands, and detailed guidance are documented in `docs/testing.md`.
+
 ## Production Build
 
 ```bash
 npm run build
 npm run start
 ```
+
+## Documentation
+
+- `docs/testing.md` — testing strategy, commands, and test-level guidance
+- `docs/ai-prompts.md` — AI-assisted development rules
