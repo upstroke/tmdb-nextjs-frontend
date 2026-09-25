@@ -46,9 +46,11 @@ export default function TypeHeadSearch() {
   const locale = useLocale();
   const router = useRouter();
 
-  const [query, setQuery] = useState(() => readStorage(STORAGE_KEY_QUERY, ''));
-  const [movies, setMovies] = useState(() => readStorage(STORAGE_KEY_MOVIES, []));
-  const [tvShows, setTvShows] = useState(() => readStorage(STORAGE_KEY_TV, []));
+  // SSR-safe: always start with empty state to avoid hydration mismatch.
+  // sessionStorage is read in a useEffect after mount.
+  const [query, setQuery] = useState('');
+  const [movies, setMovies] = useState([]);
+  const [tvShows, setTvShows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
   const [resultsClosed, setResultsClosed] = useState(false);
@@ -66,6 +68,16 @@ export default function TypeHeadSearch() {
 
   const searchHintId = 'typeahead-search-hint';
   const resultsId = 'typeahead-search-results';
+
+  // Restore persisted search state from sessionStorage after hydration
+  useEffect(() => {
+    const storedQuery = readStorage(STORAGE_KEY_QUERY, '');
+    const storedMovies = readStorage(STORAGE_KEY_MOVIES, []);
+    const storedTv = readStorage(STORAGE_KEY_TV, []);
+    if (storedQuery) setQuery(storedQuery);
+    if (storedMovies.length) setMovies(storedMovies);
+    if (storedTv.length) setTvShows(storedTv);
+  }, []);
 
   const hasResults = movies.length > 0 || tvShows.length > 0;
   const hasSearchTerm = query.trim().length >= 4;
@@ -93,6 +105,15 @@ export default function TypeHeadSearch() {
     clearStorage();
   }
   function resultHref(item) { return item.mediaType === 'movie' ? `/${locale}/movies/${item.id}` : `/${locale}/tv-shows/${item.id}`; }
+
+  // Close the results panel first, then navigate — prevents the layer staying
+  // visible during the page transition.
+  function handleResultClick(e, item) {
+    e.preventDefault();
+    closeResults();
+    const href = resultHref(item);
+    requestAnimationFrame(() => router.push(href));
+  }
 
   const search = useCallback(async (term) => {
     controllerRef.current?.abort();
@@ -135,7 +156,7 @@ export default function TypeHeadSearch() {
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
     clearAnnouncementFn(); setFocusedResultId(null);
     const term = val.trim();
-    if (term.length < 4) { resetResults(); setQuery(val); return; }
+    if (term.length < 4) { resetResults(); return; }
     setResultsClosed(false);
     debounceTimer.current = setTimeout(() => search(term), 300);
   }
@@ -209,7 +230,7 @@ export default function TypeHeadSearch() {
               <div role="group" aria-labelledby="typeahead-movies-heading">
                 <h2 id="typeahead-movies-heading" className={`typeahead-results-heading ui label blue${titles.movies ? '' : ' u-not-available'}`}>{titles.movies}</h2>
                 {movies.map((item) => (
-                  <a key={item.id} role="option" id={`movie-${item.id}`} className={`result${focusedResultId === `movie-${item.id}` ? ' result-focused' : ''}`} data-result-link="true" href={resultHref(item)} onClick={() => closeResults()} aria-selected={focusedResultId === `movie-${item.id}` ? 'true' : 'false'} aria-labelledby={`typeahead-result-type-movie-${item.id} typeahead-result-content-movie-${item.id}`} tabIndex={focusedResultId === `movie-${item.id}` ? 0 : -1}>
+                  <a key={item.id} role="option" id={`movie-${item.id}`} className={`result${focusedResultId === `movie-${item.id}` ? ' result-focused' : ''}`} data-result-link="true" href={resultHref(item)} onClick={(e) => handleResultClick(e, item)} aria-selected={focusedResultId === `movie-${item.id}` ? 'true' : 'false'} aria-labelledby={`typeahead-result-type-movie-${item.id} typeahead-result-content-movie-${item.id}`} tabIndex={focusedResultId === `movie-${item.id}` ? 0 : -1}>
                     <figure className="image" aria-hidden="true"><img src={item.posterUrl || item.imageUrl || '/not-available.png'} alt="" /></figure>
                     <div className="content">
                       <span className="u-sr-only" id={`typeahead-result-type-movie-${item.id}`}>{titles.movies}</span>
@@ -230,7 +251,7 @@ export default function TypeHeadSearch() {
               <div role="group" aria-labelledby="typeahead-tv-heading">
                 <h2 id="typeahead-tv-heading" className={`typeahead-results-heading ui label teal${titles.tvShows ? '' : ' u-not-available'}`}>{titles.tvShows}</h2>
                 {tvShows.map((item) => (
-                  <a key={item.id} role="option" id={`tv-${item.id}`} className={`result${focusedResultId === `tv-${item.id}` ? ' result-focused' : ''}`} data-result-link="true" href={resultHref(item)} onClick={() => closeResults()} aria-selected={focusedResultId === `tv-${item.id}` ? 'true' : 'false'} aria-labelledby={`typeahead-result-type-tv-${item.id} typeahead-result-content-tv-${item.id}`} tabIndex={focusedResultId === `tv-${item.id}` ? 0 : -1}>
+                  <a key={item.id} role="option" id={`tv-${item.id}`} className={`result${focusedResultId === `tv-${item.id}` ? ' result-focused' : ''}`} data-result-link="true" href={resultHref(item)} onClick={(e) => handleResultClick(e, item)} aria-selected={focusedResultId === `tv-${item.id}` ? 'true' : 'false'} aria-labelledby={`typeahead-result-type-tv-${item.id} typeahead-result-content-tv-${item.id}`} tabIndex={focusedResultId === `tv-${item.id}` ? 0 : -1}>
                     <figure className="image" aria-hidden="true"><img src={item.posterUrl || item.imageUrl || '/not-available.png'} alt="" /></figure>
                     <div className="content">
                       <span className="u-sr-only" id={`typeahead-result-type-tv-${item.id}`}>{titles.tvShows}</span>
