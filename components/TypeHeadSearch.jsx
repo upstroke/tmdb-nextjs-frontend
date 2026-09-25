@@ -65,14 +65,11 @@ export default function TypeHeadSearch() {
   const announcementTimer = useRef(null);
   const controllerRef = useRef(null);
   const prevLocale = useRef(null);
-  // Ref that always mirrors resultsClosed so silent fetches can restore it
-  // reliably without depending on stale closure values.
   const resultsClosedRef = useRef(false);
 
   const searchHintId = 'typeahead-search-hint';
   const resultsId = 'typeahead-search-results';
 
-  // Restore persisted search state from sessionStorage after hydration
   useEffect(() => {
     const storedQuery = readStorage(STORAGE_KEY_QUERY, '');
     const storedMovies = readStorage(STORAGE_KEY_MOVIES, []);
@@ -120,7 +117,6 @@ export default function TypeHeadSearch() {
     requestAnimationFrame(() => router.push(href));
   }
 
-  // Persist resultsClosed whenever it changes
   useEffect(() => {
     writeStorage(STORAGE_KEY_CLOSED, resultsClosed);
   }, [resultsClosed]);
@@ -144,9 +140,6 @@ export default function TypeHeadSearch() {
       writeStorage(STORAGE_KEY_MOVIES, dedupMovies);
       writeStorage(STORAGE_KEY_TV, dedupTv);
       if (silent) {
-        // Restore the open/closed state the user left before the fetch,
-        // since setMovies/setTvShows would otherwise cause hasResults to
-        // flip and re-open the layer unintentionally.
         setResultsClosed(resultsClosedRef.current);
       } else {
         writeStorage(STORAGE_KEY_QUERY, term);
@@ -246,8 +239,8 @@ export default function TypeHeadSearch() {
           )}
         </div>
 
-        {hasResults && (
-          <div id={resultsId} role="listbox" aria-label={messages.searchResults} aria-live="polite" aria-atomic={false} className="results-dropdown" style={{ display: resultsClosed ? 'none' : undefined }}>
+        {hasResults && !resultsClosed && (
+          <div id={resultsId} role="listbox" aria-label={messages.searchResults} aria-live="polite" aria-atomic={false} className="results-dropdown">
             {movies.length > 0 && (
               <div role="group" aria-labelledby="typeahead-movies-heading">
                 <h2 id="typeahead-movies-heading" className={`typeahead-results-heading ui label blue${titles.movies ? '' : ' u-not-available'}`}>{titles.movies}</h2>
