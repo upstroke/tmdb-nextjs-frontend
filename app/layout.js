@@ -13,6 +13,7 @@ import 'fomantic-ui-css/components/image.css';
 import 'fomantic-ui-css/components/tab.css';
 import 'fomantic-ui-css/components/segment.css';
 import '../styles/app.scss';
+import { AppLocaleProvider } from '@/components/providers/LocaleProvider';
 
 export const metadata = {
   title: 'TMDB',
@@ -23,9 +24,11 @@ export default function RootLayout({ children }) {
   return (
     <html data-scroll-behavior="smooth" lang="en">
       <body>
-        <div id="root">
-          {children}
-        </div>
+        <AppLocaleProvider>
+          <div id="root">
+            {children}
+          </div>
+        </AppLocaleProvider>
       </body>
     </html>
   );
