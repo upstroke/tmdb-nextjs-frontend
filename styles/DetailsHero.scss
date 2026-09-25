@@ -1,0 +1,121 @@
+@use '../styles/variables' as v;
+@use '../styles/mixins' as m;
+
+.details-hero {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-height: clamp(32rem, 61vw, 48rem);
+  padding: 0;
+  margin-bottom: -3rem;
+  background-color: #000;
+  background-image:
+    linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.92) 0%,
+      rgba(0, 0, 0, 0.7) 32%,
+      rgba(0, 0, 0, 0.45) 58%,
+      rgba(0, 0, 0, 0.5) 100%
+    ),
+    var(--details-hero-backdrop);
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: #fff;
+  text-shadow: 0 2px 2px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+.details-hero-overlay {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  min-height: inherit;
+  padding: 2.5rem 1rem 0.5rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.1));
+}
+
+.details-hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  width: 100%;
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+.details-hero-poster {
+  width: clamp(10rem, 22vw, 14rem);
+  margin: 0 0 1rem 0;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    box-shadow: 1px 0 5px 2px rgba(0, 0, 0, 0.4);
+    border: 2px solid #fff;
+  }
+}
+
+.details-hero-title {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.1;
+  text-align: center;
+}
+
+.details-hero-companies {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 1rem;
+  margin: 0;
+  padding: 0 0 1rem 0;
+  font-size: clamp(0.95rem, 2vw, 1.125rem);
+  text-align: center;
+
+  ul {
+    display: flex;
+    flex-wrap: inherit;
+    justify-content: inherit;
+    gap: inherit;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+  }
+}
+
+.details-hero-company {
+  white-space: normal;
+}
+
+@include m.tablet-up {
+  .details-hero {
+    min-height: clamp(36rem, 63vw, 52rem);
+  }
+
+  .details-hero-overlay {
+    padding: 3rem 1.5rem 3.5rem;
+  }
+
+  .details-hero-companies {
+    gap: 0.75rem;
+  }
+
+  .details-hero-company:not(:first-child)::before {
+    content: '•';
+    margin-right: 0.75rem;
+    color: #fff;
+  }
+}
+
+@include m.computer-up {
+  .details-hero-content {
+    max-width: 70%;
+  }
+}
