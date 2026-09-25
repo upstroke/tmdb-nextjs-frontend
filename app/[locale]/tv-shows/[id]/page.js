@@ -188,8 +188,7 @@ export default async function TvShowDetailPage({ params }) {
 
         <section aria-labelledby="watch-providers-heading">
           <h3 id="watch-providers-heading" className="ui medium dividing header">
-            {labels.streamingProviders}
-            <small className="justwatch-attribution">{labels.streamingDataProvidedBy} <strong>&copy;JustWatch</strong></small>
+            {labels.streamingProviders} <small className="justwatch-attribution">{labels.streamingDataProvidedBy} <strong>&copy;JustWatch</strong></small>
           </h3>
           {providers?.providers?.length ? (
             <ul className="ui relaxed divided list providers-list">
