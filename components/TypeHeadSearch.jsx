@@ -5,6 +5,36 @@ import { useRouter } from 'next/navigation';
 import { deduplicateById } from '@/lib/utils/deduplicateById';
 import { useI18n, useLocale } from '@/lib/stores/locale';
 
+const STORAGE_KEY_QUERY = 'search-query';
+const STORAGE_KEY_MOVIES = 'search-movies';
+const STORAGE_KEY_TV = 'search-tv';
+const STORAGE_KEY_CLOSED = 'search-results-closed';
+
+function readStorage(key, fallback) {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    const raw = sessionStorage.getItem(key);
+    return raw !== null ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function writeStorage(key, value) {
+  if (typeof window === 'undefined') return;
+  try { sessionStorage.setItem(key, JSON.stringify(value)); } catch { /* ignore */ }
+}
+
+function clearStorage() {
+  if (typeof window === 'undefined') return;
+  try {
+    sessionStorage.removeItem(STORAGE_KEY_QUERY);
+    sessionStorage.removeItem(STORAGE_KEY_MOVIES);
+    sessionStorage.removeItem(STORAGE_KEY_TV);
+    sessionStorage.removeItem(STORAGE_KEY_CLOSED);
+  } catch { /* ignore */ }
+}
+
 function formatRating(value) { return Number(value ?? 0).toFixed(1); }
 function formatYear(value) {
   if (!value) return '';
@@ -23,7 +53,8 @@ export default function TypeHeadSearch() {
   const [tvShows, setTvShows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
-  const [resultsClosed, setResultsClosed] = useState(false);
+  // Start closed so the layer never flashes open before sessionStorage is read.
+  const [resultsClosed, setResultsClosed] = useState(true);
   const [error, setError] = useState(null);
   const [announcement, setAnnouncement] = useState('');
   const [focusedResultId, setFocusedResultId] = useState(null);
@@ -35,9 +66,22 @@ export default function TypeHeadSearch() {
   const announcementTimer = useRef(null);
   const controllerRef = useRef(null);
   const prevLocale = useRef(null);
+  const resultsClosedRef = useRef(true);
 
   const searchHintId = 'typeahead-search-hint';
   const resultsId = 'typeahead-search-results';
+
+  useEffect(() => {
+    const storedQuery = readStorage(STORAGE_KEY_QUERY, '');
+    const storedMovies = readStorage(STORAGE_KEY_MOVIES, []);
+    const storedTv = readStorage(STORAGE_KEY_TV, []);
+    const storedClosed = readStorage(STORAGE_KEY_CLOSED, true);
+    if (storedQuery) setQuery(storedQuery);
+    if (storedMovies.length) setMovies(storedMovies);
+    if (storedTv.length) setTvShows(storedTv);
+    resultsClosedRef.current = storedClosed;
+    setResultsClosed(storedClosed);
+  }, []);
 
   const hasResults = movies.length > 0 || tvShows.length > 0;
   const hasSearchTerm = query.trim().length >= 4;
@@ -57,30 +101,59 @@ export default function TypeHeadSearch() {
     if (!msg) return;
     announcementTimer.current = setTimeout(() => { requestAnimationFrame(() => setAnnouncement(msg)); }, 500);
   }
-  function resetResults() { if (loadingTimer.current) clearTimeout(loadingTimer.current); clearAnnouncementFn(); setShowLoading(false); setLoading(false); setResultsClosed(false); setFocusedResultId(null); setMovies([]); setTvShows([]); setError(null); }
+  function resetResults() {
+    if (loadingTimer.current) clearTimeout(loadingTimer.current);
+    clearAnnouncementFn();
+    resultsClosedRef.current = false;
+    setShowLoading(false); setLoading(false); setResultsClosed(false);
+    setFocusedResultId(null); setMovies([]); setTvShows([]); setError(null);
+    clearStorage();
+  }
   function resultHref(item) { return item.mediaType === 'movie' ? `/${locale}/movies/${item.id}` : `/${locale}/tv-shows/${item.id}`; }
 
-  const search = useCallback(async (term) => {
+  function handleResultClick(e, item) {
+    e.preventDefault();
+    closeResults();
+    const href = resultHref(item);
+    requestAnimationFrame(() => router.push(href));
+  }
+
+  useEffect(() => {
+    writeStorage(STORAGE_KEY_CLOSED, resultsClosed);
+  }, [resultsClosed]);
+
+  const search = useCallback(async (term, { silent = false } = {}) => {
     controllerRef.current?.abort();
     if (loadingTimer.current) clearTimeout(loadingTimer.current);
     clearAnnouncementFn();
-    setFocusedResultId(null); setShowLoading(false);
+    setFocusedResultId(null);
+    if (!silent) setShowLoading(false);
     controllerRef.current = new AbortController();
     setLoading(true); setError(null);
-    loadingTimer.current = setTimeout(() => setShowLoading(true), 300);
+    if (!silent) loadingTimer.current = setTimeout(() => setShowLoading(true), 300);
     try {
       const res = await fetch(`/api/${encodeURIComponent(locale)}/search?q=${encodeURIComponent(term)}`, { signal: controllerRef.current.signal });
-      if (!res.ok) { setError(messages.searchError); scheduleAnnouncement(messages.searchError); return; }
+      if (!res.ok) { if (!silent) { setError(messages.searchError); scheduleAnnouncement(messages.searchError); } return; }
       const data = await res.json();
       const dedupMovies = deduplicateById(data.movies ?? []);
       const dedupTv = deduplicateById(data.tvShows ?? []);
       setMovies(dedupMovies); setTvShows(dedupTv);
-      const count = dedupMovies.length + dedupTv.length;
-      if (count > 0) { scheduleAnnouncement(messages.searchResultsCount.replace('{count}', String(count))); }
-      else if (term.length >= 4) { scheduleAnnouncement(messages.searchNoResults); }
+      writeStorage(STORAGE_KEY_MOVIES, dedupMovies);
+      writeStorage(STORAGE_KEY_TV, dedupTv);
+      if (silent) {
+        // After a locale change the results are new — always close the layer
+        // so the user consciously re-opens it for the updated language results.
+        resultsClosedRef.current = true;
+        setResultsClosed(true);
+      } else {
+        writeStorage(STORAGE_KEY_QUERY, term);
+        const count = dedupMovies.length + dedupTv.length;
+        if (count > 0) { scheduleAnnouncement(messages.searchResultsCount.replace('{count}', String(count))); }
+        else if (term.length >= 4) { scheduleAnnouncement(messages.searchNoResults); }
+      }
     } catch (ex) {
       if (ex instanceof Error && ex.name === 'AbortError') return;
-      setError(messages.searchError); scheduleAnnouncement(messages.searchError);
+      if (!silent) { setError(messages.searchError); scheduleAnnouncement(messages.searchError); }
     } finally { if (loadingTimer.current) clearTimeout(loadingTimer.current); setShowLoading(false); setLoading(false); }
   }, [locale, messages]);
 
@@ -89,7 +162,7 @@ export default function TypeHeadSearch() {
     if (locale === prevLocale.current) return;
     prevLocale.current = locale;
     const term = query.trim();
-    if (term.length >= 4) void search(term);
+    if (term.length >= 4) void search(term, { silent: true });
   }, [locale, query, search]);
 
   function handleInput(e) {
@@ -99,12 +172,15 @@ export default function TypeHeadSearch() {
     clearAnnouncementFn(); setFocusedResultId(null);
     const term = val.trim();
     if (term.length < 4) { resetResults(); return; }
+    resultsClosedRef.current = false;
     setResultsClosed(false);
     debounceTimer.current = setTimeout(() => search(term), 300);
   }
 
   function closeResults({ restoreFocus = false } = {}) {
-    clearAnnouncementFn(); setResultsClosed(true);
+    clearAnnouncementFn();
+    resultsClosedRef.current = true;
+    setResultsClosed(true);
     if (focusedResultId) setLastSelectedResultId(focusedResultId);
     setFocusedResultId(null);
     if (restoreFocus) inputRef.current?.focus();
@@ -112,6 +188,7 @@ export default function TypeHeadSearch() {
 
   function showResultsPanel() {
     if (query.trim().length >= 4 && (hasResults || loading || error)) {
+      resultsClosedRef.current = false;
       setResultsClosed(false);
       if (lastSelectedResultId) { const allIds = getAllResultIds(); if (allIds.includes(lastSelectedResultId)) { setFocusedResultId(lastSelectedResultId); return; } }
       if (hasResults) { const first = getAllResultIds()[0]; if (first) focusResult(first); }
@@ -165,13 +242,14 @@ export default function TypeHeadSearch() {
             </div>
           )}
         </div>
+
         {hasResults && (
-          <div id={resultsId} role="listbox" aria-label={messages.searchResults} aria-live="polite" aria-atomic={false} className="results-dropdown" style={{ display: resultsClosed ? 'none' : undefined }}>
+          <div id={resultsId} role="listbox" aria-label={messages.searchResults} aria-live="polite" aria-atomic={false} className="results-dropdown" hidden={resultsClosed}>
             {movies.length > 0 && (
               <div role="group" aria-labelledby="typeahead-movies-heading">
                 <h2 id="typeahead-movies-heading" className={`typeahead-results-heading ui label blue${titles.movies ? '' : ' u-not-available'}`}>{titles.movies}</h2>
                 {movies.map((item) => (
-                  <a key={item.id} role="option" id={`movie-${item.id}`} className={`result${focusedResultId === `movie-${item.id}` ? ' result-focused' : ''}`} data-result-link="true" href={resultHref(item)} onClick={() => closeResults()} aria-selected={focusedResultId === `movie-${item.id}` ? 'true' : 'false'} aria-labelledby={`typeahead-result-type-movie-${item.id} typeahead-result-content-movie-${item.id}`} tabIndex={focusedResultId === `movie-${item.id}` ? 0 : -1}>
+                  <a key={item.id} role="option" id={`movie-${item.id}`} className={`result${focusedResultId === `movie-${item.id}` ? ' result-focused' : ''}`} data-result-link="true" href={resultHref(item)} onClick={(e) => handleResultClick(e, item)} aria-selected={focusedResultId === `movie-${item.id}` ? 'true' : 'false'} aria-labelledby={`typeahead-result-type-movie-${item.id} typeahead-result-content-movie-${item.id}`} tabIndex={focusedResultId === `movie-${item.id}` ? 0 : -1}>
                     <figure className="image" aria-hidden="true"><img src={item.posterUrl || item.imageUrl || '/not-available.png'} alt="" /></figure>
                     <div className="content">
                       <span className="u-sr-only" id={`typeahead-result-type-movie-${item.id}`}>{titles.movies}</span>
@@ -192,7 +270,7 @@ export default function TypeHeadSearch() {
               <div role="group" aria-labelledby="typeahead-tv-heading">
                 <h2 id="typeahead-tv-heading" className={`typeahead-results-heading ui label teal${titles.tvShows ? '' : ' u-not-available'}`}>{titles.tvShows}</h2>
                 {tvShows.map((item) => (
-                  <a key={item.id} role="option" id={`tv-${item.id}`} className={`result${focusedResultId === `tv-${item.id}` ? ' result-focused' : ''}`} data-result-link="true" href={resultHref(item)} onClick={() => closeResults()} aria-selected={focusedResultId === `tv-${item.id}` ? 'true' : 'false'} aria-labelledby={`typeahead-result-type-tv-${item.id} typeahead-result-content-tv-${item.id}`} tabIndex={focusedResultId === `tv-${item.id}` ? 0 : -1}>
+                  <a key={item.id} role="option" id={`tv-${item.id}`} className={`result${focusedResultId === `tv-${item.id}` ? ' result-focused' : ''}`} data-result-link="true" href={resultHref(item)} onClick={(e) => handleResultClick(e, item)} aria-selected={focusedResultId === `tv-${item.id}` ? 'true' : 'false'} aria-labelledby={`typeahead-result-type-tv-${item.id} typeahead-result-content-tv-${item.id}`} tabIndex={focusedResultId === `tv-${item.id}` ? 0 : -1}>
                     <figure className="image" aria-hidden="true"><img src={item.posterUrl || item.imageUrl || '/not-available.png'} alt="" /></figure>
                     <div className="content">
                       <span className="u-sr-only" id={`typeahead-result-type-tv-${item.id}`}>{titles.tvShows}</span>
