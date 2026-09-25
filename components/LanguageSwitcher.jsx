@@ -1,14 +1,14 @@
 'use client';
 
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useI18n, useLocale, setLocale } from '@/lib/stores/locale';
 import { getSupportedLocales, resolveLocale } from '@/lib/i18n/helpers';
+import { SUPPORTED_LOCALES } from '@/lib/i18n/config';
 
 export default function LanguageSwitcher() {
   const { labels } = useI18n();
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const currentLocale = useLocale();
 
   const locales = getSupportedLocales().map((code) => ({ value: code, label: code.split('-')[0].toUpperCase() }));
@@ -16,9 +16,15 @@ export default function LanguageSwitcher() {
   function handleChange(event) {
     const nextLocale = resolveLocale(event.currentTarget.value);
     setLocale(nextLocale);
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('locale', nextLocale);
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+
+    const currentSegment = SUPPORTED_LOCALES.find(
+      (l) => pathname.startsWith(`/${l}/`) || pathname === `/${l}`
+    );
+    const newPathname = currentSegment
+      ? pathname.replace(`/${currentSegment}`, `/${nextLocale}`)
+      : `/${nextLocale}${pathname}`;
+
+    router.replace(newPathname, { scroll: false });
   }
 
   return (
