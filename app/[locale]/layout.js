@@ -1,7 +1,7 @@
 import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from '@/lib/i18n/config';
 import { AppLocaleProvider } from '@/components/providers/LocaleProvider';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
+import HeaderMain from '@/components/HeaderMain';
+import FooterMain from '@/components/FooterMain';
 import { notFound } from 'next/navigation';
 
 export function generateStaticParams() {
@@ -15,9 +15,9 @@ export default async function LocaleLayout({ children, params }) {
 
   return (
     <AppLocaleProvider initialLocale={locale}>
-      <Header />
+      <HeaderMain />
       {children}
-      <Footer />
+      <FooterMain />
     </AppLocaleProvider>
   );
 }
