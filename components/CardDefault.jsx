@@ -95,7 +95,7 @@ export default function CardDefault({
         <span>
           <i className="yellow star icon" aria-hidden="true" />
           <span className="u-sr-only">{labels.rating}</span>
-          {cardRating !== null ? (<><b className="rating-value">{cardRating}</b><span className={formats.outOfTen ? '' : 'u-not-available'}>{formats.outOfTen}</span></>) : (<span className="u-not-available">{notAvailableText}</span>)}
+          {cardRating !== null ? (<><b className="rating-value">{cardRating}</b> <span className={formats.outOfTen ? '' : 'u-not-available'}>{formats.outOfTen}</span></>) : (<span className="u-not-available">{notAvailableText}</span>)}
         </span>
       </footer>
     </Link>

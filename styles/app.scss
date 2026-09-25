@@ -12,6 +12,9 @@
 @use './FooterMain';
 @use './LoadMore';
 @use './DialogMessage';
+@use './MediaTypeLabel';
+@use './DetailsHero';
+@use './TabGroupe';
 
 
 
@@ -326,6 +329,22 @@ main.ui.text.container.details-view {
 	ul.relaxed.divided.list {
 		font-size: 1rem;
 	}
+
+  .ui.list.trailer-list {
+    list-style-type: none;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 0;
+
+    & > li {
+      padding: 0;
+
+      &::before {
+        display: none;
+      }
+    }
+  }
 }
 
 @include m.mobile-only {
