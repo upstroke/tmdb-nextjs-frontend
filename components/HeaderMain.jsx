@@ -4,12 +4,50 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LanguageSwitcher from './LanguageSwitcher';
-import { useI18n } from '@/lib/stores/locale';
+import { useI18n, useLocale } from '@/lib/stores/locale';
+import TypeHeadSearch from '@/components/TypeHeadSearch';
 
-export default function HeaderMain({ navItems = [], children }) {
+const NAV_ITEMS = [
+  {
+    id: 'nav-home',
+    labelKey: 'home',
+    icon: 'home',
+    getPath: (locale) => `/${locale}`,
+    storageKey: null,
+    active: (pathname, locale) => pathname === `/${locale}` || pathname === `/${locale}/`,
+  },
+  {
+    id: 'nav-movies',
+    labelKey: 'movies',
+    icon: 'film',
+    getPath: (locale) => `/${locale}/movies`,
+    storageKey: 'movies-page',
+    active: (pathname, locale) => pathname.startsWith(`/${locale}/movies`),
+  },
+  {
+    id: 'nav-tv',
+    labelKey: 'tvShows',
+    icon: 'tv',
+    getPath: (locale) => `/${locale}/tv-shows`,
+    storageKey: 'tv-shows-page',
+    active: (pathname, locale) => pathname.startsWith(`/${locale}/tv-shows`),
+  },
+];
+
+export default function HeaderMain() {
+  const locale = useLocale();
   const { labels, titles } = useI18n();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const navItems = NAV_ITEMS.map((item) => ({
+    id: item.id,
+    label: item.labelKey,
+    icon: item.icon,
+    path: item.getPath(locale),
+    storageKey: item.storageKey ?? '',
+    active: (p) => item.active(p, locale),
+  }));
 
   function getStoredPage(key) {
     if (typeof window === 'undefined' || !key) return 1;
@@ -54,7 +92,7 @@ export default function HeaderMain({ navItems = [], children }) {
             ))}
           </ul>
         </nav>
-        {children}
+        <TypeHeadSearch />
         <LanguageSwitcher />
       </div>
     </header>
