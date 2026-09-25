@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { LocaleProvider, useSetLocale, _registerExternalSetter } from '@/lib/stores/locale';
+import { LocaleProvider, useSetLocale, _registerExternalSetter, setLocale as setLocaleExternal } from '@/lib/stores/locale';
 
 function ExternalSetterRegistrar() {
   const setLocale = useSetLocale();
@@ -12,9 +12,19 @@ function ExternalSetterRegistrar() {
   return null;
 }
 
-export function AppLocaleProvider({ initialLocale, children }) {
+// Receives the server-side locale from [locale]/layout and syncs the store
+// without remounting the provider.
+export function LocaleSyncer({ locale }) {
+  useEffect(() => {
+    setLocaleExternal(locale);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locale]);
+  return null;
+}
+
+export function AppLocaleProvider({ children }) {
   return (
-    <LocaleProvider initialLocale={initialLocale}>
+    <LocaleProvider>
       <ExternalSetterRegistrar />
       {children}
     </LocaleProvider>
