@@ -1,0 +1,77 @@
+@use '../styles/variables' as v;
+@use '../styles/mixins' as m;
+
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+.default-card {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  .image-stage {
+    position: relative;
+    display: block;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    background: linear-gradient(
+      90deg,
+      color-mix(in oklch, var(--color-surface-offset) 72%, white) 0%,
+      color-mix(in oklch, var(--color-surface-offset) 88%, white) 38%,
+      color-mix(in oklch, var(--color-surface-dynamic) 72%, white) 50%,
+      color-mix(in oklch, var(--color-surface-offset) 88%, white) 62%,
+      color-mix(in oklch, var(--color-surface-offset) 72%, white) 100%
+    );
+    background-size: 220% 100%;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        color-mix(in oklch, white 62%, transparent) 48%,
+        transparent 100%
+      );
+      animation: shimmer 1.5s ease-in-out infinite;
+      animation-delay: var(--image-delay, 0ms);
+      pointer-events: none;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 180ms ease;
+    }
+
+    &.is-ready {
+      background: none;
+
+      &::before {
+        display: none;
+      }
+
+      img {
+        opacity: 1;
+      }
+    }
+  }
+}

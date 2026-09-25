@@ -1,0 +1,39 @@
+@use '../styles/variables' as v;
+@use '../styles/mixins' as m;
+
+.language-switcher {
+  display: flex;
+  align-items: center;
+  margin-left: 1.5rem;
+
+  select {
+    padding: 0.5rem;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    outline: none;
+    box-shadow: none;
+  }
+
+  select:focus,
+  select:focus-visible {
+    border: 0;
+    box-shadow: none;
+  }
+
+  select:focus-visible {
+    outline: 2px solid #2185d0;
+    outline-offset: 3px;
+  }
+
+  select:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  option {
+    background: #202020;
+    color: #fff;
+  }
+}

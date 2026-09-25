@@ -1,0 +1,40 @@
+@use '../styles/variables' as v;
+@use '../styles/mixins' as m;
+
+.main-footer {
+  footer {
+    z-index: 1000;
+    min-height: v.$footer-height;
+    height: v.$footer-height;
+
+    .ui.segment {
+      flex: 1;
+      align-self: center;
+      border-radius: 0;
+    }
+
+    ul.secondary.menu.inverted {
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      list-style: none;
+
+      > li {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .justwatch {
+          color: #fff;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 767.98px) {
+  ul.secondary.menu {
+    font-size: 0.8rem;
+  }
+}

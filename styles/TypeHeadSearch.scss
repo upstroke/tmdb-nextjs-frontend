@@ -1,0 +1,191 @@
+@use '../styles/variables' as v;
+@use '../styles/mixins' as m;
+
+#typeahead-search {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+
+  #typeahead-search-form {
+    position: relative;
+    flex: 1;
+    display: flex;
+  }
+
+  .input-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0.5rem 0;
+    flex-wrap: nowrap;
+  }
+
+  .search.icon {
+    margin-left: 0.5rem;
+  }
+
+  #typeahead-search-input {
+    border: none;
+    background: transparent;
+    color: white;
+    padding: 0.5rem 0 0.5rem 0.5rem;
+    margin-right: 0.5rem;
+    line-height: 0;
+    width: 50%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #typeahead-search-input:focus-visible {
+    outline: 2px solid v.$focus-ring-blue !important;
+    outline-offset: 0;
+    border: none;
+    box-shadow: none;
+  }
+
+  #typeahead-search-input::-webkit-search-cancel-button {
+    filter: brightness(0) invert(1);
+    cursor: pointer;
+    position: relative;
+    margin-left: 0.5rem;
+  }
+
+  #typeahead-search-results {
+    position: fixed;
+    right: 2px;
+    top: v.$header-height;
+    z-index: 1002;
+    color: black;
+    min-width: v.$typeahead-search-results-width;
+    max-width: v.$typeahead-search-results-width;
+    max-height: calc(100vh - v.$header-height - v.$footer-height - 6px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-radius: 6px;
+    background: white;
+  }
+
+  #typeahead-search-results [role='group'] {
+    background: white;
+  }
+
+  #typeahead-search-results [role='group'] > a.result {
+    display: flex;
+    padding: 0.5em 1em;
+    transition: background-color 180ms ease;
+  }
+
+  #typeahead-search-results [role='group'] > a.result:hover,
+  #typeahead-search-results [role='group'] > a.result:focus-visible,
+  #typeahead-search-results [role='group'] > a.result[aria-selected='true'],
+  #typeahead-search-results [role='group'] > a.result.result-focused {
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  #typeahead-search-results [role='group'] > a.result:focus-visible,
+  #typeahead-search-results [role='group'] > a.result[aria-selected='true'],
+  #typeahead-search-results [role='group'] > a.result.result-focused {
+    outline: 2px solid var(--focus-ring-blue);
+    outline-offset: -2px;
+  }
+
+  .typeahead-results-heading {
+    font-size: 1em;
+    font-weight: 500;
+    width: 100%;
+    border-radius: 0;
+
+    &.ui.label.blue {
+      background-color: v.$mediatype-label-blue;
+      border-color: v.$mediatype-label-blue;
+      color: white;
+    }
+
+    &.ui.label.teal {
+      background-color: v.$mediatype-label-teal;
+      border-color: v.$mediatype-label-teal;
+      color: white;
+    }
+  }
+
+  .image {
+    align-self: stretch;
+    flex: 0 0 2em;
+    width: 2em;
+    height: 3em;
+    max-height: 3em;
+    margin: 0 1rem 0 0;
+    overflow: hidden;
+  }
+
+  .image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    object-fit: cover;
+  }
+
+  .content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .result-header {
+    min-width: 0;
+    white-space: normal;
+  }
+
+  .title {
+    color: black;
+    padding-right: 0;
+    line-height: 1;
+    font-size: 1em;
+    font-weight: bold;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .description {
+    line-height: 1.6;
+    color: v.$color-text-muted;
+    font-size: 0.85em;
+  }
+
+  #status-messages-layer {
+    position: absolute;
+    right: 32px;
+    top: calc(v.$header-height + 0.5rem);
+    z-index: 1000;
+  }
+
+  #status-messages {
+    padding: 0.85rem;
+    color: black;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+  }
+
+  #status-messages .search-empty-state,
+  #status-messages .search-error-panel,
+  #status-messages .result,
+  #status-messages .result-error {
+    margin: 0;
+  }
+
+  @media only screen and (max-width: 767.98px) {
+    #typeahead-search-results {
+      min-width: unset;
+      max-width: unset;
+      width: 100vw;
+    }
+  }
+}
