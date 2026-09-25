@@ -8,6 +8,7 @@ import { useI18n, useLocale } from '@/lib/stores/locale';
 const STORAGE_KEY_QUERY = 'search-query';
 const STORAGE_KEY_MOVIES = 'search-movies';
 const STORAGE_KEY_TV = 'search-tv';
+const STORAGE_KEY_CLOSED = 'search-results-closed';
 
 function readStorage(key, fallback) {
   if (typeof window === 'undefined') return fallback;
@@ -30,6 +31,7 @@ function clearStorage() {
     sessionStorage.removeItem(STORAGE_KEY_QUERY);
     sessionStorage.removeItem(STORAGE_KEY_MOVIES);
     sessionStorage.removeItem(STORAGE_KEY_TV);
+    sessionStorage.removeItem(STORAGE_KEY_CLOSED);
   } catch { /* ignore */ }
 }
 
@@ -46,8 +48,6 @@ export default function TypeHeadSearch() {
   const locale = useLocale();
   const router = useRouter();
 
-  // SSR-safe: always start with empty state to avoid hydration mismatch.
-  // sessionStorage is read in a useEffect after mount.
   const [query, setQuery] = useState('');
   const [movies, setMovies] = useState([]);
   const [tvShows, setTvShows] = useState([]);
@@ -74,9 +74,11 @@ export default function TypeHeadSearch() {
     const storedQuery = readStorage(STORAGE_KEY_QUERY, '');
     const storedMovies = readStorage(STORAGE_KEY_MOVIES, []);
     const storedTv = readStorage(STORAGE_KEY_TV, []);
+    const storedClosed = readStorage(STORAGE_KEY_CLOSED, false);
     if (storedQuery) setQuery(storedQuery);
     if (storedMovies.length) setMovies(storedMovies);
     if (storedTv.length) setTvShows(storedTv);
+    setResultsClosed(storedClosed);
   }, []);
 
   const hasResults = movies.length > 0 || tvShows.length > 0;
@@ -106,8 +108,6 @@ export default function TypeHeadSearch() {
   }
   function resultHref(item) { return item.mediaType === 'movie' ? `/${locale}/movies/${item.id}` : `/${locale}/tv-shows/${item.id}`; }
 
-  // Close the results panel first, then navigate — prevents the layer staying
-  // visible during the page transition.
   function handleResultClick(e, item) {
     e.preventDefault();
     closeResults();
@@ -115,30 +115,38 @@ export default function TypeHeadSearch() {
     requestAnimationFrame(() => router.push(href));
   }
 
-  const search = useCallback(async (term) => {
+  // Persist resultsClosed whenever it changes
+  useEffect(() => {
+    writeStorage(STORAGE_KEY_CLOSED, resultsClosed);
+  }, [resultsClosed]);
+
+  const search = useCallback(async (term, { silent = false } = {}) => {
     controllerRef.current?.abort();
     if (loadingTimer.current) clearTimeout(loadingTimer.current);
     clearAnnouncementFn();
-    setFocusedResultId(null); setShowLoading(false);
+    setFocusedResultId(null);
+    if (!silent) setShowLoading(false);
     controllerRef.current = new AbortController();
     setLoading(true); setError(null);
-    loadingTimer.current = setTimeout(() => setShowLoading(true), 300);
+    if (!silent) loadingTimer.current = setTimeout(() => setShowLoading(true), 300);
     try {
       const res = await fetch(`/api/${encodeURIComponent(locale)}/search?q=${encodeURIComponent(term)}`, { signal: controllerRef.current.signal });
-      if (!res.ok) { setError(messages.searchError); scheduleAnnouncement(messages.searchError); return; }
+      if (!res.ok) { if (!silent) { setError(messages.searchError); scheduleAnnouncement(messages.searchError); } return; }
       const data = await res.json();
       const dedupMovies = deduplicateById(data.movies ?? []);
       const dedupTv = deduplicateById(data.tvShows ?? []);
       setMovies(dedupMovies); setTvShows(dedupTv);
-      writeStorage(STORAGE_KEY_QUERY, term);
       writeStorage(STORAGE_KEY_MOVIES, dedupMovies);
       writeStorage(STORAGE_KEY_TV, dedupTv);
-      const count = dedupMovies.length + dedupTv.length;
-      if (count > 0) { scheduleAnnouncement(messages.searchResultsCount.replace('{count}', String(count))); }
-      else if (term.length >= 4) { scheduleAnnouncement(messages.searchNoResults); }
+      if (!silent) {
+        writeStorage(STORAGE_KEY_QUERY, term);
+        const count = dedupMovies.length + dedupTv.length;
+        if (count > 0) { scheduleAnnouncement(messages.searchResultsCount.replace('{count}', String(count))); }
+        else if (term.length >= 4) { scheduleAnnouncement(messages.searchNoResults); }
+      }
     } catch (ex) {
       if (ex instanceof Error && ex.name === 'AbortError') return;
-      setError(messages.searchError); scheduleAnnouncement(messages.searchError);
+      if (!silent) { setError(messages.searchError); scheduleAnnouncement(messages.searchError); }
     } finally { if (loadingTimer.current) clearTimeout(loadingTimer.current); setShowLoading(false); setLoading(false); }
   }, [locale, messages]);
 
@@ -147,7 +155,9 @@ export default function TypeHeadSearch() {
     if (locale === prevLocale.current) return;
     prevLocale.current = locale;
     const term = query.trim();
-    if (term.length >= 4) void search(term);
+    // Re-fetch silently on locale change: update results in background,
+    // keep the layer open/closed exactly as the user left it.
+    if (term.length >= 4) void search(term, { silent: true });
   }, [locale, query, search]);
 
   function handleInput(e) {
