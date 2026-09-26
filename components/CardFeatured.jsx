@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { formatDate } from '@/lib/utils/formatDate';
 import { useI18n, useLocale } from '@/lib/stores/locale';
 
@@ -28,7 +29,14 @@ export default function CardFeatured({ id, mediaType, title, releaseDate = '', o
       <div className="featured-card-overlay">
         <div className="featured-card-layout">
           <figure className="featured-card-poster">
-            <img alt={`${featuredTitle} Poster`} src={featuredPosterUrl} />
+            <Image
+              src={featuredPosterUrl}
+              alt={`${featuredTitle} Poster`}
+              fill
+              priority
+              sizes="(max-width: 640px) 40vw, 200px"
+              style={{ objectFit: 'cover' }}
+            />
           </figure>
           <div className="featured-card-content">
             <p className={`featured-card-type featured-card-type--${normalizedType ?? 'unknown'}${featuredType ? '' : ' u-not-available'}`}>{featuredType}</p>

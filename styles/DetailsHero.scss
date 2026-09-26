@@ -48,15 +48,20 @@
 }
 
 .details-hero-poster {
+  position: relative;
   width: clamp(10rem, 22vw, 14rem);
+  aspect-ratio: 2 / 3;
+  min-height: 1px;
   margin: 0 0 1rem 0;
+  overflow: hidden;
 
   img {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
     box-shadow: 1px 0 5px 2px rgba(0, 0, 0, 0.4);
     border: 2px solid #fff;
+    object-fit: cover;
   }
 }
 
@@ -74,7 +79,7 @@
   justify-content: center;
   gap: 0.75rem 1rem;
   margin: 0;
-  padding: 0 0 1rem 0;
+  padding: 0;
   font-size: clamp(0.95rem, 2vw, 1.125rem);
   text-align: center;
 

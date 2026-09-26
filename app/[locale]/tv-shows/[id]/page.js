@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/resolver';
 import { formatDate } from '@/lib/utils/formatDate';
@@ -210,7 +211,15 @@ export default async function TvShowDetailPage({ params }) {
                 <li key={`tv-provider-${provider.providerId}-${provider.type}`}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                     {provider.logoPath && (
-                      <img src={`https://image.tmdb.org/t/p/w92${provider.logoPath}`} alt="" width={40} height={40} style={{ borderRadius: '0.25rem', background: '#f0f0f0' }} />
+                      <div style={{ position: 'relative', width: 40, height: 40, borderRadius: '0.25rem', overflow: 'hidden', background: '#f0f0f0', flexShrink: 0 }}>
+                        <Image
+                          src={`https://image.tmdb.org/t/p/w92${provider.logoPath}`}
+                          alt=""
+                          fill
+                          sizes="40px"
+                          style={{ objectFit: 'cover' }}
+                        />
+                      </div>
                     )}
                     <div>
                       {provider.link ? (

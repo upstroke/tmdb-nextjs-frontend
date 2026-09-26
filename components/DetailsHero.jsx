@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useI18n } from '@/lib/stores/locale';
 
 export default function DetailsHero({ title, backdrop, posterUrl, productionCompanies = [], emptyLabel = '' }) {
@@ -19,7 +20,14 @@ export default function DetailsHero({ title, backdrop, posterUrl, productionComp
       <div className="details-hero-overlay">
         <div className="details-hero-content">
           <div aria-hidden="true" className="details-hero-poster">
-            <img alt="" src={resolvedPosterUrl} />
+            <Image
+              src={resolvedPosterUrl}
+              alt=""
+              fill
+              priority
+              sizes="(max-width: 640px) 30vw, 185px"
+              style={{ objectFit: 'cover' }}
+            />
           </div>
           <h1 className="details-hero-title" id="details-hero-title">{resolvedTitle}</h1>
           <section aria-labelledby="details-hero-companies-heading" className="details-hero-companies">
