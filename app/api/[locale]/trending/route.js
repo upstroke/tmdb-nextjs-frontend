@@ -2,6 +2,16 @@ import { NextResponse } from 'next/server';
 import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/resolver';
 
+/** @typedef {import('@/lib/schemas/tmdb').CardItem} CardItem */
+/** @typedef {import('@/lib/schemas/tmdb').ListResponse} ListResponse */
+
+/**
+ * Returns a paginated list of trending movies and TV shows.
+ *
+ * @param {Request} request
+ * @param {{ params: Promise<{ locale: string }> }} context
+ * @returns {Promise<NextResponse>}
+ */
 export async function GET(request, { params }) {
   const { locale } = await params;
   const { messages } = getLocaleText(locale);

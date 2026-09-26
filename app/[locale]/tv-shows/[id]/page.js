@@ -9,6 +9,10 @@ import MediaTypeLabel from '@/components/MediaTypeLabel';
 import DialogMessage from '@/components/DialogMessage';
 import TabGroupe from '@/components/TabGroupe';
 
+/** @typedef {import('@/lib/schemas/tmdb').MediaDetail} MediaDetail */
+/** @typedef {import('@/lib/schemas/tmdb').WatchProviderResult} WatchProviderResult */
+/** @typedef {import('@/lib/schemas/tmdb').Season} Season */
+
 export default async function TvShowDetailPage({ params }) {
   const { locale, id } = await params;
   const { labels, fallbacks, formats, messages, buttons } = getLocaleText(locale);
@@ -19,8 +23,11 @@ export default async function TvShowDetailPage({ params }) {
     return <DialogMessage message={messages.apiKeyMissing} />;
   }
 
+  /** @type {MediaDetail|null} */
   let tvShow = null;
+  /** @type {WatchProviderResult|null} */
   let providers = null;
+  /** @type {string|null} */
   let error = null;
 
   try {
@@ -30,6 +37,7 @@ export default async function TvShowDetailPage({ params }) {
       api.getWatchProviders('tv', id),
     ]);
 
+    /** @type {Season[]} */
     const seasonsWithEpisodes = await Promise.all(
       (details.seasons ?? []).map(async (season) => {
         try {

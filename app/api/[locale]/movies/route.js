@@ -2,6 +2,16 @@ import { NextResponse } from 'next/server';
 import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/resolver';
 
+/** @typedef {import('@/lib/schemas/tmdb').CardItem} CardItem */
+/** @typedef {import('@/lib/schemas/tmdb').ListResponse} ListResponse */
+
+/**
+ * Returns a paginated list of trending movies.
+ *
+ * @param {Request} request
+ * @param {{ params: Promise<{ locale: string }> }} context
+ * @returns {Promise<NextResponse>}
+ */
 export async function GET(request, { params }) {
   const { locale } = await params;
   const { messages } = getLocaleText(locale);
@@ -17,6 +27,7 @@ export async function GET(request, { params }) {
     const api = createTmdbApi(fetch, apiKey, locale);
     const movies = await api.getTrendingMovies(page);
 
+    /** @type {CardItem[]} */
     const cards = Array.from(
       new Map((movies.results ?? []).map((c) => [`${c.id}-${c.mediaType}`, c])).values()
     );

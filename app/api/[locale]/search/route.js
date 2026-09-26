@@ -2,6 +2,16 @@ import { NextResponse } from 'next/server';
 import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/resolver';
 
+/** @typedef {import('@/lib/schemas/tmdb').CardItem} CardItem */
+/** @typedef {import('@/lib/schemas/tmdb').SearchResponse} SearchResponse */
+
+/**
+ * Searches movies and TV shows by query string.
+ *
+ * @param {Request} request
+ * @param {{ params: Promise<{ locale: string }> }} context
+ * @returns {Promise<NextResponse<SearchResponse>>}
+ */
 export async function GET(request, { params }) {
   const { locale } = await params;
   const { messages } = getLocaleText(locale);
@@ -10,7 +20,7 @@ export async function GET(request, { params }) {
   const apiKey = process.env.TMDB_API_KEY;
 
   if (!query || query.length < 4) {
-    return NextResponse.json({ movies: [], tvShows: [], results: [] });
+    return NextResponse.json({ movies: [], tvShows: [], results: [], error: null });
   }
 
   if (!apiKey) {
@@ -23,6 +33,8 @@ export async function GET(request, { params }) {
   try {
     const api = createTmdbApi(fetch, apiKey, locale);
     const searchResult = await api.searchMedia(query);
+
+    /** @type {CardItem[]} */
     const results = searchResult.results ?? [];
 
     return NextResponse.json({

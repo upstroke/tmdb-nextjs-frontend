@@ -8,6 +8,9 @@ import DetailsHero from '@/components/DetailsHero';
 import MediaTypeLabel from '@/components/MediaTypeLabel';
 import DialogMessage from '@/components/DialogMessage';
 
+/** @typedef {import('@/lib/schemas/tmdb').MediaDetail} MediaDetail */
+/** @typedef {import('@/lib/schemas/tmdb').WatchProviderResult} WatchProviderResult */
+
 export default async function MovieDetailPage({ params }) {
   const { locale, id } = await params;
   const { labels, fallbacks, formats, messages, buttons } = getLocaleText(locale);
@@ -18,8 +21,11 @@ export default async function MovieDetailPage({ params }) {
     return <DialogMessage message={messages.apiKeyMissing} />;
   }
 
+  /** @type {MediaDetail|null} */
   let movie = null;
+  /** @type {WatchProviderResult|null} */
   let providers = null;
+  /** @type {string|null} */
   let error = null;
 
   try {

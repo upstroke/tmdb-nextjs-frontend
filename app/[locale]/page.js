@@ -2,6 +2,9 @@ import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/resolver';
 import PagedList from '@/components/PagedList';
 
+/** @typedef {import('@/lib/schemas/tmdb').FeaturedItem} FeaturedItem */
+/** @typedef {import('@/lib/schemas/tmdb').CardItem} CardItem */
+
 export default async function HomePage({ params, searchParams }) {
   const { locale } = await params;
   const { messages, titles } = getLocaleText(locale);
@@ -13,9 +16,12 @@ export default async function HomePage({ params, searchParams }) {
 
   const api = createTmdbApi(fetch, apiKey, locale);
 
+  /** @type {FeaturedItem|null} */
   let featured = null;
+  /** @type {CardItem[]} */
   let cards = [];
   let hasMore = false;
+  /** @type {string|null} */
   let error = null;
 
   try {
