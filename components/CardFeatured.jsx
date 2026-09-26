@@ -33,6 +33,7 @@ export default function CardFeatured({ id, mediaType, title, releaseDate = '', o
               src={featuredPosterUrl}
               alt={`${featuredTitle} Poster`}
               fill
+              priority
               sizes="(max-width: 640px) 40vw, 200px"
               style={{ objectFit: 'cover' }}
             />

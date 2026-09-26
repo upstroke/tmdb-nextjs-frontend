@@ -24,6 +24,7 @@ export default function DetailsHero({ title, backdrop, posterUrl, productionComp
               src={resolvedPosterUrl}
               alt=""
               fill
+              priority
               sizes="(max-width: 640px) 30vw, 185px"
               style={{ objectFit: 'cover' }}
             />
