@@ -63,20 +63,10 @@ The displayed streaming providers and watch links are supplied through the TMDB 
 
 ## Type Safety Strategy
 
-This project uses **JavaScript without TypeScript**. Type safety is achieved through two complementary tools:
+Type safety is achieved through two complementary tools:
 
 - **JSDoc** — for documenting function signatures, parameters, and return types directly in the source code. JSDoc comments provide IDE type hints and serve as inline documentation. Use `@param`, `@returns`, and `@typedef` for important or non-obvious functions.
 - **Zod** — for runtime validation of external data (API responses, form inputs). Zod schemas live in `lib/schemas/` and are used in API routes and wherever data from external sources enters the application.
-
-### Why not TypeScript?
-
-TypeScript is a great tool, but it comes with trade-offs that did not fit this project:
-
-- **No build complexity** — Plain JavaScript with JSDoc requires no transpilation step, no `tsconfig.json`, and no type-stripping. The code runs as-is in Node.js and the browser.
-- **Lower barrier to entry** — Contributors do not need to know TypeScript syntax. JSDoc annotations are optional and additive — you can document as much or as little as makes sense.
-- **TypeScript only checks at compile time** — It gives you zero protection at runtime. A TMDB API response that does not match your types will silently break your app. Zod catches this at the boundary where the data actually enters.
-- **JSDoc + Zod covers the real risks** — Static analysis via JSDoc (read by VS Code and ESLint) handles the developer experience. Zod handles the runtime risk. Together they cover what TypeScript covers, plus the runtime layer TypeScript cannot.
-- **Easier refactoring in early stages** — Without a type system enforcing every interface, iterating on data shapes is faster. Zod schemas serve as the single source of truth for both validation and documentation.
 
 ### When to use which
 
