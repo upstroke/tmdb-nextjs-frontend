@@ -53,11 +53,7 @@
       pointer-events: none;
     }
 
-    img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    &:not(.is-ready) img {
       opacity: 0;
       transition: opacity 180ms ease;
     }
@@ -71,6 +67,7 @@
 
       img {
         opacity: 1;
+        transition: opacity 180ms ease;
       }
     }
   }
