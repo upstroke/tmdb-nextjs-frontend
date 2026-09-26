@@ -28,7 +28,7 @@ export default function CardFeatured({ id, mediaType, title, releaseDate = '', o
     >
       <div className="featured-card-overlay">
         <div className="featured-card-layout">
-          <figure className="featured-card-poster" style={{ position: 'relative' }}>
+          <figure className="featured-card-poster">
             <Image
               src={featuredPosterUrl}
               alt={`${featuredTitle} Poster`}

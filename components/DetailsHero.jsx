@@ -19,7 +19,7 @@ export default function DetailsHero({ title, backdrop, posterUrl, productionComp
     >
       <div className="details-hero-overlay">
         <div className="details-hero-content">
-          <div aria-hidden="true" className="details-hero-poster" style={{ position: 'relative' }}>
+          <div aria-hidden="true" className="details-hero-poster">
             <Image
               src={resolvedPosterUrl}
               alt=""
