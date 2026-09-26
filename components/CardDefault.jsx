@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import MediaTypeLabel from './MediaTypeLabel';
 import { getCertificationMeta } from '@/lib/utils/certificationMeta';
@@ -50,11 +51,14 @@ export default function CardDefault({
       <figure className="image">
         <div className={`image-stage${(!imageLoaded || isLoading) && !imageErrored ? ' is-loading' : ''}${imageLoaded && !imageErrored ? ' is-ready' : ''}`} style={{ '--image-delay': 'var(--stagger-delay, 0ms)' }}>
           {!imageErrored && (
-            <img
+            <Image
               src={cardImageUrl}
               alt={`Poster von ${cardTitle}`}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 220px"
+              style={{ objectFit: 'cover' }}
               onLoad={(e) => { const img = e.currentTarget; if (img.complete && img.naturalWidth > 0) { requestAnimationFrame(() => setImageLoaded(true)); } else { setImageLoaded(true); } }}
-              onError={(e) => { e.currentTarget.style.display = 'none'; setImageErrored(true); setImageLoaded(false); }}
+              onError={() => { setImageErrored(true); setImageLoaded(false); }}
             />
           )}
         </div>
