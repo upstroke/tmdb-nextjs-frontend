@@ -4,6 +4,7 @@ import { formatDate } from '@/lib/utils/formatDate';
 import { formatHomepageLabel } from '@/lib/utils/formatHomepageLabel';
 import { deduplicateById } from '@/lib/utils/deduplicateById';
 import { getCertificationMeta } from '@/lib/utils/certificationMeta';
+import { IdParamSchema } from '@/lib/schemas/tmdb';
 import DetailsHero from '@/components/DetailsHero';
 import MediaTypeLabel from '@/components/MediaTypeLabel';
 import DialogMessage from '@/components/DialogMessage';
@@ -12,7 +13,12 @@ import DialogMessage from '@/components/DialogMessage';
 /** @typedef {import('@/lib/schemas/tmdb').WatchProviderResult} WatchProviderResult */
 
 export default async function MovieDetailPage({ params }) {
-  const { locale, id } = await params;
+  const paramsParsed = IdParamSchema.safeParse(await params);
+  if (!paramsParsed.success) {
+    return <DialogMessage message="Invalid URL parameters." />;
+  }
+  const { locale, id } = paramsParsed.data;
+
   const { labels, fallbacks, formats, messages, buttons } = getLocaleText(locale);
   const apiKey = process.env.TMDB_API_KEY;
   const activeRegion = locale.split('-')[1] ?? 'US';

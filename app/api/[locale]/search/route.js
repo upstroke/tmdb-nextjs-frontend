@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/resolver';
-import { SearchQuerySchema } from '@/lib/schemas/tmdb';
+import { LocaleParamSchema, SearchQuerySchema } from '@/lib/schemas/tmdb';
 
 /** @typedef {import('@/lib/schemas/tmdb').CardItem} CardItem */
 /** @typedef {import('@/lib/schemas/tmdb').SearchResponse} SearchResponse */
@@ -14,7 +14,12 @@ import { SearchQuerySchema } from '@/lib/schemas/tmdb';
  * @returns {Promise<NextResponse<SearchResponse>>}
  */
 export async function GET(request, { params }) {
-  const { locale } = await params;
+  const localeParsed = LocaleParamSchema.safeParse(await params);
+  if (!localeParsed.success) {
+    return NextResponse.json({ movies: [], tvShows: [], results: [], error: 'Invalid locale.' }, { status: 400 });
+  }
+  const { locale } = localeParsed.data;
+
   const { messages } = getLocaleText(locale);
   const { searchParams } = new URL(request.url);
   const apiKey = process.env.TMDB_API_KEY;
@@ -26,10 +31,7 @@ export async function GET(request, { params }) {
   const { q: query } = queryParsed.data;
 
   if (!apiKey) {
-    return NextResponse.json(
-      { movies: [], tvShows: [], results: [], error: messages.apiKeyMissing },
-      { status: 500 }
-    );
+    return NextResponse.json({ movies: [], tvShows: [], results: [], error: messages.apiKeyMissing }, { status: 500 });
   }
 
   try {
@@ -47,9 +49,6 @@ export async function GET(request, { params }) {
     });
   } catch (e) {
     console.error('Search failed:', e);
-    return NextResponse.json(
-      { movies: [], tvShows: [], results: [], error: messages.searchError },
-      { status: 500 }
-    );
+    return NextResponse.json({ movies: [], tvShows: [], results: [], error: messages.searchError }, { status: 500 });
   }
 }
