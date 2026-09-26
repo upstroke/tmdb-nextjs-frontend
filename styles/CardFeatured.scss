@@ -47,6 +47,7 @@
   position: relative;
   width: clamp(4rem, 12.5vw, 6rem);
   aspect-ratio: 2 / 3;
+  min-height: 1px;
   margin: 0 0.5rem 0 0;
   align-self: start;
   overflow: hidden;

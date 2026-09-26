@@ -51,6 +51,7 @@
   position: relative;
   width: clamp(10rem, 22vw, 14rem);
   aspect-ratio: 2 / 3;
+  min-height: 1px;
   margin: 0 0 1rem 0;
   overflow: hidden;
 
