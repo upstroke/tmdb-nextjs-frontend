@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/resolver';
+import { ListQuerySchema } from '@/lib/schemas/tmdb';
 
 /** @typedef {import('@/lib/schemas/tmdb').CardItem} CardItem */
 /** @typedef {import('@/lib/schemas/tmdb').ListResponse} ListResponse */
@@ -16,8 +17,12 @@ export async function GET(request, { params }) {
   const { locale } = await params;
   const { messages } = getLocaleText(locale);
   const { searchParams } = new URL(request.url);
-  const page = Math.max(1, Number(searchParams.get('page') ?? '1') || 1);
   const apiKey = process.env.TMDB_API_KEY;
+
+  const queryParsed = ListQuerySchema.safeParse(
+    Object.fromEntries(searchParams)
+  );
+  const page = queryParsed.success ? queryParsed.data.page : 1;
 
   if (!apiKey) {
     return NextResponse.json({ cards: [], page, hasMore: false, error: messages.apiKeyMissing }, { status: 500 });
