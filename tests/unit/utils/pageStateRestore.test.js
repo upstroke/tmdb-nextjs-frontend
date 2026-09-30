@@ -9,7 +9,7 @@
  *                      and deduplicating the resulting card list.
  *
  * sessionStorage is replaced with a plain in-memory stub so the tests run
- * in Node/jsdom without any real storage side-effects.
+ * in Node/jsdom without any real storage side effects.
  * The SSR path (typeof window === 'undefined') is tested by temporarily
  * deleting global.window.
  */
