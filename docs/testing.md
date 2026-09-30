@@ -99,6 +99,25 @@ npm run test:acceptance  # Alias for CI
 |---|---|
 | `cy.visitLocale(locale, path)` | Navigate to `/{locale}{path}` |
 | `cy.checkPageA11y(options?)` | Run axe WCAG 2.2 AA check on current page |
+| `cy.i18n(locale?)` | Load i18n translations for a locale from `lib/i18n/ui.json` (defaults to `en-US`) |
+
+#### `cy.i18n(locale?)`
+
+Loads the translation object for the given locale directly from `lib/i18n/ui.json` via `cy.readFile()`. This avoids duplicating translation files into `cypress/fixtures/` and ensures tests always use the current translations.
+
+```js
+// Default locale (en-US)
+cy.i18n().then((t) => {
+  cy.contains(t.labels.searchInput).should('exist');
+});
+
+// Specific locale
+cy.i18n('de-DE').then((t) => {
+  cy.contains(t.labels.searchInput).should('exist');
+});
+```
+
+The returned object has the shape: `{ labels, messages, titles, buttons, formats, fallbacks }`.
 
 ### Locale
 
