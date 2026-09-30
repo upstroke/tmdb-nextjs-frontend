@@ -22,31 +22,50 @@ import {
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
+/**
+ * Creates a minimal in-memory sessionStorage stub.
+ *
+ * @returns {Storage} Stub that satisfies the sessionStorage interface for tests.
+ */
 function makeSessionStorage() {
-  const store = {};
-  return {
+  const store = /** @type {Record<string, string>} */ ({});
+  return /** @type {Storage} */ (/** @type {unknown} */ ({
     getItem: (key) => store[key] ?? null,
     setItem: (key, value) => { store[key] = value; },
     removeItem: (key) => { delete store[key]; },
-  };
+  }));
 }
 
-// ─── getStoredPage ────────────────────────────────────────────────────────────
-
-describe('getStoredPage', () => {
+/**
+ * Registers beforeEach/afterEach hooks that install a minimal window stub
+ * and a fresh sessionStorage mock, then restore the originals afterwards.
+ *
+ * @returns {{ getStorageMock: function(): Storage }} Accessor for the active storage mock.
+ */
+function setupWindowMock() {
   let originalWindow;
   let storageMock;
 
   beforeEach(() => {
     originalWindow = global.window;
     storageMock = makeSessionStorage();
-    global.window = {};
+    global.window = /** @type {Window} */ (/** @type {unknown} */ ({}));
     global.sessionStorage = storageMock;
   });
 
   afterEach(() => {
     global.window = originalWindow;
   });
+
+  return {
+    getStorageMock: () => storageMock,
+  };
+}
+
+// ─── getStoredPage ────────────────────────────────────────────────────────────
+
+describe('getStoredPage', () => {
+  const { getStorageMock } = setupWindowMock();
 
   // Statement coverage: typeof window === 'undefined' branch returns 1 immediately.
   it('returns 1 during SSR (no window)', () => {
@@ -56,7 +75,7 @@ describe('getStoredPage', () => {
 
   // Statement coverage: happy path – stored numeric string is parsed and returned.
   it('returns the stored page number', () => {
-    storageMock.setItem('key', '5');
+    getStorageMock().setItem('key', '5');
     expect(getStoredPage('key')).toBe(5);
   });
 
@@ -67,21 +86,21 @@ describe('getStoredPage', () => {
 
   // Branch coverage: Number('0') is 0 → Math.max(1, 0) clamps to 1.
   it('returns 1 when the stored value is 0', () => {
-    storageMock.setItem('key', '0');
+    getStorageMock().setItem('key', '0');
     expect(getStoredPage('key')).toBe(1);
   });
 
   // Branch coverage: Number('not-a-number') is NaN → || 1 fallback produces 1.
   it('returns 1 when the stored value is not a number', () => {
-    storageMock.setItem('key', 'not-a-number');
+    getStorageMock().setItem('key', 'not-a-number');
     expect(getStoredPage('key')).toBe(1);
   });
 
   // Branch coverage: sessionStorage.getItem throws → catch block returns 1.
   it('returns 1 when sessionStorage throws', () => {
-    global.sessionStorage = {
+    global.sessionStorage = /** @type {Storage} */ (/** @type {unknown} */ ({
       getItem: () => { throw new Error('blocked'); },
-    };
+    }));
     expect(getStoredPage('key')).toBe(1);
   });
 });
@@ -89,38 +108,26 @@ describe('getStoredPage', () => {
 // ─── storeCurrentPage ─────────────────────────────────────────────────────────
 
 describe('storeCurrentPage', () => {
-  let originalWindow;
-  let storageMock;
-
-  beforeEach(() => {
-    originalWindow = global.window;
-    storageMock = makeSessionStorage();
-    global.window = {};
-    global.sessionStorage = storageMock;
-  });
-
-  afterEach(() => {
-    global.window = originalWindow;
-  });
+  const { getStorageMock } = setupWindowMock();
 
   // Statement coverage: happy path – page number is converted to string and stored.
   it('saves the page number as a string', () => {
     storeCurrentPage('key', 3);
-    expect(storageMock.getItem('key')).toBe('3');
+    expect(getStorageMock().getItem('key')).toBe('3');
   });
 
   // Statement coverage: typeof window === 'undefined' branch returns early without writing.
   it('does nothing during SSR (no window)', () => {
     delete global.window;
     storeCurrentPage('key', 3);
-    expect(storageMock.getItem('key')).toBeNull();
+    expect(getStorageMock().getItem('key')).toBeNull();
   });
 
   // Branch coverage: sessionStorage.setItem throws → catch block suppresses the error.
   it('silently ignores storage errors', () => {
-    global.sessionStorage = {
+    global.sessionStorage = /** @type {Storage} */ (/** @type {unknown} */ ({
       setItem: () => { throw new Error('quota exceeded'); },
-    };
+    }));
     expect(() => storeCurrentPage('key', 3)).not.toThrow();
   });
 });
@@ -128,25 +135,13 @@ describe('storeCurrentPage', () => {
 // ─── restorePagedList ─────────────────────────────────────────────────────────
 
 describe('restorePagedList', () => {
-  let originalWindow;
-  let storageMock;
-
-  beforeEach(() => {
-    originalWindow = global.window;
-    storageMock = makeSessionStorage();
-    global.window = {};
-    global.sessionStorage = storageMock;
-  });
-
-  afterEach(() => {
-    global.window = originalWindow;
-  });
+  const { getStorageMock } = setupWindowMock();
 
   const card = (id) => ({ id, mediaType: 'movie' });
 
   // Statement coverage: storedPage (1) <= currentPage (1) → early return with initialData.
   it('returns initialData as-is when storedPage <= currentPage', async () => {
-    storageMock.setItem('key', '1');
+    getStorageMock().setItem('key', '1');
     const initialData = {
       featured: { id: 99 },
       cards: [card(1), card(2)],
@@ -182,7 +177,7 @@ describe('restorePagedList', () => {
 
   // Statement coverage: storedPage > currentPage → for-loop fetches all missing pages.
   it('fetches and appends missing pages up to storedPage', async () => {
-    storageMock.setItem('key', '3');
+    getStorageMock().setItem('key', '3');
     const initialData = { cards: [card(1)], page: 1, hasMore: true };
 
     const fetchPageData = vi.fn()
@@ -199,7 +194,7 @@ describe('restorePagedList', () => {
 
   // Branch coverage: incoming card already in existingKeys → filtered out by the Set check.
   it('deduplicates cards that already exist in the list', async () => {
-    storageMock.setItem('key', '2');
+    getStorageMock().setItem('key', '2');
     const initialData = { cards: [card(1), card(2)], page: 1, hasMore: true };
 
     const fetchPageData = vi.fn().mockResolvedValueOnce({
@@ -216,7 +211,7 @@ describe('restorePagedList', () => {
 
   // Branch coverage: newCards.length === 0 → currentCards spread is skipped.
   it('does not append cards when all incoming cards are duplicates', async () => {
-    storageMock.setItem('key', '2');
+    getStorageMock().setItem('key', '2');
     const initialData = { cards: [card(1), card(2)], page: 1, hasMore: true };
 
     const fetchPageData = vi.fn().mockResolvedValueOnce({
@@ -232,7 +227,7 @@ describe('restorePagedList', () => {
 
   // Branch coverage: missing initialData fields → nullish coalescing fallbacks are applied.
   it('uses fallback values when initialData fields are missing', async () => {
-    storageMock.setItem('key', '1');
+    getStorageMock().setItem('key', '1');
     const result = await restorePagedList({
       storageKey: 'key',
       initialData: {},
@@ -247,7 +242,7 @@ describe('restorePagedList', () => {
 
   // Statement coverage: currentFeatured is preserved via ?? across all fetched pages.
   it('retains featured from initialData across fetched pages', async () => {
-    storageMock.setItem('key', '2');
+    getStorageMock().setItem('key', '2');
     const initialData = { featured: { id: 42 }, cards: [card(1)], page: 1, hasMore: true };
 
     const fetchPageData = vi.fn().mockResolvedValueOnce({
