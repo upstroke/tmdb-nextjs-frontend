@@ -1,5 +1,5 @@
 import { createTmdbApi } from '@/lib/services/tmdb-api';
-import { getLocaleText } from '@/lib/i18n/resolver';
+import { getLocaleText } from '@/lib/i18n/helpers';
 import CardDefault from '@/components/CardDefault';
 
 export default async function SearchPage({ params, searchParams }) {

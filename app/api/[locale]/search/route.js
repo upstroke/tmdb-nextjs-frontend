@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createTmdbApi } from '@/lib/services/tmdb-api';
-import { getLocaleText } from '@/lib/i18n/resolver';
+import { getLocaleText } from '@/lib/i18n/helpers';
 import { LocaleParamSchema, SearchQuerySchema } from '@/lib/schemas/tmdb';
 
 /** @typedef {import('@/lib/schemas/tmdb').CardItem} CardItem */

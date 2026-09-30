@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { createTmdbApi } from '@/lib/services/tmdb-api';
-import { getLocaleText } from '@/lib/i18n/resolver';
+import { getLocaleText } from '@/lib/i18n/helpers';
 import { formatDate } from '@/lib/utils/formatDate';
 import { formatHomepageLabel } from '@/lib/utils/formatHomepageLabel';
 import { deduplicateById } from '@/lib/utils/deduplicateById';
