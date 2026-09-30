@@ -45,7 +45,6 @@ export default defineConfig({
   optimizeDeps: sharedOptimizeDeps,
   resolve: sharedResolve,
   test: {
-    globals: true,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
@@ -61,6 +60,7 @@ export default defineConfig({
         resolve: sharedResolve,
         test: {
           name: 'unit',
+          globals: true,
           environment: 'jsdom',
           // No setupFiles: MSW does not run for unit tests.
           include: ['tests/unit/**/*.test.js'],
@@ -74,6 +74,7 @@ export default defineConfig({
         resolve: sharedResolve,
         test: {
           name: 'integration',
+          globals: true,
           environment: 'jsdom',
           // MSW server lifecycle (listen / resetHandlers / close) runs here.
           setupFiles: ['./tests/setup/vitest.js'],
