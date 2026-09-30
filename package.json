@@ -40,6 +40,7 @@
     "eslint-config-next": "15.5.26",
     "eslint-plugin-jsdoc": "^50.6.17",
     "jsdom": "^26.1.0",
+    "msw": "^2.15.0",
     "prettier": "^3.9.9",
     "vitest": "^3.2.7"
   }
