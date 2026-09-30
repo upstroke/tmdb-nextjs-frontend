@@ -60,6 +60,8 @@ describe('_registerExternalSetter / setLocale', () => {
   });
 
   // Statement coverage: second registration replaces the first setter.
+  // fr-FR is a supported locale so the setter receives it unchanged,
+  // isolating the replacement behaviour from the fallback branch.
   it('replaces the setter when _registerExternalSetter is called again', () => {
     const first = vi.fn();
     const second = vi.fn();
