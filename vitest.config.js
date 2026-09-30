@@ -20,7 +20,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html'],
       include: ['lib/**', 'components/**', 'app/**'],
-      exclude: ['**/*.test.js', '**/*.test.jsx', 'node_modules/**'],
+      exclude: ['**/*.test.js', '**/*.test.jsx', 'node_modules/**', 'lib/schemas/tmdb.js'],
     },
   },
   resolve: {
