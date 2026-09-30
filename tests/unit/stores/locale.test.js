@@ -1,5 +1,5 @@
 /**
- * Unit tests for lib/stores/locale.js.
+ * Unit tests for lib/stores/locale.jsx.
  * Tests cover the pure helper functions and the external setter mechanism.
  * React hooks (useLocale, useSetLocale, useI18n) and LocaleProvider require
  * a React test environment and are excluded here.
@@ -18,7 +18,7 @@ vi.mock('react', () => ({
   useCallback: vi.fn((fn) => fn),
 }));
 
-import { setLocale, _registerExternalSetter } from '@/lib/stores/locale.js';
+import { setLocale, _registerExternalSetter } from '@/lib/stores/locale.jsx';
 
 describe('_registerExternalSetter / setLocale', () => {
   beforeEach(() => {
