@@ -1,16 +1,114 @@
 /**
- * Unit tests for the pure mapping and helper functions of createTmdbApi.
- * Async functions that depend on fetch are excluded and belong in integration tests.
+ * Unit tests for createTmdbApi.
+ *
+ * Pure mapping / helper functions are tested with a stub fetch that must never
+ * be called (any accidental invocation throws immediately).
+ *
+ * Async functions that depend on fetch (getTVShowDetails, getTVSeasonDetails,
+ * getMovieDetails, …) are tested with a controlled mock fetch so every HTTP
+ * boundary is exercised in-process, without a real network.
  */
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { createTmdbApi } from '@/lib/services/tmdb-api.js';
 
 const FAKE_KEY = 'test-key';
 
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Returns an API instance whose fetch stub must never be called. */
 function makeApi(language = 'en-US') {
-  // fetch is not called in mapping tests; provide a stub to satisfy the factory.
   return createTmdbApi(vi.fn(), FAKE_KEY, language);
 }
+
+/**
+ * Builds a fetch mock that returns the given payloads in order.
+ * Each call consumes the next entry from `responses`.
+ *
+ * @param {Array<{ok: boolean, status?: number, body: object}>} responses
+ */
+function makeFetch(responses) {
+  let index = 0;
+  return vi.fn(async () => {
+    const entry = responses[index++];
+    return {
+      ok: entry.ok ?? true,
+      status: entry.status ?? 200,
+      statusText: entry.ok === false ? 'Not Found' : 'OK',
+      json: async () => entry.body,
+    };
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Shared raw-data fixtures
+// ---------------------------------------------------------------------------
+
+const RAW_TV_SHOW = {
+  id: 1399,
+  name: 'Game of Thrones',
+  overview: 'Dragons and politics.',
+  homepage: 'https://hbo.com/got',
+  backdrop_path: '/got_backdrop.jpg',
+  poster_path: '/got_poster.jpg',
+  first_air_date: '2011-04-17',
+  vote_average: 9.2,
+  genres: [{ id: 10765, name: 'Sci-Fi & Fantasy' }],
+  runtime: null,
+  episode_run_time: [60],
+  production_companies: [],
+  number_of_seasons: 8,
+  number_of_episodes: 73,
+  seasons: [
+    { id: 3624, season_number: 1, name: 'Season 1', episode_count: 10 },
+  ],
+  credits: { cast: [], crew: [] },
+  videos: { results: [] },
+};
+
+const RAW_SEASON_1 = {
+  id: 3624,
+  season_number: 1,
+  name: 'Season 1',
+  overview: 'The beginning.',
+  air_date: '2011-04-17',
+  poster_path: '/season1_poster.jpg',
+  episodes: [
+    {
+      id: 63056,
+      episode_number: 1,
+      name: 'Winter Is Coming',
+      overview: 'The Stark family.',
+      air_date: '2011-04-17',
+      runtime: 62,
+      vote_average: 9.1,
+      still_path: '/ep1_still.jpg',
+    },
+    {
+      id: 63057,
+      episode_number: 2,
+      name: 'The Kingsroad',
+      overview: null,
+      air_date: null,
+      runtime: null,
+      vote_average: 8.5,
+      still_path: null,
+    },
+  ],
+};
+
+/** Minimal content-ratings response (DE region to match 'de-DE' locale). */
+const CONTENT_RATINGS_DE = {
+  results: [{ iso_3166_1: 'DE', rating: '16' }],
+};
+
+/** Watch-providers response (no DE entry → providers will be null). */
+const WATCH_PROVIDERS_EMPTY = { results: {} };
+
+// ---------------------------------------------------------------------------
+// mapCardItem
+// ---------------------------------------------------------------------------
 
 describe('createTmdbApi — mapCardItem', () => {
   let api;
@@ -63,6 +161,10 @@ describe('createTmdbApi — mapCardItem', () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// mapWatchProvider
+// ---------------------------------------------------------------------------
+
 describe('createTmdbApi — mapWatchProvider', () => {
   let api;
   beforeEach(() => { api = makeApi(); });
@@ -95,6 +197,10 @@ describe('createTmdbApi — mapWatchProvider', () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// mapWatchProviderList
+// ---------------------------------------------------------------------------
+
 describe('createTmdbApi — mapWatchProviderList', () => {
   let api;
   beforeEach(() => { api = makeApi(); });
@@ -113,6 +219,10 @@ describe('createTmdbApi — mapWatchProviderList', () => {
     expect(result[0].providerName).toBe('Netflix');
   });
 });
+
+// ---------------------------------------------------------------------------
+// getTrailerUrls
+// ---------------------------------------------------------------------------
 
 describe('createTmdbApi — getTrailerUrls', () => {
   let api;
@@ -141,6 +251,10 @@ describe('createTmdbApi — getTrailerUrls', () => {
     expect(api.getTrailerUrls(details)).toEqual([]);
   });
 });
+
+// ---------------------------------------------------------------------------
+// mapCast
+// ---------------------------------------------------------------------------
 
 describe('createTmdbApi — mapCast', () => {
   let api;
@@ -173,6 +287,10 @@ describe('createTmdbApi — mapCast', () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// mapCrew
+// ---------------------------------------------------------------------------
+
 describe('createTmdbApi — mapCrew', () => {
   let api;
   beforeEach(() => { api = makeApi(); });
@@ -204,6 +322,10 @@ describe('createTmdbApi — mapCrew', () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// resolveGenres
+// ---------------------------------------------------------------------------
+
 describe('createTmdbApi — resolveGenres', () => {
   it('returns an empty array when no genre IDs are provided', () => {
     const api = makeApi();
@@ -218,15 +340,208 @@ describe('createTmdbApi — resolveGenres', () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// language / region derivation
+// ---------------------------------------------------------------------------
+
 describe('createTmdbApi — language / region derivation', () => {
   it('derives region from language with hyphen', () => {
     const api = makeApi('de-DE');
-    // We can only indirectly verify via request URL — check that API instantiates without throwing.
     expect(api).toBeDefined();
   });
 
   it('instantiates with the default language', () => {
     const api = makeApi();
     expect(api).toBeDefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getTVShowDetails  (async — uses mock fetch)
+// ---------------------------------------------------------------------------
+
+describe('createTmdbApi — getTVShowDetails', () => {
+  /**
+   * Builds an API instance with a controlled fetch mock.
+   * Call order expected by getTVShowDetails:
+   *   1. GET /tv/:id?append_to_response=videos,credits  → RAW_TV_SHOW
+   *   2. GET /tv/:id/content_ratings                    → CONTENT_RATINGS_DE
+   *   3. GET /tv/:id/watch/providers                    → WATCH_PROVIDERS_EMPTY
+   */
+  function makeApiWithFetch(fetchResponses) {
+    return createTmdbApi(makeFetch(fetchResponses), FAKE_KEY, 'de-DE');
+  }
+
+  it('returns normalized TV show detail with season metadata', async () => {
+    const api = makeApiWithFetch([
+      { ok: true, body: RAW_TV_SHOW },
+      { ok: true, body: CONTENT_RATINGS_DE },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+    ]);
+
+    const result = await api.getTVShowDetails(1399);
+
+    expect(result.id).toBe(1399);
+    expect(result.mediaType).toBe('tv');
+    expect(result.title).toBe('Game of Thrones');
+    expect(result.rating).toBe(9.2);
+  });
+
+  it('includes numberOfSeasons and numberOfEpisodes', async () => {
+    const api = makeApiWithFetch([
+      { ok: true, body: RAW_TV_SHOW },
+      { ok: true, body: CONTENT_RATINGS_DE },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+    ]);
+
+    const result = await api.getTVShowDetails(1399);
+
+    expect(result.numberOfSeasons).toBe(8);
+    expect(result.numberOfEpisodes).toBe(73);
+  });
+
+  it('includes the seasons array from the raw response', async () => {
+    const api = makeApiWithFetch([
+      { ok: true, body: RAW_TV_SHOW },
+      { ok: true, body: CONTENT_RATINGS_DE },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+    ]);
+
+    const result = await api.getTVShowDetails(1399);
+
+    expect(Array.isArray(result.seasons)).toBe(true);
+    expect(result.seasons).toHaveLength(1);
+    expect(result.seasons[0].season_number).toBe(1);
+  });
+
+  it('attaches certification from content_ratings', async () => {
+    const api = makeApiWithFetch([
+      { ok: true, body: RAW_TV_SHOW },
+      { ok: true, body: CONTENT_RATINGS_DE },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+    ]);
+
+    const result = await api.getTVShowDetails(1399);
+
+    expect(result.certification).toBe('16');
+  });
+
+  it('sets providers to null when no regional entry exists', async () => {
+    const api = makeApiWithFetch([
+      { ok: true, body: RAW_TV_SHOW },
+      { ok: true, body: CONTENT_RATINGS_DE },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+    ]);
+
+    const result = await api.getTVShowDetails(1399);
+
+    expect(result.providers).toBeNull();
+  });
+
+  it('throws when the API returns a non-ok response', async () => {
+    const api = makeApiWithFetch([
+      { ok: false, status: 404, body: { status_message: 'Not Found' } },
+    ]);
+
+    await expect(api.getTVShowDetails(99999)).rejects.toThrow();
+  });
+
+  it('caches certifications — fetch is not called a second time for the same id', async () => {
+    const fetchMock = makeFetch([
+      { ok: true, body: RAW_TV_SHOW },
+      { ok: true, body: CONTENT_RATINGS_DE },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+      { ok: true, body: RAW_TV_SHOW },
+      // content_ratings and watch/providers must NOT be called again
+    ]);
+    const api = createTmdbApi(fetchMock, FAKE_KEY, 'de-DE');
+
+    await api.getTVShowDetails(1399);
+    await api.getTVShowDetails(1399);
+
+    // 4 calls: show×2 + content_ratings×1 + watch/providers×1
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getTVSeasonDetails  (async — uses mock fetch)
+// ---------------------------------------------------------------------------
+
+describe('createTmdbApi — getTVSeasonDetails', () => {
+  function makeApiWithFetch(responses) {
+    return createTmdbApi(makeFetch(responses), FAKE_KEY, 'de-DE');
+  }
+
+  it('returns a normalized season object', async () => {
+    const api = makeApiWithFetch([{ ok: true, body: RAW_SEASON_1 }]);
+    const result = await api.getTVSeasonDetails(1399, 1);
+
+    expect(result.id).toBe(3624);
+    expect(result.seasonNumber).toBe(1);
+    expect(result.name).toBe('Season 1');
+    expect(result.overview).toBe('The beginning.');
+    expect(result.airDate).toBe('2011-04-17');
+  });
+
+  it('maps posterUrl correctly', async () => {
+    const api = makeApiWithFetch([{ ok: true, body: RAW_SEASON_1 }]);
+    const result = await api.getTVSeasonDetails(1399, 1);
+
+    expect(result.posterUrl).toBe('https://image.tmdb.org/t/p/w342/season1_poster.jpg');
+  });
+
+  it('returns the correct number of episodes', async () => {
+    const api = makeApiWithFetch([{ ok: true, body: RAW_SEASON_1 }]);
+    const result = await api.getTVSeasonDetails(1399, 1);
+
+    expect(result.episodes).toHaveLength(2);
+  });
+
+  it('maps episode fields correctly', async () => {
+    const api = makeApiWithFetch([{ ok: true, body: RAW_SEASON_1 }]);
+    const result = await api.getTVSeasonDetails(1399, 1);
+    const ep = result.episodes[0];
+
+    expect(ep.id).toBe(63056);
+    expect(ep.episodeNumber).toBe(1);
+    expect(ep.name).toBe('Winter Is Coming');
+    expect(ep.runtime).toBe(62);
+    expect(ep.rating).toBe(9.1);
+    expect(ep.stillUrl).toBe('https://image.tmdb.org/t/p/w300/ep1_still.jpg');
+  });
+
+  it('sets stillUrl to null when still_path is missing', async () => {
+    const api = makeApiWithFetch([{ ok: true, body: RAW_SEASON_1 }]);
+    const result = await api.getTVSeasonDetails(1399, 1);
+    const ep = result.episodes[1];
+
+    expect(ep.stillUrl).toBeNull();
+  });
+
+  it('handles episodes with null overview and airDate gracefully', async () => {
+    const api = makeApiWithFetch([{ ok: true, body: RAW_SEASON_1 }]);
+    const result = await api.getTVSeasonDetails(1399, 1);
+    const ep = result.episodes[1];
+
+    expect(ep.overview).toBe('');
+    expect(ep.airDate).toBeNull();
+    expect(ep.runtime).toBeNull();
+  });
+
+  it('returns an empty episodes array for a season with no episodes', async () => {
+    const emptySeasonBody = { ...RAW_SEASON_1, episodes: [] };
+    const api = makeApiWithFetch([{ ok: true, body: emptySeasonBody }]);
+    const result = await api.getTVSeasonDetails(1399, 0);
+
+    expect(result.episodes).toEqual([]);
+  });
+
+  it('throws when the API returns a non-ok response', async () => {
+    const api = makeApiWithFetch([
+      { ok: false, status: 404, body: { status_message: 'Season not found' } },
+    ]);
+
+    await expect(api.getTVSeasonDetails(1399, 99)).rejects.toThrow();
   });
 });
