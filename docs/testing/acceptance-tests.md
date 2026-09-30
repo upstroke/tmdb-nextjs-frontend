@@ -1,6 +1,6 @@
-# Playwright Acceptance Tests
+# Acceptance Tests
 
-This guide defines the project rules for Playwright acceptance tests. Use acceptance tests for complete user-visible flows that require a real browser and realistic navigation.
+This guide defines the project rules for Cypress acceptance tests. Use acceptance tests for complete user-visible flows that require a real browser and realistic navigation.
 
 ## Scope
 
@@ -13,7 +13,7 @@ Acceptance tests are the right choice for:
 - accessibility checks that should run on full pages
 - regressions that are best validated in the actual browser environment
 
-Do not use Playwright for small isolated logic or component-only behavior that can be trusted with Vitest.
+Do not use Cypress for small isolated logic or component-only behavior that can be trusted with Vitest.
 
 ## File Location
 
@@ -43,7 +43,7 @@ tests/acceptance/navigation/
 
 ## What to Cover
 
-A Playwright acceptance test should cover behavior such as:
+A Cypress acceptance test should cover behavior such as:
 
 - moving between routes
 - loading and restoring paginated content
@@ -54,7 +54,7 @@ A Playwright acceptance test should cover behavior such as:
 
 ## Accessibility
 
-Use Playwright together with axe-core for automated accessibility checks on important pages and interaction states.
+Use Cypress together with axe-core for automated accessibility checks on important pages and interaction states.
 
 Typical examples:
 
@@ -70,7 +70,7 @@ Document intentional exceptions explicitly. Do not disable rules broadly.
 
 User-visible tabbed detail areas should be covered at acceptance level only when the behavior matters as an actual browser journey.
 
-Good reasons to add Playwright coverage include:
+Good reasons to add Cypress coverage include:
 
 - a season tab changes visible content in a way that is central to the feature
 - per-tab loading affects real user flows
@@ -108,4 +108,4 @@ Avoid assertions that only restate internal implementation details.
 
 When a new feature becomes user-visible, first decide whether confidence belongs at acceptance, integration, or unit level.
 
-Choose Playwright when the browser is part of the behavior contract. Otherwise, keep the test lower in the stack.
+Choose Cypress when the browser is part of the behavior contract. Otherwise, keep the test lower in the stack.

@@ -1,4 +1,4 @@
-# Accessibility Audit Checklist for SvelteKit (JavaScript)
+# Accessibility Audit Checklist for JavaScript
 
 **Goal:** This checklist supports a repeatable frontend audit according to WCAG 2.2 AA. It combines automated checks with manual testing for critical user journeys.
 
@@ -23,56 +23,7 @@
 - [ ] Use axe DevTools or WAVE for quick checks
 - [ ] Do not blindly accept findings: reproduce and evaluate each finding
 
-### E2E with Playwright and axe-core
-
-Installation:
-
-```bash
-npm i -D @axe-core/playwright
-```
-
-`tests/e2e/a11y.js`:
-
-```js
-import { AxeBuilder } from '@axe-core/playwright';
-
-export async function checkA11y(page) {
-  const results = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
-    .analyze();
-
-  if (results.violations.length > 0) {
-    const details = results.violations
-      .map((violation) => {
-        const nodes = violation.nodes
-          .map((node) => `  - ${node.html}\n    ${node.failureSummary ?? ''}`)
-          .join('\n');
-        return `${violation.id}: ${violation.help}\n${nodes}`;
-      })
-      .join('\n\n');
-
-    throw new Error(`Accessibility violations found:\n\n${details}`);
-  }
-}
-```
-
-`tests/e2e/example.a11y.spec.js`:
-
-```js
-import { test } from '@playwright/test';
-import { checkA11y } from './a11y';
-
-test('Homepage has no automatically detected WCAG A/AA violations', async ({ page }) => {
-  await page.goto('/');
-  await checkA11y(page);
-});
-
-test('Login error state is automatically testable', async ({ page }) => {
-  await page.goto('/login');
-  await page.getByRole('button', { name: /sign in/i }).click();
-  await checkA11y(page);
-});
-```
+### E2E with Cypress and cypress-axe
 
 - [ ] Run axe checks at least for each central route
 - [ ] Also check states after interactions: modal open, menu open, forms with errors, toasts, loading states
@@ -114,39 +65,6 @@ test('Login error state is automatically testable', async ({ page }) => {
 - [ ] Escape closes dialogs, popovers, or menus when this matches the expected interaction pattern
 - [ ] After client-side navigation, the new page content receives meaningful focus or is clearly announced
 
-### Svelte Example: Focus after a Dialog (JavaScript)
-
-```svelte
-<script>
-  let open = false;
-  let trigger;
-  let dialog;
-
-  function openDialog() {
-    open = true;
-    requestAnimationFrame(() => dialog?.showModal());
-  }
-
-  function closeDialog() {
-    dialog?.close();
-    open = false;
-    requestAnimationFrame(() => trigger?.focus());
-  }
-</script>
-
-<button bind:this={trigger} type="button" onclick={openDialog}>
-  Open settings
-</button>
-
-{#if open}
-  <dialog bind:this={dialog} aria-labelledby="dialog-title" onclose={closeDialog}>
-    <h2 id="dialog-title">Settings</h2>
-    <button type="button" onclick={closeDialog}>Close</button>
-  </dialog>
-{/if}
-```
-
-> For complex dialogs, additionally check focus constraining, scroll lock, Escape behavior, and background inertness. Prefer proven, tested components or an established dialog library.
 
 ## 5. Forms and Validation
 
@@ -161,32 +79,6 @@ test('Login error state is automatically testable', async ({ page }) => {
 - [ ] Input format and expected data are clearly described before submission
 - [ ] Time limits are avoidable, extendable, or announced in good time before expiry
 
-```svelte
-<script>
-  let email = '';
-  let emailError = '';
-
-  function submit() {
-    emailError = /\S+@\S+\.\S+/.test(email) ? '' : 'Please enter a valid email address.';
-  }
-</script>
-
-<form onsubmit={(event) => { event.preventDefault(); submit(); }} novalidate>
-  <label for="email">Email address</label>
-  <input
-    id="email"
-    name="email"
-    type="email"
-    bind:value={email}
-    aria-invalid={emailError ? 'true' : undefined}
-    aria-describedby={emailError ? 'email-error' : undefined}
-  />
-  {#if emailError}
-    <p id="email-error" role="alert">{emailError}</p>
-  {/if}
-  <button type="submit">Submit</button>
-</form>
-```
 
 ## 6. Images, Media, and Content
 
@@ -227,7 +119,7 @@ test('Login error state is automatically testable', async ({ page }) => {
 }
 ```
 
-## 8. Dynamic SvelteKit Interfaces
+## 8. Dynamic Interfaces
 
 - [ ] Loading states describe what is happening; purely visual spinners are not sufficient
 - [ ] Async updates are announced appropriately without flooding screen reader users with messages
@@ -237,18 +129,6 @@ test('Login error state is automatically testable', async ({ page }) => {
 - [ ] Visually shown and hidden content remains consistent with focus, screen reader tree, and operability
 - [ ] Do not use ARIA when native HTML already provides semantics and interaction
 - [ ] Use ARIA roles, states, and properties only supplementarily and correctly
-
-Example of a non-disruptive status message:
-
-```svelte
-<script>
-  let resultCount = 0;
-</script>
-
-<p role="status" aria-atomic="true">
-  {resultCount} results found.
-</p>
-```
 
 ## 9. Screen Reader Testing
 
@@ -283,19 +163,19 @@ Example of a non-disruptive status message:
 
 ## 11. Finding Template
 
-| Field | Content |
-|---|---|
-| ID | Unique identifier, e.g. `A11Y-023` |
-| Route / Component | Affected URL, flow, and component |
-| Description | What happens and why is it a barrier? |
-| Reproduction | Concrete steps, browser, and assistive technology |
-| Expectation | Accessible target behavior |
-| WCAG | Success criterion and level, e.g. 2.4.7 AA |
-| Impact | Affected user group and practical consequence |
-| Priority | Blocker, high, medium, or low |
-| Fix | Concrete, verifiable change suggestion |
-| Owner / Status | Responsible person and processing status |
-| Validation | Date, test method, and result after the fix |
+| Field             | Content                                           |
+|-------------------|---------------------------------------------------|
+| ID                | Unique identifier, e.g. `A11Y-023`                |
+| Route / Component | Affected URL, flow, and component                 |
+| Description       | What happens and why is it a barrier?             |
+| Reproduction      | Concrete steps, browser, and assistive technology |
+| Expectation       | Accessible target behavior                        |
+| WCAG              | Success criterion and level, e.g. 2.4.7 AA        |
+| Impact            | Affected user group and practical consequence     |
+| Priority          | Blocker, high, medium, or low                     |
+| Fix               | Concrete, verifiable change suggestion            |
+| Owner / Status    | Responsible person and processing status          |
+| Validation        | Date, test method, and result after the fix       |
 
 ## Short Routine per Pull Request
 
@@ -306,5 +186,5 @@ Example of a non-disruptive status message:
 - [ ] Forms: labels, help texts, and error association are present
 - [ ] New images and media have appropriate text alternatives
 - [ ] Contrasts checked
-- [ ] axe/Playwright test added or updated for the affected flow
+- [ ] axe/Cypress test added or updated for the affected flow
 - [ ] For dynamic changes: focus and screen reader announcement checked

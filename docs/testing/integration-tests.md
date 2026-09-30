@@ -6,7 +6,7 @@ This guide defines the project rules for Vitest integration tests. Use integrati
 
 Integration tests are the right choice for:
 
-- rendered Svelte components with props, slots, and events
+- rendered components with props, slots, and events
 - route behavior with mocked load data or controlled dependencies
 - interaction between components, stores, and helper modules
 - accessibility-relevant rendered output that can be verified in `jsdom`
@@ -119,12 +119,12 @@ Examples:
 - icon buttons have accessible names
 - error messages and status messages are actually rendered in the DOM
 
-## When to Escalate to Playwright
+## When to Escalate to Cypress
 
 Move a test to acceptance level when confidence depends on:
 
 - real routing across pages
 - browser history behavior
 - viewport-specific layout behavior
-- focus movement that depends on the browser rather than `jsdom`
+- focus movement that depends on the browser
 - interaction across multiple routes or application layers

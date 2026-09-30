@@ -124,7 +124,6 @@ For test tasks, apply the relevant documentation in this order:
 1. `docs/testing.md`
 2. `docs/testing/common-rules.md`
 3. The relevant guide in `docs/testing/`
-4. For Playwright end-to-end acceptance tests: `playwright.config.js`, the affected feature directory's `*-testplan.md`, and its existing `*.spec.js` files
 
 If instructions at the same priority level conflict, stop and explain the conflict before making changes. Never silently override a higher-priority instruction with a lower-priority preference.
 
@@ -231,7 +230,7 @@ Requirements:
 - Select the appropriate test level before implementation.
 - Preserve existing patterns and conventions.
 - Reuse fixtures, mocks, and setup utilities where applicable.
-- For Playwright end-to-end acceptance tests, also read `playwright.config.js` and the affected feature directory's test plan and existing specifications.
+- For Cypress end-to-end acceptance tests, also read corresponding Cypress config files and the affected feature directory's test plan and existing specifications.
 
 Output: A test file in the appropriate existing test directory.
 ```
@@ -327,4 +326,4 @@ Output: A `route.js` file in the appropriate `app/api/` subdirectory.
 - `docs/testing.md` for the project's testing overview (to be created)
 - `docs/testing/common-rules.md` for rules shared by all automated tests (to be created)
 - `docs/testing/unit-tests.md` for Vitest unit-test rules (to be created)
-- `docs/testing/playwright-acceptance-tests.md` for Playwright end-to-end acceptance-test rules (to be created)
+- `docs/testing/acceptance-tests.md` for end-to-end acceptance-test rules (to be created)

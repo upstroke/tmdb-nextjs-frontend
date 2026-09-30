@@ -9,7 +9,7 @@ These rules apply to all automated tests in this project.
 - Read the relevant existing tests, fixtures, mocks, setup utilities, and source files before proposing changes.
 - Select the appropriate test level before implementation.
 - Define the test subject, expected behavior, relevant risks, input classes, expected results, and intended test level before implementing a test.
-- For questions about Vitest, Playwright, Svelte Testing Library, Svelte, or SvelteKit behavior that may depend on a current version, verify the current official documentation before implementing a non-obvious solution.
+- For questions about testing or testing libraries, React or Next.js behavior that may depend on a current version, verify the current official documentation before implementing a non-obvious solution.
 - Reconcile external guidance with `package.json`, the project configuration, and existing test patterns before applying it.
 - If current documentation and the installed version appear to conflict, stop and report the discrepancy before making changes.
 

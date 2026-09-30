@@ -7,31 +7,17 @@ This file provides the high-level testing overview for the project. Read it befo
 The project uses three automated test levels:
 
 - Unit tests with Vitest for isolated utility, store, helper, route, and TMDB API logic
-- Integration tests with Vitest for Svelte components, route behavior, and interactions between controlled parts
-- End-to-end acceptance tests with Playwright for complete browser-based user flows
+- Integration tests with Vitest for React components, route behavior, and interactions between controlled parts
+- End-to-end acceptance tests with Cypress for complete browser-based user flows
 
 ## Accessibility Testing
 
 The project includes automated accessibility testing to support WCAG 2.2 AA compliance.
 
-- Accessibility checks use Playwright together with axe-core (`@axe-core/playwright`) for automated WCAG A/AA violation detection.
+- Accessibility checks use Cypress together with cypress-axe for automated WCAG A/AA violation detection.
 - Accessibility test files are located under `tests/acceptance/accessibility/`.
 - Accessibility test plans remain next to the executable specifications as `*-testplan.md` files.
 - Common tags for these tests are `@accessibility` and `@a11y`.
-
-### Accessibility Commands
-
-```bash
-# All accessibility tests
-npx playwright test tests/acceptance/accessibility/
-
-# Accessibility tests by tag
-npx playwright test -g @accessibility
-npx playwright test -g @a11y
-
-# Combined with other tags
-npx playwright test -g "(?=.*@accessibility)(?=.*@homepage)"
-```
 
 ## Test Directory Structure
 
@@ -55,13 +41,13 @@ tests/
 - `tests/unit/` contains isolated Vitest unit tests. Domain subdirectories such as `routes/` and `tmdb-api/` may be used where they improve discoverability.
 - `tests/integration/components/` contains Vitest component integration tests.
 - `tests/integration/routes/` contains Vitest route integration tests.
-- `tests/acceptance/<feature>/` contains Playwright end-to-end acceptance tests organized by user-visible feature.
-- `tests/acceptance/accessibility/` contains accessibility tests with Playwright and axe-core.
+- `tests/acceptance/<feature>/` contains Cypress end-to-end acceptance tests organized by user-visible feature.
+- `tests/acceptance/accessibility/` contains accessibility tests with Cypress and axe-core.
 - `tests/fixtures/` contains stable, reusable domain test data.
 - `tests/mocks/` contains reusable mock support for technical dependencies.
 - `tests/setup/` contains shared setup and cleanup utilities.
 
-For Playwright end-to-end acceptance tests, each substantial feature directory contains one or more `*.spec.js` files and exactly one related `*-testplan.md` file. The test plan stays next to the executable specifications. Existing examples are `tests/acceptance/navigation/` and `tests/acceptance/loadmore/`.
+For Cypress end-to-end acceptance tests, each substantial feature directory contains one or more `*.spec.js` files and exactly one related `*-testplan.md` file. The test plan stays next to the executable specifications. Existing examples are `tests/acceptance/navigation/` and `tests/acceptance/loadmore/`.
 
 ## Documentation by Test Level
 
@@ -70,7 +56,7 @@ Read the following files in addition to this overview:
 - `docs/testing/common-rules.md` for rules shared by all automated tests
 - `docs/testing/unit-tests.md` for Vitest unit-test rules
 - `docs/testing/integration-tests.md` for Vitest integration-test rules
-- `docs/testing/playwright-acceptance-tests.md` for Playwright end-to-end acceptance-test rules
+- `docs/testing/acceptance-tests.md` for Cypress end-to-end acceptance-test rules
 
 ## Test Commands
 
@@ -84,10 +70,6 @@ npm run test:vitest:coverage
 ```
 
 The `justfile` provides shortcuts for important commands, including `just test-vitest` and `just test-e2e`.
-
-## Vitest Setup Note
-
-For Svelte 5 component tests with Vitest, the official `svelteTesting()` Vite plugin from `@testing-library/svelte/vite` is used. It automatically adds cleanup and the browser resolver condition to the DOM-based test environment, allowing UI tests under `jsdom` to load the browser version of the Svelte modules correctly.
 
 ## Path Aliases
 
@@ -117,7 +99,7 @@ import { cleanupAll } from '$tests/setup/test-utils.js';
 Test coverage follows practical agile development:
 
 1. A user story or use case describes the desired behavior.
-2. Playwright acceptance tests verify complete, user-visible flows.
+2. Cypress acceptance tests verify complete, user-visible flows.
 3. Vitest integration tests verify interactions between the involved components, routes, stores, helpers, and controlled dependencies.
 4. Vitest unit tests protect pure utility functions, isolated logic, and relevant edge cases.
 5. Accessibility tests verify WCAG 2.2 AA compliance for pages and interactions.
