@@ -7,7 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run"
   },
   "dependencies": {
     "fomantic-ui-css": "^2.9.4",
@@ -20,6 +22,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "autoprefixer": "^10.4.21",
+    "cypress": "^14",
     "eslint": "^9",
     "eslint-config-next": "15.5.26",
     "eslint-plugin-jsdoc": "^50.6.17",
