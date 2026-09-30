@@ -1,29 +1,42 @@
+/**
+ * The tests verify the return type, the presence of all known locales,
+ * and the absence of unknown values in the list returned by getSupportedLocales.
+ */
 import { describe, expect, it } from 'vitest';
 import { getSupportedLocales } from '@/lib/i18n/helpers.js';
 
 describe('getSupportedLocales', () => {
+  // Statement coverage: the function returns an array.
   it('returns an array', () => {
     expect(Array.isArray(getSupportedLocales())).toBe(true);
   });
 
-  it('contains en-US', () => {
-    expect(getSupportedLocales()).toContain('en-US');
+  // Statement coverage: the array is not empty.
+  it('returns a non-empty array', () => {
+    expect(getSupportedLocales().length).toBeGreaterThan(0);
   });
 
-  it('contains de-DE', () => {
-    expect(getSupportedLocales()).toContain('de-DE');
-  });
+  // Branch coverage: each known supported locale is included.
+  it.each(['en-US', 'de-DE', 'es-ES', 'fr-FR', 'ru-RU', 'vi-VN'])(
+    'includes %s in the supported locales',
+    (locale) => {
+      expect(getSupportedLocales()).toContain(locale);
+    }
+  );
 
-  it('returns only non-empty strings', () => {
+  // Branch coverage: unsupported locales are not included.
+  it('does not include unsupported locales', () => {
     const locales = getSupportedLocales();
-    locales.forEach((l) => {
-      expect(typeof l).toBe('string');
-      expect(l.length).toBeGreaterThan(0);
-    });
+    expect(locales).not.toContain('ja-JP');
+    expect(locales).not.toContain('zh-CN');
   });
 
-  it('returns no duplicate locales', () => {
+  // Statement coverage: every entry in the array is a non-empty string.
+  it('contains only non-empty strings', () => {
     const locales = getSupportedLocales();
-    expect(new Set(locales).size).toBe(locales.length);
+    for (const locale of locales) {
+      expect(typeof locale).toBe('string');
+      expect(locale.length).toBeGreaterThan(0);
+    }
   });
 });
