@@ -17,6 +17,7 @@ function ExternalSetterRegistrar() {
 export function LocaleSyncer({ locale }) {
   useEffect(() => {
     setLocaleExternal(locale);
+    document.documentElement.lang = locale;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locale]);
   return null;
