@@ -37,35 +37,40 @@ function makeSessionStorage() {
 }
 
 /**
+ * Returns the sessionStorage mock that was installed by the most recent
+ * beforeEach hook. Reads global.sessionStorage at call time so it always
+ * reflects the current mock, regardless of when the function is referenced.
+ *
+ * @returns {Storage} The active sessionStorage stub.
+ */
+function getStorageMock() {
+  return /** @type {Storage} */ (global.sessionStorage);
+}
+
+/**
  * Registers beforeEach/afterEach hooks that install a minimal window stub
  * and a fresh sessionStorage mock, then restore the originals afterwards.
  *
- * @returns {{ getStorageMock: function(): Storage }} Accessor for the active storage mock.
+ * @returns {void}
  */
 function setupWindowMock() {
   let originalWindow;
-  let storageMock;
 
   beforeEach(() => {
     originalWindow = global.window;
-    storageMock = makeSessionStorage();
     global.window = /** @type {Window} */ (/** @type {unknown} */ ({}));
-    global.sessionStorage = storageMock;
+    global.sessionStorage = makeSessionStorage();
   });
 
   afterEach(() => {
     global.window = originalWindow;
   });
-
-  return {
-    getStorageMock: () => storageMock,
-  };
 }
 
 // ─── getStoredPage ────────────────────────────────────────────────────────────
 
 describe('getStoredPage', () => {
-  const { getStorageMock } = setupWindowMock();
+  setupWindowMock();
 
   // Statement coverage: typeof window === 'undefined' branch returns 1 immediately.
   it('returns 1 during SSR (no window)', () => {
@@ -108,7 +113,7 @@ describe('getStoredPage', () => {
 // ─── storeCurrentPage ─────────────────────────────────────────────────────────
 
 describe('storeCurrentPage', () => {
-  const { getStorageMock } = setupWindowMock();
+  setupWindowMock();
 
   // Statement coverage: happy path – page number is converted to string and stored.
   it('saves the page number as a string', () => {
@@ -135,7 +140,7 @@ describe('storeCurrentPage', () => {
 // ─── restorePagedList ─────────────────────────────────────────────────────────
 
 describe('restorePagedList', () => {
-  const { getStorageMock } = setupWindowMock();
+  setupWindowMock();
 
   const card = (id) => ({ id, mediaType: 'movie' });
 
@@ -226,8 +231,8 @@ describe('restorePagedList', () => {
   });
 
   // Branch coverage: missing initialData fields → nullish coalescing fallbacks are applied.
+  // storedPage defaults to 1 (nothing stored) which equals currentPage 1 → early return path.
   it('uses fallback values when initialData fields are missing', async () => {
-    getStorageMock().setItem('key', '1');
     const result = await restorePagedList({
       storageKey: 'key',
       initialData: {},
