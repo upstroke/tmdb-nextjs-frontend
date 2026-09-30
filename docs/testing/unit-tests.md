@@ -92,6 +92,13 @@ Typical coverage areas for TMDB API unit tests:
 
 When possible, use reusable fixtures from `tests/fixtures/tmdb/`. If the new payload is highly specific to one method, a small local fixture inside the test file is acceptable.
 
+### Mocking Network Requests
+
+TMDB API unit tests mock `fetch` directly using `vi.fn()` or `vi.stubGlobal('fetch')`.
+MSW is not used at unit level — MSW is reserved for integration tests where a component
+calls `fetch` through a real service boundary. See `docs/testing/integration-tests.md`
+for the MSW setup and handler reference.
+
 ### Season and Episode Data
 
 For TV season work, unit tests should explicitly cover the contracts of season-related methods such as `getTVShowDetails()` and `getTVSeasonDetails()`.
