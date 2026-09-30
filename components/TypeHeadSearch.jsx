@@ -10,6 +10,13 @@ const STORAGE_KEY_MOVIES = 'search-movies';
 const STORAGE_KEY_TV = 'search-tv';
 const STORAGE_KEY_CLOSED = 'search-results-closed';
 
+/**
+ * Reads a JSON-serialised value from sessionStorage.
+ *
+ * @param {string} key - sessionStorage key.
+ * @param {*} fallback - Value returned when the key is missing or parsing fails.
+ * @returns {*} The parsed value or `fallback`.
+ */
 function readStorage(key, fallback) {
   if (typeof window === 'undefined') return fallback;
   try {
@@ -20,11 +27,24 @@ function readStorage(key, fallback) {
   }
 }
 
+/**
+ * Serialises a value as JSON and writes it to sessionStorage.
+ * Silently ignores storage errors (e.g. private-browsing quota).
+ *
+ * @param {string} key - sessionStorage key.
+ * @param {*} value - Value to serialise and store.
+ * @returns {void}
+ */
 function writeStorage(key, value) {
   if (typeof window === 'undefined') return;
   try { sessionStorage.setItem(key, JSON.stringify(value)); } catch { /* ignore */ }
 }
 
+/**
+ * Removes all typeahead-search keys from sessionStorage.
+ *
+ * @returns {void}
+ */
 function clearStorage() {
   if (typeof window === 'undefined') return;
   try {
@@ -35,7 +55,21 @@ function clearStorage() {
   } catch { /* ignore */ }
 }
 
+/**
+ * Formats a numeric rating to one decimal place.
+ *
+ * @param {number|string|null|undefined} value - Raw rating value.
+ * @returns {string} Rating string, e.g. `"7.4"`.
+ */
 function formatRating(value) { return Number(value ?? 0).toFixed(1); }
+
+/**
+ * Extracts the four-digit year from an ISO date string.
+ *
+ * @param {string|null|undefined} value - ISO date string (e.g. `"2023-05-12"`).
+ * @returns {string} The year as a string, or an empty string when the input is
+ *   missing or not a valid date.
+ */
 function formatYear(value) {
   if (!value) return '';
   const date = new Date(value);
