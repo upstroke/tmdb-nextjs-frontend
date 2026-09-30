@@ -4,6 +4,41 @@ import { useState, useRef, useEffect } from 'react';
 import { useI18n, useLocale } from '@/lib/stores/locale';
 import { formatDate } from '@/lib/utils/formatDate';
 
+/**
+ * @typedef {object} Episode
+ * @property {number|string} [id] - Episode id.
+ * @property {string} name - Episode title.
+ * @property {string} [air_date] - ISO air date string.
+ * @property {string} [overview] - Short episode description.
+ */
+
+/**
+ * @typedef {object} Tab
+ * @property {number|string} id - Unique tab identifier.
+ * @property {string} label - Visible tab label.
+ * @property {Episode[]} [episodes] - List of episodes rendered in the tab panel.
+ * @property {boolean} [loading] - When true a loading message is shown instead of episodes.
+ * @property {string} [content] - Fallback plain-text content when no episodes are available.
+ */
+
+/**
+ * Accessible tab group for displaying season episode lists on TV show detail pages.
+ *
+ * Implements the ARIA tabs pattern with full keyboard navigation:
+ * - Arrow Left / Right to move between tabs
+ * - Home / End to jump to first or last tab
+ * - Arrow Up / Down to navigate episodes within the active panel
+ *
+ * Logs a development warning when `ariaLabel` is not provided.
+ *
+ * @param {object} props
+ * @param {Tab[]} [props.tabs=[]] - Tab definitions including label and episode data.
+ * @param {number|string} [props.initialTab] - Id of the tab selected on first render.
+ *   Defaults to the first tab when omitted.
+ * @param {string} [props.ariaLabel=''] - Accessible label for the tablist element (required for WCAG 4.1.2).
+ * @param {Function} [props.onTabSelect] - Callback invoked with the selected tab id as a string.
+ * @returns {JSX.Element}
+ */
 export default function TabGroupe({ tabs = [], initialTab, ariaLabel = '', onTabSelect }) {
   const { labels, messages } = useI18n();
   const locale = useLocale();

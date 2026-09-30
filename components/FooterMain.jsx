@@ -1,3 +1,11 @@
+/**
+ * Site-wide footer with legal links and attribution notices for IMDb content
+ * and JustWatch streaming data.
+ *
+ * Renders as a fixed bottom bar using Fomantic UI menu classes.
+ *
+ * @returns {JSX.Element}
+ */
 export default function FooterMain() {
   return (
     <div className="main-footer">

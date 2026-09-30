@@ -8,6 +8,25 @@ import { getCertificationMeta } from '@/lib/utils/certificationMeta';
 import { formatDate } from '@/lib/utils/formatDate';
 import { useI18n, useLocale } from '@/lib/stores/locale';
 
+/**
+ * Displays a media item as a linked card with poster image, title, genres,
+ * release date, certification badge, and rating.
+ *
+ * Returns null when the item has no valid id or unrecognised media type.
+ *
+ * @param {object} props
+ * @param {number|string} props.id - TMDB item id used to build the detail page URL.
+ * @param {'movie'|'tv'} props.mediaType - Media type determining the detail route.
+ * @param {string} props.title - Display title of the item.
+ * @param {string} [props.date=''] - ISO release / first-air date string.
+ * @param {number} [props.rating=0] - Numeric TMDB vote average (0–10).
+ * @param {string} [props.certification=''] - Age-rating code (e.g. "PG-13").
+ * @param {Array<{id?: number|string, name: string}>} [props.genres=[]] - Genre list.
+ * @param {string} [props.imageUrl=''] - Absolute URL of the poster image.
+ * @param {string} [props.scrollId=''] - HTML id set on the root link element for scroll-restoration.
+ * @param {boolean} [props.isLoading=false] - When true the card renders in a loading skeleton state.
+ * @returns {JSX.Element|null}
+ */
 export default function CardDefault({
   id, mediaType, title, date = '', rating = 0, certification = '',
   genres = [], imageUrl = '', scrollId = '', isLoading = false,

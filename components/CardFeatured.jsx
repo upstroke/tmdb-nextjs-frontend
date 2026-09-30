@@ -5,6 +5,24 @@ import Image from 'next/image';
 import { formatDate } from '@/lib/utils/formatDate';
 import { useI18n, useLocale } from '@/lib/stores/locale';
 
+/**
+ * Displays a single media item as a large featured hero card with backdrop
+ * image, poster, genres, release date, overview, and action buttons.
+ *
+ * Used at the top of paginated list pages to highlight a trending item.
+ *
+ * @param {object} props
+ * @param {number|string} props.id - TMDB item id.
+ * @param {'movie'|'tv'} props.mediaType - Determines the detail page route and type label.
+ * @param {string} props.title - Display title.
+ * @param {string} [props.releaseDate=''] - ISO release / first-air date string.
+ * @param {string} [props.overview=''] - Short plot summary.
+ * @param {string} [props.homepage=''] - Official website URL; omitted when empty.
+ * @param {Array<{id?: number|string, name: string}>} [props.genres=[]] - Genre list.
+ * @param {string} [props.imageUrl=''] - Absolute URL used as the backdrop background.
+ * @param {string} [props.posterUrl=''] - Absolute URL of the poster image; falls back to imageUrl.
+ * @returns {JSX.Element}
+ */
 export default function CardFeatured({ id, mediaType, title, releaseDate = '', overview = '', homepage = '', genres = [], imageUrl = '', posterUrl = '' }) {
   const { labels, fallbacks } = useI18n();
   const locale = useLocale();

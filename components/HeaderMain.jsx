@@ -34,6 +34,17 @@ const NAV_ITEMS = [
   },
 ];
 
+/**
+ * Site-wide header with primary navigation, typeahead search, and language
+ * switcher.
+ *
+ * Navigation links restore the last visited page in paginated lists by reading
+ * the page number from sessionStorage before constructing the href.
+ *
+ * The burger button toggles the nav drawer on small viewports.
+ *
+ * @returns {JSX.Element}
+ */
 export default function HeaderMain() {
   const locale = useLocale();
   const { labels, titles } = useI18n();

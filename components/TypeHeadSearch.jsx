@@ -43,6 +43,29 @@ function formatYear(value) {
   return String(date.getFullYear());
 }
 
+/**
+ * Typeahead search widget embedded in the global header.
+ *
+ * Debounces user input by 300 ms and fetches suggestions from
+ * `/api/[locale]/search?q=` once the query reaches 4 characters.
+ * Results are split into movies and TV shows and displayed in an
+ * accessible combobox / listbox dropdown.
+ *
+ * Persists the last query and result set in sessionStorage so the
+ * dropdown can be restored after navigating back to the page.
+ *
+ * When the locale changes while a query is active, results are
+ * silently re-fetched in the new language and the dropdown is closed
+ * so the user consciously re-opens it.
+ *
+ * Keyboard navigation:
+ * - Arrow Down / Up — move focus through results
+ * - Home / End — jump to first or last result
+ * - Enter — navigate to the focused result
+ * - Escape — close the dropdown and return focus to the input
+ *
+ * @returns {JSX.Element}
+ */
 export default function TypeHeadSearch() {
   const { labels, messages, formats, titles, fallbacks } = useI18n();
   const locale = useLocale();

@@ -5,6 +5,15 @@ import { useI18n, useLocale, setLocale } from '@/lib/stores/locale';
 import { getSupportedLocales, resolveLocale } from '@/lib/i18n/helpers';
 import { SUPPORTED_LOCALES } from '@/lib/i18n/config';
 
+/**
+ * Dropdown control for switching the active locale.
+ *
+ * On change the component updates the global locale store, replaces the locale
+ * segment in the current pathname, and performs a client-side navigation to the
+ * same route in the selected language.
+ *
+ * @returns {JSX.Element}
+ */
 export default function LanguageSwitcher() {
   const { labels } = useI18n();
   const router = useRouter();

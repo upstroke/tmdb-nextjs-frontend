@@ -9,6 +9,27 @@ import CardFeatured from '@/components/CardFeatured';
 import LoadMore from '@/components/LoadMore';
 import DialogMessage from '@/components/DialogMessage';
 
+/**
+ * Client-side paginated list of media cards with featured item, load-more
+ * functionality, scroll restoration, and duplicate removal.
+ *
+ * On mount the component attempts to restore the previously viewed page from
+ * sessionStorage via `restorePagedList`. Subsequent pages are fetched from the
+ * internal API route at `/api/[locale]/[apiPath]`.
+ *
+ * Errors are surfaced through `DialogMessage`. Duplicate items across pages are
+ * removed using `deduplicateMedia`.
+ *
+ * @param {object} props
+ * @param {object} props.initialData - Server-rendered first page data passed as initial state.
+ * @param {string} props.apiPath - Relative path segment appended to `/api/[locale]/` for pagination requests.
+ * @param {string} props.storageKey - sessionStorage key used to persist and restore the current page number.
+ * @param {string} props.cardIdPrefix - Prefix for the HTML id set on each card element (used for scroll targeting).
+ * @param {string} props.listKeyPrefix - Prefix for React list keys on card wrapper elements.
+ * @param {string} [props.heading] - Optional section heading rendered above the card grid.
+ * @param {string} [props.emptyMessageKey='noContent'] - i18n message key shown when the list is empty.
+ * @returns {JSX.Element}
+ */
 export default function PagedList({ initialData, apiPath, storageKey, cardIdPrefix, listKeyPrefix, heading, emptyMessageKey = 'noContent' }) {
   const { messages } = useI18n();
   const locale = useLocale();
