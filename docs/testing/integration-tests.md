@@ -59,6 +59,68 @@ When a component loads data asynchronously:
 
 Do not assert arbitrary timeouts.
 
+## Mocking API Requests with MSW
+
+Integration tests use [MSW (Mock Service Worker)](https://mswjs.io/) to intercept
+HTTP requests at the network level. MSW replaces the previous `vi.stubGlobal('fetch')`
+approach and keeps tests realistic: the component calls `fetch` as usual, MSW
+intercepts the request before it reaches the network, and returns fixture data.
+
+### Setup
+
+The MSW Node.js server is started globally in `tests/setup/vitest.js`:
+
+- `beforeAll` → `server.listen({ onUnhandledRequest: 'warn' })`
+- `afterEach` → `server.resetHandlers()` — removes per-test overrides
+- `afterAll` → `server.close()`
+
+No setup is needed inside individual test files.
+
+### Default Handlers
+
+`tests/mocks/msw.handlers.js` defines default responses for all internal API routes:
+
+| Route pattern | Returns |
+|---|---|
+| `GET /api/:locale/movies` | `rawFixtures.moviesPopular` |
+| `GET /api/:locale/movies/:id` | `rawFixtures.movieDetail` |
+| `GET /api/:locale/tv` | `rawFixtures.tvPopular` |
+| `GET /api/:locale/tv/:id/season` | `rawFixtures.tvSeason1` |
+| `GET /api/:locale/tv/:id` | `rawFixtures.tvDetail` |
+| `GET /api/:locale/search` | `rawFixtures.searchMulti` |
+| `GET /api/:locale/genres/movie` | `rawFixtures.genresMovie` |
+| `GET /api/:locale/genres/tv` | `rawFixtures.genresTv` |
+
+These defaults are active for every test without any additional import.
+
+### Per-Test Overrides
+
+Use `server.use()` to override a handler for a single test. The override is
+removed automatically by `server.resetHandlers()` after each test.
+
+```js
+import { server } from '$tests/mocks/msw.server.js';
+import { tmdbErrorHandler } from '$tests/mocks/msw.handlers.js';
+
+it('shows an error message when the API returns 503', async () => {
+  server.use(tmdbErrorHandler('/api/en-US/movies', 503));
+
+  // render and assert error state ...
+});
+```
+
+`tmdbErrorHandler(urlPattern, status)` returns a one-off handler that responds
+with a JSON error body and the given HTTP status code.
+
+### MSW vs. cy.intercept()
+
+| Context | Tool |
+|---|---|
+| Vitest unit and integration tests | MSW (`msw.server.js`) |
+| Cypress acceptance tests | `cy.intercept()` |
+
+Do not use MSW in Cypress tests and do not use `cy.intercept()` in Vitest tests.
+
 ## Components Worth Integration Testing
 
 Integration tests are especially useful for components that combine rendering, accessibility semantics, and interaction logic, for example:
