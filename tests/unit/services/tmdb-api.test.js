@@ -157,14 +157,17 @@ describe('createTmdbApi — mapCardItem', () => {
   let api;
   beforeEach(() => { api = makeApi(); });
 
+  // Branch coverage: returns null when item has no id.
   it('returns null when item has no id', () => {
     expect(api.mapCardItem({ media_type: 'movie', title: 'X', vote_average: 7 })).toBeNull();
   });
 
+  // Branch coverage: returns null for unsupported media type.
   it('returns null for unsupported media type', () => {
     expect(api.mapCardItem({ id: 1, media_type: 'person', name: 'John' })).toBeNull();
   });
 
+  // Statement coverage: maps a minimal movie item to a card shape.
   it('maps a minimal movie item', () => {
     const item = { id: 42, media_type: 'movie', title: 'Inception', vote_average: 8.8 };
     const result = api.mapCardItem(item);
@@ -175,6 +178,7 @@ describe('createTmdbApi — mapCardItem', () => {
     expect(result.rating).toBe(8.8);
   });
 
+  // Statement coverage: maps a minimal tv item to a card shape.
   it('maps a minimal tv item', () => {
     const item = { id: 7, media_type: 'tv', name: 'Breaking Bad', vote_average: 9.5 };
     const result = api.mapCardItem(item);
@@ -183,6 +187,7 @@ describe('createTmdbApi — mapCardItem', () => {
     expect(result.title).toBe('Breaking Bad');
   });
 
+  // Branch coverage: uses fallbackMediaType when media_type is missing.
   it('uses fallbackMediaType when media_type is missing', () => {
     const item = { id: 5, title: 'Dune', vote_average: 7.8 };
     const result = api.mapCardItem(item, 'movie');
@@ -190,12 +195,14 @@ describe('createTmdbApi — mapCardItem', () => {
     expect(result.mediaType).toBe('movie');
   });
 
+  // Branch coverage: fills placeholder genre when genre list is empty.
   it('fills placeholder genre when genre list is empty', () => {
     const item = { id: 10, media_type: 'movie', title: 'Test', vote_average: 5, genre_ids: [] };
     const result = api.mapCardItem(item);
     expect(result.genres).toEqual([{ id: 'na', name: 'N/A' }]);
   });
 
+  // Branch coverage: uses NOT_AVAILABLE_IMAGE when no image paths are present.
   it('uses NOT_AVAILABLE_IMAGE when poster_path and backdrop_path are missing', () => {
     const item = { id: 11, media_type: 'movie', title: 'No Image', vote_average: 6 };
     const result = api.mapCardItem(item);
@@ -212,14 +219,17 @@ describe('createTmdbApi — mapWatchProvider', () => {
   let api;
   beforeEach(() => { api = makeApi(); });
 
+  // Branch coverage: returns null when provider_id is missing.
   it('returns null when provider_id is missing', () => {
     expect(api.mapWatchProvider({ provider_name: 'Netflix' }, 'flatrate', null)).toBeNull();
   });
 
+  // Branch coverage: returns null when provider_name is missing.
   it('returns null when provider_name is missing', () => {
     expect(api.mapWatchProvider({ provider_id: 8 }, 'flatrate', null)).toBeNull();
   });
 
+  // Statement coverage: maps a valid provider to the expected shape.
   it('maps a valid provider', () => {
     const provider = { provider_id: 8, provider_name: 'Netflix', logo_path: '/netflix.png', display_priority: 1 };
     const result = api.mapWatchProvider(provider, 'flatrate', 'https://example.com');
@@ -233,6 +243,7 @@ describe('createTmdbApi — mapWatchProvider', () => {
     });
   });
 
+  // Branch coverage: sets link to null when baseLink is null.
   it('sets link to null when baseLink is null', () => {
     const provider = { provider_id: 8, provider_name: 'Netflix' };
     const result = api.mapWatchProvider(provider, 'rent', null);
@@ -248,10 +259,12 @@ describe('createTmdbApi — mapWatchProviderList', () => {
   let api;
   beforeEach(() => { api = makeApi(); });
 
+  // Branch coverage: returns an empty array for an empty list.
   it('returns an empty array for an empty list', () => {
     expect(api.mapWatchProviderList([], 'buy', null)).toEqual([]);
   });
 
+  // Branch coverage: filters out providers with missing id or name.
   it('filters out invalid providers', () => {
     const providers = [
       { provider_id: 8, provider_name: 'Netflix' },
@@ -271,10 +284,12 @@ describe('createTmdbApi — getTrailerUrls', () => {
   let api;
   beforeEach(() => { api = makeApi(); });
 
+  // Branch coverage: returns an empty array when there are no videos.
   it('returns an empty array when there are no videos', () => {
     expect(api.getTrailerUrls({})).toEqual([]);
   });
 
+  // Statement coverage: returns only YouTube trailer URLs.
   it('returns YouTube trailer URLs', () => {
     const details = {
       videos: {
@@ -289,6 +304,7 @@ describe('createTmdbApi — getTrailerUrls', () => {
     expect(urls).toEqual(['https://www.youtube.com/watch?v=abc123']);
   });
 
+  // Branch coverage: excludes entries without a key.
   it('excludes entries without a key', () => {
     const details = { videos: { results: [{ site: 'YouTube', type: 'Trailer', key: '' }] } };
     expect(api.getTrailerUrls(details)).toEqual([]);
@@ -303,10 +319,12 @@ describe('createTmdbApi — mapCast', () => {
   let api;
   beforeEach(() => { api = makeApi(); });
 
+  // Branch coverage: returns an empty array for an empty cast.
   it('returns an empty array for an empty cast', () => {
     expect(api.mapCast([])).toEqual([]);
   });
 
+  // Statement coverage: maps a cast member to the expected shape.
   it('maps a cast member correctly', () => {
     const person = {
       id: 1, credit_id: 'c1', name: 'Alice', character: 'Hero',
@@ -324,6 +342,7 @@ describe('createTmdbApi — mapCast', () => {
     });
   });
 
+  // Branch coverage: limits the result to 20 members.
   it('limits the result to 20 members', () => {
     const cast = Array.from({ length: 30 }, (_, i) => ({ id: i, name: `Person ${i}`, credit_id: `c${i}` }));
     expect(api.mapCast(cast)).toHaveLength(20);
@@ -338,10 +357,12 @@ describe('createTmdbApi — mapCrew', () => {
   let api;
   beforeEach(() => { api = makeApi(); });
 
+// Branch coverage: returns an empty array for an empty crew
   it('returns an empty array for an empty crew', () => {
     expect(api.mapCrew([])).toEqual([]);
   });
 
+// Statement coverage: maps a crew member to the expected shape.
   it('maps a crew member correctly', () => {
     const person = {
       id: 2, credit_id: 'c2', name: 'Bob', job: 'Director',
@@ -359,6 +380,7 @@ describe('createTmdbApi — mapCrew', () => {
     });
   });
 
+  // Branch coverage: limits the result to 20 members.
   it('limits the result to 20 members', () => {
     const crew = Array.from({ length: 30 }, (_, i) => ({ id: i, name: `Person ${i}`, credit_id: `c${i}` }));
     expect(api.mapCrew(crew)).toHaveLength(20);
@@ -370,11 +392,13 @@ describe('createTmdbApi — mapCrew', () => {
 // ---------------------------------------------------------------------------
 
 describe('createTmdbApi — resolveGenres', () => {
+  // Branch coverage: returns an empty array when no genre IDs are provided.
   it('returns an empty array when no genre IDs are provided', () => {
     const api = makeApi();
     expect(api.resolveGenres([], 'movie')).toEqual([]);
   });
 
+  // Branch coverage: returns empty array when genreMap is not loaded.
   it('returns null-filtered results when genreMap is not loaded', () => {
     const api = makeApi();
     // Genre maps are not loaded (no fetch called), so all IDs resolve to null and are filtered.
@@ -388,11 +412,13 @@ describe('createTmdbApi — resolveGenres', () => {
 // ---------------------------------------------------------------------------
 
 describe('createTmdbApi — language / region derivation', () => {
+  // Statement coverage: instantiates without error when language contains a hyphen.
   it('derives region from language with hyphen', () => {
     const api = makeApi('de-DE');
     expect(api).toBeDefined();
   });
 
+  // Statement coverage: instantiates without error with the default language.
   it('instantiates with the default language', () => {
     const api = makeApi();
     expect(api).toBeDefined();
@@ -407,6 +433,7 @@ describe('createTmdbApi — mapDetails', () => {
   let api;
   beforeEach(() => { api = makeApi('de-DE'); });
 
+  // Statement coverage: maps a movie details object to the normalized shape.
   it('maps a movie details object correctly', () => {
     const result = api.mapDetails(RAW_MOVIE, 'movie');
     expect(result.id).toBe(550);
@@ -416,6 +443,7 @@ describe('createTmdbApi — mapDetails', () => {
     expect(result.runtime).toBe(139);
   });
 
+  // Statement coverage: maps a tv details object to the normalized shape.
   it('maps a tv details object correctly', () => {
     const result = api.mapDetails(RAW_TV_SHOW, 'tv');
     expect(result.id).toBe(1399);
@@ -423,6 +451,7 @@ describe('createTmdbApi — mapDetails', () => {
     expect(result.title).toBe('Game of Thrones');
   });
 
+  // Statement coverage: includes cast and crew arrays from credits.
   it('includes cast and crew arrays', () => {
     const details = {
       ...RAW_MOVIE,
@@ -436,6 +465,7 @@ describe('createTmdbApi — mapDetails', () => {
     expect(result.crew).toHaveLength(1);
   });
 
+  // Statement coverage: passes through certification and providers from the details object.
   it('sets certification and providers from details object', () => {
     const details = { ...RAW_MOVIE, certification: 'FSK 16', providers: null };
     const result = api.mapDetails(details, 'movie');
@@ -452,6 +482,7 @@ describe('createTmdbApi — mapFeaturedItem', () => {
   let api;
   beforeEach(() => { api = makeApi('de-DE'); });
 
+  // Statement coverage: maps a tv show to the featured item shape.
   it('maps a tv show to a featured item', () => {
     const result = api.mapFeaturedItem(RAW_TV_SHOW, 'tv');
     expect(result.id).toBe(1399);
@@ -461,6 +492,7 @@ describe('createTmdbApi — mapFeaturedItem', () => {
     expect(result.homepage).toBe('https://hbo.com/got');
   });
 
+  // Statement coverage: maps a movie to the featured item shape.
   it('maps a movie to a featured item', () => {
     const result = api.mapFeaturedItem(RAW_MOVIE, 'movie');
     expect(result.id).toBe(550);
@@ -468,6 +500,7 @@ describe('createTmdbApi — mapFeaturedItem', () => {
     expect(result.title).toBe('Fight Club');
   });
 
+  // Branch coverage: uses backdrop_path as imageUrl.
   it('uses imageUrl from backdrop_path', () => {
     const result = api.mapFeaturedItem(RAW_TV_SHOW, 'tv');
     expect(result.imageUrl).toContain('got_backdrop');
@@ -479,6 +512,7 @@ describe('createTmdbApi — mapFeaturedItem', () => {
 // ---------------------------------------------------------------------------
 
 describe('createTmdbApi — getCertification', () => {
+  // Statement coverage: returns movie certification from DE release_dates.
   it('returns movie certification from release_dates for DE region', async () => {
     const fetch = makeFetch([{ ok: true, body: RELEASE_DATES_DE }]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
@@ -486,6 +520,7 @@ describe('createTmdbApi — getCertification', () => {
     expect(result).toBe('FSK 16');
   });
 
+  // Branch coverage: returns empty string when no DE entry exists for movie.
   it('returns empty string when no DE release_date entry exists for movie', async () => {
     const fetch = makeFetch([{ ok: true, body: { results: [] } }]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
@@ -493,6 +528,7 @@ describe('createTmdbApi — getCertification', () => {
     expect(result).toBe('');
   });
 
+  // Statement coverage: returns tv certification from DE content_ratings.
   it('returns tv certification from content_ratings for DE region', async () => {
     const fetch = makeFetch([{ ok: true, body: CONTENT_RATINGS_DE }]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
@@ -500,6 +536,7 @@ describe('createTmdbApi — getCertification', () => {
     expect(result).toBe('16');
   });
 
+  // Branch coverage: caches the result — fetch is called only once for the same id.
   it('caches the result — fetch is called only once for the same id', async () => {
     const fetchMock = makeFetch([
       { ok: true, body: CONTENT_RATINGS_DE },
@@ -510,6 +547,7 @@ describe('createTmdbApi — getCertification', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
+  // Branch coverage: returns empty string when fetch throws.
   it('returns empty string when fetch throws', async () => {
     const fetchMock = vi.fn().mockRejectedValue(new Error('Network error'));
     const api = createTmdbApi(fetchMock, FAKE_KEY, 'de-DE');
@@ -523,6 +561,7 @@ describe('createTmdbApi — getCertification', () => {
 // ---------------------------------------------------------------------------
 
 describe('createTmdbApi — getWatchProviders', () => {
+  // Branch coverage: returns null when results object has no regional entry.
   it('returns null when results object has no regional entry', async () => {
     const fetch = makeFetch([{ ok: true, body: WATCH_PROVIDERS_EMPTY }]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
@@ -530,6 +569,7 @@ describe('createTmdbApi — getWatchProviders', () => {
     expect(result).toBeNull();
   });
 
+  // Statement coverage: returns mapped providers when a DE entry exists.
   it('returns mapped providers when a DE entry exists', async () => {
     const fetch = makeFetch([{ ok: true, body: WATCH_PROVIDERS_DE }]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
@@ -540,6 +580,7 @@ describe('createTmdbApi — getWatchProviders', () => {
     expect(result.link).toBe('https://www.justwatch.com/de');
   });
 
+  // Branch coverage: caches the result — fetch is called only once for the same id.
   it('caches the result — fetch is called only once for the same id', async () => {
     const fetchMock = makeFetch([
       { ok: true, body: WATCH_PROVIDERS_EMPTY },
@@ -550,6 +591,7 @@ describe('createTmdbApi — getWatchProviders', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
+  // Branch coverage: returns null and does not throw when fetch fails.
   it('returns null and does not throw when fetch fails', async () => {
     const fetchMock = vi.fn().mockRejectedValue(new Error('Network error'));
     const api = createTmdbApi(fetchMock, FAKE_KEY, 'de-DE');
@@ -563,6 +605,7 @@ describe('createTmdbApi — getWatchProviders', () => {
 // ---------------------------------------------------------------------------
 
 describe('createTmdbApi — enrichCardCertifications', () => {
+  // Statement coverage: attaches certification to each card.
   it('attaches certification to each card', async () => {
     const fetchMock = makeFetch([
       { ok: true, body: RELEASE_DATES_DE },
@@ -579,6 +622,7 @@ describe('createTmdbApi — enrichCardCertifications', () => {
     expect(result[1].certification).toBe('16');
   });
 
+  // Branch coverage: returns an empty array for an empty input.
   it('returns an empty array for an empty input', async () => {
     const api = makeApi();
     const result = await api.enrichCardCertifications([]);
@@ -591,6 +635,7 @@ describe('createTmdbApi — enrichCardCertifications', () => {
 // ---------------------------------------------------------------------------
 
 describe('createTmdbApi — loadGenreMaps', () => {
+  // Statement coverage: loads genre maps and makes resolveGenres return correct results.
   it('loads genre maps and makes resolveGenres work', async () => {
     const fetchMock = makeFetch([
       { ok: true, body: GENRE_MOVIE_LIST },
@@ -605,6 +650,7 @@ describe('createTmdbApi — loadGenreMaps', () => {
     ]);
   });
 
+  // Branch coverage: does not call fetch a second time if already loaded.
   it('does not call fetch a second time if already loaded', async () => {
     const fetchMock = makeFetch([
       { ok: true, body: GENRE_MOVIE_LIST },
@@ -626,6 +672,7 @@ describe('createTmdbApi — getMovieDetails', () => {
     return createTmdbApi(makeFetch(responses), FAKE_KEY, 'de-DE');
   }
 
+  // Statement coverage: returns normalized movie detail.
   it('returns normalized movie detail', async () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_MOVIE },
@@ -639,6 +686,7 @@ describe('createTmdbApi — getMovieDetails', () => {
     expect(result.runtime).toBe(139);
   });
 
+  // Statement coverage: attaches movie certification.
   it('attaches movie certification', async () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_MOVIE },
@@ -649,6 +697,7 @@ describe('createTmdbApi — getMovieDetails', () => {
     expect(result.certification).toBe('FSK 16');
   });
 
+  // Statement coverage: attaches providers when available.
   it('attaches providers when available', async () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_MOVIE },
@@ -660,6 +709,7 @@ describe('createTmdbApi — getMovieDetails', () => {
     expect(result.providers.providers[0].providerName).toBe('Netflix');
   });
 
+  // Branch coverage: throws when the API returns a non-ok response.
   it('throws when the API returns a non-ok response', async () => {
     const api = makeApiWithFetch([
       { ok: false, status: 404, body: { status_message: 'Not Found' } },
@@ -709,6 +759,7 @@ describe('createTmdbApi — getList and list endpoints', () => {
     ]);
   }
 
+  // Statement coverage: returns a normalized ListResponse with hasMore=true.
   it('getList returns a normalized ListResponse with hasMore=true', async () => {
     const api = createTmdbApi(makeListFetch(), FAKE_KEY, 'de-DE');
     const result = await api.getList('/movie/popular', 1, 'movie');
@@ -718,18 +769,21 @@ describe('createTmdbApi — getList and list endpoints', () => {
     expect(result.results[0].title).toBe('Inception');
   });
 
+  // Statement coverage: getTrendingAll delegates to getList and returns results.
   it('getTrendingAll returns a list response', async () => {
     const api = createTmdbApi(makeListFetch(), FAKE_KEY, 'de-DE');
     const result = await api.getTrendingAll(1);
     expect(Array.isArray(result.results)).toBe(true);
   });
 
+  // Statement coverage: getTrendingMovies delegates to getList and returns results.
   it('getTrendingMovies returns a list response', async () => {
     const api = createTmdbApi(makeListFetch(), FAKE_KEY, 'de-DE');
     const result = await api.getTrendingMovies(1);
     expect(Array.isArray(result.results)).toBe(true);
   });
 
+  // Statement coverage: getTrendingTVShows delegates to getList and returns results.
   it('getTrendingTVShows returns a list response', async () => {
     const tvListBody = {
       ...LIST_BODY,
@@ -746,12 +800,14 @@ describe('createTmdbApi — getList and list endpoints', () => {
     expect(Array.isArray(result.results)).toBe(true);
   });
 
+  // Statement coverage: getPopularMovies delegates to getList and returns results.
   it('getPopularMovies returns a list response', async () => {
     const api = createTmdbApi(makeListFetch(), FAKE_KEY, 'de-DE');
     const result = await api.getPopularMovies(1);
     expect(Array.isArray(result.results)).toBe(true);
   });
 
+  // Statement coverage: getPopularTVShows delegates to getList and returns results.
   it('getPopularTVShows returns a list response', async () => {
     const tvBody = {
       ...LIST_BODY,
@@ -768,12 +824,14 @@ describe('createTmdbApi — getList and list endpoints', () => {
     expect(Array.isArray(result.results)).toBe(true);
   });
 
+  // Statement coverage: getTopRatedMovies delegates to getList and returns results.
   it('getTopRatedMovies returns a list response', async () => {
     const api = createTmdbApi(makeListFetch(), FAKE_KEY, 'de-DE');
     const result = await api.getTopRatedMovies(1);
     expect(Array.isArray(result.results)).toBe(true);
   });
 
+  // Statement coverage: getTopRatedTVShows delegates to getList and returns results.
   it('getTopRatedTVShows returns a list response', async () => {
     const tvBody = {
       ...LIST_BODY,
@@ -796,6 +854,7 @@ describe('createTmdbApi — getList and list endpoints', () => {
 // ---------------------------------------------------------------------------
 
 describe('createTmdbApi — searchMedia', () => {
+  // Statement coverage: returns normalized search results with hasMore=false.
   it('returns normalized search results', async () => {
     const searchBody = {
       page: 1,
@@ -817,6 +876,7 @@ describe('createTmdbApi — searchMedia', () => {
     expect(result.results.length).toBeGreaterThan(0);
   });
 
+  // Branch coverage: filters out person results from search.
   it('filters out person results from search', async () => {
     const searchBody = {
       page: 1,
@@ -853,6 +913,7 @@ describe('createTmdbApi — getTVShowDetails', () => {
     return createTmdbApi(makeFetch(fetchResponses), FAKE_KEY, 'de-DE');
   }
 
+  // Statement coverage: returns normalized TV show detail with season metadata.
   it('returns normalized TV show detail with season metadata', async () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_TV_SHOW },
@@ -868,6 +929,7 @@ describe('createTmdbApi — getTVShowDetails', () => {
     expect(result.rating).toBe(9.2);
   });
 
+  // Statement coverage: includes numberOfSeasons and numberOfEpisodes.
   it('includes numberOfSeasons and numberOfEpisodes', async () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_TV_SHOW },
@@ -881,6 +943,7 @@ describe('createTmdbApi — getTVShowDetails', () => {
     expect(result.numberOfEpisodes).toBe(73);
   });
 
+  // Statement coverage: includes the seasons array from the raw response.
   it('includes the seasons array from the raw response', async () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_TV_SHOW },
@@ -895,6 +958,7 @@ describe('createTmdbApi — getTVShowDetails', () => {
     expect(result.seasons[0].season_number).toBe(1);
   });
 
+  // Statement coverage: attaches certification from content_ratings.
   it('attaches certification from content_ratings', async () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_TV_SHOW },
@@ -907,6 +971,7 @@ describe('createTmdbApi — getTVShowDetails', () => {
     expect(result.certification).toBe('16');
   });
 
+  // Branch coverage: sets providers to null when no regional entry exists
   it('sets providers to null when no regional entry exists', async () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_TV_SHOW },
@@ -919,6 +984,7 @@ describe('createTmdbApi — getTVShowDetails', () => {
     expect(result.providers).toBeNull();
   });
 
+  // Branch coverage: throws when the API returns a non-ok response.
   it('throws when the API returns a non-ok response', async () => {
     const api = makeApiWithFetch([
       { ok: false, status: 404, body: { status_message: 'Not Found' } },
