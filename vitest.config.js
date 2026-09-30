@@ -12,13 +12,16 @@ export default defineConfig({
       include: ['**/*.jsx', '**/*.js'],
     }),
   ],
-  esbuild: {
-    // Tell Vite's own esbuild step to treat .js files as JSX.
-    // This is required because vite:import-analysis runs before user plugins
-    // and would fail on JSX syntax in .js files before @vitejs/plugin-react
-    // can transform them.
-    include: /\.(jsx?|tsx?)$/,
-    loader: 'jsx',
+  optimizeDeps: {
+    esbuildOptions: {
+      // Tell Vite's dep pre-bundler to treat .js files as JSX.
+      // This prevents vite:import-analysis from failing on JSX syntax
+      // in .js source files (e.g. lib/stores/locale.js) before the
+      // @vitejs/plugin-react transform can run.
+      loader: {
+        '.js': 'jsx',
+      },
+    },
   },
   test: {
     environment: 'jsdom',
