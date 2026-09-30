@@ -25,17 +25,23 @@ The project includes automated accessibility testing to support WCAG 2.2 AA comp
 tests/
   acceptance/
     accessibility/
+      accessibility.spec.js
+      accessibility-testplan.md
     loadmore/
     navigation/
+      navigation.spec.js
+      navigation-testplan.md
   integration/
     components/
     routes/
   unit/
     routes/
     tmdb-api/
-  fixtures/
+  fixtures/         # Shared domain test data (cy.intercept stubs)
   mocks/
   setup/
+    cypress.js            # Cypress support entry point
+    cypress-commands.js   # Custom commands
 ```
 
 - `tests/unit/` contains isolated Vitest unit tests. Domain subdirectories such as `routes/` and `tmdb-api/` may be used where they improve discoverability.
@@ -70,6 +76,51 @@ npm run test:vitest:coverage
 ```
 
 The `justfile` provides shortcuts for important commands, including `just test-vitest` and `just test-e2e`.
+
+## Cypress Quick Start
+
+Start the dev server first:
+
+```bash
+npm run dev
+```
+
+Then in a second terminal:
+
+```bash
+npm run cy:open       # Interactive Cypress UI
+npm run cy:run        # Headless, single run
+npm run test:acceptance  # Alias for CI
+```
+
+### Custom Commands
+
+| Command | Description |
+|---|---|
+| `cy.visitLocale(locale, path)` | Navigate to `/{locale}{path}` |
+| `cy.checkPageA11y(options?)` | Run axe WCAG 2.2 AA check on current page |
+
+### Locale
+
+The default locale is read from `NEXT_PUBLIC_DEFAULT_LOCALE` in `.env.local`. To override for a test run, create `cypress.env.json` (not committed):
+
+```json
+{ "DEFAULT_LOCALE": "en-US" }
+```
+
+Or pass via CLI:
+
+```bash
+npx cypress run --env DEFAULT_LOCALE=de-DE
+```
+
+### Mocking APIs
+
+```js
+cy.intercept('GET', '/api/movies/trending*', { fixture: 'trending-movies.json' }).as('trending');
+cy.visitLocale('en-US');
+cy.wait('@trending');
+```
 
 ## Path Aliases
 
@@ -124,6 +175,7 @@ Run the same checks manually with:
 
 ```bash
 npm run test:precommit
+```
 
 ## Further Information
 
