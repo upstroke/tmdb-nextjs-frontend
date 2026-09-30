@@ -5,32 +5,33 @@
  * visiting the homepage, verifying the header, and
  * confirming that locale-prefixed routing is active.
  *
+ * Uses the Page Object Model (POM) — see docs/testing/page-objects.md.
  * See navigation-testplan.md for the full test plan.
  */
+import { HomePage } from '../../pages/HomePage.js';
+
 describe('Navigation', () => {
   const locale = Cypress.env('DEFAULT_LOCALE') ?? 'en-US';
+  let home;
 
   beforeEach(() => {
-    cy.visitLocale(locale);
+    home = new HomePage(locale);
+    home.visit();
   });
 
   it('loads the homepage without errors', () => {
-    cy.get('main').should('exist');
+    home.assertMainExists();
   });
 
   it('includes the locale in the URL', () => {
-    cy.url().should('include', `/${locale}`);
+    home.assertLocaleInUrl();
   });
 
   it('displays a visible header', () => {
-    cy.get('header').should('be.visible');
+    home.header.assertVisible();
   });
 
   it('has a language switcher in the header', () => {
-    cy.get('header')
-      .find(
-        '[data-testid="language-switcher"], [aria-label*="language" i], [aria-label*="sprache" i]',
-      )
-      .should('exist');
+    home.header.assertLanguageSwitcherExists();
   });
 });
