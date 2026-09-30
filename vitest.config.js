@@ -12,26 +12,6 @@ const sharedPlugins = [
   }),
 ];
 
-const sharedEsbuild = {
-  // Treat .js files as JSX so that vite:import-analysis does not fail
-  // on JSX syntax in .js source files (e.g. lib/stores/locale.js)
-  // before the @vitejs/plugin-react transform runs.
-  include: /\.(js|jsx)$/,
-  loader: 'jsx',
-};
-
-const sharedOptimizeDeps = {
-  esbuildOptions: {
-    // Tell Vite's dep pre-bundler to treat .js files as JSX.
-    // This prevents vite:import-analysis from failing on JSX syntax
-    // in .js source files (e.g. lib/stores/locale.js) before the
-    // @vitejs/plugin-react transform can run.
-    loader: {
-      '.js': 'jsx',
-    },
-  },
-};
-
 const sharedResolve = {
   alias: {
     '@': resolve(__dirname, '.'),
@@ -40,9 +20,26 @@ const sharedResolve = {
 };
 
 export default defineConfig({
+  // esbuild and optimizeDeps must live here at root level.
+  // Vitest 3.x project objects only support plugins, resolve, and test –
+  // these fields are ignored when placed inside a project object.
+  // All projects inherit the root Vite config automatically.
+  esbuild: {
+    // Treat .js files as JSX so that vite:import-analysis does not fail
+    // on JSX syntax in .js source files (e.g. lib/stores/locale.js)
+    // before the @vitejs/plugin-react transform runs.
+    include: /\.(js|jsx)$/,
+    loader: 'jsx',
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      // Tell Vite's dep pre-bundler to treat .js files as JSX.
+      loader: {
+        '.js': 'jsx',
+      },
+    },
+  },
   plugins: sharedPlugins,
-  esbuild: sharedEsbuild,
-  optimizeDeps: sharedOptimizeDeps,
   resolve: sharedResolve,
   test: {
     coverage: {
@@ -55,8 +52,6 @@ export default defineConfig({
       {
         name: 'unit',
         plugins: sharedPlugins,
-        esbuild: sharedEsbuild,
-        optimizeDeps: sharedOptimizeDeps,
         resolve: sharedResolve,
         test: {
           name: 'unit',
@@ -69,8 +64,6 @@ export default defineConfig({
       {
         name: 'integration',
         plugins: sharedPlugins,
-        esbuild: sharedEsbuild,
-        optimizeDeps: sharedOptimizeDeps,
         resolve: sharedResolve,
         test: {
           name: 'integration',
