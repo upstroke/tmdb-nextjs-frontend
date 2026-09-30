@@ -1,17 +1,3 @@
-/**
- * Additional branch/statement coverage for createTmdbApi.
- *
- * These tests target the gaps that keep tmdb-api.js below 80% coverage:
- *   - getFeaturedToday (fully uncovered)
- *   - request() ok:false path (direct)
- *   - Zod-failure fallback paths in mapDetails / getList
- *   - loadGenreMaps with undefined genres array
- *   - underscore-separated locale (language_REGION format)
- *   - getWatchProviders with rent+buy providers
- *   - mapCardItem with genres array on item
- *   - getList hasMore:false branch
- *   - searchMedia hasMore:true branch
- */
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { createTmdbApi } from '@/lib/services/tmdb-api.js';
 
@@ -94,22 +80,15 @@ const RAW_TV_SHOW = {
   media_type: 'tv',
 };
 
-// ---------------------------------------------------------------------------
-// request() — direct error branch
-//
-// Statements covered:
-//   - the `if (!response.ok)` guard that constructs and throws TMDBError
-//   - the query-param loop branch where null/undefined/'' values are skipped
-//     via the `if (value == null || value === '')` continue statement
-// ---------------------------------------------------------------------------
-
 describe('createTmdbApi — request() error branch', () => {
+  // Covers the `if (!response.ok)` guard that constructs and throws TMDBError
   it('throws TMDBError when response.ok is false', async () => {
     const fetch = makeFetch([{ ok: false, status: 401, body: { status_message: 'Unauthorized' } }]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'en-US');
     await expect(api.request('/movie/1')).rejects.toThrow('401');
   });
 
+  // Covers the query-param loop branch where null/undefined/'' values are skipped via `if (value == null || value === '')` continue
   it('skips undefined/null/empty query params', async () => {
     const fetch = makeFetch([{ ok: true, body: { results: [] } }]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'en-US');
@@ -121,16 +100,8 @@ describe('createTmdbApi — request() error branch', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// language with underscore separator
-//
-// Branch covered:
-//   - `region = locale.split('-')[1] ?? locale.split('_')[1]`
-//     The left side of ?? is undefined when the locale uses '_' instead of '-',
-//     so the right side (`split('_')[1]`) is evaluated and provides the region.
-// ---------------------------------------------------------------------------
-
 describe('createTmdbApi — underscore locale format', () => {
+  // Covers `region = locale.split('-')[1] ?? locale.split('_')[1]`: left side is undefined for '_' separator, right side provides the region
   it('derives region from locale with underscore (de_DE)', async () => {
     const fetch = makeFetch([{ ok: true, body: CONTENT_RATINGS_DE }]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de_DE');
@@ -140,16 +111,8 @@ describe('createTmdbApi — underscore locale format', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// loadGenreMaps — genres field missing / undefined in API response
-//
-// Branch covered:
-//   - `(data.genres ?? []).forEach(...)` when the API response omits the
-//     `genres` key entirely, so `data.genres` is undefined and the nullish
-//     coalescing operator falls back to an empty array, preventing a crash.
-// ---------------------------------------------------------------------------
-
 describe('createTmdbApi — loadGenreMaps with missing genres field', () => {
+  // Covers `(data.genres ?? []).forEach(...)` when the API omits `genres`, so nullish coalescing falls back to [] and prevents a crash
   it('handles missing genres array gracefully (no throw)', async () => {
     const fetch = makeFetch([
       { ok: true, body: {} },          // /genre/movie/list  — no genres key
@@ -162,16 +125,8 @@ describe('createTmdbApi — loadGenreMaps with missing genres field', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// mapCardItem — item already has genres array (skips resolveGenres)
-//
-// Branch covered:
-//   - `item.genres?.length ? item.genres : resolveGenres(...)`
-//     When `item.genres` is a non-empty array the truthy branch is taken and
-//     `resolveGenres` is not called, so the genres are used as-is.
-// ---------------------------------------------------------------------------
-
 describe('createTmdbApi — mapCardItem with inline genres', () => {
+  // Covers `item.genres?.length ? item.genres : resolveGenres(...)`: truthy branch uses genres as-is and skips resolveGenres
   it('uses genres from item directly when present', () => {
     const api = createTmdbApi(vi.fn(), FAKE_KEY, 'en-US');
     const item = {
@@ -186,16 +141,8 @@ describe('createTmdbApi — mapCardItem with inline genres', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// getWatchProviders — rent + buy providers (no flatrate key)
-//
-// Branches covered:
-//   - The `if (regional.flatrate)` branch is NOT taken (key absent).
-//   - The `if (regional.rent)` and `if (regional.buy)` branches ARE taken,
-//     mapping each entry with type 'rent' / 'buy' respectively.
-// ---------------------------------------------------------------------------
-
 describe('createTmdbApi — getWatchProviders rent and buy types', () => {
+  // Covers `if (regional.rent)` and `if (regional.buy)` branches; `if (regional.flatrate)` is NOT taken (key absent)
   it('maps rent and buy providers when flatrate is absent', async () => {
     const fetch = makeFetch([{ ok: true, body: WATCH_PROVIDERS_RENT_BUY }]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
@@ -208,15 +155,8 @@ describe('createTmdbApi — getWatchProviders rent and buy types', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// getList — hasMore:false branch (last page)
-//
-// Branch covered:
-//   - `hasMore: page < total_pages` evaluates to false when page === total_pages,
-//     exercising the falsy side of that boolean expression.
-// ---------------------------------------------------------------------------
-
 describe('createTmdbApi — getList hasMore:false', () => {
+  // Covers `hasMore: page < total_pages` evaluating to false when page === total_pages
   it('sets hasMore to false when page equals total_pages', async () => {
     const body = {
       page: 3,
@@ -235,15 +175,8 @@ describe('createTmdbApi — getList hasMore:false', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// searchMedia — hasMore:true branch
-//
-// Branch covered:
-//   - `hasMore: page < total_pages` evaluates to true when more pages exist,
-//     exercising the truthy side of that boolean expression.
-// ---------------------------------------------------------------------------
-
 describe('createTmdbApi — searchMedia hasMore:true', () => {
+  // Covers `hasMore: page < total_pages` evaluating to true when more pages exist
   it('sets hasMore to true when more pages exist', async () => {
     const body = {
       page: 1,
@@ -261,27 +194,12 @@ describe('createTmdbApi — searchMedia hasMore:true', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// getFeaturedToday  (fully uncovered — the largest gap)
-//
-// Statements and branches covered:
-//   - happy path: trending returns a movie → details + certification + providers fetched
-//   - TV fallback branch: no movie with backdrop_path → first TV item is used instead
-//   - empty results branch: trending returns [] → null is returned immediately
-//   - providers null branch: watch/providers has no regional entry → providers: null
-//   - providers present branch: watch/providers has a DE entry → providers attached
-//   - trailerUrls statement: videos.results mapped to YouTube embed URLs
-//   - first-item fallback branch: no item has a backdrop → first item used regardless
-// ---------------------------------------------------------------------------
-
 describe('createTmdbApi — getFeaturedToday', () => {
-  /**
-   * Call order for getFeaturedToday when featured item is a movie:
-   *   1. GET /trending/all/day                        → trendingBody
-   *   2. GET /movie/:id?append_to_response=...        → RAW_MOVIE (details)
-   *   3. GET /movie/:id/release_dates                 → RELEASE_DATES_DE
-   *   4. GET /movie/:id/watch/providers               → WATCH_PROVIDERS_EMPTY
-   */
+  // Call order for getFeaturedToday when featured item is a movie:
+  //   1. GET /trending/all/day                        → trendingBody
+  //   2. GET /movie/:id?append_to_response=...        → RAW_MOVIE (details)
+  //   3. GET /movie/:id/release_dates                 → RELEASE_DATES_DE
+  //   4. GET /movie/:id/watch/providers               → WATCH_PROVIDERS_EMPTY
   function makeMovieFeaturedFetch(overrides = {}) {
     const trendingBody = {
       results: [{ ...RAW_MOVIE, ...overrides }],
@@ -294,6 +212,7 @@ describe('createTmdbApi — getFeaturedToday', () => {
     ]);
   }
 
+  // Happy path: trending returns a movie → details + certification + providers fetched
   it('returns a featured item for a trending movie', async () => {
     const api = createTmdbApi(makeMovieFeaturedFetch(), FAKE_KEY, 'de-DE');
     const result = await api.getFeaturedToday();
@@ -303,20 +222,22 @@ describe('createTmdbApi — getFeaturedToday', () => {
     expect(result.title).toBe('Fight Club');
   });
 
+  // Covers the certification statement: release_dates mapped to FSK label
   it('attaches certification to the featured item', async () => {
     const api = createTmdbApi(makeMovieFeaturedFetch(), FAKE_KEY, 'de-DE');
     const result = await api.getFeaturedToday();
     expect(result.certification).toBe('FSK 16');
   });
 
+  // Covers providers null branch: watch/providers has no regional entry → providers: null
   it('attaches providers (null when no regional entry)', async () => {
     const api = createTmdbApi(makeMovieFeaturedFetch(), FAKE_KEY, 'de-DE');
     const result = await api.getFeaturedToday();
     expect(result.providers).toBeNull();
   });
 
+  // Covers TV fallback branch: no movie with backdrop_path → first TV item is used instead
   it('returns a featured TV show when no movie with backdrop exists', async () => {
-    // No movie with backdrop_path → falls through to TV item
     const trendingBody = {
       results: [
         { ...RAW_TV_SHOW },  // tv item with backdrop
@@ -334,6 +255,7 @@ describe('createTmdbApi — getFeaturedToday', () => {
     expect(result.mediaType).toBe('tv');
   });
 
+  // Covers empty results branch: trending returns [] → null is returned immediately
   it('returns null when trending results are empty', async () => {
     const fetch = makeFetch([{ ok: true, body: { results: [] } }]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
@@ -341,6 +263,7 @@ describe('createTmdbApi — getFeaturedToday', () => {
     expect(result).toBeNull();
   });
 
+  // Covers trailerUrls statement: videos.results mapped to YouTube embed URLs
   it('includes trailerUrls in the featured item', async () => {
     const api = createTmdbApi(makeMovieFeaturedFetch(), FAKE_KEY, 'de-DE');
     const result = await api.getFeaturedToday();
@@ -348,6 +271,7 @@ describe('createTmdbApi — getFeaturedToday', () => {
     expect(Array.isArray(result.trailerUrls)).toBe(true);
   });
 
+  // Covers providers present branch: watch/providers has a DE entry → providers attached
   it('attaches watch providers when a DE entry exists', async () => {
     const trendingBody = { results: [{ ...RAW_MOVIE }] };
     const fetch = makeFetch([
@@ -361,8 +285,8 @@ describe('createTmdbApi — getFeaturedToday', () => {
     expect(result.providers).not.toBeNull();
   });
 
+  // Covers first-item fallback branch: no item has a backdrop → first item used regardless
   it('falls back to first item when no movie/tv with backdrop exists', async () => {
-    // All items without backdrop_path
     const trendingBody = {
       results: [
         { id: 1, media_type: 'movie', title: 'No Backdrop', vote_average: 5, backdrop_path: null },
