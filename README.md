@@ -59,6 +59,7 @@ The displayed streaming providers and watch links are supplied through the TMDB 
 - Sass
 - Zod for runtime validation
 - Vitest for unit testing
+- Cypress for end2end testing
 - Prettier and ESLint for formatting and code quality
 
 ## Type Safety Strategy
@@ -111,8 +112,8 @@ cp .env.example .env.local
 
 You can create your own API key in your TMDB account:
 
-- [TMDB API Settings](https://www.themoviedb.org/settings/api)
 - [TMDB Getting Started](https://developer.themoviedb.org/docs/getting-started)
+- [TMDB API Settings](https://www.themoviedb.org/settings/api)
 
 ## Requirements
 
