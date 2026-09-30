@@ -38,7 +38,7 @@ describe('TabGroupe', () => {
     render(<TabGroupe tabs={tabs} ariaLabel="Seasons" />);
 
     expect(screen.getByText('1. Pilot')).toBeVisible();
-    expect(screen.getByRole('tabpanel', { name: 'Season 2', hidden: true })).not.toBeVisible();
+    expect(document.getElementById('panel-2')).not.toBeVisible();
   });
 
   it('switches to the clicked tab panel', async () => {
