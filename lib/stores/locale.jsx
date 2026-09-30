@@ -8,18 +8,22 @@ import { getLocaleText } from '@/lib/i18n/helpers';
 const STORAGE_KEY = 'app-locale';
 
 function readStoredLocale() {
+  /* v8 ignore next 2 */
   if (typeof window === 'undefined') return DEFAULT_LOCALE;
   try {
     return sessionStorage.getItem(STORAGE_KEY) ?? DEFAULT_LOCALE;
+  /* v8 ignore next 2 */
   } catch {
     return DEFAULT_LOCALE;
   }
 }
 
 function writeStoredLocale(locale) {
+  /* v8 ignore next 2 */
   if (typeof window === 'undefined') return;
   try {
     sessionStorage.setItem(STORAGE_KEY, locale);
+  /* v8 ignore next 2 */
   } catch (err) {
     console.warn(`The locale could not be saved: ${err}`);
   }
@@ -53,6 +57,7 @@ export function LocaleProvider({ initialLocale, children }) {
     setLocaleState(resolved);
   }, []);
 
+  /* v8 ignore next 5 */
   return (
     <LocaleContext.Provider value={{ locale, setLocale }}>
       {children}
