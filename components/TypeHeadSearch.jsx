@@ -158,6 +158,17 @@ export default function TypeHeadSearch() {
     if (!msg) return;
     announcementTimer.current = setTimeout(() => { requestAnimationFrame(() => setAnnouncement(msg)); }, 500);
   }
+
+  /**
+   * Resets all search state and clears sessionStorage.
+   *
+   * Called when the query drops below the minimum length (4 characters).
+   * Cancels any pending loading timer, clears the live-region announcement,
+   * empties the movie and TV show result arrays, and removes all search keys
+   * from sessionStorage.
+   *
+   * @returns {void}
+   */
   function resetResults() {
     if (loadingTimer.current) clearTimeout(loadingTimer.current);
     clearAnnouncementFn();
@@ -166,8 +177,26 @@ export default function TypeHeadSearch() {
     setFocusedResultId(null); setMovies([]); setTvShows([]); setError(null);
     clearStorage();
   }
+
+  /**
+   * Returns the internal navigation href for a search result item.
+   *
+   * @param {{ mediaType: string, id: number|string }} item - Search result item.
+   * @returns {string} Locale-prefixed path to the movie or TV show detail page.
+   */
   function resultHref(item) { return item.mediaType === 'movie' ? `/${locale}/movies/${item.id}` : `/${locale}/tv-shows/${item.id}`; }
 
+  /**
+   * Handles a click on a search result link.
+   *
+   * Prevents the default anchor navigation, closes the results dropdown, and
+   * defers the programmatic router push to the next animation frame so the
+   * dropdown close animation can complete first.
+   *
+   * @param {React.MouseEvent<HTMLAnchorElement>} e - The click event.
+   * @param {{ mediaType: string, id: number|string }} item - The result item that was clicked.
+   * @returns {void}
+   */
   function handleResultClick(e, item) {
     e.preventDefault();
     closeResults();
@@ -179,6 +208,24 @@ export default function TypeHeadSearch() {
     writeStorage(STORAGE_KEY_CLOSED, resultsClosed);
   }, [resultsClosed]);
 
+  /**
+   * Fetches search suggestions for the given query term.
+   *
+   * Aborts any in-flight request before starting a new one. Deduplicates
+   * movies and TV shows from the API response using `deduplicateById` and
+   * persists the results to sessionStorage.
+   *
+   * When called with `silent: true` (locale-change refetch), results are
+   * stored but the dropdown is kept closed so the user consciously re-opens
+   * it. No loading indicator or live-region announcement is emitted in silent
+   * mode.
+   *
+   * @param {string} term - Trimmed search query (minimum 4 characters).
+   * @param {{ silent?: boolean }} [options={}] - Options object.
+   * @param {boolean} [options.silent=false] - When true, suppresses UI feedback
+   *   (loading indicator, announcements) and closes the dropdown after fetching.
+   * @returns {Promise<void>}
+   */
   const search = useCallback(async (term, { silent = false } = {}) => {
     controllerRef.current?.abort();
     if (loadingTimer.current) clearTimeout(loadingTimer.current);
@@ -234,6 +281,18 @@ export default function TypeHeadSearch() {
     debounceTimer.current = setTimeout(() => search(term), 300);
   }
 
+  /**
+   * Closes the results dropdown and optionally returns focus to the input.
+   *
+   * Persists the focused result id as `lastSelectedResultId` so that the
+   * same item can be pre-focused when the panel is re-opened. Also cancels
+   * any pending live-region announcement.
+   *
+   * @param {{ restoreFocus?: boolean }} [options={}] - Options object.
+   * @param {boolean} [options.restoreFocus=false] - When true, moves focus back
+   *   to the search input after closing.
+   * @returns {void}
+   */
   function closeResults({ restoreFocus = false } = {}) {
     clearAnnouncementFn();
     resultsClosedRef.current = true;
@@ -243,6 +302,16 @@ export default function TypeHeadSearch() {
     if (restoreFocus) inputRef.current?.focus();
   }
 
+  /**
+   * Opens the results dropdown when the input receives focus.
+   *
+   * Only shows the panel when the query is at least 4 characters long and
+   * results, a loading state, or an error are available. Restores focus to
+   * the last selected result when applicable; otherwise focuses the first
+   * result in the list.
+   *
+   * @returns {void}
+   */
   function showResultsPanel() {
     if (query.trim().length >= 4 && (hasResults || loading || error)) {
       resultsClosedRef.current = false;
