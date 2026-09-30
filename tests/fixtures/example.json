@@ -1,0 +1,7 @@
+{
+  "note": "Fixture files provide stable, reusable domain test data for cy.intercept() stubs.",
+  "example": {
+    "id": 1,
+    "title": "Example Movie"
+  }
+}
