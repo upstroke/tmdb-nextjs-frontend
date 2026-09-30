@@ -181,7 +181,7 @@ export default function TypeHeadSearch() {
   /**
    * Returns the internal navigation href for a search result item.
    *
-   * @param {{ mediaType: string, id: number|string }} item - Search result item.
+   * @param {import('@/lib/schemas/tmdb').CardItem} item - Search result item.
    * @returns {string} Locale-prefixed path to the movie or TV show detail page.
    */
   function resultHref(item) { return item.mediaType === 'movie' ? `/${locale}/movies/${item.id}` : `/${locale}/tv-shows/${item.id}`; }
@@ -194,7 +194,7 @@ export default function TypeHeadSearch() {
    * dropdown close animation can complete first.
    *
    * @param {React.MouseEvent<HTMLAnchorElement>} e - The click event.
-   * @param {{ mediaType: string, id: number|string }} item - The result item that was clicked.
+   * @param {import('@/lib/schemas/tmdb').CardItem} item - The result item that was clicked.
    * @returns {void}
    */
   function handleResultClick(e, item) {
