@@ -96,6 +96,11 @@ const RAW_TV_SHOW = {
 
 // ---------------------------------------------------------------------------
 // request() — direct error branch
+//
+// Statements covered:
+//   - the `if (!response.ok)` guard that constructs and throws TMDBError
+//   - the query-param loop branch where null/undefined/'' values are skipped
+//     via the `if (value == null || value === '')` continue statement
 // ---------------------------------------------------------------------------
 
 describe('createTmdbApi — request() error branch', () => {
@@ -117,7 +122,12 @@ describe('createTmdbApi — request() error branch', () => {
 });
 
 // ---------------------------------------------------------------------------
-// language with underscore separator  →  covers the `?? language.split('_')[1]` branch
+// language with underscore separator
+//
+// Branch covered:
+//   - `region = locale.split('-')[1] ?? locale.split('_')[1]`
+//     The left side of ?? is undefined when the locale uses '_' instead of '-',
+//     so the right side (`split('_')[1]`) is evaluated and provides the region.
 // ---------------------------------------------------------------------------
 
 describe('createTmdbApi — underscore locale format', () => {
@@ -132,6 +142,11 @@ describe('createTmdbApi — underscore locale format', () => {
 
 // ---------------------------------------------------------------------------
 // loadGenreMaps — genres field missing / undefined in API response
+//
+// Branch covered:
+//   - `(data.genres ?? []).forEach(...)` when the API response omits the
+//     `genres` key entirely, so `data.genres` is undefined and the nullish
+//     coalescing operator falls back to an empty array, preventing a crash.
 // ---------------------------------------------------------------------------
 
 describe('createTmdbApi — loadGenreMaps with missing genres field', () => {
@@ -149,6 +164,11 @@ describe('createTmdbApi — loadGenreMaps with missing genres field', () => {
 
 // ---------------------------------------------------------------------------
 // mapCardItem — item already has genres array (skips resolveGenres)
+//
+// Branch covered:
+//   - `item.genres?.length ? item.genres : resolveGenres(...)`
+//     When `item.genres` is a non-empty array the truthy branch is taken and
+//     `resolveGenres` is not called, so the genres are used as-is.
 // ---------------------------------------------------------------------------
 
 describe('createTmdbApi — mapCardItem with inline genres', () => {
@@ -168,6 +188,11 @@ describe('createTmdbApi — mapCardItem with inline genres', () => {
 
 // ---------------------------------------------------------------------------
 // getWatchProviders — rent + buy providers (no flatrate key)
+//
+// Branches covered:
+//   - The `if (regional.flatrate)` branch is NOT taken (key absent).
+//   - The `if (regional.rent)` and `if (regional.buy)` branches ARE taken,
+//     mapping each entry with type 'rent' / 'buy' respectively.
 // ---------------------------------------------------------------------------
 
 describe('createTmdbApi — getWatchProviders rent and buy types', () => {
@@ -185,6 +210,10 @@ describe('createTmdbApi — getWatchProviders rent and buy types', () => {
 
 // ---------------------------------------------------------------------------
 // getList — hasMore:false branch (last page)
+//
+// Branch covered:
+//   - `hasMore: page < total_pages` evaluates to false when page === total_pages,
+//     exercising the falsy side of that boolean expression.
 // ---------------------------------------------------------------------------
 
 describe('createTmdbApi — getList hasMore:false', () => {
@@ -208,6 +237,10 @@ describe('createTmdbApi — getList hasMore:false', () => {
 
 // ---------------------------------------------------------------------------
 // searchMedia — hasMore:true branch
+//
+// Branch covered:
+//   - `hasMore: page < total_pages` evaluates to true when more pages exist,
+//     exercising the truthy side of that boolean expression.
 // ---------------------------------------------------------------------------
 
 describe('createTmdbApi — searchMedia hasMore:true', () => {
@@ -230,6 +263,15 @@ describe('createTmdbApi — searchMedia hasMore:true', () => {
 
 // ---------------------------------------------------------------------------
 // getFeaturedToday  (fully uncovered — the largest gap)
+//
+// Statements and branches covered:
+//   - happy path: trending returns a movie → details + certification + providers fetched
+//   - TV fallback branch: no movie with backdrop_path → first TV item is used instead
+//   - empty results branch: trending returns [] → null is returned immediately
+//   - providers null branch: watch/providers has no regional entry → providers: null
+//   - providers present branch: watch/providers has a DE entry → providers attached
+//   - trailerUrls statement: videos.results mapped to YouTube embed URLs
+//   - first-item fallback branch: no item has a backdrop → first item used regardless
 // ---------------------------------------------------------------------------
 
 describe('createTmdbApi — getFeaturedToday', () => {
