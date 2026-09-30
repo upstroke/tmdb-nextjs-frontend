@@ -357,12 +357,12 @@ describe('createTmdbApi — mapCrew', () => {
   let api;
   beforeEach(() => { api = makeApi(); });
 
-// Branch coverage: returns an empty array for an empty crew
+  // Branch coverage: returns an empty array for an empty crew.
   it('returns an empty array for an empty crew', () => {
     expect(api.mapCrew([])).toEqual([]);
   });
 
-// Statement coverage: maps a crew member to the expected shape.
+  // Statement coverage: maps a crew member to the expected shape.
   it('maps a crew member correctly', () => {
     const person = {
       id: 2, credit_id: 'c2', name: 'Bob', job: 'Director',
@@ -971,7 +971,7 @@ describe('createTmdbApi — getTVShowDetails', () => {
     expect(result.certification).toBe('16');
   });
 
-  // Branch coverage: sets providers to null when no regional entry exists
+  // Branch coverage: sets providers to null when no regional entry exists.
   it('sets providers to null when no regional entry exists', async () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_TV_SHOW },
@@ -993,6 +993,7 @@ describe('createTmdbApi — getTVShowDetails', () => {
     await expect(api.getTVShowDetails(99999)).rejects.toThrow();
   });
 
+  // Branch coverage: caches certifications — fetch is not called a second time for the same id.
   it('caches certifications — fetch is not called a second time for the same id', async () => {
     const fetchMock = makeFetch([
       { ok: true, body: RAW_TV_SHOW },
@@ -1020,6 +1021,7 @@ describe('createTmdbApi — getTVSeasonDetails', () => {
     return createTmdbApi(makeFetch(responses), FAKE_KEY, 'de-DE');
   }
 
+  // Statement coverage: returns a normalized season object with top-level fields.
   it('returns a normalized season object', async () => {
     const api = makeApiWithFetch([{ ok: true, body: RAW_SEASON_1 }]);
     const result = await api.getTVSeasonDetails(1399, 1);
@@ -1031,6 +1033,7 @@ describe('createTmdbApi — getTVSeasonDetails', () => {
     expect(result.airDate).toBe('2011-04-17');
   });
 
+  // Statement coverage: builds posterUrl from poster_path.
   it('maps posterUrl correctly', async () => {
     const api = makeApiWithFetch([{ ok: true, body: RAW_SEASON_1 }]);
     const result = await api.getTVSeasonDetails(1399, 1);
@@ -1038,6 +1041,7 @@ describe('createTmdbApi — getTVSeasonDetails', () => {
     expect(result.posterUrl).toBe('https://image.tmdb.org/t/p/w342/season1_poster.jpg');
   });
 
+  // Statement coverage: episodes array has the correct length.
   it('returns the correct number of episodes', async () => {
     const api = makeApiWithFetch([{ ok: true, body: RAW_SEASON_1 }]);
     const result = await api.getTVSeasonDetails(1399, 1);
@@ -1045,6 +1049,7 @@ describe('createTmdbApi — getTVSeasonDetails', () => {
     expect(result.episodes).toHaveLength(2);
   });
 
+  // Statement coverage: maps all episode fields to the normalized shape.
   it('maps episode fields correctly', async () => {
     const api = makeApiWithFetch([{ ok: true, body: RAW_SEASON_1 }]);
     const result = await api.getTVSeasonDetails(1399, 1);
@@ -1058,6 +1063,7 @@ describe('createTmdbApi — getTVSeasonDetails', () => {
     expect(ep.stillUrl).toBe('https://image.tmdb.org/t/p/w300/ep1_still.jpg');
   });
 
+  // Branch coverage: sets stillUrl to null when still_path is missing.
   it('sets stillUrl to null when still_path is missing', async () => {
     const api = makeApiWithFetch([{ ok: true, body: RAW_SEASON_1 }]);
     const result = await api.getTVSeasonDetails(1399, 1);
@@ -1066,6 +1072,7 @@ describe('createTmdbApi — getTVSeasonDetails', () => {
     expect(ep.stillUrl).toBeNull();
   });
 
+  // Branch coverage: handles null overview, airDate, and runtime gracefully.
   it('handles episodes with null overview and airDate gracefully', async () => {
     const api = makeApiWithFetch([{ ok: true, body: RAW_SEASON_1 }]);
     const result = await api.getTVSeasonDetails(1399, 1);
@@ -1076,6 +1083,7 @@ describe('createTmdbApi — getTVSeasonDetails', () => {
     expect(ep.runtime).toBeNull();
   });
 
+  // Branch coverage: returns an empty episodes array when season has no episodes.
   it('returns an empty episodes array for a season with no episodes', async () => {
     const emptySeasonBody = { ...RAW_SEASON_1, episodes: [] };
     const api = makeApiWithFetch([{ ok: true, body: emptySeasonBody }]);
@@ -1084,6 +1092,7 @@ describe('createTmdbApi — getTVSeasonDetails', () => {
     expect(result.episodes).toEqual([]);
   });
 
+  // Branch coverage: throws when the API returns a non-ok response.
   it('throws when the API returns a non-ok response', async () => {
     const api = makeApiWithFetch([
       { ok: false, status: 404, body: { status_message: 'Season not found' } },
