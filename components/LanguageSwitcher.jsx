@@ -2,7 +2,7 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { useI18n, useLocale, setLocale } from '@/lib/stores/locale';
-import { getSupportedLocales } from '@/lib/i18n/helpers'
+import { getSupportedLocales } from '@/lib/i18n/helpers';
 import { resolveLocale } from '@/lib/i18n/resolver';
 import { SUPPORTED_LOCALES } from '@/lib/i18n/config';
 
