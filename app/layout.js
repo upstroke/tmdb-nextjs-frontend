@@ -14,15 +14,19 @@ import 'fomantic-ui-css/components/tab.css';
 import 'fomantic-ui-css/components/segment.css';
 import '../styles/app.scss';
 import { AppLocaleProvider } from '@/components/providers/LocaleProvider';
+import { DEFAULT_LOCALE } from '@/lib/i18n/config';
 
 export const metadata = {
   title: 'TMDB',
   description: 'Movies and TV Shows powered by TMDB',
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children, params }) {
+  const { locale } = (await params) ?? {};
+  const lang = locale ?? DEFAULT_LOCALE;
+
   return (
-    <html data-scroll-behavior="smooth" lang="en">
+    <html data-scroll-behavior="smooth" lang={lang}>
       <body>
         <AppLocaleProvider>
           <div id="root">
