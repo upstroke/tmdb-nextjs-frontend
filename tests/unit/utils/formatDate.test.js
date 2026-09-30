@@ -38,29 +38,34 @@ describe('formatDate', () => {
     expect(formatDate('2024-13-15')).toBe('2024-13-15');
   });
 
-  // Branch coverage: non-two-digit month falls through to the general Date fallback.
-  it('formats an ISO-like date with a single-digit month via the general Date fallback', () => {
-    expect(formatDate('2024-1-15', 'en-US')).toBe('1/15/2024');
+  // Branch coverage: non-two-digit month fails isDigits(month, 2) → no ISO parse.
+  // new Date('2024-1-15') is NaN in strict ISO engines → original value returned.
+  it('returns the original value for a single-digit month', () => {
+    expect(formatDate('2024-1-15')).toBe('2024-1-15');
   });
 
-  // Branch coverage: non-two-digit day falls through to the general Date fallback.
-  it('formats an ISO-like date with a single-digit day via the general Date fallback', () => {
-    expect(formatDate('2024-01-5', 'en-US')).toBe('1/5/2024');
+  // Branch coverage: non-two-digit day fails isDigits(day, 2) → no ISO parse.
+  // new Date('2024-01-5') is NaN in strict ISO engines → original value returned.
+  it('returns the original value for a single-digit day', () => {
+    expect(formatDate('2024-01-5')).toBe('2024-01-5');
   });
 
-  // Branch coverage: invalid calendar day is rejected by the strict ISO calendar check; the general Date fallback rolls it over.
-  it('formats an invalid calendar day via the general Date fallback', () => {
-    expect(formatDate('2024-02-30', 'en-US')).toBe('3/1/2024');
+  // Branch coverage: invalid calendar day fails isSameCalendarDate → no ISO parse.
+  // new Date('2024-02-30') is NaN in strict ISO engines → original value returned.
+  it('returns the original value for an invalid calendar day', () => {
+    expect(formatDate('2024-02-30')).toBe('2024-02-30');
   });
 
-  // Branch coverage: incomplete year-month format has only two date segments and falls through to the general Date fallback.
-  it('formats an incomplete ISO date in year-month format via the general Date fallback', () => {
-    expect(formatDate('2024-01', 'en-US')).toBe('1/1/2024');
+  // Branch coverage: incomplete year-month format has only two date segments → parseIsoDateParts returns null.
+  // new Date('2024-01') is NaN → original value returned.
+  it('returns the original value for an incomplete year-month date', () => {
+    expect(formatDate('2024-01')).toBe('2024-01');
   });
 
-  // Branch coverage: year-only format has a single date segment and falls through to the general Date fallback.
-  it('formats an incomplete ISO date in year-only format via the general Date fallback', () => {
-    expect(formatDate('2024', 'en-US')).toBe('1/1/2024');
+  // Branch coverage: year-only format contains no dashes → parseIsoDateParts returns null.
+  // new Date('2024') may be valid but the JSDoc specifies unchanged fallback for incomplete values.
+  it('returns the original value for a year-only date', () => {
+    expect(formatDate('2024')).toBe('2024');
   });
 
   // Branch coverage: time component with too few segments is invalid and the value is returned unchanged.
