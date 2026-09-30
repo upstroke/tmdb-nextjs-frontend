@@ -6,7 +6,12 @@ import { fileURLToPath } from 'node:url';
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react({
+      // Allow JSX syntax in .js files (e.g. lib/stores/locale.js).
+      include: ['**/*.jsx', '**/*.js'],
+    }),
+  ],
   test: {
     environment: 'jsdom',
     globals: true,

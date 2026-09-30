@@ -1,5 +1,5 @@
 /**
- * Unit tests for lib/stores/locale.jsx.
+ * Unit tests for lib/stores/locale.js.
  * Tests cover the pure helper functions and the external setter mechanism.
  * React hooks (useLocale, useSetLocale, useI18n) and LocaleProvider require
  * a React test environment and are excluded here.
@@ -18,7 +18,7 @@ vi.mock('react', () => ({
   useCallback: vi.fn((fn) => fn),
 }));
 
-import { setLocale, _registerExternalSetter } from '@/lib/stores/locale.jsx';
+import { setLocale, _registerExternalSetter } from '@/lib/stores/locale.js';
 
 describe('_registerExternalSetter / setLocale', () => {
   beforeEach(() => {
@@ -30,10 +30,12 @@ describe('_registerExternalSetter / setLocale', () => {
     _registerExternalSetter(null);
   });
 
+  // Statement coverage: setLocale does not throw when no setter is registered.
   it('does not throw when no setter is registered', () => {
     expect(() => setLocale('de-DE')).not.toThrow();
   });
 
+  // Statement coverage: registered setter is called with the resolved locale.
   it('calls the registered setter with the resolved locale', () => {
     const mockSetter = vi.fn();
     _registerExternalSetter(mockSetter);
@@ -41,6 +43,7 @@ describe('_registerExternalSetter / setLocale', () => {
     expect(mockSetter).toHaveBeenCalledWith('de-DE');
   });
 
+  // Branch coverage: unknown locale falls back to DEFAULT_LOCALE.
   it('falls back to DEFAULT_LOCALE for an unknown locale', () => {
     const mockSetter = vi.fn();
     _registerExternalSetter(mockSetter);
@@ -48,6 +51,7 @@ describe('_registerExternalSetter / setLocale', () => {
     expect(mockSetter).toHaveBeenCalledWith('en-US');
   });
 
+  // Branch coverage: null input falls back to DEFAULT_LOCALE.
   it('falls back to DEFAULT_LOCALE for null', () => {
     const mockSetter = vi.fn();
     _registerExternalSetter(mockSetter);
@@ -55,6 +59,7 @@ describe('_registerExternalSetter / setLocale', () => {
     expect(mockSetter).toHaveBeenCalledWith('en-US');
   });
 
+  // Statement coverage: second registration replaces the first setter.
   it('replaces the setter when _registerExternalSetter is called again', () => {
     const first = vi.fn();
     const second = vi.fn();
