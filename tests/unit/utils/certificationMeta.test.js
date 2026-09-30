@@ -3,9 +3,17 @@
  * known ratings for US and DE, unknown ratings in known systems, unknown
  * rating systems, country normalisation (case, trim, null, blank), and
  * numeric value coercion.
+ *
+ * Expected values are derived from the ratings mock fixtures (ratings.mocks.js)
+ * instead of being hardcoded — keeping tests in sync with lib/i18n/ratings.json
+ * without duplication.
  */
 import { describe, expect, it } from 'vitest';
 import { getCertificationMeta } from '@/lib/utils/certificationMeta';
+import { ratingsMockDefault, ratingsMockDE } from '@/tests/mocks/ratings.mocks';
+
+const usRatings = ratingsMockDefault.ratingSystem.ratings;
+const deRatings = ratingsMockDE.ratingSystem.ratings;
 
 describe('getCertificationMeta', () => {
   // Statement coverage: !normalizedValue branch → early return null.
@@ -32,10 +40,7 @@ describe('getCertificationMeta', () => {
   it('returns correct metadata for US rating G', () => {
     expect(getCertificationMeta('G', 'US')).toEqual({
       value: 'G',
-      label: 'G',
-      description: 'General Audiences',
-      color: '#2e7d32',
-      textColor: '#ffffff',
+      ...usRatings['G'],
     });
   });
 
@@ -43,9 +48,9 @@ describe('getCertificationMeta', () => {
   it('returns correct metadata for US rating PG-13', () => {
     expect(getCertificationMeta('PG-13', 'US')).toMatchObject({
       value: 'PG-13',
-      label: 'PG-13',
-      color: '#ef6c00',
-      textColor: '#ffffff',
+      label: usRatings['PG-13'].label,
+      color: usRatings['PG-13'].color,
+      textColor: usRatings['PG-13'].textColor,
     });
   });
 
@@ -53,8 +58,8 @@ describe('getCertificationMeta', () => {
   it('returns correct metadata for US rating R', () => {
     expect(getCertificationMeta('R', 'US')).toMatchObject({
       value: 'R',
-      label: 'R',
-      color: '#c62828',
+      label: usRatings['R'].label,
+      color: usRatings['R'].color,
     });
   });
 
@@ -67,10 +72,7 @@ describe('getCertificationMeta', () => {
   it('returns correct metadata for DE rating FSK 12', () => {
     expect(getCertificationMeta('12', 'DE')).toEqual({
       value: '12',
-      label: 'FSK 12',
-      age: 12,
-      color: '#4caf50',
-      textColor: '#000000',
+      ...deRatings['12'],
     });
   });
 
@@ -78,15 +80,18 @@ describe('getCertificationMeta', () => {
   it('returns correct metadata for DE rating FSK 18', () => {
     expect(getCertificationMeta('18', 'DE')).toMatchObject({
       value: '18',
-      label: 'FSK 18',
-      color: '#d32f2f',
-      textColor: '#ffffff',
+      label: deRatings['18'].label,
+      color: deRatings['18'].color,
+      textColor: deRatings['18'].textColor,
     });
   });
 
   // Branch coverage: numeric value coercion – number 6 is stringified to '6'.
   it('accepts a numeric value and resolves DE rating FSK 6', () => {
-    expect(getCertificationMeta(6, 'DE')).toMatchObject({ value: '6', label: 'FSK 6' });
+    expect(getCertificationMeta(6, 'DE')).toMatchObject({
+      value: '6',
+      label: deRatings['6'].label,
+    });
   });
 
   // Branch coverage: normalizeRatingSystem toUpperCase() path.
