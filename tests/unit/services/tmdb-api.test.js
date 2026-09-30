@@ -67,6 +67,23 @@ const RAW_TV_SHOW = {
   videos: { results: [] },
 };
 
+const RAW_MOVIE = {
+  id: 550,
+  title: 'Fight Club',
+  overview: 'Rules of Fight Club.',
+  homepage: 'https://example.com/fightclub',
+  backdrop_path: '/fc_backdrop.jpg',
+  poster_path: '/fc_poster.jpg',
+  release_date: '1999-10-15',
+  vote_average: 8.8,
+  genres: [{ id: 18, name: 'Drama' }],
+  runtime: 139,
+  episode_run_time: [],
+  production_companies: [{ id: 1, name: 'Fox' }],
+  credits: { cast: [], crew: [] },
+  videos: { results: [] },
+};
+
 const RAW_SEASON_1 = {
   id: 3624,
   season_number: 1,
@@ -105,6 +122,32 @@ const CONTENT_RATINGS_DE = {
 
 /** Watch-providers response (no DE entry → providers will be null). */
 const WATCH_PROVIDERS_EMPTY = { results: {} };
+
+/** Watch-providers response with a DE flatrate entry. */
+const WATCH_PROVIDERS_DE = {
+  results: {
+    DE: {
+      link: 'https://www.justwatch.com/de',
+      flatrate: [
+        { provider_id: 8, provider_name: 'Netflix', logo_path: '/netflix.png', display_priority: 1 },
+      ],
+    },
+  },
+};
+
+/** Release-dates response for movie certification (DE region). */
+const RELEASE_DATES_DE = {
+  results: [
+    {
+      iso_3166_1: 'DE',
+      release_dates: [{ certification: 'FSK 16', type: 3 }],
+    },
+  ],
+};
+
+/** Genre list responses. */
+const GENRE_MOVIE_LIST = { genres: [{ id: 18, name: 'Drama' }, { id: 28, name: 'Action' }] };
+const GENRE_TV_LIST = { genres: [{ id: 10765, name: 'Sci-Fi & Fantasy' }] };
 
 // ---------------------------------------------------------------------------
 // mapCardItem
@@ -353,6 +396,444 @@ describe('createTmdbApi — language / region derivation', () => {
   it('instantiates with the default language', () => {
     const api = makeApi();
     expect(api).toBeDefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// mapDetails
+// ---------------------------------------------------------------------------
+
+describe('createTmdbApi — mapDetails', () => {
+  let api;
+  beforeEach(() => { api = makeApi('de-DE'); });
+
+  it('maps a movie details object correctly', () => {
+    const result = api.mapDetails(RAW_MOVIE, 'movie');
+    expect(result.id).toBe(550);
+    expect(result.mediaType).toBe('movie');
+    expect(result.title).toBe('Fight Club');
+    expect(result.rating).toBe(8.8);
+    expect(result.runtime).toBe(139);
+  });
+
+  it('maps a tv details object correctly', () => {
+    const result = api.mapDetails(RAW_TV_SHOW, 'tv');
+    expect(result.id).toBe(1399);
+    expect(result.mediaType).toBe('tv');
+    expect(result.title).toBe('Game of Thrones');
+  });
+
+  it('includes cast and crew arrays', () => {
+    const details = {
+      ...RAW_MOVIE,
+      credits: {
+        cast: [{ id: 1, credit_id: 'c1', name: 'Actor', character: 'Hero', order: 0 }],
+        crew: [{ id: 2, credit_id: 'c2', name: 'Director', job: 'Director', department: 'Directing' }],
+      },
+    };
+    const result = api.mapDetails(details, 'movie');
+    expect(result.cast).toHaveLength(1);
+    expect(result.crew).toHaveLength(1);
+  });
+
+  it('sets certification and providers from details object', () => {
+    const details = { ...RAW_MOVIE, certification: 'FSK 16', providers: null };
+    const result = api.mapDetails(details, 'movie');
+    expect(result.certification).toBe('FSK 16');
+    expect(result.providers).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// mapFeaturedItem
+// ---------------------------------------------------------------------------
+
+describe('createTmdbApi — mapFeaturedItem', () => {
+  let api;
+  beforeEach(() => { api = makeApi('de-DE'); });
+
+  it('maps a tv show to a featured item', () => {
+    const result = api.mapFeaturedItem(RAW_TV_SHOW, 'tv');
+    expect(result.id).toBe(1399);
+    expect(result.mediaType).toBe('tv');
+    expect(result.title).toBe('Game of Thrones');
+    expect(result.overview).toBe('Dragons and politics.');
+    expect(result.homepage).toBe('https://hbo.com/got');
+  });
+
+  it('maps a movie to a featured item', () => {
+    const result = api.mapFeaturedItem(RAW_MOVIE, 'movie');
+    expect(result.id).toBe(550);
+    expect(result.mediaType).toBe('movie');
+    expect(result.title).toBe('Fight Club');
+  });
+
+  it('uses imageUrl from backdrop_path', () => {
+    const result = api.mapFeaturedItem(RAW_TV_SHOW, 'tv');
+    expect(result.imageUrl).toContain('got_backdrop');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getCertification  (async — uses mock fetch)
+// ---------------------------------------------------------------------------
+
+describe('createTmdbApi — getCertification', () => {
+  it('returns movie certification from release_dates for DE region', async () => {
+    const fetch = makeFetch([{ ok: true, body: RELEASE_DATES_DE }]);
+    const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
+    const result = await api.getCertification('movie', 550);
+    expect(result).toBe('FSK 16');
+  });
+
+  it('returns empty string when no DE release_date entry exists for movie', async () => {
+    const fetch = makeFetch([{ ok: true, body: { results: [] } }]);
+    const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
+    const result = await api.getCertification('movie', 550);
+    expect(result).toBe('');
+  });
+
+  it('returns tv certification from content_ratings for DE region', async () => {
+    const fetch = makeFetch([{ ok: true, body: CONTENT_RATINGS_DE }]);
+    const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
+    const result = await api.getCertification('tv', 1399);
+    expect(result).toBe('16');
+  });
+
+  it('caches the result — fetch is called only once for the same id', async () => {
+    const fetchMock = makeFetch([
+      { ok: true, body: CONTENT_RATINGS_DE },
+    ]);
+    const api = createTmdbApi(fetchMock, FAKE_KEY, 'de-DE');
+    await api.getCertification('tv', 1399);
+    await api.getCertification('tv', 1399);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns empty string when fetch throws', async () => {
+    const fetchMock = vi.fn().mockRejectedValue(new Error('Network error'));
+    const api = createTmdbApi(fetchMock, FAKE_KEY, 'de-DE');
+    const result = await api.getCertification('movie', 1);
+    expect(result).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getWatchProviders  (async — uses mock fetch)
+// ---------------------------------------------------------------------------
+
+describe('createTmdbApi — getWatchProviders', () => {
+  it('returns null when results object has no regional entry', async () => {
+    const fetch = makeFetch([{ ok: true, body: WATCH_PROVIDERS_EMPTY }]);
+    const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
+    const result = await api.getWatchProviders('movie', 550);
+    expect(result).toBeNull();
+  });
+
+  it('returns mapped providers when a DE entry exists', async () => {
+    const fetch = makeFetch([{ ok: true, body: WATCH_PROVIDERS_DE }]);
+    const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
+    const result = await api.getWatchProviders('tv', 1399);
+    expect(result).not.toBeNull();
+    expect(result.providers).toHaveLength(1);
+    expect(result.providers[0].providerName).toBe('Netflix');
+    expect(result.link).toBe('https://www.justwatch.com/de');
+  });
+
+  it('caches the result — fetch is called only once for the same id', async () => {
+    const fetchMock = makeFetch([
+      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+    ]);
+    const api = createTmdbApi(fetchMock, FAKE_KEY, 'de-DE');
+    await api.getWatchProviders('movie', 550);
+    await api.getWatchProviders('movie', 550);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns null and does not throw when fetch fails', async () => {
+    const fetchMock = vi.fn().mockRejectedValue(new Error('Network error'));
+    const api = createTmdbApi(fetchMock, FAKE_KEY, 'de-DE');
+    const result = await api.getWatchProviders('movie', 1);
+    expect(result).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// enrichCardCertifications  (async)
+// ---------------------------------------------------------------------------
+
+describe('createTmdbApi — enrichCardCertifications', () => {
+  it('attaches certification to each card', async () => {
+    const fetchMock = makeFetch([
+      { ok: true, body: RELEASE_DATES_DE },
+      { ok: true, body: CONTENT_RATINGS_DE },
+    ]);
+    const api = createTmdbApi(fetchMock, FAKE_KEY, 'de-DE');
+    const cards = [
+      { id: 550, mediaType: 'movie', title: 'Fight Club' },
+      { id: 1399, mediaType: 'tv', title: 'GoT' },
+    ];
+    const result = await api.enrichCardCertifications(cards);
+    expect(result).toHaveLength(2);
+    expect(result[0].certification).toBe('FSK 16');
+    expect(result[1].certification).toBe('16');
+  });
+
+  it('returns an empty array for an empty input', async () => {
+    const api = makeApi();
+    const result = await api.enrichCardCertifications([]);
+    expect(result).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// loadGenreMaps  (async)
+// ---------------------------------------------------------------------------
+
+describe('createTmdbApi — loadGenreMaps', () => {
+  it('loads genre maps and makes resolveGenres work', async () => {
+    const fetchMock = makeFetch([
+      { ok: true, body: GENRE_MOVIE_LIST },
+      { ok: true, body: GENRE_TV_LIST },
+    ]);
+    const api = createTmdbApi(fetchMock, FAKE_KEY, 'en-US');
+    await api.loadGenreMaps();
+    const result = api.resolveGenres([18, 28], 'movie');
+    expect(result).toEqual([
+      { id: 18, name: 'Drama' },
+      { id: 28, name: 'Action' },
+    ]);
+  });
+
+  it('does not call fetch a second time if already loaded', async () => {
+    const fetchMock = makeFetch([
+      { ok: true, body: GENRE_MOVIE_LIST },
+      { ok: true, body: GENRE_TV_LIST },
+    ]);
+    const api = createTmdbApi(fetchMock, FAKE_KEY, 'en-US');
+    await api.loadGenreMaps();
+    await api.loadGenreMaps();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getMovieDetails  (async — uses mock fetch)
+// ---------------------------------------------------------------------------
+
+describe('createTmdbApi — getMovieDetails', () => {
+  function makeApiWithFetch(responses) {
+    return createTmdbApi(makeFetch(responses), FAKE_KEY, 'de-DE');
+  }
+
+  it('returns normalized movie detail', async () => {
+    const api = makeApiWithFetch([
+      { ok: true, body: RAW_MOVIE },
+      { ok: true, body: RELEASE_DATES_DE },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+    ]);
+    const result = await api.getMovieDetails(550);
+    expect(result.id).toBe(550);
+    expect(result.mediaType).toBe('movie');
+    expect(result.title).toBe('Fight Club');
+    expect(result.runtime).toBe(139);
+  });
+
+  it('attaches movie certification', async () => {
+    const api = makeApiWithFetch([
+      { ok: true, body: RAW_MOVIE },
+      { ok: true, body: RELEASE_DATES_DE },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+    ]);
+    const result = await api.getMovieDetails(550);
+    expect(result.certification).toBe('FSK 16');
+  });
+
+  it('attaches providers when available', async () => {
+    const api = makeApiWithFetch([
+      { ok: true, body: RAW_MOVIE },
+      { ok: true, body: RELEASE_DATES_DE },
+      { ok: true, body: WATCH_PROVIDERS_DE },
+    ]);
+    const result = await api.getMovieDetails(550);
+    expect(result.providers).not.toBeNull();
+    expect(result.providers.providers[0].providerName).toBe('Netflix');
+  });
+
+  it('throws when the API returns a non-ok response', async () => {
+    const api = makeApiWithFetch([
+      { ok: false, status: 404, body: { status_message: 'Not Found' } },
+    ]);
+    await expect(api.getMovieDetails(99999)).rejects.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getList + list helpers (getTrendingAll, getPopularMovies, searchMedia etc.)
+// ---------------------------------------------------------------------------
+
+describe('createTmdbApi — getList and list endpoints', () => {
+  /**
+   * A minimal list response body that passes ListResponseSchema validation.
+   * Includes one movie card with all required fields.
+   */
+  const LIST_BODY = {
+    page: 1,
+    total_pages: 2,
+    results: [
+      {
+        id: 42,
+        media_type: 'movie',
+        title: 'Inception',
+        vote_average: 8.8,
+        poster_path: '/inception.jpg',
+        genre_ids: [],
+      },
+    ],
+  };
+
+  /**
+   * Fetch sequence for getList calls:
+   *   1. endpoint request → LIST_BODY
+   *   2. /genre/movie/list → GENRE_MOVIE_LIST  (from loadGenreMaps)
+   *   3. /genre/tv/list   → GENRE_TV_LIST     (from loadGenreMaps)
+   *   4. /movie/42/release_dates → RELEASE_DATES_DE  (enrichCardCertifications)
+   */
+  function makeListFetch(extra = []) {
+    return makeFetch([
+      { ok: true, body: LIST_BODY },
+      { ok: true, body: GENRE_MOVIE_LIST },
+      { ok: true, body: GENRE_TV_LIST },
+      { ok: true, body: RELEASE_DATES_DE },
+      ...extra,
+    ]);
+  }
+
+  it('getList returns a normalized ListResponse with hasMore=true', async () => {
+    const api = createTmdbApi(makeListFetch(), FAKE_KEY, 'de-DE');
+    const result = await api.getList('/movie/popular', 1, 'movie');
+    expect(result.page).toBe(1);
+    expect(result.hasMore).toBe(true);
+    expect(result.results).toHaveLength(1);
+    expect(result.results[0].title).toBe('Inception');
+  });
+
+  it('getTrendingAll returns a list response', async () => {
+    const api = createTmdbApi(makeListFetch(), FAKE_KEY, 'de-DE');
+    const result = await api.getTrendingAll(1);
+    expect(Array.isArray(result.results)).toBe(true);
+  });
+
+  it('getTrendingMovies returns a list response', async () => {
+    const api = createTmdbApi(makeListFetch(), FAKE_KEY, 'de-DE');
+    const result = await api.getTrendingMovies(1);
+    expect(Array.isArray(result.results)).toBe(true);
+  });
+
+  it('getTrendingTVShows returns a list response', async () => {
+    const tvListBody = {
+      ...LIST_BODY,
+      results: [{ id: 7, media_type: 'tv', name: 'Breaking Bad', vote_average: 9.5, genre_ids: [] }],
+    };
+    const fetch = makeFetch([
+      { ok: true, body: tvListBody },
+      { ok: true, body: GENRE_MOVIE_LIST },
+      { ok: true, body: GENRE_TV_LIST },
+      { ok: true, body: CONTENT_RATINGS_DE },
+    ]);
+    const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
+    const result = await api.getTrendingTVShows(1);
+    expect(Array.isArray(result.results)).toBe(true);
+  });
+
+  it('getPopularMovies returns a list response', async () => {
+    const api = createTmdbApi(makeListFetch(), FAKE_KEY, 'de-DE');
+    const result = await api.getPopularMovies(1);
+    expect(Array.isArray(result.results)).toBe(true);
+  });
+
+  it('getPopularTVShows returns a list response', async () => {
+    const tvBody = {
+      ...LIST_BODY,
+      results: [{ id: 7, media_type: 'tv', name: 'Breaking Bad', vote_average: 9.5, genre_ids: [] }],
+    };
+    const fetch = makeFetch([
+      { ok: true, body: tvBody },
+      { ok: true, body: GENRE_MOVIE_LIST },
+      { ok: true, body: GENRE_TV_LIST },
+      { ok: true, body: CONTENT_RATINGS_DE },
+    ]);
+    const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
+    const result = await api.getPopularTVShows(1);
+    expect(Array.isArray(result.results)).toBe(true);
+  });
+
+  it('getTopRatedMovies returns a list response', async () => {
+    const api = createTmdbApi(makeListFetch(), FAKE_KEY, 'de-DE');
+    const result = await api.getTopRatedMovies(1);
+    expect(Array.isArray(result.results)).toBe(true);
+  });
+
+  it('getTopRatedTVShows returns a list response', async () => {
+    const tvBody = {
+      ...LIST_BODY,
+      results: [{ id: 7, media_type: 'tv', name: 'Breaking Bad', vote_average: 9.5, genre_ids: [] }],
+    };
+    const fetch = makeFetch([
+      { ok: true, body: tvBody },
+      { ok: true, body: GENRE_MOVIE_LIST },
+      { ok: true, body: GENRE_TV_LIST },
+      { ok: true, body: CONTENT_RATINGS_DE },
+    ]);
+    const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
+    const result = await api.getTopRatedTVShows(1);
+    expect(Array.isArray(result.results)).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// searchMedia  (async — uses mock fetch)
+// ---------------------------------------------------------------------------
+
+describe('createTmdbApi — searchMedia', () => {
+  it('returns normalized search results', async () => {
+    const searchBody = {
+      page: 1,
+      total_pages: 1,
+      results: [
+        { id: 42, media_type: 'movie', title: 'Inception', vote_average: 8.8, genre_ids: [] },
+        { id: 7, media_type: 'tv', name: 'Breaking Bad', vote_average: 9.5, genre_ids: [] },
+      ],
+    };
+    const fetch = makeFetch([
+      { ok: true, body: searchBody },
+      { ok: true, body: GENRE_MOVIE_LIST },
+      { ok: true, body: GENRE_TV_LIST },
+    ]);
+    const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
+    const result = await api.searchMedia('inception', 1);
+    expect(result.page).toBe(1);
+    expect(result.hasMore).toBe(false);
+    expect(result.results.length).toBeGreaterThan(0);
+  });
+
+  it('filters out person results from search', async () => {
+    const searchBody = {
+      page: 1,
+      total_pages: 1,
+      results: [
+        { id: 1, media_type: 'person', name: 'Some Actor' },
+        { id: 42, media_type: 'movie', title: 'Inception', vote_average: 8.8, genre_ids: [] },
+      ],
+    };
+    const fetch = makeFetch([
+      { ok: true, body: searchBody },
+      { ok: true, body: GENRE_MOVIE_LIST },
+      { ok: true, body: GENRE_TV_LIST },
+    ]);
+    const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
+    const result = await api.searchMedia('inception');
+    expect(result.results.every((r) => r.mediaType !== 'person')).toBe(true);
   });
 });
 
