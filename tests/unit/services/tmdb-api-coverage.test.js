@@ -81,14 +81,14 @@ const RAW_TV_SHOW = {
 };
 
 describe('createTmdbApi — request() error branch', () => {
-  // Covers the `if (!response.ok)` guard that constructs and throws TMDBError
+  // Branch coverage: `if (!response.ok)` guard constructs and throws TMDBError when the response is not ok.
   it('throws TMDBError when response.ok is false', async () => {
     const fetch = makeFetch([{ ok: false, status: 401, body: { status_message: 'Unauthorized' } }]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'en-US');
     await expect(api.request('/movie/1')).rejects.toThrow('401');
   });
 
-  // Covers the query-param loop branch where null/undefined/'' values are skipped via `if (value == null || value === '')` continue
+  // Branch coverage: `if (value == null || value === '')` continue skips null/undefined/'' query params without throwing.
   it('skips undefined/null/empty query params', async () => {
     const fetch = makeFetch([{ ok: true, body: { results: [] } }]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'en-US');
@@ -101,7 +101,7 @@ describe('createTmdbApi — request() error branch', () => {
 });
 
 describe('createTmdbApi — underscore locale format', () => {
-  // Covers `region = locale.split('-')[1] ?? locale.split('_')[1]`: left side is undefined for '_' separator, right side provides the region
+  // Branch coverage: `locale.split('-')[1] ?? locale.split('_')[1]` — left side is undefined for '_' separator, so right side provides the region.
   it('derives region from locale with underscore (de_DE)', async () => {
     const fetch = makeFetch([{ ok: true, body: CONTENT_RATINGS_DE }]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de_DE');
@@ -112,7 +112,7 @@ describe('createTmdbApi — underscore locale format', () => {
 });
 
 describe('createTmdbApi — loadGenreMaps with missing genres field', () => {
-  // Covers `(data.genres ?? []).forEach(...)` when the API omits `genres`, so nullish coalescing falls back to [] and prevents a crash
+  // Branch coverage: `(data.genres ?? []).forEach(...)` — nullish coalescing falls back to [] when the API omits the `genres` key, preventing a crash.
   it('handles missing genres array gracefully (no throw)', async () => {
     const fetch = makeFetch([
       { ok: true, body: {} },          // /genre/movie/list  — no genres key
@@ -126,7 +126,7 @@ describe('createTmdbApi — loadGenreMaps with missing genres field', () => {
 });
 
 describe('createTmdbApi — mapCardItem with inline genres', () => {
-  // Covers `item.genres?.length ? item.genres : resolveGenres(...)`: truthy branch uses genres as-is and skips resolveGenres
+  // Branch coverage: `item.genres?.length ? item.genres : resolveGenres(...)` — truthy branch uses genres as-is and skips resolveGenres.
   it('uses genres from item directly when present', () => {
     const api = createTmdbApi(vi.fn(), FAKE_KEY, 'en-US');
     const item = {
@@ -142,7 +142,7 @@ describe('createTmdbApi — mapCardItem with inline genres', () => {
 });
 
 describe('createTmdbApi — getWatchProviders rent and buy types', () => {
-  // Covers `if (regional.rent)` and `if (regional.buy)` branches; `if (regional.flatrate)` is NOT taken (key absent)
+  // Branch coverage: `if (regional.rent)` and `if (regional.buy)` are taken; `if (regional.flatrate)` is NOT taken (key absent).
   it('maps rent and buy providers when flatrate is absent', async () => {
     const fetch = makeFetch([{ ok: true, body: WATCH_PROVIDERS_RENT_BUY }]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
@@ -156,7 +156,7 @@ describe('createTmdbApi — getWatchProviders rent and buy types', () => {
 });
 
 describe('createTmdbApi — getList hasMore:false', () => {
-  // Covers `hasMore: page < total_pages` evaluating to false when page === total_pages
+  // Branch coverage: `hasMore: page < total_pages` evaluates to false when page === total_pages.
   it('sets hasMore to false when page equals total_pages', async () => {
     const body = {
       page: 3,
@@ -176,7 +176,7 @@ describe('createTmdbApi — getList hasMore:false', () => {
 });
 
 describe('createTmdbApi — searchMedia hasMore:true', () => {
-  // Covers `hasMore: page < total_pages` evaluating to true when more pages exist
+  // Branch coverage: `hasMore: page < total_pages` evaluates to true when more pages exist.
   it('sets hasMore to true when more pages exist', async () => {
     const body = {
       page: 1,
@@ -212,7 +212,7 @@ describe('createTmdbApi — getFeaturedToday', () => {
     ]);
   }
 
-  // Happy path: trending returns a movie → details + certification + providers fetched
+  // Statement coverage: happy path — trending returns a movie, details + certification + providers are fetched.
   it('returns a featured item for a trending movie', async () => {
     const api = createTmdbApi(makeMovieFeaturedFetch(), FAKE_KEY, 'de-DE');
     const result = await api.getFeaturedToday();
@@ -222,21 +222,21 @@ describe('createTmdbApi — getFeaturedToday', () => {
     expect(result.title).toBe('Fight Club');
   });
 
-  // Covers the certification statement: release_dates mapped to FSK label
+  // Statement coverage: release_dates are mapped to a FSK certification label.
   it('attaches certification to the featured item', async () => {
     const api = createTmdbApi(makeMovieFeaturedFetch(), FAKE_KEY, 'de-DE');
     const result = await api.getFeaturedToday();
     expect(result.certification).toBe('FSK 16');
   });
 
-  // Covers providers null branch: watch/providers has no regional entry → providers: null
+  // Branch coverage: watch/providers has no regional entry → providers is null.
   it('attaches providers (null when no regional entry)', async () => {
     const api = createTmdbApi(makeMovieFeaturedFetch(), FAKE_KEY, 'de-DE');
     const result = await api.getFeaturedToday();
     expect(result.providers).toBeNull();
   });
 
-  // Covers TV fallback branch: no movie with backdrop_path → first TV item is used instead
+  // Branch coverage: no movie with backdrop_path in trending results → first TV item is used as featured.
   it('returns a featured TV show when no movie with backdrop exists', async () => {
     const trendingBody = {
       results: [
@@ -255,7 +255,7 @@ describe('createTmdbApi — getFeaturedToday', () => {
     expect(result.mediaType).toBe('tv');
   });
 
-  // Covers empty results branch: trending returns [] → null is returned immediately
+  // Branch coverage: trending returns an empty results array → null is returned immediately.
   it('returns null when trending results are empty', async () => {
     const fetch = makeFetch([{ ok: true, body: { results: [] } }]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
@@ -263,7 +263,7 @@ describe('createTmdbApi — getFeaturedToday', () => {
     expect(result).toBeNull();
   });
 
-  // Covers trailerUrls statement: videos.results mapped to YouTube embed URLs
+  // Statement coverage: videos.results is mapped to an array of YouTube embed URLs.
   it('includes trailerUrls in the featured item', async () => {
     const api = createTmdbApi(makeMovieFeaturedFetch(), FAKE_KEY, 'de-DE');
     const result = await api.getFeaturedToday();
@@ -271,7 +271,7 @@ describe('createTmdbApi — getFeaturedToday', () => {
     expect(Array.isArray(result.trailerUrls)).toBe(true);
   });
 
-  // Covers providers present branch: watch/providers has a DE entry → providers attached
+  // Branch coverage: watch/providers has a DE entry → providers object is attached to the result.
   it('attaches watch providers when a DE entry exists', async () => {
     const trendingBody = { results: [{ ...RAW_MOVIE }] };
     const fetch = makeFetch([
@@ -285,7 +285,7 @@ describe('createTmdbApi — getFeaturedToday', () => {
     expect(result.providers).not.toBeNull();
   });
 
-  // Covers first-item fallback branch: no item has a backdrop → first item used regardless
+  // Branch coverage: no item has a backdrop_path → first item is used as fallback regardless of media type.
   it('falls back to first item when no movie/tv with backdrop exists', async () => {
     const trendingBody = {
       results: [
