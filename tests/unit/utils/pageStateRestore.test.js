@@ -142,7 +142,7 @@ describe('restorePagedList', () => {
     global.window = originalWindow;
   });
 
-  const card = (id) => ({ id, media_type: 'movie' });
+  const card = (id) => ({ id, mediaType: 'movie' });
 
   // Statement coverage: storedPage (1) <= currentPage (1) → early return with initialData.
   it('returns initialData as-is when storedPage <= currentPage', async () => {
