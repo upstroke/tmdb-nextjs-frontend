@@ -99,6 +99,10 @@ MSW is not used at unit level — MSW is reserved for integration tests where a 
 calls `fetch` through a real service boundary. See `docs/testing/integration-tests.md`
 for the MSW setup and handler reference.
 
+The `unit` Vitest project has no `setupFiles`, so the MSW server is never
+started during a unit test run. There is no risk of MSW interference or
+unhandled-request warnings from `vi.stubGlobal('fetch')` overrides.
+
 ### Season and Episode Data
 
 For TV season work, unit tests should explicitly cover the contracts of season-related methods such as `getTVShowDetails()` and `getTVSeasonDetails()`.

@@ -68,7 +68,11 @@ intercepts the request before it reaches the network, and returns fixture data.
 
 ### Setup
 
-The MSW Node.js server is started globally in `tests/setup/vitest.js`:
+The MSW Node.js server is started globally in `tests/setup/vitest.js` and is
+scoped exclusively to the `integration` Vitest project. Unit tests run in their
+own project with no `setupFiles`, so MSW is never active during a unit test run.
+
+The lifecycle hooks in `tests/setup/vitest.js` are:
 
 - `beforeAll` → `server.listen({ onUnhandledRequest: 'warn' })`
 - `afterEach` → `server.resetHandlers()` — removes per-test overrides
@@ -91,7 +95,7 @@ No setup is needed inside individual test files.
 | `GET /api/:locale/genres/movie` | `rawFixtures.genresMovie` |
 | `GET /api/:locale/genres/tv` | `rawFixtures.genresTv` |
 
-These defaults are active for every test without any additional import.
+These defaults are active for every integration test without any additional import.
 
 ### Per-Test Overrides
 
@@ -116,7 +120,8 @@ with a JSON error body and the given HTTP status code.
 
 | Context | Tool |
 |---|---|
-| Vitest unit and integration tests | MSW (`msw.server.js`) |
+| Vitest integration tests | MSW (`msw.server.js`) |
+| Vitest unit tests | `vi.stubGlobal('fetch')` |
 | Cypress acceptance tests | `cy.intercept()` |
 
 Do not use MSW in Cypress tests and do not use `cy.intercept()` in Vitest tests.
