@@ -1,6 +1,6 @@
 // Custom Cypress commands for the TMDB Next.js frontend.
 //
-// Naming convention: cy.visitLocale(locale, path)
+// Naming convention: cy.visitLocale(locale, path), cy.checkPageA11y(options?), cy.i18n(locale?)
 
 /**
  * Navigate to a locale-prefixed route.
@@ -43,4 +43,49 @@ Cypress.Commands.add('checkPageA11y', (options = {}) => {
     null,
     true, // log violations to the Cypress command log
   );
+});
+
+/**
+ * Load UI translations for a locale directly from lib/i18n/ui.json.
+ *
+ * Reads the live translation file instead of duplicating strings into
+ * cypress/fixtures/, so acceptance tests always use the current translations.
+ *
+ * Falls back to the DEFAULT_LOCALE env variable (set in cypress.config.js
+ * from NEXT_PUBLIC_DEFAULT_LOCALE) when no locale argument is provided.
+ *
+ * The returned object shape mirrors the locale entry in ui.json:
+ * { languageCode, languageShortCode, fallbacks, labels, messages, formats, titles, buttons }
+ *
+ * @param {string} [locale] - BCP 47 locale tag, e.g. 'en-US' or 'de-DE'.
+ *   Defaults to Cypress.env('DEFAULT_LOCALE').
+ * @yields {object} The translation object for the requested locale.
+ *
+ * @example
+ * // Default locale
+ * cy.i18n().then((t) => {
+ *   cy.contains(t.labels.searchInput).should('exist');
+ * });
+ *
+ * // Specific locale
+ * cy.i18n('de-DE').then((t) => {
+ *   cy.visitLocale('de-DE', '/movies');
+ *   cy.get('[placeholder]').should('have.attr', 'placeholder', t.labels.searchInput);
+ * });
+ */
+Cypress.Commands.add('i18n', (locale) => {
+  const resolvedLocale = locale ?? Cypress.env('DEFAULT_LOCALE') ?? 'en-US';
+
+  return cy.readFile('lib/i18n/ui.json').then((ui) => {
+    const translations = ui.locales[resolvedLocale];
+
+    if (!translations) {
+      throw new Error(
+        `cy.i18n(): locale "${resolvedLocale}" not found in lib/i18n/ui.json. ` +
+          `Available locales: ${Object.keys(ui.locales).join(', ')}`,
+      );
+    }
+
+    return translations;
+  });
 });
