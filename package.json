@@ -8,6 +8,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run",
+    "test:unit": "vitest run tests/unit",
+    "test:components": "vitest run tests/integration/components",
+    "test:integration": "vitest run tests/integration",
+    "test:watch": "vitest",
+    "test:vitest:coverage": "vitest run --coverage",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
     "test:acceptance": "cypress run"
@@ -22,12 +28,18 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.21",
     "cypress": "^14",
     "cypress-axe": "^1",
     "eslint": "^9",
     "eslint-config-next": "15.5.26",
     "eslint-plugin-jsdoc": "^50.6.17",
-    "prettier": "^3.9.9"
+    "jsdom": "^26.1.0",
+    "prettier": "^3.9.9",
+    "vitest": "^3.2.4"
   }
 }
