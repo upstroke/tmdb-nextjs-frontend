@@ -89,7 +89,7 @@ describe('TabGroupe', () => {
     const loadingTabs = [{ id: '1', label: 'Season 1', loading: true }];
     render(<TabGroupe tabs={loadingTabs} ariaLabel="Seasons" />);
 
-    expect(screen.getByText('Loading\u2026')).toBeInTheDocument();
+    expect(screen.getByText('Loading \u2026')).toBeInTheDocument();
   });
 
   it('calls onTabSelect with the tab id when a tab is clicked', async () => {
