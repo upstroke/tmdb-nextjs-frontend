@@ -58,8 +58,8 @@ The displayed streaming providers and watch links are supplied through the TMDB 
 - Fomantic UI CSS
 - Sass
 - Zod for runtime validation
-- Vitest for unit testing
-- Cypress for end2end testing
+- Vitest for unit and integration testing
+- Cypress for browser-based acceptance (end-to-end) testing
 - Prettier and ESLint for formatting and code quality
 
 ## Type Safety Strategy
@@ -93,6 +93,7 @@ lib/
   schemas/        # Zod validation schemas + JSDoc typedefs
 styles/           # Sass styles (Fomantic UI)
 docs/             # Project documentation
+tests/            # Vitest unit/integration and Cypress acceptance tests
 ```
 
 ## Environment Variables
@@ -129,19 +130,20 @@ npm run dev
 
 ## Testing
 
-Unit tests use [Vitest](https://vitest.dev/). Test files live next to the module they test (`*.test.js`).
+Tests are separated by runner and purpose:
+
+- [Vitest](https://vitest.dev/) unit tests: `tests/unit/`.
+- Vitest integration tests: `tests/integration/`.
+- Cypress browser-based acceptance tests: `tests/cypress/acceptance/`. Route tests (`routes/`), shared UI behavior (`components/`), and accessibility checks (`accessibility/`) are peer categories.
+
+Cypress Page Objects live in `tests/cypress/POM/`; Cypress-specific fixtures and support files live in `tests/cypress/fixtures/` and `tests/cypress/support/`. Shared domain fixtures remain in `tests/fixtures/`.
 
 ```bash
-npm test            # single run
-npm run test:watch  # watch mode
+npm test            # Vitest single run
+npm run test:watch  # Vitest watch mode
 ```
 
-Tests cover:
-- Zod schema validation (`lib/schemas/tmdb.test.js`)
-- API mapper logic with mocked fetch (`lib/services/tmdb-api.test.js`)
-- `TMDBError` thrown on failed requests
-
-The testing overview, commands, and detailed guidance are documented in `docs/testing.md`.
+The Cypress spec-discovery configuration and imports still need to be aligned with the moved tests before the acceptance suite can run. See [docs/testing.md](docs/testing.md) for the testing strategy, commands, and conventions.
 
 ## Production Build
 

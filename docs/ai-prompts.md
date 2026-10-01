@@ -14,7 +14,7 @@ This file documents proven prompt patterns for AI-assisted development in the pr
 
 This project uses:
 
-- Next.js 16 with the App Router
+- Next.js 15 with the App Router
 - React 19
 - JavaScript (no TypeScript); type safety via JSDoc and Zod (see below)
 - Sass/SCSS for styles
@@ -170,9 +170,7 @@ Error and retry handling:
 - Flaky commands may be retried deliberately, but not indefinitely: first perform a short retry, then assess the situation, and if it fails again, narrow down the cause instead of continuing blindly.
 - Before targeted file edits, read the current file state exactly and copy search text character-for-character from the file.
 - If an edit fails because of an exact match, reread the file and choose the smallest safe change.
-- If something goes wrong or is not completed, say so openly so work can resume at exactly that point.
-
-Code creation and modification strategy:
+- If something goes wrong or is not completed, say so openly so work can resume at exactly that point.... Code creation and modification strategy:
 - Prefer existing patterns, conventions, and architecture.
 - Apply Next.js and React best practices, including proper error handling and appropriate use of Server Components, Client Components, and existing Context stores.
 - JavaScript should remain readable, transparent, and easy for people to understand.
@@ -224,13 +222,13 @@ Create a test for [function/component/feature].
 Context:
 - The test subject is located in `lib/` or `components/` or `app/`.
 - Read `docs/testing.md`, `docs/testing/common-rules.md`, and the applicable test-level guide before proposing changes.
-- Existing tests are in `tests/unit/`, `tests/integration/`, or `tests/acceptance/`.
+- Existing tests are in `tests/unit/`, `tests/integration/`, or `tests/cypress/acceptance/`.
 
 Requirements:
 - Select the appropriate test level before implementation.
 - Preserve existing patterns and conventions.
 - Reuse fixtures, mocks, and setup utilities where applicable.
-- For Cypress end-to-end acceptance tests, also read corresponding Cypress config files and the affected feature directory's test plan and existing specifications.
+- For Cypress end-to-end acceptance tests, read `cypress.config.js`, the affected directory under `tests/cypress/acceptance/`, any relevant test plan and existing specs, and applicable Page Objects under `tests/cypress/POM/`.
 
 Output: A test file in the appropriate existing test directory.
 ```
@@ -321,9 +319,11 @@ Output: A `route.js` file in the appropriate `app/api/` subdirectory.
 ## Further Information
 
 - `README.md` for project context and tech stack
-- `next.config.mjs` for build and runtime configuration
+- `next.config.js` for build and runtime configuration
 - `.env.example` for required environment variables
-- `docs/testing.md` for the project's testing overview (to be created)
-- `docs/testing/common-rules.md` for rules shared by all automated tests (to be created)
-- `docs/testing/unit-tests.md` for Vitest unit-test rules (to be created)
-- `docs/testing/acceptance-tests.md` for end-to-end acceptance-test rules (to be created)
+- `docs/testing.md` for the project's testing overview
+- `docs/testing/common-rules.md` for rules shared by all automated tests
+- `docs/testing/unit-tests.md` for Vitest unit-test rules
+- `docs/testing/integration-tests.md` for Vitest integration-test rules
+- `docs/testing/acceptance-tests.md` for end-to-end acceptance-test rules
+- `docs/testing/page-objects.md` for Cypress Page Object Model conventions
