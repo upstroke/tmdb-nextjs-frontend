@@ -17,19 +17,31 @@ describe('Navigation', () => {
     home.visit();
   });
 
-  it('loads the homepage without errors', () => {
+  // -------------------------------------------------------------------------
+  // NAV-01 — Homepage loads without errors
+  // -------------------------------------------------------------------------
+  it('[NAV-01] loads the homepage without errors', () => {
     home.assertMainExists();
   });
 
-  it('includes the locale in the URL', () => {
+  // -------------------------------------------------------------------------
+  // NAV-02 — Active locale is reflected in the URL
+  // -------------------------------------------------------------------------
+  it('[NAV-02] includes the locale in the URL', () => {
     home.assertLocaleInUrl();
   });
 
-  it('displays a visible header', () => {
+  // -------------------------------------------------------------------------
+  // NAV-03 — Global header is visible
+  // -------------------------------------------------------------------------
+  it('[NAV-03] displays a visible header', () => {
     home.header.assertVisible();
   });
 
-  it('has a language switcher in the header', () => {
+  // -------------------------------------------------------------------------
+  // NAV-04 — Language switcher is present in the header
+  // -------------------------------------------------------------------------
+  it('[NAV-04] has a language switcher in the header', () => {
     home.header.assertLanguageSwitcherExists();
   });
 });
