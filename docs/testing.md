@@ -15,7 +15,7 @@ The project uses three automated test levels:
 The project includes automated accessibility testing to support WCAG 2.2 AA compliance.
 
 - Accessibility checks use Cypress together with cypress-axe for automated WCAG A/AA violation detection.
-- Accessibility test files are located under `tests/acceptance/accessibility/`.
+- Accessibility test files are located under `tests/cypress/acceptance/accessibility/`.
 - Accessibility test plans remain next to the executable specifications as `*-testplan.md` files.
 - Common tags for these tests are `@accessibility` and `@a11y`.
 
@@ -23,37 +23,42 @@ The project includes automated accessibility testing to support WCAG 2.2 AA comp
 
 ```text
 tests/
-  acceptance/
-    accessibility/
-      accessibility.spec.js
-      accessibility-testplan.md
-    loadmore/
-    navigation/
-      navigation.spec.js
-      navigation-testplan.md
-  integration/
-    components/
-    routes/
-  unit/
-    routes/
-    tmdb-api/
-  fixtures/         # Shared domain test data (cy.intercept stubs)
-  mocks/
-  setup/
-    cypress.js            # Cypress support entry point
-    cypress-commands.js   # Custom commands
+  cypress/
+    POM/
+      BasePage.js
+      HeaderPage.js
+      HomePage.js
+    acceptance/
+      accessibility/
+        accessibility.spec.js
+        accessibility-testplan.md
+      components/
+        navigation/
+          navigation.spec.js
+          navigation-testplan.md
+      routes/
+        homepage.cy.js
+    fixtures/          # Cypress-specific fixture data
+    support/
+      commands.js
+      e2e.js
+      tmdb.commands.js
+  integration/          # Vitest integration tests
+  unit/                 # Vitest unit tests
+  fixtures/             # Shared domain test data
+  mocks/                # Technical mocks for tests
+  setup/                # Vitest setup and existing legacy Cypress setup
 ```
 
-- `tests/unit/` contains isolated Vitest unit tests. Domain subdirectories such as `routes/` and `tmdb-api/` may be used where they improve discoverability.
-- `tests/integration/components/` contains Vitest component integration tests.
-- `tests/integration/routes/` contains Vitest route integration tests.
-- `tests/acceptance/<feature>/` contains Cypress end-to-end acceptance tests organized by user-visible feature.
-- `tests/acceptance/accessibility/` contains accessibility tests with Cypress and axe-core.
-- `tests/fixtures/` contains stable, reusable domain test data.
+- `tests/unit/` contains isolated Vitest unit tests.
+- `tests/integration/` contains Vitest integration tests, including component interactions.
+- `tests/cypress/acceptance/` contains Cypress end-to-end acceptance tests grouped by accessibility, browser-visible component behavior, and routes. The `components/` directory does not mean Cypress Component Testing.
+- `tests/cypress/POM/` contains Cypress page objects; see `docs/testing/page-objects.md`.
+- `tests/cypress/fixtures/` holds Cypress-specific fixtures. `tests/fixtures/` holds shared domain test data; do not merge them as part of the directory migration.
+- `tests/cypress/support/` contains Cypress-specific support files and commands. The existing Cypress files in `tests/setup/` remain for now; their role and imports are reviewed separately. `tests/setup/` also contains Vitest setup.
 - `tests/mocks/` contains reusable mock support for technical dependencies.
-- `tests/setup/` contains shared setup and cleanup utilities.
 
-For Cypress end-to-end acceptance tests, each substantial feature directory contains one or more `*.spec.js` files and exactly one related `*-testplan.md` file. The test plan stays next to the executable specifications. Existing examples are `tests/acceptance/navigation/` and `tests/acceptance/loadmore/`.
+Accessibility and navigation have a `*-testplan.md` file next to their specs. The current `routes/homepage.cy.js` does not have a nearby test plan. The existing Cypress specs still use both `.spec.js` and `.cy.js`; test discovery and naming are handled in the follow-up configuration step.
 
 ## Documentation by Test Level
 
@@ -63,6 +68,7 @@ Read the following files in addition to this overview:
 - `docs/testing/unit-tests.md` for Vitest unit-test rules
 - `docs/testing/integration-tests.md` for Vitest integration-test rules
 - `docs/testing/acceptance-tests.md` for Cypress end-to-end acceptance-test rules
+- `docs/testing/page-objects.md` for Cypress Page Object Model conventions
 
 ## Test Commands
 
@@ -103,7 +109,7 @@ npm run test:acceptance  # Alias for CI
 
 #### `cy.i18n(locale?)`
 
-Loads the translation object for the given locale directly from `lib/i18n/ui.json` via `cy.readFile()`. This avoids duplicating translation files into `cypress/fixtures/` and ensures tests always use the current translations.
+Loads the translation object for the given locale directly from `lib/i18n/ui.json` via `cy.readFile()`. This avoids duplicating translation files into `tests/cypress/fixtures/` and ensures tests always use the current translations.
 
 ```js
 // Default locale (en-US)
@@ -135,6 +141,8 @@ npx cypress run --env DEFAULT_LOCALE=de-DE
 
 ### Mocking APIs
 
+For example, with a fixture available in `tests/cypress/fixtures/` (replace the filename and URL with those used by the scenario):
+
 ```js
 cy.intercept('GET', '/api/movies/trending*', { fixture: 'trending-movies.json' }).as('trending');
 cy.visitLocale('en-US');
@@ -161,7 +169,6 @@ This allows imports such as:
 ```js
 import { i18nMockDefault } from '$tests/mocks/i18n.mocks.js';
 import { movieDetails } from '$tests/fixtures/tmdb/tmdb.fixtures.js';
-import { cleanupAll } from '$tests/setup/test-utils.js';
 ```
 
 ## Test Strategy

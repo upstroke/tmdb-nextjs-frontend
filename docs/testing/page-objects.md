@@ -20,14 +20,15 @@ Benefits in this project:
 
 ## Directory structure
 
-Page objects live under `tests/pages/`:
+Page objects live under `tests/cypress/POM/`:
 
 ```text
 tests/
-  pages/
-    BasePage.js     # Shared navigation helpers; extended by all page objects
-    HeaderPage.js   # Global header; composed into page objects as this.header
-    HomePage.js     # Homepage (locale root)
+  cypress/
+    POM/
+      BasePage.js     # Shared navigation helpers; extended by all page objects
+      HeaderPage.js   # Global header; composed into page objects as this.header
+      HomePage.js     # Homepage (locale root)
 ```
 
 Page objects are plain JavaScript classes. There are no framework dependencies beyond the globally available `cy` object provided by Cypress.
@@ -78,6 +79,7 @@ Add new header selectors and assertion methods to `HeaderPage.js` when you need 
 Each route gets its own page object that extends `BasePage`.
 
 ```js
+// Inside tests/cypress/POM/MoviesPage.js:
 import { BasePage } from './BasePage.js';
 import { HeaderPage } from './HeaderPage.js';
 
@@ -100,10 +102,10 @@ export class MoviesPage extends BasePage {
 
 ## Using page objects in spec files
 
-Import the page object, instantiate it in `beforeEach`, and call its methods in each `it` block.
+Import the page object, instantiate it in `beforeEach`, and call its methods in each `it` block. From `tests/cypress/acceptance/routes/homepage.cy.js`, the relative path to `tests/cypress/POM/HomePage.js` is `../../POM/HomePage.js`.
 
 ```js
-import { HomePage } from '../../pages/HomePage.js';
+import { HomePage } from '../../POM/HomePage.js';
 
 describe('Navigation', () => {
   const locale = Cypress.env('DEFAULT_LOCALE') ?? 'en-US';
@@ -123,6 +125,8 @@ describe('Navigation', () => {
   });
 });
 ```
+
+From `tests/cypress/acceptance/components/navigation/navigation.spec.js`, the corresponding relative path is `../../../POM/HomePage.js`. Examples describe the intended imports; executable specs are updated in a separate step.
 
 ## Naming conventions
 
@@ -147,7 +151,7 @@ describe('Navigation', () => {
 **Do not put in the page object:**
 
 - `describe` or `it` blocks — those stay in spec files
-- Test data or fixtures — those live in `tests/fixtures/`
+- Test data or fixtures — Cypress-specific fixtures live in `tests/cypress/fixtures/`; shared domain data lives in `tests/fixtures/`
 - Assertions about business logic that is better verified at integration level
 
 ## Selectors
@@ -163,7 +167,7 @@ Never use `:nth-child()` or index-based selectors in page objects.
 
 ## Adding a new page object
 
-1. Create `tests/pages/<Name>Page.js`.
+1. Create `tests/cypress/POM/<Name>Page.js`.
 2. Extend `BasePage` with the correct `locale` and `path`.
 3. Compose `HeaderPage` as `this.header` if the page includes the global header.
 4. Add element getters and methods for the features you need to test.

@@ -17,20 +17,28 @@ Do not use Cypress for small isolated logic or component-only behavior that can 
 
 ## File Location
 
-Place acceptance tests under `tests/acceptance/<feature>/`.
-
-Each substantial feature directory should contain:
-
-- one or more `*.spec.js` files
-- one related `*-testplan.md` file that describes the covered user stories and scenarios
-
-Example:
+Place browser-based acceptance tests under `tests/cypress/acceptance/`:
 
 ```text
-tests/acceptance/navigation/
-  navigation.spec.js
-  navigation-testplan.md
+tests/cypress/
+  acceptance/
+    accessibility/
+      accessibility.spec.js
+      accessibility-testplan.md
+    components/
+      navigation/
+        navigation.spec.js
+        navigation-testplan.md
+    routes/
+      homepage.cy.js
+  POM/                 # Cypress page objects
+  fixtures/            # Cypress-specific fixture data
+  support/             # Cypress entry point and commands
 ```
+
+`components/navigation/` contains a browser-based acceptance test for navigation, not an isolated Cypress Component Test. Use a directory per shared UI component or region when its user-visible behavior needs acceptance coverage. `routes/` contains route-oriented browser journeys; `accessibility/` contains full-page and interaction-state accessibility checks.
+
+Accessibility and navigation currently have a test plan next to their specs; `routes/homepage.cy.js` does not yet have one. Existing specs use both `*.spec.js` and `*.cy.js`. The current `cypress.config.js` still targets `tests/cypress/e2e/**/*.cy.js`, so none of the specs in this structure are discovered by that pattern until the follow-up configuration and import changes are completed. Do not treat the naming shown here as a working runner configuration.
 
 ## General Rules
 
@@ -81,9 +89,7 @@ If the concern is only keyboard handling, ARIA semantics, or isolated async rend
 
 ## Test Plans
 
-Each acceptance feature directory should contain exactly one nearby test plan file.
-
-The plan should describe:
+Keep a `*-testplan.md` beside the executable specs for a substantial acceptance feature. Accessibility and navigation already have nearby plans; the current homepage route spec does not. A plan should describe:
 
 - the user story or feature goal
 - covered scenarios
