@@ -46,7 +46,7 @@ Cypress.Commands.add('interceptTmdb', (overrides = {}) => {
 
 /**
  * Simulate TMDB API error for a specific route
- * @param {string} urlPattern - e.g. '**/movie/**'
+ * @param {string} urlPattern - e.g. a TMDB movie URL glob
  * @param {number} statusCode - e.g. 404, 500
  */
 Cypress.Commands.add('interceptTmdbError', (urlPattern, statusCode = 500) => {

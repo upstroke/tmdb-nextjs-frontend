@@ -28,9 +28,7 @@ export class HeaderPage {
    * @returns {Cypress.Chainable}
    */
   get languageSwitcher() {
-    return this.root.find(
-      '[data-testid="language-switcher"], [aria-label*="language" i], [aria-label*="sprache" i]',
-    );
+    return this.root.find('#language-select');
   }
 
   /**
