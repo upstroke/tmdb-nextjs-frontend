@@ -4,20 +4,18 @@ export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:3000',
 
-    // Acceptance tests: tests/acceptance/<feature>/*.spec.js
-    // Each feature directory also contains a *-testplan.md
-    specPattern: 'tests/acceptance/**/*.spec.js',
+    // Acceptance/E2E specs in tests/cypress/e2e
+    specPattern: 'tests/cypress/e2e/**/*.cy.js',
 
-    // Support entry point — registers cypress-axe and custom commands
-    // (cy.visitLocale, cy.checkPageA11y)
-    supportFile: 'tests/setup/cypress.js',
+    // Support entry point — registers custom commands
+    supportFile: 'tests/cypress/support/e2e.js',
 
-    // Shared domain fixtures used by cy.intercept stubs
-    fixturesFolder: 'tests/fixtures',
+    // Cypress-specific fixtures used by cy.intercept stubs
+    fixturesFolder: 'tests/cypress/fixtures',
 
-    // Artifacts — excluded from version control via .gitignore
-    screenshotsFolder: 'cypress/screenshots',
-    videosFolder: 'cypress/videos',
+    // Artifacts — exclude these paths from version control via .gitignore
+    screenshotsFolder: 'tests/cypress/screenshots',
+    videosFolder: 'tests/cypress/videos',
 
     // Viewport — matches Fomantic UI desktop breakpoint
     viewportWidth: 1280,
