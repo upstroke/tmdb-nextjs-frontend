@@ -16,20 +16,32 @@ describe('Homepage', () => {
     cy.visitLocale(locale);
   });
 
-  it('loads without errors', () => {
+  // -------------------------------------------------------------------------
+  // HOME-01 — Homepage loads without errors
+  // -------------------------------------------------------------------------
+  it('[HOME-01] loads without errors', () => {
     cy.get('main').should('exist');
   });
 
-  it('displays a trending section', () => {
+  // -------------------------------------------------------------------------
+  // HOME-02 — Trending content is displayed
+  // -------------------------------------------------------------------------
+  it('[HOME-02] displays a trending section', () => {
     // The heading text will vary by locale — check for a section landmark instead
     cy.get('main').should('have.length.greaterThan', 0);
   });
 
-  it('has a visible navigation header', () => {
+  // -------------------------------------------------------------------------
+  // HOME-03 — Navigation header is visible
+  // -------------------------------------------------------------------------
+  it('[HOME-03] has a visible navigation header', () => {
     cy.get('header').should('be.visible');
   });
 
-  it('has a language switcher in the header', () => {
+  // -------------------------------------------------------------------------
+  // HOME-04 — Language switcher is present in the header
+  // -------------------------------------------------------------------------
+  it('[HOME-04] has a language switcher in the header', () => {
     const header = new HeaderPage();
     header.languageSwitcher.should('exist');
   });
