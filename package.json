@@ -9,14 +9,14 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
+    "test:vitest": "vitest run",
+    "test:vitest:watch": "vitest",
+    "test:vitest:coverage": "vitest run --coverage",
     "test:unit": "vitest run tests/unit",
     "test:components": "vitest run tests/integration/components",
     "test:integration": "vitest run tests/integration",
-    "test:watch": "vitest",
-    "test:vitest:coverage": "vitest run --coverage",
-    "cy:open": "cypress open",
-    "cy:run": "cypress run",
-    "test:acceptance": "cypress run"
+    "test:acceptance": "cypress run",
+    "test:acceptance:ui": "cypress open"
   },
   "dependencies": {
     "fomantic-ui-css": "^2.9.4",
