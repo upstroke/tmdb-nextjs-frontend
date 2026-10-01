@@ -1,4 +1,19 @@
 // Global support file — runs before every test file.
-// Import custom commands or third-party plugins here.
+// Import the Cypress commands and the accessibility plugin once.
 
+import 'cypress-axe';
 import './commands';
+import './tmdb.commands';
+
+Cypress.Commands.add('checkPageA11y', (options = {}) => {
+  cy.injectAxe();
+  cy.checkA11y(
+    null,
+    {
+      runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'] },
+      ...options,
+    },
+    null,
+    true,
+  );
+});
