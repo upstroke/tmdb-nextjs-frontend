@@ -52,7 +52,7 @@ tests/
 
 - `tests/unit/` contains isolated Vitest unit tests.
 - `tests/integration/` contains Vitest integration tests, including component interactions.
-- `tests/cypress/acceptance/` contains Cypress end-to-end acceptance tests grouped by accessibility, browser-visible component behavior, and routes. The `components/` directory does not mean Cypress Component Testing.
+- `tests/cypress/acceptance/` contains browser-based Cypress acceptance tests. Its `routes/`, `components/`, and `accessibility/` subdirectories are peer categories within the same test level: `routes/` covers individual pages and their visible behavior; `components/` covers shared UI areas such as navigation in the context of the running application; `accessibility/` covers accessibility checks on pages and interaction states.
 - `tests/cypress/POM/` contains Cypress page objects; see `docs/testing/page-objects.md`.
 - `tests/cypress/fixtures/` holds Cypress-specific fixtures. `tests/fixtures/` holds shared domain test data; do not merge them as part of the directory migration.
 - `tests/cypress/support/` contains Cypress-specific support files and commands. The existing Cypress files in `tests/setup/` remain for now; their role and imports are reviewed separately. `tests/setup/` also contains Vitest setup.
