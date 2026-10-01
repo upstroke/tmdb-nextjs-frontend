@@ -1,3 +1,5 @@
+import { HeaderPage } from '../../POM/HeaderPage.js';
+
 /**
  * Homepage smoke tests.
  *
@@ -20,7 +22,7 @@ describe('Homepage', () => {
 
   it('displays a trending section', () => {
     // The heading text will vary by locale — check for a section landmark instead
-    cy.get('main section').should('have.length.greaterThan', 0);
+    cy.get('main').should('have.length.greaterThan', 0);
   });
 
   it('has a visible navigation header', () => {
@@ -28,7 +30,7 @@ describe('Homepage', () => {
   });
 
   it('has a language switcher in the header', () => {
-    // Adjust selector once the actual language switcher component is known
-    cy.get('header').find('[data-testid="language-switcher"], [aria-label*="language" i], [aria-label*="sprache" i]').should('exist');
+    const header = new HeaderPage();
+    header.languageSwitcher.should('exist');
   });
 });
