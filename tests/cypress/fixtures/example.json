@@ -1,7 +1,0 @@
-{
-  "note": "Fixture files can be used to mock API responses via cy.intercept().",
-  "example": {
-    "id": 1,
-    "title": "Example Movie"
-  }
-}
