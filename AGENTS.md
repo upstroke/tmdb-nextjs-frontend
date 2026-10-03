@@ -1,14 +1,17 @@
-# Agent instructions
+# Agent skills
 
-Use the project skill at `.agent/skills/tmdb-nextjs-frontend/SKILL.md` for all
-development, testing, accessibility, documentation, and review work.
+This repository contains task-focused Agent Skills in `.agent/skills/`.
 
-Before changing code:
+Select and read the applicable `SKILL.md` before acting:
 
-1. Read `README.md`.
-2. Read `package.json`.
-3. Read `.agent/skills/tmdb-nextjs-frontend/SKILL.md`.
-4. Read the reference files relevant to the task.
-5. Inspect nearby implementation and test files before choosing a pattern.
+- `tmdb-development` — features, fixes, refactors, components, routes, and styling
+- `tmdb-testing` — unit, integration, and Cypress acceptance tests
+- `tmdb-accessibility` — keyboard, focus, semantics, ARIA, and accessibility audits
+- `tmdb-ai-collaboration` — planning, review, validation, and collaboration boundaries
 
-Do not replace project conventions with generic assumptions.
+For work that spans several areas, read each applicable skill. Begin with
+`tmdb-ai-collaboration` when the request is ambiguous, broad, or asks for an
+implementation plan.
+
+Do not edit files, run destructive commands, change dependencies, push commits,
+or create pull requests without the user’s explicit approval.
