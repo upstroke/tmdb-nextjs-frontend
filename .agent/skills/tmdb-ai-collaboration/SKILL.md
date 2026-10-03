@@ -26,9 +26,26 @@ specialist skill before proposing technical changes.
 6. Request explicit approval before irreversible or external actions, including
    writing files, creating commits, pushing branches, deleting files, creating
    pull requests, changing dependencies, or modifying configuration.
-7. After changes, inspect the diff and run relevant validation commands.
+7. After changes, inspect the diff and run `scripts/validate.sh` when a
+   standard validation pass is appropriate.
 8. Report facts only: files changed, commands run, outcomes, skipped checks,
    unresolved risks, and follow-up decisions.
+
+## Validation
+
+`scripts/validate.sh` runs the project’s standard local checks:
+
+```bash
+npm run lint
+npm run test:unit
+npm run build
+```
+
+Run Cypress acceptance tests separately when the change affects a user journey,
+navigation flow, browser behavior, or an existing acceptance test.
+
+Do not claim validation succeeded unless every command completed successfully
+and its output was observed.
 
 ## Review rules
 

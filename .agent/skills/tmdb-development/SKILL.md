@@ -18,17 +18,19 @@ before creating a new pattern.
 ## Workflow
 
 1. Restate the requested behavior in observable terms.
-2. Identify affected files and inspect their callers, tests, and related UI.
-3. Identify whether the work also requires `tmdb-testing` or
+2. Run `scripts/changed-files.sh` when reviewing an existing branch or
+   identifying the scope of pending work.
+3. Identify affected files and inspect their callers, tests, and related UI.
+4. Identify whether the work also requires `tmdb-testing` or
    `tmdb-accessibility`; read those skills before editing when applicable.
-4. Present a concise plan when the task is ambiguous, multi-file, architectural,
+5. Present a concise plan when the task is ambiguous, multi-file, architectural,
    or changes user-facing behavior.
-5. Make the smallest change that meets the requested behavior.
-6. Preserve existing naming, file placement, imports, styling, and data-flow
+6. Make the smallest change that meets the requested behavior.
+7. Preserve existing naming, file placement, imports, styling, and data-flow
    conventions unless the request explicitly changes them.
-7. Add or update tests and documentation when the change affects behavior,
+8. Add or update tests and documentation when the change affects behavior,
    setup, or contributor workflow.
-8. Run only relevant commands that exist in `package.json` and report actual
+9. Run only relevant commands that exist in `package.json` and report actual
    results.
 
 ## Constraints
