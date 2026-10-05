@@ -1,5 +1,4 @@
-// Global support file — runs before every test file.
-// Import the Cypress commands and the accessibility plugin once.
+// tests/cypress/support/e2e.js
 
 import 'cypress-axe';
 import './commands.js';
@@ -7,7 +6,7 @@ import './tmdb.commands.js';
 import '@testing-library/cypress';
 
 Cypress.Commands.add('checkPageA11y', (options = {}) => {
-  cy.injectAxe();
+  cy.injectAxe({ axeCorePath: 'node_modules/axe-core/axe.min.js' });
   cy.checkA11y(
     null,
     {
