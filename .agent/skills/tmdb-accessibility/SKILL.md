@@ -1,48 +1,68 @@
----
-name: tmdb-accessibility
-description: Implement, review, or test accessibility in the TMDB Next.js frontend, including keyboard behavior, focus management, semantics, ARIA, screen-reader support, and accessibility audits.
-version: 0.1.0
----
+# TMDB Accessibility Skill
 
-# TMDB accessibility
+## Überblick
 
-## Use this skill
+Dieser Skill definiert die Accessibility-Strategie für das TMDB Next.js Frontend. Accessibility-Tests sind über alle Test-Levels integriert.
 
-Use this skill for every change to interactive UI, forms, navigation, dynamic
-content, dialogs, menus, search, media controls, page structure, or visible
-status and error messages.
+## Test-Levels für Accessibility
 
-Read `docs/testing/accessibility-audit-checklist.md` before editing. Inspect
-the affected component, its keyboard behavior, nearby tests, and similar
-accessible components already in the repository.
+| Level | Werkzeug | Pfad | Fokus |
+|-------|----------|------|-------|
+| **Unit** | Vitest + axe-core | `tests/vitest/accessibility/` | Automatisierte A11y-Checks isolierter Komponenten |
+| **Komponente** | Cypress | `tests/cypress/acceptance/components/` | Interaktive A11y-Checks an einzelnen Komponenten |
+| **Akzeptanz (E2E/Flows)** | Cypress | `tests/cypress/acceptance/flows/` | A11y in kompletten User-Flows (End-to-End) |
 
-## Workflow
+## Wichtige Regeln
 
-1. Identify the user interaction, semantic structure, and dynamic state being
-   changed.
-2. Use native HTML controls and semantics before adding ARIA.
-3. Ensure all functionality works with keyboard-only operation.
-4. Verify visible focus, logical tab order, accessible names, labels, and
-   descriptions.
-5. For dynamic content, ensure loading, success, validation, and error changes
-   are perceivable without relying on color, animation, or pointer input.
-6. For dialogs, menus, popovers, tabs, and disclosures, verify the component’s
-   roles, state, focus movement, Escape behavior where applicable, and focus
-   restoration.
-7. Add automated coverage for repeatable behavior and state remaining manual
-   audit steps.
-8. Run relevant project tests and report actual outcomes.
+1. **ARIA-Rollen**: Alle interaktiven Elemente haben korrekte `role`-Attribute
+2. **Labels**: Alle Formularelemente haben verknüpfte `<label>` oder `aria-label`
+3. **Kontraste**: Text-Hintergrund-Kontrast ≥ 4.5:1 (WCAG AA)
+4. **Fokus-Indikatoren**: Alle fokussierbaren Elemente haben sichtbaren Fokus
+5. **Keyboard-Navigation**: Alle Interaktionen sind per Tastatur möglich
+6. **Screen-Reader-Tests**: Wichtige Inhalte werden vorgelesen
 
-## Constraints
+## Automatisierte Tests (Vitest)
 
-- Do not use `div` or `span` as a substitute for a native interactive element.
-- Do not add ARIA that duplicates or conflicts with native semantics.
-- Do not remove visible focus or trap keyboard users.
-- Do not use color as the only state or error indicator.
-- Do not assume an automated check replaces keyboard and screen-reader review.
-- Respect reduced-motion preferences for nonessential motion.
+```js
+// tests/vitest/accessibility/movie-card.test.js
+import { axe, toHaveNoViolations } from 'jest-axe';
+import { render } from '@testing-library/react';
+import { MovieCard } from '@/components/movie-card';
 
-## Completion report
+expect.extend(toHaveNoViolations);
 
-Report semantic and keyboard decisions, focus behavior, automated tests run,
-manual checks performed or still required, and any known accessibility risk.
+it('hat keine A11y-Verstöße', async () => {
+  const { container } = render(<MovieCard movie={{ title: 'Inception' }} />);
+  const results = await axe(container);
+  expect(results).toHaveNoViolations();
+});
+```
+
+## Interaktive Tests (Cypress)
+
+```js
+// tests/cypress/acceptance/components/movie-card.cy.js
+describe('MovieCard (A11y)', () => {
+  it('ist per Tastatur navigierbar', () => {
+    cy.mount(<MovieCard movie={{ title: 'Inception' }} />);
+    cy.tab().should('have.focus');
+  });
+
+  it('hat korrekte ARIA-Labels', () => {
+    cy.mount(<MovieCard movie={{ title: 'Inception' }} />);
+    cy.findByRole('img', { name: /inception/i }).should('exist');
+  });
+});
+```
+
+## Dokumentation
+
+- **Accessibility Audit Checklist**: [`docs/testing/accessibility-audit-checklist.md`](../../docs/testing/accessibility-audit-checklist.md)
+- **Testing-Strategie**: [`docs/testing.md`](../../docs/testing.md)
+
+## Tools
+
+- **axe-core**: Automatisierte A11y-Checks in Vitest und Cypress
+- **WAVE Browser-Extension**: Visuelle A11y-Analyse
+- **Screen-Reader**: NVDA (Windows), VoiceOver (macOS)
+- **Tastatur-Test**: Nur Tab, Shift+Tab, Enter, Space, Pfeiltasten verwenden
