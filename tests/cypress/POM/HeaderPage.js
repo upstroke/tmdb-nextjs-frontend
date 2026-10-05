@@ -35,6 +35,14 @@ export function HeaderPage() {
       return cy.get(selectors.menuButton);
     },
 
+    /**
+     * Navigate to a page and return this for chaining
+     */
+    visit(locale = 'en-US') {
+      cy.visit(`/${locale}`);
+      return this;
+    },
+
     assertVisible() {
       this.root.should('be.visible');
     },
