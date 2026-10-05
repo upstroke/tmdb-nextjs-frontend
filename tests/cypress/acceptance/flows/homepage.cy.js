@@ -19,7 +19,15 @@ describe('Homepage', () => {
 
   it('should search for movies when using the search bar', () => {
     homePage.visit();
-    homePage.searchInput.type('Batman{enter}');
-    cy.location('pathname').should('include', '/search');
+    homePage.searchInput
+      .should('be.visible')
+      .type('Batman');
+
+    cy.get('#typeahead-search-results')
+      .should('be.visible')
+      .and('have.attr', 'role', 'listbox');
+
+    cy.get('#typeahead-search-results [role="option"]')
+      .should('have.length.at.least', 1);
   });
 });
