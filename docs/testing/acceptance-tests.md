@@ -36,9 +36,17 @@ tests/cypress/
   support/             # Cypress entry point and commands
 ```
 
-`components/navigation/` contains a browser-based acceptance test for navigation, not an isolated Cypress Component Test. Use a directory per shared UI component or region when its user-visible behavior needs acceptance coverage in the browser. Isolated component behavior, including ARIA semantics and keyboard handling inside a single reusable component, belongs in Vitest integration tests under `tests/integration/components/`. `routes/` contains route-oriented browser journeys; `accessibility/` contains full-page and interaction-state accessibility checks.
+`cypress.config.js` discovers specs with `tests/cypress/acceptance/**/*.{cy,spec}.js`, so both `*.cy.js` and the legacy `*.spec.js` naming are picked up. The support file is `tests/cypress/support/e2e.js` and fixtures live in `tests/cypress/fixtures`.
 
-Accessibility and navigation currently have a test plan next to their specs; `routes/homepage.cy.js` does not yet have one. Existing specs use both `*.spec.js` and `*.cy.js`. The current `cypress.config.js` still targets `tests/cypress/e2e/**/*.cy.js`, so none of the specs in this structure are discovered by that pattern until the follow-up configuration and import changes are completed. Do not treat the naming shown here as a working runner configuration.
+## Component Tests: Vitest or Cypress?
+
+Component tests are written with Vitest, as integration tests under `tests/integration/components/` (see `integration-tests.md`). The project does not use Cypress Component Testing; `cypress.config.js` only defines an `e2e` configuration.
+
+`tests/cypress/acceptance/components/` is different: it holds browser-based acceptance tests for shared UI components or regions (for example navigation) whose user-visible behavior needs coverage in a real browser. These run against the running application, not against an isolated component. Isolated component behavior, including ARIA semantics and keyboard handling inside a single reusable component, belongs in Vitest.
+
+`routes/` contains route-oriented browser journeys; `accessibility/` contains full-page and interaction-state accessibility checks.
+
+Accessibility and navigation currently have a test plan next to their specs; `routes/homepage.cy.js` does not yet have one.
 
 ## General Rules
 
