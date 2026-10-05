@@ -1,38 +1,50 @@
-/**
- * Header Page module — encapsulates header selectors and assertions.
- *
- * @returns {Object} HeaderPage instance with header selectors and assertions
- */
+// tests/cypress/POM/HeaderPage.js
+
+const selectors = {
+  root: '#menuHeader',
+  navigation: '#navmenu',
+  navigationItems: '#navmenu a',
+  searchInput: '#typeahead-search-input',
+  languageSwitcher: '#language-select',
+  menuButton: '#menuHeader .burger-icon'
+};
+
 export function HeaderPage() {
   return {
-    /**
-     * @returns {Cypress.Chainable}
-     */
     get root() {
-      return cy.get('header[role="banner"]');
+      return cy.get(selectors.root);
     },
 
-    /**
-     * @returns {Cypress.Chainable}
-     */
+    get navigation() {
+      return cy.get(selectors.navigation);
+    },
+
+    get navigationItems() {
+      return cy.get(selectors.navigationItems);
+    },
+
+    get searchInput() {
+      return cy.get(selectors.searchInput);
+    },
+
     get languageSwitcher() {
-      return this.root.get('[data-testid="language-switcher"]');
+      return cy.get(selectors.languageSwitcher);
     },
 
-    /**
-     * @returns {Object} This instance for chaining
-     */
+    get menuButton() {
+      return cy.get(selectors.menuButton);
+    },
+
     assertVisible() {
       this.root.should('be.visible');
-      return this;
     },
 
-    /**
-     * @returns {Object} This instance for chaining
-     */
+    assertNavigationExists() {
+      this.navigation.should('exist');
+    },
+
     assertLanguageSwitcherExists() {
       this.languageSwitcher.should('exist');
-      return this;
-    },
+    }
   };
 }
