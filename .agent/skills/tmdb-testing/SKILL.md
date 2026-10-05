@@ -1,7 +1,7 @@
 ---
 name: tmdb-testing
 description: Design, implement, update, or review unit, integration, and Cypress acceptance tests for the TMDB Next.js frontend, including fixtures, mocks, and page objects.
-version: 0.1.0
+version: 0.2.0
 ---
 
 # TMDB testing
@@ -26,6 +26,42 @@ mocks, and page objects nearest to the feature.
 - Use a page object when a Cypress page interaction or selector is reused or
   represents meaningful user intent.
 
+## Coverage target and ISTQB classification
+
+The project target is at least 80% statement coverage.
+
+Classify every `it` block according to ISTQB terminology:
+
+- **Statement coverage**: the test executes statements at least once. Use this
+  for straight-line code and for the single path through a function.
+- **Branch coverage**: the test exercises a specific outcome of a decision
+  (`true` or `false` of an `if`, each case of a `switch`, each side of a ternary,
+  `&&`, `||`, `??`, or optional chaining fallback).
+
+Branch coverage subsumes statement coverage: a test that covers a branch also
+covers its statements, but it must still be labeled as branch coverage.
+
+Label each `it` block with a comment directly above it:
+
+```js
+// Coverage: Statement
+it('returns the title for a movie', () => { /* ... */ })
+
+// Coverage: Branch (poster_path missing -> fallback image)
+it('uses the fallback image when poster_path is missing', () => { /* ... */ })
+```
+
+Rules:
+
+- Every `it` block carries exactly one `// Coverage:` label.
+- A branch label names the decision and the outcome that is exercised.
+- Cover both outcomes of each relevant decision with separate `it` blocks.
+- Do not label a test as branch coverage if it exercises only one outcome and
+  the other outcome has no test.
+- Cypress acceptance tests are user-journey tests; label them too, but do not
+  count them toward the 80% statement coverage target, which is measured on
+  Vitest unit and integration tests.
+
 ## Workflow
 
 1. Identify the behavior to protect and the appropriate test level.
@@ -37,8 +73,10 @@ mocks, and page objects nearest to the feature.
    selectors.
 6. Mock external boundaries rather than internal implementation details.
 7. Cover relevant success, loading, empty, error, and edge cases.
-8. Run the narrowest relevant test command first, then broader project checks
+8. Label each new or changed `it` block with its ISTQB coverage type.
+9. Run the narrowest relevant test command first, then broader project checks
    only when appropriate.
+10. Check the statement coverage report against the 80% target.
 
 ## Constraints
 
@@ -49,8 +87,11 @@ mocks, and page objects nearest to the feature.
 - Keep page-object methods intention-revealing; do not expose incidental DOM
   structure as a test API.
 - Do not mark behavior as covered without a test that demonstrates it.
+- Do not add tests only to raise the coverage number; each test must protect
+  observable behavior.
 
 ## Completion report
 
-Report test level chosen, scenarios covered, files changed, exact commands run,
-results, and manual checks that remain.
+Report test level chosen, scenarios covered, coverage type per `it` block
+(statement or branch), files changed, exact commands run, results, the
+statement coverage figure against the 80% target, and manual checks that remain.
