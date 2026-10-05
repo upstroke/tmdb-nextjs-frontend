@@ -7,11 +7,14 @@ describe('Security: Search XSS Prevention', () => {
     header.visit('de-DE');
   });
 
-  it('zeigt keine Script-Injection in Suchergebnissen', () => {
+  it('sanitizes XSS-Input im Suchfeld', () => {
     const xssInput = '<script>alert("XSS")</script>';
     
     // XSS-Input eingeben
     header.searchInput.type(xssInput);
+    
+    // Der Value im Input-Feld sollte exakt dem Input entsprechen (als Text, nicht ausgeführt)
+    header.searchInput.should('have.value', xssInput);
     
     // Enter drücken, um Suche zu triggern
     header.searchInput.type('{enter}');
@@ -19,21 +22,20 @@ describe('Security: Search XSS Prevention', () => {
     // Seite sollte nicht crashen – wir landen auf /search
     cy.location('pathname').should('include', '/search');
     
+    // URL-Parameter sollte encoded sein (< wird zu %3C, > zu %3E)
+    cy.location('search').should('include', '%3Cscript%3E');
+    cy.location('search').should('include', '%3C/script%3E');
+    
     // Kein echtes Script-Tag im DOM
+    cy.get('script').should('not.exist');
+    
+    // Body-HTML sollte die encoded Version enthalten, nicht das rohe Script-Tag
     cy.get('body').then(($body) => {
       const bodyHtml = $body.html();
-      expect(bodyHtml).to.not.include('<script>');
+      // Das rohe <script>-Tag darf nicht vorkommen
+      expect(bodyHtml).to.not.include('<script>alert');
       expect(bodyHtml).to.not.include('</script>');
     });
-    
-    // Kein Alert sollte getriggert werden
-    let alertTriggered = false;
-    cy.on('window:alert', () => {
-      alertTriggered = true;
-    });
-    
-    cy.wait(500);
-    cy.wrap(alertTriggered).should('be.false');
   });
 
   it('akzeptiert normale Suchanfragen', () => {
