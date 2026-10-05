@@ -20,6 +20,54 @@ import { http, HttpResponse } from 'msw';
 import { rawFixtures } from '../fixtures/tmdb/tmdb.fixtures.js';
 
 export const handlers = [
+  // ── TMDB API (for integration tests) ─────────────────────
+
+  /** GET https://api.themoviedb.org/3/trending/movie/day */
+  http.get('https://api.themoviedb.org/3/trending/movie/day', () => {
+    return HttpResponse.json({
+      page: 1,
+      results: [
+        {
+          id: 1,
+          title: 'Movie 1',
+          media_type: 'movie',
+          vote_average: 7.5,
+          poster_path: '/poster1.jpg',
+          genre_ids: [18],
+        },
+        {
+          id: 2,
+          title: 'Movie 2',
+          media_type: 'movie',
+          vote_average: 8.0,
+          poster_path: '/poster2.jpg',
+          genre_ids: [28],
+        },
+      ],
+      total_pages: 10,
+      total_results: 200,
+    });
+  }),
+
+  /** GET https://api.themoviedb.org/3/trending/tv/day */
+  http.get('https://api.themoviedb.org/3/trending/tv/day', () => {
+    return HttpResponse.json({
+      page: 1,
+      results: [
+        {
+          id: 1399,
+          name: 'TV Show 1',
+          media_type: 'tv',
+          vote_average: 9.0,
+          poster_path: '/poster1.jpg',
+          genre_ids: [10765],
+        },
+      ],
+      total_pages: 10,
+      total_results: 200,
+    });
+  }),
+
   // ── Movies ───────────────────────────────────────────────
 
   /** GET /api/:locale/movies — popular / top_rated / trending list */
