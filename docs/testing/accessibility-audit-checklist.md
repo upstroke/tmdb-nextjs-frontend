@@ -1,133 +1,108 @@
 # Accessibility Audit Checklist
 
-Diese Checkliste gliedert Accessibility-Tests nach Test-Levels und Werkzeugen.
+## Overview
 
-## Übersicht
+This checklist ensures the application meets WCAG 2.1 AA accessibility standards. Use it during development and before releases.
 
-| Test-Level | Werkzeug | Pfad | Fokus |
-|------------|----------|------|-------|
-| **Unit** | Vitest + axe-core | `tests/vitest/accessibility/` | Automatisierte A11y-Checks isolierter Komponenten |
-| **Komponente** | Cypress | `tests/cypress/acceptance/components/` | Interaktive A11y-Checks an einzelnen Komponenten |
-| **Akzeptanz (E2E)** | Cypress | `tests/cypress/acceptance/flows/` | A11y in kompletten User-Flows |
+## Automated Testing
 
----
+### Cypress + axe-core
 
-## Unit-Tests (Vitest + axe-core)
-
-**Pfad:** `tests/vitest/accessibility/`
-
-### Automatisierte Checks
-
-- [ ] **ARIA-Rollen**: Alle interaktiven Elemente haben korrekte `role`-Attribute
-- [ ] **Labels**: Alle Formularelemente haben verknüpfte `<label>` oder `aria-label`
-- [ ] **Kontraste**: Text-Hintergrund-Kontrast ≥ 4.5:1 (WCAG AA)
-- [ ] **Fokus-Indikatoren**: Alle fokussierbaren Elemente haben sichtbaren Fokus
-- [ ] **Semantik**: Korrekte Überschriften-Hierarchie (`h1`–`h6`)
-- [ ] **Bilder**: Alle `<img>` haben aussagekräftige `alt`-Texte
-- [ ] **Links**: Link-Texte sind beschreibend (nicht "hier klicken")
-
-### Beispiel
-
-```ts
-// tests/vitest/accessibility/movie-card.test.ts
-import { axe, toHaveNoViolations } from 'jest-axe';
-import { render } from '@testing-library/react';
-import { MovieCard } from '@/components/movie-card';
-
-expect.extend(toHaveNoViolations);
-
-it('hat keine A11y-Verstöße', async () => {
-  const { container } = render(
-    <MovieCard movie={{ title: 'Inception', releaseDate: '2010-07-16' }} />
-  );
-  const results = await axe(container);
-  expect(results).toHaveNoViolations();
-});
-```
-
----
-
-## Komponententests (Cypress)
-
-**Pfad:** `tests/cypress/acceptance/components/`
-
-### Interaktive Checks
-
-- [ ] **Keyboard-Navigation**: Alle Interaktionen sind per Tastatur möglich
-- [ ] **Fokus-Reihenfolge**: Logische Fokus-Reihenfolge (Tab-Reihenfolge)
-- [ ] **Screen-Reader-Tests**: Wichtige Inhalte werden vorgelesen
-- [ ] **Fokus-Fallen**: Kein Fokus-Trap in Modalen/Dialogen
-- [ ] **Dynamische Inhalte**: `aria-live`-Regionen für Updates
-
-### Beispiel
-
-```ts
-// tests/cypress/acceptance/components/movie-card.cy.ts
-import { MovieCard } from '@/components/movie-card';
-
-describe('MovieCard (A11y)', () => {
-  it('ist per Tastatur navigierbar', () => {
-    cy.mount(<MovieCard movie={{ title: 'Inception' }} />);
-    cy.tab().should('have.focus');
-    cy.tab().should('have.focus');
-  });
-
-  it('hat korrekte ARIA-Labels', () => {
-    cy.mount(<MovieCard movie={{ title: 'Inception' }} />);
-    cy.findByRole('img', { name: /inception/i }).should('exist');
-    cy.findByRole('button', { name: /favorit/i }).should('exist');
-  });
-});
-```
-
----
-
-## Akzeptanztests (E2E, Cypress)
-
-**Pfad:** `tests/cypress/acceptance/flows/`
-
-### Flow-weite Checks
-
-- [ ] **Kompletter Flow per Tastatur**: User-Flow ist ohne Maus möglich
-- [ ] **Fokus-Management**: Fokus wird nach Navigation/Modal-Öffnung korrekt gesetzt
-- [ ] **Fehlermeldungen**: Fehler sind per Screen-Reader lesbar (`aria-invalid`, `aria-describedby`)
-- [ ] **Ladezustände**: Loading-States sind angekündigt (`aria-busy`, `aria-live`)
-
-### Beispiel
-
-```ts
-// tests/cypress/acceptance/flows/search-and-add.cy.ts
-describe('User-Flow: Film suchen und hinzufügen (A11y)', () => {
-  it('ist komplett per Tastatur bedienbar', () => {
+```js
+// tests/cypress/acceptance/accessibility/homepage.cy.js
+describe('Homepage Accessibility', () => {
+  it('has no accessibility violations', () => {
     cy.visit('/');
-    cy.findByRole('searchbox', { name: /filme suchen/i }).type('Inception{enter}');
-    cy.findByText(/inception/i).first().tab().type('{enter}');
-    cy.url().should('include', '/movie/');
-    cy.findByRole('button', { name: /zur watchlist hinzufügen/i })
-      .tab()
-      .type('{enter}');
-    cy.findByText(/zur watchlist hinzugefügt/i).should('be.visible');
+    cy.injectAxe();
+    cy.checkA11y();
   });
 });
 ```
 
----
+### Running Audits
 
-## Manuelle Checks (alle Levels)
+```bash
+# All accessibility tests
+npm run test:a11y
 
-Diese Checks erfordern manuelle Prüfung und können nicht automatisiert werden:
+# Watch mode
+npm run test:a11y:watch
+```
 
-- [ ] **Logische Lesereihenfolge**: DOM-Reihenfolge entspricht visueller Reihenfolge
-- [ ] **Bewegte Inhalte**: Animationen sind pausierbar (`prefers-reduced-motion`)
-- [ ] **Farbunabhängigkeit**: Informationen nicht nur über Farbe vermittelt
-- [ ] **Zoom**: Funktioniert bis 200% ohne Funktionsverlust
-- [ ] **Touch-Targets**: Mindestens 44×44 Pixel für interaktive Elemente
+## Manual Checklist
 
----
+### ✅ Keyboard Navigation
 
-## Tools
+- [ ] All interactive elements are focusable
+- [ ] Focus order is logical (Tab key)
+- [ ] Focus indicators are visible
+- [ ] No keyboard traps
+- [ ] Skip links work correctly
+- [ ] Modal dialogs trap focus
 
-- **axe-core**: Automatisierte A11y-Checks in Vitest und Cypress
-- **WAVE Browser-Extension**: Visuelle A11y-Analyse
-- **Screen-Reader**: NVDA (Windows), VoiceOver (macOS), JAWS
-- **Tastatur-Test**: Nur Tab, Shift+Tab, Enter, Space, Pfeiltasten verwenden
+### ✅ Screen Reader Support
+
+- [ ] All images have alt text
+- [ ] Form inputs have labels
+- [ ] Buttons have accessible names
+- [ ] Dynamic content is announced (aria-live)
+- [ ] Landmarks are used correctly (main, nav, etc.)
+- [ ] Headings are in logical order
+
+### ✅ Visual Design
+
+- [ ] Text contrast ratio ≥ 4.5:1 (normal text)
+- [ ] Text contrast ratio ≥ 3:1 (large text)
+- [ ] Color is not the only way to convey information
+- [ ] Focus states are clearly visible
+- [ ] Text can be zoomed to 200% without loss
+
+### ✅ Interactive Elements
+
+- [ ] All buttons are clickable
+- [ ] Links have descriptive text
+- [ ] Form errors are clearly identified
+- [ ] Required fields are marked
+- [ ] Custom controls have proper ARIA roles
+
+### ✅ Content
+
+- [ ] Page has a unique title
+- [ ] Language is declared
+- [ ] Content is structured with headings
+- [ ] Lists are marked up correctly
+- [ ] Tables have headers (if used)
+
+## Testing Tools
+
+### Automated
+- **axe-core** (via cypress-axe)
+- **WAVE** browser extension
+- **Lighthouse** accessibility audit
+
+### Manual
+- **Keyboard-only navigation** (Tab, Shift+Tab, Enter, Space, Arrow keys)
+- **Screen readers**: NVDA (Windows), VoiceOver (Mac)
+- **Browser zoom**: Test up to 200%
+- **High contrast mode**
+
+## Common Issues
+
+### Critical
+- Missing alt text on images
+- Missing form labels
+- Keyboard inaccessible elements
+- Missing focus indicators
+- Poor color contrast
+
+### Important
+- Missing ARIA labels on custom controls
+- Illogical heading structure
+- Missing skip links
+- Auto-playing media without controls
+
+## Documentation
+
+- [Testing Strategy](../testing.md)
+- [Component Tests](./component-tests.md)
+- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
