@@ -68,6 +68,26 @@ export const handlers = [
     });
   }),
 
+  /** GET https://api.themoviedb.org/3/genre/movie/list */
+  http.get('https://api.themoviedb.org/3/genre/movie/list', () => {
+    return HttpResponse.json({
+      genres: [
+        { id: 18, name: 'Drama' },
+        { id: 28, name: 'Action' },
+      ],
+    });
+  }),
+
+  /** GET https://api.themoviedb.org/3/genre/tv/list */
+  http.get('https://api.themoviedb.org/3/genre/tv/list', () => {
+    return HttpResponse.json({
+      genres: [
+        { id: 10765, name: 'Sci-Fi & Fantasy' },
+        { id: 18, name: 'Drama' },
+      ],
+    });
+  }),
+
   // ── Movies ───────────────────────────────────────────────
 
   /** GET /api/:locale/movies — popular / top_rated / trending list */
