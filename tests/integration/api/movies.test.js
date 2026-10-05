@@ -21,6 +21,10 @@ describe('GET /api/[locale]/movies', () => {
     return new Request(url);
   };
 
+  const createParams = (locale = 'en-US') => {
+    return { params: Promise.resolve({ locale }) };
+  };
+
   let mockGetTrending;
 
   beforeEach(() => {
@@ -39,7 +43,7 @@ describe('GET /api/[locale]/movies', () => {
       total_pages: 10,
     });
 
-    const response = await GET(createRequest('en-US', '1'));
+    const response = await GET(createRequest('en-US', '1'), createParams('en-US'));
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -51,7 +55,7 @@ describe('GET /api/[locale]/movies', () => {
   it('uses page 1 when the page parameter is omitted', async () => {
     mockGetTrending.mockResolvedValue({ results: [], page: 1 });
 
-    const response = await GET(createRequest('en-US'));
+    const response = await GET(createRequest('en-US'), createParams('en-US'));
 
     expect(response.status).toBe(200);
     expect(mockGetTrending).toHaveBeenCalledWith('en-US', 'movie', 1);
@@ -59,14 +63,14 @@ describe('GET /api/[locale]/movies', () => {
 
   // Branch coverage covers the invalid-locale branch.
   it('returns a 400 response when the locale is unsupported', async () => {
-    const response = await GET(createRequest('invalid-locale'));
+    const response = await GET(createRequest('invalid-locale'), createParams('invalid-locale'));
 
     expect(response.status).toBe(400);
   });
 
   // Branch coverage covers the invalid-page branch.
   it('returns a 400 response when the page parameter is not numeric', async () => {
-    const response = await GET(createRequest('en-US', 'abc'));
+    const response = await GET(createRequest('en-US', 'abc'), createParams('en-US'));
 
     expect(response.status).toBe(400);
   });
@@ -75,7 +79,7 @@ describe('GET /api/[locale]/movies', () => {
   it('returns a 500 response when the TMDB request fails', async () => {
     mockGetTrending.mockRejectedValue(new Error('TMDB API error'));
 
-    const response = await GET(createRequest('en-US'));
+    const response = await GET(createRequest('en-US'), createParams('en-US'));
     const data = await response.json();
 
     expect(response.status).toBe(500);
@@ -90,7 +94,7 @@ describe('GET /api/[locale]/movies', () => {
       total_pages: 10,
     });
 
-    const response = await GET(createRequest('en-US', '2'));
+    const response = await GET(createRequest('en-US', '2'), createParams('en-US'));
     const data = await response.json();
 
     expect(response.status).toBe(200);
