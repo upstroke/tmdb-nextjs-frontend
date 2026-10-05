@@ -1,53 +1,28 @@
-// tests/cypress/POM/HomePage.js
+export const HomePage = () => {
+  const page = () => cy.get('main.home-page');
+  const movieCards = () => cy.get('#home-card-1');
+  const searchInput = () => cy.get('#typeahead-search-input');
 
-const selectors = {
-  main: 'main.home-page',
-  title: 'main.home-page h2.ui.dividing.header',
-  movieCards: 'main.home-page a[id^="home-card-"]',
-  firstMovieCard: '#home-card-1',
-  searchInput: '#typeahead-search-input'
-};
-
-export function HomePage() {
-  return {
-    get main() {
-      return cy.get(selectors.main);
-    },
-
-    get title() {
-      return cy.get(selectors.title);
-    },
-
-    get movieCards() {
-      return cy.get(selectors.movieCards);
-    },
-
-    get firstMovieCard() {
-      return cy.get(selectors.firstMovieCard);
-    },
-
-    get searchInput() {
-      return cy.get(selectors.searchInput);
-    },
-
-    /**
-     * Navigate to the homepage with the specified locale
-     */
-    visit(locale = 'en-US') {
-      cy.visit(`/${locale}`);
-      return this;
-    },
-
-    assertTitleVisible() {
-      this.title.should('be.visible');
-    },
-
-    assertMovieCardsVisible() {
-      this.movieCards.should('be.visible');
-    },
-
-    assertSearchInputVisible() {
-      this.searchInput.should('be.visible');
-    }
+  /**
+   * Visit the homepage with the given locale
+   * @param {string} locale - e.g. 'en-US' or 'de-DE'
+   */
+  const visit = (locale) => {
+    cy.visit(`/${locale}`);
   };
-}
+
+  /**
+   * Assert that the page title is visible
+   */
+  const assertTitleVisible = () => {
+    page().should('be.visible');
+  };
+
+  return {
+    page,
+    movieCards,
+    searchInput,
+    visit,
+    assertTitleVisible,
+  };
+};
