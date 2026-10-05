@@ -1,36 +1,45 @@
-import { BasePage } from './BasePage.js';
-import { HeaderPage } from './HeaderPage.js';
+// tests/cypress/POM/HomePage.js
 
-/**
- * Home Page module — encapsulates homepage selectors and actions.
- *
- * Composes BasePage for navigation and HeaderPage for header interactions.
- *
- * @param {string} [locale='en-US'] - BCP 47 locale tag
- * @returns {Object} HomePage instance with sections and assertions
- */
-export function HomePage(locale = 'en-US') {
-  const base = BasePage(locale, '/');
-  const header = HeaderPage();
+const selectors = {
+  main: 'main.home-page',
+  title: 'main.home-page h2.ui.dividing.header',
+  movieCards: 'main.home-page a[id^="home-card-"]',
+  firstMovieCard: '#home-card-1',
+  searchInput: '#typeahead-search-input'
+};
 
+export function HomePage() {
   return {
-    ...base,
-    header,
-
-    /**
-     * @returns {Cypress.Chainable}
-     */
-    get sections() {
-      return cy.get('main section');
+    get main() {
+      return cy.get(selectors.main);
     },
 
-    /**
-     * Assert at least one trending section is rendered.
-     * @returns {Object} This instance for chaining
-     */
-    assertTrendingSectionsExist() {
-      this.sections.should('have.length.greaterThan', 0);
-      return this;
+    get title() {
+      return cy.get(selectors.title);
     },
+
+    get movieCards() {
+      return cy.get(selectors.movieCards);
+    },
+
+    get firstMovieCard() {
+      return cy.get(selectors.firstMovieCard);
+    },
+
+    get searchInput() {
+      return cy.get(selectors.searchInput);
+    },
+
+    assertTitleVisible() {
+      this.title.should('be.visible');
+    },
+
+    assertMovieCardsVisible() {
+      this.movieCards.should('be.visible');
+    },
+
+    assertSearchInputVisible() {
+      this.searchInput.should('be.visible');
+    }
   };
 }
