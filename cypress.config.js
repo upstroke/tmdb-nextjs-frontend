@@ -4,8 +4,8 @@ export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:3000',
 
-    // Acceptance/E2E specs in tests/cypress/acceptance
-    specPattern: 'tests/cypress/acceptance/**/*.cy.js',
+    // Acceptance/E2E specs in tests/cypress/acceptance (.cy.js and legacy .spec.js)
+    specPattern: 'tests/cypress/acceptance/**/*.{cy,spec}.js',
 
     // Support entry point — registers custom commands
     supportFile: 'tests/cypress/support/e2e.js',

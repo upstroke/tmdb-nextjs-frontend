@@ -58,7 +58,7 @@ tests/
 - `tests/cypress/support/` contains Cypress-specific support files and commands. The existing Cypress files in `tests/setup/` remain for now; their role and imports are reviewed separately. `tests/setup/` also contains Vitest setup.
 - `tests/mocks/` contains reusable mock support for technical dependencies.
 
-Accessibility and navigation have a `*-testplan.md` file next to their specs. The current `routes/homepage.cy.js` does not have a nearby test plan. Cypress discovers the acceptance specs through `cypress.config.js`, which points to `tests/cypress/acceptance/`.
+Accessibility and navigation have a `*-testplan.md` file next to their specs. The current `routes/homepage.cy.js` does not have a nearby test plan. `cypress.config.js` discovers specs in `tests/cypress/acceptance/` matching `*.cy.js` and the existing `*.spec.js`; use `.cy.js` for new specs.
 
 ## Documentation by Test Level
 
