@@ -1,280 +1,61 @@
-# Cline Rules - TMDB Next.js Frontend
-# Optimized for Qwen3-Coder-30B-A3B-Instruct-MLX
+# TMDB Next.js Frontend - Cline Rules
 
-## 🎯 Project Overview
-- **Framework**: Next.js 15 with App Router
-- **Language**: JavaScript (NO TypeScript)
-- **Styling**: Fomantic UI CSS + Sass (NO Tailwind)
-- **API**: TMDB (The Movie Database)
-- **i18n**: next-intl
+## 🧪 Testing
 
-## 🧪 Testing Strategy
+### Component Tests
+- **Framework**: Cypress Component Testing
+- **Location**: `tests/cypress/component/components/*.cy.js`
+- **Library**: `@testing-library/cypress`
+- **Mount**: `cy.mount(<Component />)`
+- **Queries**: `cy.findByRole()`, `cy.findByText()`, `cy.getByTestId()`
+- **Assertions**: `.should('exist')`, `.should('be.visible')`, `.should('have.focus')`
+- **Events**: `.click()`, `cy.realPress()` für Keyboard
 
-### Test Pyramid
-1. **Unit Tests (Vitest)** → `tests/vitest/`
-   - Utility functions, mappers, Zod schemas
-   - Security tests (input validation, API key handling)
-   - Fast, isolated tests
+### Unit Tests
+- **Framework**: Vitest
+- **Location**: `tests/vitest/utils/*.test.js`, `tests/vitest/services/*.test.js`
+- **Library**: `@testing-library/react` + `vitest`
 
-2. **Integration Tests (Vitest + MSW)** → `tests/vitest/`
-   - Pages/sections with mocked data
-   - Real integration testing
-   - Assert on rendered DOM (roles, text)
-
-3. **Component Tests (Cypress)** → `tests/cypress/acceptance/components/`
-   - Individual React components
-   - User interactions
-   - Accessibility checks (keyboard, focus, ARIA)
-
-4. **Acceptance Tests (Cypress)** → `tests/cypress/acceptance/flows/`
-   - Complete user flows
-   - E2E scenarios
-   - Search, detail pages, navigation
-
-5. **Accessibility Tests** → `tests/cypress/acceptance/accessibility/`
-   - axe-core audits (`cy.checkA11y()`)
-   - Keyboard navigation
-   - Screen reader compatibility
-   - Color contrast checks
-
-6. **Security Tests** → `tests/vitest/security/` + `tests/cypress/acceptance/components/security/`
-   - Input validation (XSS prevention)
-   - API key handling
-   - Dependency security
-
-### Testing Rules (CRITICAL)
-- ✅ Use Testing Library: `findByRole()`, `findByText()`, `findByLabelText()`
-- ❌ NEVER use CSS selectors (`.class`, `#id`, `[data-testid]`) unless absolutely necessary
-- ✅ Component tests: `cy.mount(<Component />)`
-- ✅ E2E tests: `cy.visit('/path')`
-- ✅ Mock APIs with MSW (Mock Service Worker)
-- ✅ Use fixtures: `tests/fixtures/tmdb/`
-- ✅ Use mocks: `tests/mocks/`
-- ✅ Run `cy.checkA11y()` on pages and after interactions
-- ✅ Use Page Objects for complex flows: `tests/cypress/POM/`
-
-### Test File Naming
-- Cypress: `*.cy.js` → `tab-groupe.cy.js`
-- Vitest: `*.test.js` → `format.test.js`
-- Security: `security-*.cy.js` or `*.test.js` in `security/` folder
-
-### Example Test
-```js
-import { TabGroupe } from '@/components/TabGroupe';
-
-describe('TabGroupe Component', () => {
-  const mockTabs = [
-    { id: 'tab1', label: 'Overview', content: 'Overview content' },
-    { id: 'tab2', label: 'Cast', content: 'Cast content' },
-  ];
-
-  beforeEach(() => {
-    cy.mount(<TabGroupe tabs={mockTabs} />);
-  });
-
-  it('renders all tabs', () => {
-    cy.findByRole('tablist').should('exist');
-    cy.findByRole('tab', { name: /overview/i }).should('exist');
-  });
-
-  it('switches tabs on click', () => {
-    cy.findByRole('tab', { name: /cast/i }).click();
-    cy.findByRole('tab', { name: /cast/i })
-      .should('have.attr', 'aria-selected', 'true');
-  });
-});
-```
+### Acceptance Tests (E2E)
+- **Framework**: Cypress E2E
+- **Location**: `tests/cypress/acceptance/flows/*.cy.js`
+- **Focus**: User Flows über mehrere Pages
 
 ## 📁 Project Structure
+
 ```
-tmdb-nextjs-frontend/
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   ├── movies/[id]/       # Dynamic routes
-│   ├── components/        # Shared components
-│   ├── layout.tsx
-│   └── page.tsx
-├── components/             # React components
-├── tests/
-│   ├── cypress/
-│   │   └── acceptance/
-│   │       ├── components/      # Component tests
-│   │       ├── flows/           # E2E tests
-│   │       ├── accessibility/   # A11y tests
-│   │       └── security/        # Security tests
-│   ├── POM/                 # Page objects
-│   ├── fixtures/tmdb/     # Test data (TMDB API responses)
-│   ├── mocks/             # MSW handlers & mocks
-│   └── setup/             # Test setup files
-├── lib/
-│   ├── i18n/              # Internationalization
-│   ├── schemas/           # Zod schemas
-│   └── services/          # TMDB API service
-├── docs/                   # Documentation
-│   ├── testing.md          # Testing strategy
-│   └── ai-prompts.md       # AI collaboration prompts
-└── .agent/skills/          # AI agent skills
-    ├── tmdb-testing/
-    ├── tmdb-accessibility/
-    ├── tmdb-security/
-    └── tmdb-development/
+components/        # React Komponenten (*.jsx)
+styles/           # SCSS Dateien
+public/           # Static assets
+tests/
+  ├── cypress/
+  │   ├── component/   # Component Tests
+  │   └── acceptance/  # E2E Tests
+  └── vitest/        # Unit Tests
 ```
 
 ## 💻 Code Style
 
-### JavaScript ONLY (NO TypeScript)
-- ✅ `function Component({ prop })`
-- ❌ `function Component({ prop }: Props)`
-- ✅ `export function formatDate(dateString)`
-- ❌ `export const formatDate: (dateString: string) => string`
+- **React**: Funktionale Komponenten mit Hooks
+- **Imports**: Absolute Pfade (`@/components/...`)
+- **Exports**: Benannte Exports (`export { Component }`)
+- **No TypeScript**: Reines JavaScript (.jsx)
 
-### Imports
-- Use `@/` alias: `import { foo } from '@/utils/foo'`
-- Components: `import { Component } from '@/components/Component'`
-- Utils: `import { util } from '@/utils/util'`
+## 🎯 Component Test Beispiel
 
-### Components
-- Functional components with hooks
-- **Fomantic UI CSS classes** (e.g., `ui button`, `ui grid`)
-- **Sass for custom styles** (`.scss` files)
-- NO Tailwind classes
-- NO inline styles (`style={{}}`) unless absolutely necessary
-- Semantic HTML (article, section, nav, etc.)
+```js
+import { Component } from '@/components/Component';
 
-### Naming
-- Components: PascalCase → `TabGroupe`, `MovieCard`
-- Files: kebab-case → `tab-groupe.jsx`, `movie-card.jsx`
-- Tests: kebab-case + suffix → `tab-groupe.cy.js`, `format.test.js`
-- Utils: camelCase → `format.js`, `sanitize.js`
+describe('Component', () => {
+  it('renders correctly', () => {
+    cy.mount(<Component prop="value" />);
+    cy.findByRole('button').should('exist');
+  });
+});
+```
 
-## 🌍 Internationalization (i18n)
+## ⚙️ Cline Settings
 
-### Locale Modules
-- `lib/i18n/helpers.js` - Helper functions
-- `lib/i18n/config.js` - Configuration
-- `lib/i18n/resolver.js` - Locale resolver
-- `lib/i18n/ui.json` - UI translations
-- `lib/i18n/ratings.json` - Rating format translations
-
-### Rules
-- ✅ Preserve locale propagation through internal navigation
-- ✅ Preserve current route when changing languages
-- ✅ Reuse existing i18n modules (don't reinvent)
-- ✅ Store UI translations in `lib/i18n/ui.json`
-- ✅ Include locale in TMDB API requests
-
-## 📦 Data Handling
-
-### TMDB API
-- ❌ Treat TMDB data as **unreliable** until validated
-- ✅ Use TMDB service layer: `lib/services/tmdb-api.js`
-- ✅ Validate with Zod schemas: `lib/schemas/`
-- ✅ Preserve fallback behavior for missing data
-- ✅ Remove duplicates when loading paginated data
-- ✅ Include locale in TMDB requests
-
-### Zod Validation
-- ✅ Use Zod for runtime validation
-- ✅ Validate external data, API responses, form input
-- ✅ Import schemas from `lib/schemas/`
-
-## 🚫 Forbidden Patterns
-
-1. **NO TypeScript** - No `.ts`, `.tsx` files
-2. **NO Tailwind CSS** - Use Fomantic UI + Sass only
-3. **NO class components** - Functional + hooks only
-4. **NO CSS selectors in tests** - Testing Library queries only
-5. **NO direct API calls in components** - Use API routes or service layer
-6. **NO `dangerouslySetInnerHTML`** - Except explicitly trusted content
-7. **NO `.env` in git** - Use `.env.example` for template
-8. **NO unvalidated external data** - Always use Zod
-
-## ♿ Accessibility (WCAG 2.1 AA)
-
-### Development Checklist
-- [ ] All interactive elements keyboard accessible
-- [ ] Focus indicators visible
-- [ ] Images have `alt` text
-- [ ] Forms have labels
-- [ ] Errors announced to screen readers
-- [ ] Color not sole information carrier
-- [ ] Text contrast 4.5:1 minimum
-- [ ] Headings in logical order
-- [ ] Links descriptive
-- [ ] Dynamic content announced (`aria-live`)
-
-### Testing
-- Run `cy.checkA11y()` (cypress-axe) on every page
-- Test keyboard-only navigation
-- Test with screen reader (NVDA/VoiceOver)
-- Test zoom up to 200%
-- Test color contrast
-
-## 🔒 Security
-
-### Development Checklist
-- [ ] All user inputs sanitized
-- [ ] API key server-side only (not in client)
-- [ ] External URLs validated
-- [ ] No `dangerouslySetInnerHTML` for user content
-- [ ] Dependencies up to date (`npm audit`)
-
-### Security Tests
-- Input validation (XSS prevention)
-- API key exposure checks
-- Dependency vulnerability scans
-
-## 📚 Documentation
-
-- **Testing Strategy**: `docs/testing.md`
-- **AI Prompts**: `docs/ai-prompts.md`
-- **Skills**:
-  - `.agent/skills/tmdb-testing/SKILL.md` - Testing patterns
-  - `.agent/skills/tmdb-accessibility/SKILL.md` - A11y guidelines
-  - `.agent/skills/tmdb-security/SKILL.md` - Security tests
-  - `.agent/skills/tmdb-development/SKILL.md` - Dev standards
-
-## 🔒 Git & Security
-
-- NEVER commit `.env` files
-- NEVER commit API keys or secrets
-- Use `.env.example` as template
-- Check `.gitignore` before committing
-- Run `npm audit` regularly
-
-## 🛠️ Locally Available Tools
-
-Prefer these tools when available:
-- `rg` (ripgrep) - Fast text searches
-- `fd` - Fast file/directory search
-- `fzf` - Interactive selection/filtering
-- `bat` - Readable file output
-- `delta` - Readable Git diffs
-- `sd` - Simple text changes
-
-## 🎯 Qwen3 Instructions
-
-1. **Be concise** - Shorter, clearer explanations
-2. **Show code** - Working examples always
-3. **Check docs** - Reference `docs/` and `.agent/skills/` when unsure
-4. **Ask questions** - If requirements ambiguous
-5. **Follow patterns** - Match existing code style exactly
-6. **Use skills** - Check `.agent/skills/` for detailed patterns
-7. **Use Fomantic UI** - Check existing components for class patterns
-8. **Validate data** - Always use Zod for external data
-9. **Preserve i18n** - Keep locale propagation intact
-
-## ✅ Before You Finish (Checklist)
-
-- [ ] JavaScript (NOT TypeScript)
-- [ ] Testing Library queries in tests
-- [ ] Fomantic UI + Sass (NO Tailwind)
-- [ ] No `.env` or secrets in commit
-- [ ] Test file naming: `*.cy.js` or `*.test.js`
-- [ ] Imports use `@/` alias
-- [ ] Components functional + hooks
-- [ ] Accessibility considered (aria labels, keyboard nav)
-- [ ] Security considered (input sanitization, no exposed secrets)
-- [ ] i18n preserved (locale propagation, route on language switch)
-- [ ] Data validated (Zod schemas, TMDB service layer)
-- [ ] No unvalidated external data
+- **max_context_tokens**: 100000
+- **auto_load_files**: true
+- **Model**: Qwen3 (lokal auf M1 Mac)
