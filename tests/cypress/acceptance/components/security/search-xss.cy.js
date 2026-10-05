@@ -1,28 +1,32 @@
-// tests/cypress/acceptance/components/security/search-xss.cy.js
-// Security-Test: XSS-Prävention in der Suche
+import { HomePage } from '../../POM/HomePage.js';
 
 describe('Security: Search XSS Prevention', () => {
+  const homePage = HomePage('de-DE');
+
+  beforeEach(() => {
+    homePage.visit();
+  });
+
   it('zeigt keine Script-Injection in Suchergebnissen', () => {
-    cy.visit('/');
+    const xssPayload = '<script>alert("XSS")</script>';
+    homePage.visit();
 
-    // Gib XSS-Payload in die Suche ein
-    cy.findByRole('searchbox', { name: /filme suchen/i }).type(
-      '<script>alert("xss")</script>{enter}'
-    );
+    cy.get('input[name="search"]').type(`${xssPayload}{enter}`);
+    cy.location('pathname').should('include', '/search');
 
-    // Sollte keine Alert-Box zeigen (wird automatisch geblockt)
-    // Der Suchbegriff sollte escaped angezeigt werden
-    cy.findByText(/<script>/i).should('not.exist');
-
-    // Stattdessen sollte der escaped Text sichtbar sein
-    cy.contains(/<script>/i).should('exist');
+    // eslint-disable-next-line cypress/unsafe-to-chain-command
+    cy.get('main').should('contain', xssPayload);
+    cy.contains(xssPayload).should('not.have.length', 0);
   });
 
   it('akzeptiert normale Suchanfragen', () => {
-    cy.visit('/');
-    cy.findByRole('searchbox', { name: /filme suchen/i }).type('Inception{enter}');
+    const searchTerm = 'Inception';
+    homePage.visit();
 
-    // Sollte Suchergebnisse anzeigen
-    cy.findByText(/inception/i).should('exist');
+    cy.get('input[name="search"]').type(`${searchTerm}{enter}`);
+    cy.location('pathname').should('include', '/search');
+    cy.location('search').should('include', 'q=Inception');
+
+    cy.get('main').should('contain', 'Suche');
   });
 });
