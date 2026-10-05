@@ -1,24 +1,25 @@
-import { HomePage } from '@pom/HomePage.js';
+import { HomePage } from '../../POM/HomePage.js';
+
+const homePage = HomePage();
 
 describe('Homepage', () => {
-  const homePage = HomePage('en-US');
-
   beforeEach(() => {
     homePage.visit();
   });
 
   it('should display the homepage title', () => {
-    homePage.header.assertVisible();
+    homePage.assertTitleVisible();
   });
 
   it('should navigate to movie details when clicking on a movie card', () => {
-    cy.get('main a[href*="/movie/"]').first().click();
-    cy.location('pathname').should('include', '/movie/');
+    homePage.visit();
+    homePage.movieCards.first().click();
+    cy.location('pathname').should('match', /^\/(en-US|de-DE)\/movies\//);
   });
 
   it('should search for movies when using the search bar', () => {
-    cy.get('input[aria-label="Search"], input[name="search"]').first()
-      .type('Inception{enter}');
+    homePage.visit();
+    homePage.searchInput.type('Batman{enter}');
     cy.location('pathname').should('include', '/search');
   });
 });
