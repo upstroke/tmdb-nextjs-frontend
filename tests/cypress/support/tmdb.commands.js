@@ -4,6 +4,16 @@
  *   import './tmdb.commands'
  */
 
+/**
+ * Visit a URL with a locale prefix.
+ * @param {string} path - URL path, e.g. '/' or '/movie/123'
+ * @param {string} [locale='en-US'] - BCP 47 locale tag
+ */
+Cypress.Commands.add('visitWithLocale', (path, locale = 'en-US') => {
+  const url = `/${locale}${path}`;
+  return cy.visit(url);
+});
+
 Cypress.Commands.add('interceptTmdb', (overrides = {}) => {
   cy.intercept('GET', '**/movie/popular*', {
     fixture: 'tmdb_movies_popular.json',
