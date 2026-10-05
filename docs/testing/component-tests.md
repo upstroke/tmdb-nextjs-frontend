@@ -1,125 +1,70 @@
 # Component Tests
 
-## Overview
+Component tests are located in `tests/cypress/component/` and are run with Cypress Component Testing.
 
-Component tests verify individual React components in isolation. They ensure components render correctly and handle user interactions properly.
+## Configuration
 
-## Tool
+### Vite Configuration Files
 
-- **Cypress Component Testing** - Fast, browser-based component testing
+This project requires **two separate Vite configuration files** due to limitations in Cypress's Vite DevServer:
 
-## Location
+1. **`vitest.config.js`** – Used by Vitest for Unit and Integration tests (ESM)
+2. **`vite.config.js`** – Used by Cypress Component Testing (ESM)
 
-```
-tests/cypress/component/
-├── components/    # Component test files
-└── *.cy.js        # Test files
-```
+### Why Two Config Files?
 
-## What to Test
+Cypress Component Testing uses the `@cypress/vite-dev-server` package, which:
 
-### ✅ Test These:
+- Searches hardcoded for `vite.config.*` in the project root
+- Does not automatically detect or load `vitest.config.js`
+- Requires a separate Vite config even though both configs use identical plugins and aliases
 
-- Component rendering with props
-- User interactions (clicks, typing, etc.)
-- State changes and re-renders
-- Conditional rendering
-- Event handlers
+This is a **known limitation** of Cypress 13.x and has been reported by the community. The Cypress team is aware of this overhead, but as of version 13.17.0, there is no built-in solution to share a single config file between Vitest and Cypress.
 
-### ❌ Don't Test:
+### Config Structure
 
-- Implementation details
-- Child component internals (mock them)
-- API calls (mock services)
-- Full user flows (use acceptance tests)
-
-## Example
+Both files export the same core configuration:
 
 ```js
-// tests/cypress/component/MovieCard.cy.js
-import { MovieCard } from '@/components/MovieCard';
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-describe('MovieCard', () => {
-  const mockMovie = {
-    id: 1,
-    title: 'Inception',
-    poster_path: '/inception.jpg',
-    vote_average: 8.5,
-    release_date: '2010-07-16'
-  };
-
-  it('renders movie information', () => {
-    cy.mount(<MovieCard movie={mockMovie} />);
-
-    cy.findByText('Inception').should('be.visible');
-    cy.findByText('8.5').should('be.visible');
-    cy.findByAltText('Inception poster').should('have.attr', 'src');
-  });
-
-  it('calls onClick when clicked', () => {
-    const onClick = cy.stub().as('handleClick');
-    cy.mount(<MovieCard movie={mockMovie} onClick={onClick} />);
-
-    cy.findByTestId('movie-card').click();
-    cy.get('@handleClick').should('have.been.calledOnce');
-  });
-
-  it('shows fallback for missing poster', () => {
-    const movieWithoutPoster = { ...mockMovie, poster_path: null };
-    cy.mount(<MovieCard movie={movieWithoutPoster} />);
-
-    cy.findByAltText('Inception poster')
-      .should('have.attr', 'src')
-      .and('include', '/movie-placeholder.svg');
-  });
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': './',
+      '$tests': './tests',
+    },
+  },
 });
 ```
 
-## Best Practices
+The `vitest.config.js` additionally wraps this in a `test: { ... }` configuration for Vitest-specific settings.
 
-1. **Mount one component** - Test the component in isolation
-2. **Use realistic props** - Match real data structure
-3. **Test user interactions** - Clicks, typing, selections
-4. **Assert on visible content** - What the user sees
-5. **Mock children and APIs** - Keep tests focused
-6. **Use data-testid** - For stable selectors
-
-## Running Tests
+## Running Component Tests
 
 ```bash
-# All component tests (headless)
 npm run test:component
-
-# Open Cypress UI
-npm run test:component:ui
-
-# Run specific test
-npx cypress run --component --spec "tests/cypress/component/MovieCard.cy.js"
 ```
 
-## Test Structure
+## When to Use Component Tests
 
-```js
-describe('ComponentName', () => {
-  it('does something', () => {
-    cy.mount(<Component prop={value} />);
-    // Assertions
-  });
-});
-```
+Component tests are ideal for:
 
-## Difference from Acceptance Tests
+- Testing individual React components in isolation
+- Verifying component behavior with different props and states
+- Testing user interactions within a single component
+- Faster feedback than E2E tests (no full app boot required)
 
-| Component Tests      | Acceptance Tests     |
-| -------------------- | -------------------- |
-| Single component     | Multiple pages       |
-| Isolated             | Full application     |
-| Fast (< 1s)          | Slower (seconds)     |
-| Mock data            | Real or fixture data |
-| Implementation focus | User flow focus      |
+## When to Use Integration or E2E Tests Instead
 
-## Documentation
+- **Integration Tests** (`tests/integration/`): Multiple components working together, state management, API mocking
+- **E2E Tests** (`tests/cypress/acceptance/`): Complete user flows, navigation, full app behavior
 
-- [Testing Strategy](../testing.md)
-- [Acceptance Tests](./acceptance-tests.md)
-- [Cypress Component Testing](https://docs.cypress.io/guides/component-testing/overview)
+## Related Documentation
+
+- [Testing Overview](./testing.md) – Complete testing strategy
+- [Unit Tests](./testing/unit-tests.md) – Vitest unit testing
+- [Integration Tests](./testing/integration-tests.md) – Testing Library integration tests
+- [E2E Tests](./testing/e2e-tests.md) – Cypress end-to-end testing
