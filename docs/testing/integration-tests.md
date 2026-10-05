@@ -9,8 +9,10 @@ Integration tests are the right choice for:
 - rendered components with props, slots, and events
 - route behavior with mocked load data or controlled dependencies
 - interaction between components, stores, and helper modules
-- accessibility-relevant rendered output that can be verified in `jsdom`
+- component-level accessibility semantics (roles, accessible names, ARIA state, keyboard handling) that can be verified in `jsdom`
 - async UI states that are driven by mocked services
+
+Automated axe-core scans of full pages and browser-dependent focus behavior are not integration test concerns. They belong to Cypress acceptance tests (see `acceptance-tests.md`).
 
 Do not use an integration test when a small unit test is sufficient. Do not use it as a substitute for a real end-to-end flow that depends on browser navigation, layout, or multi-page behavior.
 
@@ -177,7 +179,7 @@ Avoid asserting internal function calls unless that call is itself the contract 
 
 ## Accessibility
 
-Integration tests should reinforce accessible markup.
+Integration tests should reinforce accessible markup at component level. Full-page axe-core scans run in Cypress.
 
 Examples:
 
@@ -194,4 +196,5 @@ Move a test to acceptance level when confidence depends on:
 - browser history behavior
 - viewport-specific layout behavior
 - focus movement that depends on the browser
+- automated axe-core accessibility scans of full pages
 - interaction across multiple routes or application layers

@@ -36,7 +36,7 @@ tests/cypress/
   support/             # Cypress entry point and commands
 ```
 
-`components/navigation/` contains a browser-based acceptance test for navigation, not an isolated Cypress Component Test. Use a directory per shared UI component or region when its user-visible behavior needs acceptance coverage. `routes/` contains route-oriented browser journeys; `accessibility/` contains full-page and interaction-state accessibility checks.
+`components/navigation/` contains a browser-based acceptance test for navigation, not an isolated Cypress Component Test. Use a directory per shared UI component or region when its user-visible behavior needs acceptance coverage in the browser. Isolated component behavior, including ARIA semantics and keyboard handling inside a single reusable component, belongs in Vitest integration tests under `tests/integration/components/`. `routes/` contains route-oriented browser journeys; `accessibility/` contains full-page and interaction-state accessibility checks.
 
 Accessibility and navigation currently have a test plan next to their specs; `routes/homepage.cy.js` does not yet have one. Existing specs use both `*.spec.js` and `*.cy.js`. The current `cypress.config.js` still targets `tests/cypress/e2e/**/*.cy.js`, so none of the specs in this structure are discovered by that pattern until the follow-up configuration and import changes are completed. Do not treat the naming shown here as a working runner configuration.
 
@@ -62,7 +62,7 @@ A Cypress acceptance test should cover behavior such as:
 
 ## Accessibility
 
-Use Cypress together with axe-core for automated accessibility checks on important pages and interaction states.
+Use Cypress together with axe-core for automated accessibility checks on important pages and interaction states. Component-level semantics and keyboard handling are covered by Vitest integration tests; Cypress covers the full-page scans and browser-dependent focus behavior.
 
 Typical examples:
 
