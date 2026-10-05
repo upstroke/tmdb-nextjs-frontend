@@ -2,8 +2,8 @@
 // Import the Cypress commands and the accessibility plugin once.
 
 import 'cypress-axe';
-import './commands';
-import './tmdb.commands';
+import './commands.js';
+import './tmdb.commands.js';
 import '@testing-library/cypress';
 
 Cypress.Commands.add('checkPageA11y', (options = {}) => {
