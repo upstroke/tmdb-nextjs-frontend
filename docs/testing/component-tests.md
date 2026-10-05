@@ -2,175 +2,122 @@
 
 ## Overview
 
-Component tests verify that individual React components work correctly in isolation. Unlike unit tests, component tests render the actual component with its dependencies (context, providers, etc.).
+Component tests verify individual React components in isolation. They ensure components render correctly and handle user interactions properly.
 
-## Test Levels
+## Tool
 
-| Level | Tool | Path | Focus |
-|-------|------|------|-------|
-| **Component** | Cypress | `tests/cypress/acceptance/components/` | Individual components |
-| **Acceptance** | Cypress | `tests/cypress/acceptance/flows/` | Complete user flows |
+- **Cypress Component Testing** - Fast, browser-based component testing
 
-## Scripts
+## Location
 
-```bash
-# All component tests
-npm run test:component
-
-# Component tests in watch mode
-npm run test:component:watch
+```
+tests/cypress/component/
+├── components/    # Component test files
+└── *.cy.js        # Test files
 ```
 
-## Component Test Structure
+## What to Test
 
-### Example: SearchBar Component
+### ✅ Test These:
+- Component rendering with props
+- User interactions (clicks, typing, etc.)
+- State changes and re-renders
+- Conditional rendering
+- Event handlers
 
-```js
-// tests/cypress/acceptance/components/search-bar.cy.js
-describe('SearchBar Component', () => {
-  beforeEach(() => {
-    cy.visit('/');
-  });
+### ❌ Don't Test:
+- Implementation details
+- Child component internals (mock them)
+- API calls (mock services)
+- Full user flows (use acceptance tests)
 
-  it('renders search input', () => {
-    cy.findByRole('searchbox', { name: /search movies/i }).should('exist');
-  });
-
-  it('shows loading state during search', () => {
-    cy.findByRole('searchbox', { name: /search movies/i })
-      .type('Inception{enter}');
-    cy.findByTestId('loading-spinner').should('exist');
-  });
-
-  it('displays search results', () => {
-    cy.findByRole('searchbox', { name: /search movies/i })
-      .type('Inception{enter}');
-    cy.findByText(/Inception/i).should('exist');
-  });
-});
-```
-
-### Example: MovieCard Component
+## Example
 
 ```js
-// tests/cypress/acceptance/components/movie-card.cy.js
-describe('MovieCard Component', () => {
-  it('renders movie title and poster', () => {
+// tests/cypress/component/MovieCard.cy.js
+import { MovieCard } from '@/components/MovieCard';
+
+describe('MovieCard', () => {
+  const mockMovie = {
+    id: 1,
+    title: 'Inception',
+    poster_path: '/inception.jpg',
+    vote_average: 8.5,
+    release_date: '2010-07-16',
+  };
+
+  it('renders movie information', () => {
     cy.mount(<MovieCard movie={mockMovie} />);
-    cy.findByText(mockMovie.title).should('exist');
-    cy.findByAltText(mockMovie.title).should('exist');
+    
+    cy.findByText('Inception').should('be.visible');
+    cy.findByText('8.5').should('be.visible');
+    cy.findByAltText('Inception poster').should('have.attr', 'src');
   });
 
-  it('shows rating with correct stars', () => {
-    cy.mount(<MovieCard movie={mockMovie} />);
-    cy.findByTestId('rating-stars').should('have.length', 5);
+  it('calls onClick when clicked', () => {
+    const onClick = cy.stub().as('handleClick');
+    cy.mount(<MovieCard movie={mockMovie} onClick={onClick} />);
+    
+    cy.findByTestId('movie-card').click();
+    cy.get('@handleClick').should('have.been.calledOnce');
+  });
+
+  it('shows fallback for missing poster', () => {
+    const movieWithoutPoster = { ...mockMovie, poster_path: null };
+    cy.mount(<MovieCard movie={movieWithoutPoster} />);
+    
+    cy.findByAltText('Inception poster')
+      .should('have.attr', 'src')
+      .and('include', '/movie-placeholder.svg');
   });
 });
 ```
 
 ## Best Practices
 
-### 1. Use Testing Library Queries
+1. **Mount one component** - Test the component in isolation
+2. **Use realistic props** - Match real data structure
+3. **Test user interactions** - Clicks, typing, selections
+4. **Assert on visible content** - What the user sees
+5. **Mock children and APIs** - Keep tests focused
+6. **Use data-testid** - For stable selectors
 
-```js
-// ✅ Good: Semantic queries
-cy.findByRole('button', { name: /search/i });
-cy.findByLabelText(/search movies/i);
-cy.findByTestId('movie-card');
+## Running Tests
 
-// ❌ Avoid: CSS selectors
-cy.get('.search-button');
-cy.get('[data-cy="search"]');
+```bash
+# All component tests (headless)
+npm run test:component
+
+# Open Cypress UI
+npm run test:component:ui
+
+# Run specific test
+npx cypress run --component --spec "tests/cypress/component/MovieCard.cy.js"
 ```
 
-### 2. Test User Interactions
+## Test Structure
 
 ```js
-// ✅ Good: Real user interactions
-cy.findByRole('searchbox').type('Inception{enter}');
-cy.findByRole('button', { name: /search/i }).click();
-
-// ❌ Avoid: Direct DOM manipulation
-cy.get('input').invoke('val', 'Inception').trigger('change');
-```
-
-### 3. Wait for Async Operations
-
-```js
-// ✅ Good: Wait for content
-cy.findByText(/Inception/i); // Automatically retries
-
-// ❌ Avoid: Fixed waits
-cy.wait(1000);
-```
-
-### 4. Use Page Objects for Complex Components
-
-```js
-// tests/cypress/acceptance/pages/search-page.js
-export class SearchPage {
-  visit() {
-    cy.visit('/');
-  }
-
-  search(query) {
-    cy.findByRole('searchbox', { name: /search movies/i })
-      .type(`${query}{enter}`);
-  }
-
-  getMovieCard(title) {
-    return cy.findByText(new RegExp(title, 'i')).closest('[data-testid="movie-card"]');
-  }
-}
-
-// In test file
-import { SearchPage } from '../pages/search-page';
-
-describe('SearchBar', () => {
-  const searchPage = new SearchPage();
-
-  it('shows results', () => {
-    searchPage.visit();
-    searchPage.search('Inception');
-    searchPage.getMovieCard('Inception').should('exist');
+describe('ComponentName', () => {
+  it('does something', () => {
+    cy.mount(<Component prop={value} />);
+    // Assertions
   });
 });
 ```
 
-## Test Coverage
+## Difference from Acceptance Tests
 
-### Components to Test
-
-- [ ] **SearchBar**: Input, loading state, results display
-- [ ] **MovieCard**: Title, poster, rating, overview
-- [ ] **MovieList**: Grid layout, empty state, pagination
-- [ ] **MovieDetail**: All sections (overview, cast, reviews)
-- [ ] **Navigation**: Active states, responsive behavior
-- [ ] **ErrorBoundary**: Error display, recovery
-- [ ] **LoadingSpinner**: Visibility, accessibility
-
-## Accessibility Tests
-
-```js
-describe('SearchBar Accessibility', () => {
-  it('has accessible label', () => {
-    cy.findByLabelText(/search movies/i).should('exist');
-  });
-
-  it('announces loading state to screen readers', () => {
-    cy.findByRole('searchbox').type('Inception{enter}');
-    cy.findByRole('status').should('contain', 'Loading');
-  });
-
-  it('keyboard navigation works', () => {
-    cy.findByRole('searchbox').type('Inception{downarrow}{enter}');
-    cy.focused().should('have.attr', 'data-testid', 'movie-card');
-  });
-});
-```
+| Component Tests | Acceptance Tests |
+|-----------------|------------------|
+| Single component | Multiple pages |
+| Isolated | Full application |
+| Fast (< 1s) | Slower (seconds) |
+| Mock data | Real or fixture data |
+| Implementation focus | User flow focus |
 
 ## Documentation
 
-- **Component Tests Skill**: [`.agent/skills/tmdb-testing/SKILL.md`](../../.agent/skills/tmdb-testing/SKILL.md)
-- **Testing Strategy**: [`docs/testing.md`](./testing.md)
-- **Page Objects**: [`docs/testing/page-objects.md`](./page-objects.md)
+- [Testing Strategy](../testing.md)
+- [Acceptance Tests](./acceptance-tests.md)
+- [Cypress Component Testing](https://docs.cypress.io/guides/component-testing/overview)
