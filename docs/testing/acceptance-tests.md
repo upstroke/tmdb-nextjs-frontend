@@ -1,150 +1,68 @@
-# Cypress Tests: Component and Acceptance
+# Akzeptanztests (Acceptance Tests)
 
-This guide defines the project rules for Cypress tests. Cypress covers two levels: component tests for isolated UI components in a real browser, and acceptance tests for complete user-visible flows with realistic navigation. Vitest covers unit and integration tests only (see `integration-tests.md`).
+## Ziel
 
-## Component Tests
+Akzeptanztests prüfen, ob die implementierten Features die Anforderungen der User-Stories erfüllen. Sie dienen als letzte Qualitätsstufe vor dem Release und simulieren reale Nutzungsszenarien.
 
-Use Cypress Component Testing for reusable UI components rendered in isolation in a real browser.
+## Ebenen der Akzeptanztests
 
-Good candidates:
+Akzeptanztests gliedern sich in zwei Ebenen:
 
-- dialogs, menus, and typeahead search
-- tabs with keyboard support (for example `TabGroupe`)
-- pagination and load-more controls
-- language switching controls
-- ARIA semantics, focus handling, and keyboard behavior of a single component
-- layout behavior of a component at specific viewport sizes
+1. **Komponenten-Akzeptanz** – Fachliche Abnahme einzelner UI-Komponenten gegen Akzeptanzkriterien (AC) der User-Stories.
+2. **Flow-Akzeptanz (E2E)** – Abnahme kompletter User-Flows über mehrere Seiten und Interaktionen hinweg.
 
-Rules:
+## Komponententests (Component Acceptance)
 
-- Mount the component with `cy.mount()`, registered in `tests/cypress/support/component.js`.
-- Stub network requests with `cy.intercept()`; do not use MSW.
-- Prefer selectors by role, label, and visible text.
-- Test one component contract per spec: states, interactions, keyboard, and accessible names.
-- Do not test full pages or multi-page flows here; use acceptance tests.
+Komponententests sind Teil der Akzeptanztests und prüfen das fachliche Verhalten von UI-Komponenten gegen die Akzeptanzkriterien.
 
-Place specs under `tests/cypress/component/`, one directory per component or component group, with the spec file named `*.cy.js`.
+**Spezifikationen:** `tests/cypress/acceptance/components/`
 
-## Acceptance Tests
+Detaillierte Regeln und Beispiele finden sich in [component-tests.md](./component-tests.md).
 
-Acceptance tests are the right choice for:
+## Flow-Akzeptanztests (E2E)
 
-- complete user journeys across one or more pages
-- navigation and routing behavior
-- browser-visible loading, restore, and error flows
-- locale changes across real navigation paths
-- accessibility checks that should run on full pages
-- regressions that are best validated in the actual browser environment
+E2E-Tests prüfen komplette Nutzerabläufe (z. B. "Film suchen → Details ansehen → zur Watchlist hinzufügen").
 
-Do not use Cypress for pure logic that can be trusted with Vitest unit tests.
+**Spezifikationen:** `tests/cypress/acceptance/flows/`
 
-## File Location
+## Werkzeug
 
-Place Cypress tests under `tests/cypress/`:
+- **Cypress** für beide Ebenen (Component Testing + E2E)
+- Tests laufen im echten Browser mit voller Interaktionsunterstützung
 
-```text
-tests/cypress/
-  component/
-    tab-groupe/
-      tab-groupe.cy.js
-  acceptance/
-    accessibility/
-      accessibility.spec.js
-      accessibility-testplan.md
-    components/
-      navigation/
-        navigation.spec.js
-        navigation-testplan.md
-    routes/
-      homepage.cy.js
-  POM/                 # Cypress page objects
-  fixtures/            # Cypress-specific fixture data
-  support/             # e2e.js, component.js, component-index.html
+## Beispiel (E2E)
+
+```ts
+// tests/cypress/acceptance/flows/search-and-add.cy.ts
+describe('User-Flow: Film suchen und zur Watchlist hinzufügen', () => {
+  it('erfolgreich gemäß AC-1 bis AC-3', () => {
+    cy.visit('/');
+    cy.findByRole('searchbox', { name: /filme suchen/i }).type('Inception{enter}');
+    cy.findByText(/inception/i).first().click();
+    cy.url().should('include', '/movie/');
+    cy.findByRole('button', { name: /zur watchlist hinzufügen/i }).click();
+    cy.findByText(/zur watchlist hinzugefügt/i).should('be.visible');
+  });
+});
 ```
 
-`cypress.config.js` defines two configurations:
+## Regeln
 
-- `e2e` discovers specs with `tests/cypress/acceptance/**/*.{cy,spec}.js` and uses `tests/cypress/support/e2e.js`.
-- `component` discovers specs with `tests/cypress/component/**/*.cy.{js,jsx}` and uses `tests/cypress/support/component.js` and `tests/cypress/support/component-index.html`.
+1. **Ein Test = Ein Akzeptanzkriterium oder Flow**  
+   Jede `it()`-Beschreibung referenziert explizit ACs oder einen User-Flow.
 
-`acceptance/components/` contains browser-based acceptance tests for shared UI regions (for example navigation) running against the real application. It is not the place for isolated component tests; those live in `tests/cypress/component/`. `routes/` contains route-oriented browser journeys; `accessibility/` contains full-page and interaction-state accessibility checks.
+2. **Fachliche Sprache**  
+   Testbeschreibungen verwenden die Sprache der Product Owner.
 
-Accessibility and navigation currently have a test plan next to their specs; `routes/homepage.cy.js` does not yet have one.
+3. **Sichtbare Elemente priorisieren**  
+   Queries nutzen `findByRole`, `findByText`, `findByLabel`.
 
-## General Rules
+4. **Barrierefreiheit mitprüfen**  
+   Jede Komponente und jeder Flow enthält mindestens einen Test für ARIA-Labels oder Keyboard-Interaktion.
 
-- Write tests from the user perspective.
-- Prefer stable selectors based on role, label, and visible text.
-- Keep scenarios realistic and business-oriented.
-- Avoid overspecifying intermediate implementation details.
-- Keep each scenario independent and repeatable.
-- Use helper functions only when they improve clarity and do not hide the intent of the test.
+## Zusammenhang mit anderen Test-Leveln
 
-## What to Cover in Acceptance Tests
-
-A Cypress acceptance test should cover behavior such as:
-
-- moving between routes
-- loading and restoring paginated content
-- changing locale and preserving route context
-- using search in realistic navigation flows
-- error handling visible to real users
-- accessibility scans on central pages and meaningful interaction states
-
-## Accessibility
-
-Use Cypress together with axe-core for automated accessibility checks. Component tests verify semantics, keyboard handling, and focus of a single component; acceptance tests run full-page scans and verify browser-dependent focus behavior on important pages and interaction states.
-
-Typical acceptance examples:
-
-- homepage
-- list pages
-- detail pages
-- dialogs or menus after opening
-- error states that appear after user interaction
-
-Document intentional exceptions explicitly. Do not disable rules broadly.
-
-## Tabs and Season Views
-
-The generic interaction contract of a reusable tab component (selected state, keyboard navigation, tab roles, panel relationships, async tab loading, error fallback) is covered by a Cypress component test.
-
-Add acceptance coverage only when the behavior matters as an actual browser journey, for example:
-
-- a season tab changes visible content in a way that is central to the feature
-- per-tab loading affects real user flows
-- routing, deep linking, or browser history interacts with the active tab
-
-## Test Plans
-
-Keep a `*-testplan.md` beside the executable specs for a substantial feature. Accessibility and navigation already have nearby plans; the current homepage route spec does not. A plan should describe:
-
-- the user story or feature goal
-- covered scenarios
-- states that must be included, for example loading, error, and success
-- special accessibility or locale considerations
-
-Keep the plan close to the executable tests so documentation and implementation evolve together.
-
-## Assertions
-
-Prefer assertions against:
-
-- visible content
-- roles and accessible names
-- URL changes when routing matters
-- browser-visible restore behavior
-- dialog, menu, or tab state as the user experiences it
-
-Avoid assertions that only restate internal implementation details.
-
-## Maintenance
-
-When a new feature becomes user-visible, first decide the level:
-
-- unit (Vitest): pure logic
-- integration (Vitest): modules and routes with mocked APIs, no browser
-- component (Cypress): one UI component in isolation in a browser
-- acceptance (Cypress): complete flows across pages
-
-Keep the test as low in this list as the behavior allows.
+- **Unit-Tests** prüfen technische Helper-Funktionen.
+- **Integrationstests** prüfen das Zusammenspiel mehrerer Module.
+- **Komponententests** (dieses Dokument) prüfen fachliches Verhalten von Komponenten.
+- **Flow-Akzeptanztests** (dieses Dokument) prüfen komplette User-Flows.
