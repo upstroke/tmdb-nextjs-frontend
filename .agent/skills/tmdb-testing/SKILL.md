@@ -1,74 +1,136 @@
 # TMDB Testing Skill
 
-## Überblick
+## Purpose
 
-Dieser Skill definiert die Test-Strategie für das TMDB Next.js Frontend. Alle Tests folgen der fachlichen Struktur und nicht der Werkzeug-Struktur.
+This skill enables the AI agent to write and maintain comprehensive tests for the TMDB Next.js frontend. It covers all test levels from unit to acceptance tests.
 
-## Test-Levels
+## Scope
 
-| Level | Werkzeug | Pfad | Fokus |
-|-------|----------|------|-------|
-| **Unit** | Vitest | `tests/vitest/` | Isolierte Funktionen, Helper, Services |
-| **Integration** | Vitest | `tests/vitest/` | Zusammenspiel mehrerer Module/Services |
-| **Komponente** | Cypress | `tests/cypress/acceptance/components/` | Fachliche Abnahme von UI-Komponenten gegen Akzeptanzkriterien |
-| **Akzeptanz (E2E)** | Cypress | `tests/cypress/acceptance/flows/` | Komplette User-Flows über mehrere Seiten |
+- Unit tests (Vitest)
+- Component tests (Cypress)
+- Integration tests (Cypress)
+- Acceptance tests (Cypress)
+- Accessibility tests (axe-core)
+- Security tests (Vitest + Cypress)
 
-## Ordnerstruktur
+## Capabilities
+
+### 1. Write Unit Tests (Vitest)
+
+```js
+// tests/vitest/utils/format.test.js
+import { formatRating } from '@/utils/format';
+
+describe('formatRating', () => {
+  it('formats rating to one decimal', () => {
+    expect(formatRating(8.5)).toBe('8.5');
+  });
+
+  it('handles null rating', () => {
+    expect(formatRating(null)).toBe('N/A');
+  });
+});
+```
+
+### 2. Write Component Tests (Cypress)
+
+```js
+// tests/cypress/acceptance/components/movie-card.cy.js
+describe('MovieCard Component', () => {
+  it('renders movie title and poster', () => {
+    cy.mount(<MovieCard movie={mockMovie} />);
+    cy.findByText(mockMovie.title).should('exist');
+    cy.findByAltText(mockMovie.title).should('exist');
+  });
+});
+```
+
+### 3. Write Acceptance Tests (Cypress)
+
+```js
+// tests/cypress/acceptance/flows/search.cy.js
+describe('Search Flow', () => {
+  it('finds movies by title', () => {
+    cy.visit('/');
+    cy.findByRole('searchbox', { name: /search movies/i })
+      .type('Inception{enter}');
+    cy.findByText(/Inception/i).should('exist');
+  });
+});
+```
+
+### 4. Write Accessibility Tests
+
+```js
+// tests/cypress/acceptance/accessibility/homepage.cy.js
+describe('Homepage Accessibility', () => {
+  it('has no accessibility violations', () => {
+    cy.visit('/');
+    cy.injectAxe();
+    cy.checkA11y();
+  });
+});
+```
+
+## Test Structure
 
 ```
 tests/
-├── vitest/                          # Unit- und Integrationstests
-│   ├── accessibility/               # Automatisierte A11y-Tests
-│   └── *.test.js                    # Test-Dateien
-├── cypress/
-│   ├── acceptance/                  # Cypress Acceptance Tests
-│   │   ├── components/              # Komponententests (Component Acceptance)
-│   │   ├── flows/                   # E2E-Tests (Flow-Akzeptanz)
-│   │   └── accessibility/           # Interaktive A11y-Tests
-│   ├── POM/                         # Page Objects (für alle Test-Levels)
-│   ├── fixtures/                    # Test-Daten
-│   └── support/                     # Cypress-Konfiguration und Helpers
+├── vitest/              # Unit tests
+│   ├── utils/
+│   └── security/
+└── cypress/
+    └── acceptance/
+        ├── components/  # Component tests
+        ├── flows/       # Acceptance tests
+        └── accessibility/
 ```
 
-## Wichtige Regeln
+## Scripts
 
-1. **Fachliche Sprache**: Testbeschreibungen verwenden die Sprache der Product Owner (nicht technische Implementierungsdetails).
-2. **Ein Test = Ein Akzeptanzkriterium**: Jede `it()`-Beschreibung referenziert explizit ein AC aus der User-Story.
-3. **Sichtbare Elemente priorisieren**: Queries nutzen `findByRole`, `findByText`, `findByLabel` – keine implementation details.
-4. **Barrierefreiheit mitprüfen**: Jede Komponente enthält mindestens einen Test für ARIA-Labels oder Keyboard-Interaktion.
+```bash
+# All tests
+npm run test
 
-## Cypress-Config
+# Unit tests only
+npm run test:unit
 
-Die Cypress-Konfiguration (`cypress.config.js`) verwendet folgende `specPattern`:
+# Component tests only
+npm run test:component
 
-- **Component Testing**: `tests/cypress/acceptance/components/**/*.cy.js`
-- **E2E Testing**: `tests/cypress/acceptance/flows/**/*.cy.js`
+# Acceptance tests only
+npm run test:acceptance
 
-## Page Objects
+# Accessibility audit
+npm run test:a11y
 
-Page Objects befinden sich in `tests/cypress/POM/` und werden in E2E-Tests verwendet:
-
-```js
-// tests/cypress/POM/HomePage.js
-import { BasePage } from './BasePage';
-
-export class HomePage extends BasePage {
-  visit() {
-    cy.visit('/');
-    return this;
-  }
-}
+# Security tests
+npm run test:security
 ```
 
-## Dokumentation
+## Best Practices
 
-- **Zentrale Testing-Doku**: [`docs/testing.md`](../../docs/testing.md)
-- **Komponententests**: [`docs/testing/component-tests.md`](../../docs/testing/component-tests.md)
-- **Akzeptanztests**: [`docs/testing/acceptance-tests.md`](../../docs/testing/acceptance-tests.md)
+1. **Use Testing Library queries**: `findByRole`, `findByLabelText`, `findByTestId`
+2. **Test user interactions**: Real clicks, typing, navigation
+3. **Wait for content**: Use `findBy*` queries instead of `cy.wait()`
+4. **Page objects**: For complex flows, use page object pattern
+5. **Accessibility first**: Run axe-core on every page
+
+## Documentation
+
+- **Testing Strategy**: [`docs/testing.md`](../../docs/testing.md)
+- **Unit Tests**: [`docs/testing/unit-tests.md`](../../docs/testing/unit-tests.md)
+- **Component Tests**: [`docs/testing/component-tests.md`](../../docs/testing/component-tests.md)
+- **Acceptance Tests**: [`docs/testing/acceptance-tests.md`](../../docs/testing/acceptance-tests.md)
 - **Accessibility**: [`docs/testing/accessibility-audit-checklist.md`](../../docs/testing/accessibility-audit-checklist.md)
-- **AI-Prompts**: [`docs/ai-prompts.md`](../../docs/ai-prompts.md)
+- **Security Tests**: [`docs/testing/security-tests.md`](../../docs/testing/security-tests.md)
+- **Page Objects**: [`docs/testing/page-objects.md`](../../docs/testing/page-objects.md)
 
-## Coverage-Ziele
+## When to Use
 
-- **Vitest**: 80% global (branches, functions, lines, statements) – erzwungen durch `vitest.config.js`
-- **Cypress**: Kein automatisches Coverage, aber qualitative Abdeckung aller Akzeptanzkriterien
+Use this skill when:
+- Adding new components
+- Implementing new features
+- Fixing bugs
+- Refactoring code
+- Adding new pages or routes
