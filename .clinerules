@@ -51,6 +51,7 @@
 - ✅ Use fixtures: `tests/fixtures/tmdb/`
 - ✅ Use mocks: `tests/mocks/`
 - ✅ Run `cy.checkA11y()` on pages and after interactions
+- ✅ Use Page Objects for complex flows: `tests/cypress/POM/`
 
 ### Test File Naming
 - Cypress: `*.cy.js` → `tab-groupe.cy.js`
@@ -101,12 +102,14 @@ tmdb-nextjs-frontend/
 │   │       ├── flows/           # E2E tests
 │   │       ├── accessibility/   # A11y tests
 │   │       └── security/        # Security tests
-│   ├── vitest/
-│   │   ├── utils/         # Unit tests
-│   │   └── security/      # Security unit tests
+│   ├── POM/                 # Page objects
 │   ├── fixtures/tmdb/     # Test data (TMDB API responses)
 │   ├── mocks/             # MSW handlers & mocks
 │   └── setup/             # Test setup files
+├── lib/
+│   ├── i18n/              # Internationalization
+│   ├── schemas/           # Zod schemas
+│   └── services/          # TMDB API service
 ├── docs/                   # Documentation
 │   ├── testing.md          # Testing strategy
 │   └── ai-prompts.md       # AI collaboration prompts
@@ -144,15 +147,47 @@ tmdb-nextjs-frontend/
 - Tests: kebab-case + suffix → `tab-groupe.cy.js`, `format.test.js`
 - Utils: camelCase → `format.js`, `sanitize.js`
 
+## 🌍 Internationalization (i18n)
+
+### Locale Modules
+- `lib/i18n/helpers.js` - Helper functions
+- `lib/i18n/config.js` - Configuration
+- `lib/i18n/resolver.js` - Locale resolver
+- `lib/i18n/ui.json` - UI translations
+- `lib/i18n/ratings.json` - Rating format translations
+
+### Rules
+- ✅ Preserve locale propagation through internal navigation
+- ✅ Preserve current route when changing languages
+- ✅ Reuse existing i18n modules (don't reinvent)
+- ✅ Store UI translations in `lib/i18n/ui.json`
+- ✅ Include locale in TMDB API requests
+
+## 📦 Data Handling
+
+### TMDB API
+- ❌ Treat TMDB data as **unreliable** until validated
+- ✅ Use TMDB service layer: `lib/services/tmdb-api.js`
+- ✅ Validate with Zod schemas: `lib/schemas/`
+- ✅ Preserve fallback behavior for missing data
+- ✅ Remove duplicates when loading paginated data
+- ✅ Include locale in TMDB requests
+
+### Zod Validation
+- ✅ Use Zod for runtime validation
+- ✅ Validate external data, API responses, form input
+- ✅ Import schemas from `lib/schemas/`
+
 ## 🚫 Forbidden Patterns
 
 1. **NO TypeScript** - No `.ts`, `.tsx` files
 2. **NO Tailwind CSS** - Use Fomantic UI + Sass only
 3. **NO class components** - Functional + hooks only
 4. **NO CSS selectors in tests** - Testing Library queries only
-5. **NO direct API calls in components** - Use API routes or server actions
+5. **NO direct API calls in components** - Use API routes or service layer
 6. **NO `dangerouslySetInnerHTML`** - Except explicitly trusted content
 7. **NO `.env` in git** - Use `.env.example` for template
+8. **NO unvalidated external data** - Always use Zod
 
 ## ♿ Accessibility (WCAG 2.1 AA)
 
@@ -207,6 +242,16 @@ tmdb-nextjs-frontend/
 - Check `.gitignore` before committing
 - Run `npm audit` regularly
 
+## 🛠️ Locally Available Tools
+
+Prefer these tools when available:
+- `rg` (ripgrep) - Fast text searches
+- `fd` - Fast file/directory search
+- `fzf` - Interactive selection/filtering
+- `bat` - Readable file output
+- `delta` - Readable Git diffs
+- `sd` - Simple text changes
+
 ## 🎯 Qwen3 Instructions
 
 1. **Be concise** - Shorter, clearer explanations
@@ -216,6 +261,8 @@ tmdb-nextjs-frontend/
 5. **Follow patterns** - Match existing code style exactly
 6. **Use skills** - Check `.agent/skills/` for detailed patterns
 7. **Use Fomantic UI** - Check existing components for class patterns
+8. **Validate data** - Always use Zod for external data
+9. **Preserve i18n** - Keep locale propagation intact
 
 ## ✅ Before You Finish (Checklist)
 
@@ -228,3 +275,6 @@ tmdb-nextjs-frontend/
 - [ ] Components functional + hooks
 - [ ] Accessibility considered (aria labels, keyboard nav)
 - [ ] Security considered (input sanitization, no exposed secrets)
+- [ ] i18n preserved (locale propagation, route on language switch)
+- [ ] Data validated (Zod schemas, TMDB service layer)
+- [ ] No unvalidated external data
