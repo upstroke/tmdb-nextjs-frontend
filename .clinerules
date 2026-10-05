@@ -1,0 +1,124 @@
+# Cline Rules - TMDB Next.js Frontend
+# Optimized for Qwen3-Coder-30B-A3B-Instruct-MLX
+
+## 🎯 Project Overview
+- **Framework**: Next.js 15 with App Router
+- **Language**: JavaScript (NO TypeScript)
+- **Styling**: Tailwind CSS
+- **API**: TMDB (The Movie Database)
+- **i18n**: next-intl
+
+## 🧪 Testing (CRITICAL)
+
+### Test Types
+- **Cypress**: Component + E2E tests → `tests/cypress/acceptance/`
+- **Vitest**: Unit tests → `tests/vitest/`
+- **Testing Library**: Always use semantic queries
+
+### Testing Rules
+1. Use `findByRole()`, `findByText()`, `findByLabelText()` from Testing Library
+2. NEVER use CSS selectors (`.class`, `#id`) in tests
+3. Component tests use `cy.mount()`
+4. E2E tests use `cy.visit()`
+5. Mock external APIs with MSW (Mock Service Worker)
+6. Use fixtures from `tests/fixtures/tmdb/`
+7. Use mocks from `tests/mocks/`
+
+### Test File Naming
+- Cypress: `*.cy.js` (e.g., `tab-groupe.cy.js`)
+- Vitest: `*.test.js` (e.g., `format.test.js`)
+
+### Example Test Structure
+```js
+import { Component } from '@/components/Component';
+
+describe('Component', () => {
+  beforeEach(() => {
+    cy.mount(<Component />);
+  });
+
+  it('should do something', () => {
+    cy.findByRole('button').should('exist');
+  });
+});
+```
+
+## 📁 Project Structure
+```
+├── app/                    # Next.js App Router pages
+├── components/             # React components
+├── tests/
+│   ├── cypress/
+│   │   └── acceptance/
+│   │       ├── components/ # Component tests
+│   │       ├── flows/      # E2E tests
+│   │       └── accessibility/
+│   ├── vitest/             # Unit tests
+│   ├── fixtures/tmdb/      # Test data
+│   └── mocks/              # MSW mocks
+├── docs/                   # Documentation
+│   └── testing.md          # Testing strategy
+└── .agent/skills/          # AI agent skills
+```
+
+## 💻 Code Style
+
+### JavaScript (NOT TypeScript)
+- ✅ `function Component({ prop })`
+- ❌ `function Component({ prop }: Props)`
+
+### Imports
+- Use `@/` alias for root: `import { foo } from '@/utils/foo'`
+- Component imports: `import { Component } from '@/components/Component'`
+
+### Components
+- Functional components only
+- Use hooks (useState, useEffect, etc.)
+- Tailwind classes for styling
+- NO inline styles
+
+### Naming Conventions
+- Components: PascalCase (`TabGroupe`)
+- Files: kebab-case (`tab-groupe.jsx`)
+- Tests: kebab-case with suffix (`tab-groupe.cy.js`)
+
+## 🚫 Forbidden Patterns
+
+1. **NO TypeScript** (.ts, .tsx files)
+2. **NO CSS modules** (use Tailwind)
+3. **NO class components** (use functional + hooks)
+4. **NO CSS selectors in tests** (use Testing Library)
+5. **NO direct API calls in components** (use API routes)
+
+## 📚 Documentation References
+
+- **Testing**: `docs/testing.md` - Full testing strategy
+- **AI Skills**: `.agent/skills/` - Detailed patterns
+  - `tmdb-testing/SKILL.md` - Testing guidelines
+  - `tmdb-accessibility/SKILL.md` - A11y rules
+  - `tmdb-security/SKILL.md` - Security tests
+  - `tmdb-development/SKILL.md` - Dev standards
+
+## 🔒 Security & Git
+
+- NEVER commit `.env` files
+- NEVER commit API keys or secrets
+- Use environment variables for sensitive data
+- Check `.gitignore` before committing
+
+## 🎯 Qwen3-Specific Instructions
+
+1. **Be concise**: Prefer shorter, clearer explanations
+2. **Show code**: Always provide working code examples
+3. **Check context**: Reference `docs/` and `.agent/skills/` when unsure
+4. **Ask clarifying questions**: If requirements are ambiguous
+5. **Follow patterns**: Match existing code style exactly
+
+## ✅ Before You Finish
+
+- [ ] Code follows JavaScript (not TypeScript)
+- [ ] Tests use Testing Library queries
+- [ ] Tailwind classes for styling
+- [ ] No secrets or .env files in commit
+- [ ] Test file naming matches convention
+- [ ] Imports use `@/` alias
