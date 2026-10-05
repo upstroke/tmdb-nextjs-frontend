@@ -1,4 +1,4 @@
-import { HomePage } from '../../../POM/HomePage.js';
+import { HomePage } from '@pom/HomePage.js';
 
 describe('Navigation', () => {
   const home = HomePage('en-US');
