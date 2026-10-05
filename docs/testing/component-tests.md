@@ -1,102 +1,176 @@
-# Komponententests (Component Acceptance)
+# Component Tests
 
-## Ziel
+## Overview
 
-Komponententests dienen der fachlichen Abnahme von UI-Komponenten gegen die Akzeptanzkriterien der User-Stories. Im Gegensatz zu technischen Unit-Tests wird hier das sichtbare und interaktive Verhalten der Komponente aus Anwendersicht geprüft.
+Component tests verify that individual React components work correctly in isolation. Unlike unit tests, component tests render the actual component with its dependencies (context, providers, etc.).
 
-## Abgrenzung
+## Test Levels
 
-| Test-Level | Werkzeug | Ort | Fokus |
-|------------|----------|-----|-------|
-| Unit-Tests | Vitest | `tests/vitest/` | Technische Korrektheit isolierter Funktionen |
-| **Komponententests** | **Cypress** | `tests/cypress/acceptance/components/` | **Fachliches Verhalten von Komponenten gegen Akzeptanzkriterien** |
-| Integrationstests | Vitest | `tests/vitest/` | Zusammenspiel mehrerer Module/Services |
-| Akzeptanztests (E2E) | Cypress | `tests/cypress/acceptance/flows/` | Komplette User-Flows über mehrere Seiten |
+| Level | Tool | Path | Focus |
+|-------|------|------|-------|
+| **Component** | Cypress | `tests/cypress/acceptance/components/` | Individual components |
+| **Acceptance** | Cypress | `tests/cypress/acceptance/flows/` | Complete user flows |
 
-## Test-Ort
+## Scripts
 
-Spezifikationen für Komponententests liegen unter:
+```bash
+# All component tests
+npm run test:component
 
-```
-tests/cypress/acceptance/components/
-```
-
-Dateinamen enden auf `.cy.{js,ts,jsx,tsx}` und folgen dem Muster:
-
-```
-<component-name>.cy.ts
+# Component tests in watch mode
+npm run test:component:watch
 ```
 
-Beispiel:
+## Component Test Structure
 
-```
-tests/cypress/acceptance/components/movie-card.cy.ts
-```
+### Example: SearchBar Component
 
-## Werkzeug
-
-- **Cypress Component Testing** mit Next.js-Bundler
-- Tests laufen im echten Browser (kein JSDOM)
-- Volle Unterstützung für Interaktionen (Klicks, Hover, Navigation)
-
-## Beispiel
-
-```ts
-// tests/cypress/acceptance/components/movie-card.cy.ts
-import { MovieCard } from '@/components/movie-card';
-
-describe('MovieCard (Acceptance)', () => {
-  it('zeigt Titel und Release-Jahr gemäß Akzeptanzkriterium AC-1', () => {
-    const movie = {
-      title: 'Inception',
-      releaseDate: '2010-07-16',
-      posterPath: '/inception.jpg',
-    };
-
-    cy.mount(<MovieCard movie={movie} />);
-
-    cy.findByRole('img', { name: /inception/i }).should('be.visible');
-    cy.findByText(/inception/i).should('be.visible');
-    cy.findByText(/2010/).should('be.visible');
+```js
+// tests/cypress/acceptance/components/search-bar.cy.js
+describe('SearchBar Component', () => {
+  beforeEach(() => {
+    cy.visit('/');
   });
 
-  it('zeigt Favoriten-Button und markiert als favorisiert gemäß AC-2', () => {
-    const movie = {
-      title: 'Inception',
-      releaseDate: '2010-07-16',
-      posterPath: '/inception.jpg',
-      isFavorite: true,
-    };
+  it('renders search input', () => {
+    cy.findByRole('searchbox', { name: /search movies/i }).should('exist');
+  });
 
-    cy.mount(<MovieCard movie={movie} />);
+  it('shows loading state during search', () => {
+    cy.findByRole('searchbox', { name: /search movies/i })
+      .type('Inception{enter}');
+    cy.findByTestId('loading-spinner').should('exist');
+  });
 
-    cy.findByRole('button', { name: /favorit/i })
-      .should('be.visible')
-      .and('have.attr', 'aria-pressed', 'true');
+  it('displays search results', () => {
+    cy.findByRole('searchbox', { name: /search movies/i })
+      .type('Inception{enter}');
+    cy.findByText(/Inception/i).should('exist');
   });
 });
 ```
 
-## Regeln
+### Example: MovieCard Component
 
-1. **Ein Test = Ein Akzeptanzkriterium**  
-   Jede `it()`-Beschreibung referenziert explizit ein AC aus der User-Story (z. B. "gemäß AC-1").
+```js
+// tests/cypress/acceptance/components/movie-card.cy.js
+describe('MovieCard Component', () => {
+  it('renders movie title and poster', () => {
+    cy.mount(<MovieCard movie={mockMovie} />);
+    cy.findByText(mockMovie.title).should('exist');
+    cy.findByAltText(mockMovie.title).should('exist');
+  });
 
-2. **Fachliche Sprache**  
-   Testbeschreibungen verwenden die Sprache der Product Owner (nicht technische Implementierungsdetails).
+  it('shows rating with correct stars', () => {
+    cy.mount(<MovieCard movie={mockMovie} />);
+    cy.findByTestId('rating-stars').should('have.length', 5);
+  });
+});
+```
 
-3. **Sichtbare Elemente priorisieren**  
-   Queries nutzen `findByRole`, `findByText`, `findByLabel` – keine implementation details wie `data-testid` außer bei Screen-Reader-spezifischen Fällen.
+## Best Practices
 
-4. **Keine Mocks für Fachlogik**  
-   Die Komponente wird mit realen Props getestet. Externe Abhängigkeiten (API-Calls) werden über Cypress-Intercepts gemockt, falls nötig.
+### 1. Use Testing Library Queries
 
-5. **Barrierefreiheit mitprüfen**  
-   Jede Komponente enthält mindestens einen Test für ARIA-Labels oder Keyboard-Interaktion.
+```js
+// ✅ Good: Semantic queries
+cy.findByRole('button', { name: /search/i });
+cy.findByLabelText(/search movies/i);
+cy.findByTestId('movie-card');
 
-## Zusammenhang mit anderen Test-Leveln
+// ❌ Avoid: CSS selectors
+cy.get('.search-button');
+cy.get('[data-cy="search"]');
+```
 
-- **Unit-Tests** prüfen technische Helper-Funktionen der Komponente (z. B. `formatReleaseDate()`).
-- **Komponententests** prüfen das fachliche Verhalten der gesamten Komponente.
-- **Integrationstests** prüfen das Zusammenspiel der Komponente mit Parent-Komponenten oder Context-Providern.
-- **Akzeptanztests (E2E)** prüfen die Komponente im Kontext kompletter User-Flows.
+### 2. Test User Interactions
+
+```js
+// ✅ Good: Real user interactions
+cy.findByRole('searchbox').type('Inception{enter}');
+cy.findByRole('button', { name: /search/i }).click();
+
+// ❌ Avoid: Direct DOM manipulation
+cy.get('input').invoke('val', 'Inception').trigger('change');
+```
+
+### 3. Wait for Async Operations
+
+```js
+// ✅ Good: Wait for content
+cy.findByText(/Inception/i); // Automatically retries
+
+// ❌ Avoid: Fixed waits
+cy.wait(1000);
+```
+
+### 4. Use Page Objects for Complex Components
+
+```js
+// tests/cypress/acceptance/pages/search-page.js
+export class SearchPage {
+  visit() {
+    cy.visit('/');
+  }
+
+  search(query) {
+    cy.findByRole('searchbox', { name: /search movies/i })
+      .type(`${query}{enter}`);
+  }
+
+  getMovieCard(title) {
+    return cy.findByText(new RegExp(title, 'i')).closest('[data-testid="movie-card"]');
+  }
+}
+
+// In test file
+import { SearchPage } from '../pages/search-page';
+
+describe('SearchBar', () => {
+  const searchPage = new SearchPage();
+
+  it('shows results', () => {
+    searchPage.visit();
+    searchPage.search('Inception');
+    searchPage.getMovieCard('Inception').should('exist');
+  });
+});
+```
+
+## Test Coverage
+
+### Components to Test
+
+- [ ] **SearchBar**: Input, loading state, results display
+- [ ] **MovieCard**: Title, poster, rating, overview
+- [ ] **MovieList**: Grid layout, empty state, pagination
+- [ ] **MovieDetail**: All sections (overview, cast, reviews)
+- [ ] **Navigation**: Active states, responsive behavior
+- [ ] **ErrorBoundary**: Error display, recovery
+- [ ] **LoadingSpinner**: Visibility, accessibility
+
+## Accessibility Tests
+
+```js
+describe('SearchBar Accessibility', () => {
+  it('has accessible label', () => {
+    cy.findByLabelText(/search movies/i).should('exist');
+  });
+
+  it('announces loading state to screen readers', () => {
+    cy.findByRole('searchbox').type('Inception{enter}');
+    cy.findByRole('status').should('contain', 'Loading');
+  });
+
+  it('keyboard navigation works', () => {
+    cy.findByRole('searchbox').type('Inception{downarrow}{enter}');
+    cy.focused().should('have.attr', 'data-testid', 'movie-card');
+  });
+});
+```
+
+## Documentation
+
+- **Component Tests Skill**: [`.agent/skills/tmdb-testing/SKILL.md`](../../.agent/skills/tmdb-testing/SKILL.md)
+- **Testing Strategy**: [`docs/testing.md`](./testing.md)
+- **Page Objects**: [`docs/testing/page-objects.md`](./page-objects.md)
