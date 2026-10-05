@@ -1,66 +1,66 @@
-# Testing-Strategie
+# Testing Strategy
 
-## Test-Levels
+## Test Levels
 
-Dieses Projekt verwendet vier Test-Levels, die sich nach fachlichen Kriterien und nicht nach Werkzeugen gliedern:
+This project uses four test levels, organized by business criteria rather than by tooling:
 
-| Level | Werkzeug | Pfad | Fokus |
-|-------|----------|------|-------|
-| **Unit** | Vitest | `tests/vitest/` | Isolierte Funktionen, Helper, Services |
-| **Integration** | Vitest | `tests/vitest/` | Zusammenspiel mehrerer Module/Services |
-| **Komponente** | Cypress | `tests/cypress/acceptance/components/` | Fachliche Abnahme von UI-Komponenten gegen Akzeptanzkriterien |
-| **Akzeptanz (E2E)** | Cypress | `tests/cypress/acceptance/flows/` | Komplette User-Flows über mehrere Seiten |
+| Level                | Tool    | Path                                   | Focus                                                            |
+|----------------------|---------|----------------------------------------|------------------------------------------------------------------|
+| **Unit**             | Vitest  | `tests/vitest/`                        | Isolated functions, helpers, services                            |
+| **Integration**      | Vitest  | `tests/vitest/`                        | Interaction between multiple modules/services                    |
+| **Component**        | Cypress | `tests/cypress/acceptance/components/` | Business acceptance of UI components against acceptance criteria |
+| **Acceptance (E2E)** | Cypress | `tests/cypress/acceptance/flows/`      | Complete user flows across multiple pages                        |
 
-## Ordnerstruktur
+## Folder Structure
 
-```
+```text
 tests/
-├── vitest/                          # Unit- und Integrationstests
-│   ├── accessibility/               # Automatisierte A11y-Tests
-│   ├── security/                    # Security-Tests (XSS, API-Key)
-│   └── *.test.js                    # Test-Dateien
+├── vitest/                          # Unit and integration tests
+│   ├── accessibility/               # Automated a11y tests
+│   ├── security/                    # Security tests (XSS, API key)
+│   └── *.test.js                    # Test files
 ├── cypress/
-│   ├── acceptance/                  # Cypress Acceptance Tests
-│   │   ├── components/              # Komponententests (Component Acceptance)
-│   │   ├── flows/                   # E2E-Tests (Flow-Akzeptanz)
-│   │   └── accessibility/           # Interaktive A11y-Tests
-│   ├── POM/                         # Page Objects (für alle Test-Levels)
-│   ├── fixtures/                    # Test-Daten
-│   └── support/                     # Cypress-Konfiguration und Helpers
+│   ├── acceptance/                  # Cypress acceptance tests
+│   │   ├── components/              # Component tests (Component Acceptance)
+│   │   ├── flows/                   # E2E tests (Flow Acceptance)
+│   │   └── accessibility/           # Interactive a11y tests
+│   ├── POM/                         # Page objects (for all test levels)
+│   ├── fixtures/                    # Test data
+│   └── support/                     # Cypress configuration and helpers
 ```
 
-## Werkzeuge
+## Tooling
 
-- **Vitest** für Unit- und Integrationstests (schnelle, isolierte Tests)
-- **Cypress** für Komponenten- und Akzeptanztests (Browser-basiert, interaktiv)
+- **Vitest** for unit and integration tests (fast, isolated tests)
+- **Cypress** for component and acceptance tests (browser-based, interactive)
 
-## Dokumentationen
+## Documentation
 
-- [Unit-Tests](./testing/unit-tests.md)
-- [Integrationstests](./testing/integration-tests.md)
-- [Komponententests](./testing/component-tests.md)
-- [Akzeptanztests](./testing/acceptance-tests.md)
-- [Security-Tests](./testing/security-tests.md)
-- [Accessibility Audit](./testing/accessibility-audit-checklist.md)
-- [Common Rules](./testing/common-rules.md)
-- [Page Objects](./testing/page-objects.md)
-- [AI-Prompts](../ai-prompts.md)
+- [Unit tests](./testing/unit-tests.md)
+- [Integration tests](./testing/integration-tests.md)
+- [Component tests](./testing/component-tests.md)
+- [Acceptance tests](./testing/acceptance-tests.md)
+- [Security tests](./testing/security-tests.md)
+- [Accessibility audit](./testing/accessibility-audit-checklist.md)
+- [Common rules](./testing/common-rules.md)
+- [Page objects](./testing/page-objects.md)
+- [AI prompts](../ai-prompts.md)
 
-## Test-Pyramide
+## Test Pyramid
 
-```
+```text
         /
-       /  \      Akzeptanz (E2E)
-      /----\     Komponente
+       /  \      Acceptance (E2E)
+      /----\     Component
      /      \    Integration
     /--------\   Unit
 ```
 
-- **Basis**: Viele schnelle Unit-Tests
-- **Mitte**: Weniger Integrationstests
-- **Spitze**: Wenige, aber wertvolle Komponenten- und Akzeptanztests
+- **Base**: Many fast unit tests
+- **Middle**: Fewer integration tests
+- **Top**: Few but valuable component and acceptance tests
 
-## Coverage-Ziele
+## Coverage Goals
 
-- **Vitest**: 80% global (branches, functions, lines, statements) – erzwungen durch `vitest.config.js`
-- **Cypress**: Kein automatisches Coverage, aber qualitative Abdeckung aller Akzeptanzkriterien
+- **Vitest**: 80% globally (branches, functions, lines, statements) — enforced via `vitest.config.js`
+- **Cypress**: No automated coverage, but qualitative coverage of all acceptance criteria
