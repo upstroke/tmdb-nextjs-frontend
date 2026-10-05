@@ -1,66 +1,140 @@
 # Testing Strategy
 
-## Test Levels
+This project uses a comprehensive testing strategy with multiple test types to ensure code quality and application reliability.
 
-This project uses four test levels, organized by business criteria rather than by tooling:
+## Test Types
 
-| Level                | Tool    | Path                                   | Focus                                                            |
-| -------------------- | ------- | -------------------------------------- | ---------------------------------------------------------------- |
-| **Unit**             | Vitest  | `tests/vitest/`                        | Isolated functions, helpers, services                            |
-| **Integration**      | Vitest  | `tests/vitest/`                        | Interaction between multiple modules/services                    |
-| **Component**        | Cypress | `tests/cypress/acceptance/components/` | Business acceptance of UI components against acceptance criteria |
-| **Acceptance (E2E)** | Cypress | `tests/cypress/acceptance/flows/`      | Complete user flows across multiple pages                        |
+### Unit Tests
 
-## Folder Structure
+**Location:** `tests/unit/`
 
-```text
+Unit tests verify individual functions, utilities, and modules in isolation.
+
+- **Framework:** Vitest
+- **Environment:** jsdom
+- **Use cases:**
+  - Utility functions (e.g., sanitization, formatting)
+  - Helper functions
+  - Pure functions with no external dependencies
+  - i18n helpers and resolvers
+  - Store logic
+  - Service layer functions
+
+**Run unit tests:**
+```bash
+npm run test:unit
+```
+
+### Integration Tests
+
+**Location:** `tests/integration/`
+
+Integration tests verify multiple components working together, typically React components with their dependencies.
+
+- **Framework:** Vitest + Testing Library
+- **Environment:** jsdom
+- **Use cases:**
+  - Component interactions
+  - State management
+  - API mocking and responses
+  - Multi-component workflows
+
+**Run integration tests:**
+```bash
+npm run test:unit
+```
+
+### Component Tests
+
+**Location:** `tests/cypress/component/`
+
+Component tests render individual React components in a real browser environment for isolated testing.
+
+- **Framework:** Cypress Component Testing
+- **Environment:** Real browser (Chrome)
+- **Use cases:**
+  - Single component behavior
+  - Props and state variations
+  - User interactions within a component
+  - Faster feedback than E2E (no full app boot)
+
+**Run component tests:**
+```bash
+npm run test:component
+```
+
+### E2E Tests
+
+**Location:** `tests/cypress/acceptance/`
+
+End-to-end tests verify complete user flows through the entire application.
+
+- **Framework:** Cypress
+- **Environment:** Real browser (Chrome)
+- **Use cases:**
+  - Complete user journeys
+  - Navigation and routing
+  - Full application behavior
+  - Cross-component workflows
+
+**Run E2E tests:**
+```bash
+npm run test:e2e
+```
+
+## Test Commands
+
+```bash
+# Run all unit and integration tests
+npm run test:unit
+
+# Run component tests
+npm run test:component
+
+# Run E2E tests
+npm run test:e2e
+
+# Run unit tests with coverage
+npm run test:coverage
+```
+
+## Test File Naming Conventions
+
+- **Unit tests:** `*.test.js` or `*.test.jsx`
+- **Integration tests:** `*.test.js` or `*.test.jsx`
+- **Component tests:** `*.cy.js` or `*.cy.jsx`
+- **E2E tests:** `*.cy.js` or `*.cy.jsx`
+
+## Directory Structure
+
+```
 tests/
-├── vitest/                          # Unit and integration tests
-│   ├── accessibility/               # Automated a11y tests
-│   ├── security/                    # Security tests (XSS, API key)
-│   └── *.test.js                    # Test files
-├── cypress/
-│   ├── acceptance/                  # Cypress acceptance tests
-│   │   ├── components/              # Component tests (Component Acceptance)
-│   │   ├── flows/                   # E2E tests (Flow Acceptance)
-│   │   └── accessibility/           # Interactive a11y tests
-│   ├── POM/                         # Page objects (for all test levels)
-│   ├── fixtures/                    # Test data
-│   └── support/                     # Cypress configuration and helpers
+├── unit/                    # Unit tests (Vitest)
+│   ├── i18n/
+│   ├── security/
+│   ├── services/
+│   ├── stores/
+│   └── utils/
+├── integration/             # Integration tests (Vitest + Testing Library)
+├── cypress/                 # Cypress tests
+│   ├── acceptance/          # E2E tests
+│   ├── component/           # Component tests
+│   ├── fixtures/
+│   └── support/
+├── mocks/                   # Shared test mocks
+├── setup/                   # Test setup files
+└── cypress.config.js        # Cypress configuration
 ```
 
-## Tooling
+## Configuration Files
 
-- **Vitest** for unit and integration tests (fast, isolated tests)
-- **Cypress** for component and acceptance tests (browser-based, interactive)
+- **`vitest.config.js`** – Vitest configuration for unit and integration tests
+- **`vite.config.js`** – Vite configuration for Cypress Component Testing
+- **`tests/cypress.config.js`** – Cypress configuration for E2E and component tests
 
-## Documentation
+## Related Documentation
 
-- [Unit tests](./testing/unit-tests.md)
-- [Integration tests](./testing/integration-tests.md)
-- [Component tests](./testing/component-tests.md)
-- [Acceptance tests](./testing/acceptance-tests.md)
-- [Security tests](./testing/security-tests.md)
-- [Accessibility audit](./testing/accessibility-audit-checklist.md)
-- [Common rules](./testing/common-rules.md)
-- [Page objects](./testing/page-objects.md)
-- [AI prompts](../ai-prompts.md)
-
-## Test Pyramid
-
-```text
-        /
-       /  \      Acceptance (E2E)
-      /----\     Component
-     /      \    Integration
-    /--------\   Unit
-```
-
-- **Base**: Many fast unit tests
-- **Middle**: Fewer integration tests
-- **Top**: Few but valuable component and acceptance tests
-
-## Coverage Goals
-
-- **Vitest**: 80% globally (branches, functions, lines, statements) — enforced via `vitest.config.js`
-- **Cypress**: No automated coverage, but qualitative coverage of all acceptance criteria
+- [Unit Tests](./testing/unit-tests.md)
+- [Integration Tests](./testing/integration-tests.md)
+- [Component Tests](./testing/component-tests.md)
+- [E2E Tests](./testing/e2e-tests.md)
