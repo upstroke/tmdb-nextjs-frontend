@@ -89,7 +89,10 @@ Rules:
 - Use `npm run test:unit` or `npm run test:integration` for focused Vitest validation.
 - Use `npm run test:vitest:coverage` when coverage is required.
 - Run `npm run build` for production-build validation.
-- Treat Cypress as a separate validation step: `npm run test:acceptance` runs headlessly and `npm run test:acceptance:ui` opens the interactive runner.
+- Treat Cypress as a separate validation step. Cypress has two modes:
+  - E2E (`cypress.config.js` `e2e`, specs in `tests/cypress/acceptance/`): `npm run test:acceptance` runs headlessly (`cypress run --e2e`) and `npm run test:acceptance:ui` opens the interactive runner. The app must run on `http://localhost:3000`.
+  - Component (`cypress.config.js` `component`, specs in `tests/cypress/component/**/*.cy.{js,jsx}`): `npm run test:component` runs headlessly (`cypress run --component`) and `npm run test:component:ui` opens the interactive runner.
+  - `npm run test:cypress` runs `cypress run` for both modes.
 - Cypress is configured to use `tests/cypress/` for specs, support files, fixtures, screenshots, and videos; consult `docs/testing.md` for test conventions.
 
 Do not edit files, run destructive commands, change dependencies, push commits,
