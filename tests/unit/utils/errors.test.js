@@ -34,7 +34,9 @@ describe('createTMDBError', () => {
 
   // Branch coverage: error can be thrown and caught by message and name.
   it('can be thrown and caught as a TMDBError', () => {
-    const throwIt = () => { throw createTMDBError('Server error', 500); };
+    const throwIt = () => {
+      throw createTMDBError('Server error', 500);
+    };
     expect(throwIt).toThrow('Server error');
     expect(throwIt).toThrow(Error);
   });

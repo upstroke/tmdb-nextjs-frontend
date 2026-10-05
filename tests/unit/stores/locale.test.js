@@ -15,7 +15,7 @@ vi.mock('react', () => ({
     return [val, vi.fn()];
   }),
   useEffect: vi.fn(),
-  useCallback: vi.fn((fn) => fn),
+  useCallback: vi.fn((fn) => fn)
 }));
 
 import { setLocale, _registerExternalSetter } from '@/lib/stores/locale.jsx';

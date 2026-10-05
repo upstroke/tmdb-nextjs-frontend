@@ -7,16 +7,16 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'image.tmdb.org',
-        pathname: '/t/p/**',
-      },
-    ],
+        pathname: '/t/p/**'
+      }
+    ]
   },
   env: {
     TMDB_API_KEY: process.env.TMDB_API_KEY,
-    NEXT_PUBLIC_DEFAULT_LOCALE: process.env.NEXT_PUBLIC_DEFAULT_LOCALE,
+    NEXT_PUBLIC_DEFAULT_LOCALE: process.env.NEXT_PUBLIC_DEFAULT_LOCALE
   },
   sassOptions: {
-    includePaths: ['./node_modules'],
+    includePaths: ['./node_modules']
   },
   async headers() {
     return [
@@ -36,13 +36,13 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' image.tmdb.org data:",
               "connect-src 'self' api.themoviedb.org",
-              "frame-ancestors 'none'",
-            ].join('; '),
-          },
-        ],
-      },
+              "frame-ancestors 'none'"
+            ].join('; ')
+          }
+        ]
+      }
     ];
-  },
+  }
 };
 
 export default nextConfig;

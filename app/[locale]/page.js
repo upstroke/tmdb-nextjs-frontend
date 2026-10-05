@@ -9,7 +9,11 @@ import PagedList from '@/components/PagedList';
 export default async function HomePage({ params, searchParams }) {
   const paramsParsed = LocaleParamSchema.safeParse(await params);
   if (!paramsParsed.success) {
-    return <main className="ui container fluid home-page"><p>Invalid URL parameters.</p></main>;
+    return (
+      <main className="ui container fluid home-page">
+        <p>Invalid URL parameters.</p>
+      </main>
+    );
   }
   const { locale } = paramsParsed.data;
 
@@ -17,7 +21,11 @@ export default async function HomePage({ params, searchParams }) {
   const apiKey = process.env.TMDB_API_KEY;
 
   if (!apiKey) {
-    return <main className="ui container fluid home-page"><p>{messages.apiKeyMissing}</p></main>;
+    return (
+      <main className="ui container fluid home-page">
+        <p>{messages.apiKeyMissing}</p>
+      </main>
+    );
   }
 
   const api = createTmdbApi(fetch, apiKey, locale);
@@ -36,9 +44,10 @@ export default async function HomePage({ params, searchParams }) {
 
     if (source) {
       try {
-        const details = source.mediaType === 'tv'
-          ? await api.getTVShowDetails(source.id)
-          : await api.getMovieDetails(source.id);
+        const details =
+          source.mediaType === 'tv'
+            ? await api.getTVShowDetails(source.id)
+            : await api.getMovieDetails(source.id);
         featured = {
           id: details.id,
           mediaType: details.mediaType,
@@ -48,7 +57,7 @@ export default async function HomePage({ params, searchParams }) {
           homepage: details.homepage,
           genres: details.genres ?? [],
           imageUrl: details.imageUrl,
-          posterUrl: details.posterUrl,
+          posterUrl: details.posterUrl
         };
       } catch (e) {
         console.error('Featured details could not be loaded:', e);

@@ -50,9 +50,7 @@ export default async function SearchPage({ params, searchParams }) {
 
       {error && <p className="ui error message">{error}</p>}
 
-      {!error && movies.length === 0 && tvShows.length === 0 && (
-        <p>{messages.noResultsFound}</p>
-      )}
+      {!error && movies.length === 0 && tvShows.length === 0 && <p>{messages.noResultsFound}</p>}
 
       {movies.length > 0 && (
         <section>

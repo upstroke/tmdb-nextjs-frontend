@@ -29,12 +29,7 @@ interface MovieCardProps {
 export function MovieCard({ movie }: MovieCardProps) {
   return (
     <article data-testid="movie-card">
-      <Image
-        src={movie.posterPath}
-        alt={movie.title}
-        width={200}
-        height={300}
-      />
+      <Image src={movie.posterPath} alt={movie.title} width={200} height={300} />
       <h2>{movie.title}</h2>
       <p>Rating: {formatRating(movie.rating)}</p>
     </article>
@@ -55,7 +50,7 @@ export function formatDate(dateString: string): string {
   return new Date(dateString).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric',
+    day: 'numeric'
   });
 }
 ```
@@ -69,16 +64,13 @@ import { NextResponse } from 'next/server';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q');
-  
-  const response = await fetch(
-    `https://api.themoviedb.org/3/search/movie?query=${query}`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
-      },
+
+  const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${query}`, {
+    headers: {
+      Authorization: `Bearer ${process.env.TMDB_API_KEY}`
     }
-  );
-  
+  });
+
   const data = await response.json();
   return NextResponse.json(data);
 }
@@ -171,6 +163,7 @@ npm run test:security
 ## When to Use
 
 Use this skill when:
+
 - Creating new components
 - Adding new pages or routes
 - Writing utility functions

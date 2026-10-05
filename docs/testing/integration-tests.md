@@ -19,6 +19,7 @@ tests/vitest/
 ## What to Test
 
 ### ✅ Test These:
+
 - Page or section rendering with mocked data
 - Data flow from API → Service → Component
 - Multiple components working together
@@ -26,6 +27,7 @@ tests/vitest/
 - Real integration scenarios
 
 ### ❌ Don't Test:
+
 - Single isolated functions (use unit tests)
 - Full E2E flows (use Cypress acceptance tests)
 - Pure UI components (use Cypress component tests)
@@ -47,15 +49,15 @@ afterAll(() => server.close());
 
 it('displays search results after fetching', async () => {
   render(<MovieSearch />);
-  
+
   // User action
   await userEvent.type(screen.getByRole('searchbox'), 'Inception{enter}');
-  
+
   // Wait for results
   await waitFor(() => {
     expect(screen.getByText(/Inception/i)).toBeInTheDocument();
   });
-  
+
   // Verify data reached the component
   const movieCards = screen.getAllByTestId('movie-card');
   expect(movieCards).toHaveLength(10);
@@ -85,12 +87,12 @@ npm run test:vitest:coverage
 
 ## Difference from Unit Tests
 
-| Unit Tests | Integration Tests |
-|------------|-------------------|
+| Unit Tests             | Integration Tests         |
+| ---------------------- | ------------------------- |
 | Single function/module | Multiple modules together |
-| Mock all dependencies | Mock only external APIs |
-| Very fast (< 10ms) | Fast (< 100ms) |
-| Isolated | Real integration |
+| Mock all dependencies  | Mock only external APIs   |
+| Very fast (< 10ms)     | Fast (< 100ms)            |
+| Isolated               | Real integration          |
 
 ## Documentation
 

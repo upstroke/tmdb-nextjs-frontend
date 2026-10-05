@@ -72,7 +72,7 @@ Type safety is achieved through two complementary tools:
 ### When to use which
 
 | Use case                | Tool                        |
-|-------------------------|-----------------------------|
+| ----------------------- | --------------------------- |
 | Component props         | JSDoc `@param`              |
 | Function signatures     | JSDoc `@param` / `@returns` |
 | Shared type definitions | JSDoc `@typedef`            |
@@ -105,7 +105,7 @@ cp .env.example .env.local
 ```
 
 | Variable                     | Description                   |
-|------------------------------|-------------------------------|
+| ---------------------------- | ----------------------------- |
 | `TMDB_API_KEY`               | API key for the TMDB API      |
 | `NEXT_PUBLIC_DEFAULT_LOCALE` | Default locale (e.g. `en-US`) |
 

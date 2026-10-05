@@ -23,14 +23,34 @@ import { useI18n, useLocale } from '@/lib/stores/locale';
  * @param {string} [props.posterUrl=''] - Absolute URL of the poster image; falls back to imageUrl.
  * @returns {JSX.Element}
  */
-export default function CardFeatured({ id, mediaType, title, releaseDate = '', overview = '', homepage = '', genres = [], imageUrl = '', posterUrl = '' }) {
+export default function CardFeatured({
+  id,
+  mediaType,
+  title,
+  releaseDate = '',
+  overview = '',
+  homepage = '',
+  genres = [],
+  imageUrl = '',
+  posterUrl = ''
+}) {
   const { labels, fallbacks } = useI18n();
   const locale = useLocale();
 
   const normalizedType = mediaType === 'movie' ? 'movie' : mediaType === 'tv' ? 'tv' : null;
-  const detailsHref = normalizedType === 'movie' ? `/${locale}/movies/${id}` : normalizedType === 'tv' ? `/${locale}/tv-shows/${id}` : undefined;
+  const detailsHref =
+    normalizedType === 'movie'
+      ? `/${locale}/movies/${id}`
+      : normalizedType === 'tv'
+        ? `/${locale}/tv-shows/${id}`
+        : undefined;
   const notAvailableText = fallbacks.notAvailable;
-  const featuredType = normalizedType === 'movie' ? labels.movie : normalizedType === 'tv' ? labels.tvShow : notAvailableText;
+  const featuredType =
+    normalizedType === 'movie'
+      ? labels.movie
+      : normalizedType === 'tv'
+        ? labels.tvShow
+        : notAvailableText;
   const featuredImageUrl = imageUrl || '/not-available.png';
   const featuredPosterUrl = posterUrl || imageUrl || '/not-available.png';
   const featuredTitle = title?.trim() || notAvailableText;
@@ -57,7 +77,11 @@ export default function CardFeatured({ id, mediaType, title, releaseDate = '', o
             />
           </figure>
           <div className="featured-card-content">
-            <p className={`featured-card-type featured-card-type--${normalizedType ?? 'unknown'}${featuredType ? '' : ' u-not-available'}`}>{featuredType}</p>
+            <p
+              className={`featured-card-type featured-card-type--${normalizedType ?? 'unknown'}${featuredType ? '' : ' u-not-available'}`}
+            >
+              {featuredType}
+            </p>
             {(genres.length > 0 || featuredReleaseDate) && (
               <dl className="featured-card-meta">
                 {genres.length > 0 && (
@@ -65,7 +89,20 @@ export default function CardFeatured({ id, mediaType, title, releaseDate = '', o
                     <dt className="u-sr-only">{labels.genre}</dt>
                     <dd className="featured-card-genres">
                       <i className="layer group icon" aria-hidden="true" />
-                      <ul>{genres.map((genre, index) => (<li key={genre.id ?? genre.name}>{index > 0 && <span className="featured-card-genre-separator" aria-hidden="true">/</span>}<span className={genre.name ? '' : 'u-not-available'}>{genre.name}</span></li>))}</ul>
+                      <ul>
+                        {genres.map((genre, index) => (
+                          <li key={genre.id ?? genre.name}>
+                            {index > 0 && (
+                              <span className="featured-card-genre-separator" aria-hidden="true">
+                                /
+                              </span>
+                            )}
+                            <span className={genre.name ? '' : 'u-not-available'}>
+                              {genre.name}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
                     </dd>
                   </div>
                 )}
@@ -74,17 +111,42 @@ export default function CardFeatured({ id, mediaType, title, releaseDate = '', o
                     <dt className="u-sr-only">{labels.releaseDate}</dt>
                     <dd className="featured-card-date">
                       <i className="calendar icon" aria-hidden="true" />
-                      <span className={featuredReleaseDate ? '' : 'u-not-available'}>{featuredReleaseDate}</span>
+                      <span className={featuredReleaseDate ? '' : 'u-not-available'}>
+                        {featuredReleaseDate}
+                      </span>
                     </dd>
                   </div>
                 )}
               </dl>
             )}
-            <h2 className={`featured-card-title${featuredTitle ? '' : ' u-not-available'}`} id="featured-card-title">{featuredTitle}</h2>
-            <p className={`featured-card-description${featuredOverview ? '' : ' u-not-available'}`}>{featuredOverview}</p>
+            <h2
+              className={`featured-card-title${featuredTitle ? '' : ' u-not-available'}`}
+              id="featured-card-title"
+            >
+              {featuredTitle}
+            </h2>
+            <p className={`featured-card-description${featuredOverview ? '' : ' u-not-available'}`}>
+              {featuredOverview}
+            </p>
             <nav aria-label={`Aktionen für ${featuredTitle}`} className="featured-card-actions">
-              {detailsHref && <Link className={`ui inverted primary button${labels.moreInfo ? '' : ' u-not-available'}`} href={detailsHref}>{labels.moreInfo}</Link>}
-              {featuredHomepage && <a className={`ui inverted button${labels.officialWebsite ? '' : ' u-not-available'}`} href={featuredHomepage} target="_blank" rel="noopener noreferrer">{labels.officialWebsite}</a>}
+              {detailsHref && (
+                <Link
+                  className={`ui inverted primary button${labels.moreInfo ? '' : ' u-not-available'}`}
+                  href={detailsHref}
+                >
+                  {labels.moreInfo}
+                </Link>
+              )}
+              {featuredHomepage && (
+                <a
+                  className={`ui inverted button${labels.officialWebsite ? '' : ' u-not-available'}`}
+                  href={featuredHomepage}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {labels.officialWebsite}
+                </a>
+              )}
             </nav>
           </div>
         </div>

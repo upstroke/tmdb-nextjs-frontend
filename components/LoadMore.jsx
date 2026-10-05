@@ -20,9 +20,25 @@ export default function LoadMore({ hasMore = false, loading = false, onLoad = nu
   return (
     <div className="load-more" aria-live="polite">
       {loading ? (
-        <button className="ui primary button loading" type="button" onClick={() => onLoad?.()} disabled aria-busy>{texts.loadMoreLoading}</button>
+        <button
+          className="ui primary button loading"
+          type="button"
+          onClick={() => onLoad?.()}
+          disabled
+          aria-busy
+        >
+          {texts.loadMoreLoading}
+        </button>
       ) : (
-        <button className="ui primary button" type="button" onClick={() => onLoad?.()} disabled={!hasMore} aria-busy={false}>{texts.loadMore}</button>
+        <button
+          className="ui primary button"
+          type="button"
+          onClick={() => onLoad?.()}
+          disabled={!hasMore}
+          aria-busy={false}
+        >
+          {texts.loadMore}
+        </button>
       )}
     </div>
   );

@@ -14,6 +14,7 @@ This test plan covers the acceptance tests for the homepage of the TMDB frontend
 ## Test Cases
 
 ### TC-1: Homepage loads correctly
+
 - **Precondition**: Application is running on localhost:3000
 - **Steps**:
   1. Navigate to `/`
@@ -21,6 +22,7 @@ This test plan covers the acceptance tests for the homepage of the TMDB frontend
 - **Expected**: Page title is visible, movie cards are displayed
 
 ### TC-2: Navigate to movie details
+
 - **Precondition**: Homepage is loaded with movie cards
 - **Steps**:
   1. Click on a movie card
@@ -28,6 +30,7 @@ This test plan covers the acceptance tests for the homepage of the TMDB frontend
 - **Expected**: Movie details page is displayed with correct movie information
 
 ### TC-3: Search for movies
+
 - **Precondition**: Homepage is loaded
 - **Steps**:
   1. Click on search bar

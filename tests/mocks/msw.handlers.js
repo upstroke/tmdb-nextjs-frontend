@@ -66,7 +66,7 @@ export const handlers = [
   /** GET /api/:locale/genres/tv */
   http.get('/api/:locale/genres/tv', () => {
     return HttpResponse.json(rawFixtures.genresTv);
-  }),
+  })
 ];
 
 /**

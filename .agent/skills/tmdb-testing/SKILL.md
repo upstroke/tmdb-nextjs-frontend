@@ -52,8 +52,7 @@ describe('MovieCard Component', () => {
 describe('Search Flow', () => {
   it('finds movies by title', () => {
     cy.visit('/');
-    cy.findByRole('searchbox', { name: /search movies/i })
-      .type('Inception{enter}');
+    cy.findByRole('searchbox', { name: /search movies/i }).type('Inception{enter}');
     cy.findByText(/Inception/i).should('exist');
   });
 });
@@ -129,6 +128,7 @@ npm run test:security
 ## When to Use
 
 Use this skill when:
+
 - Adding new components
 - Implementing new features
 - Fixing bugs

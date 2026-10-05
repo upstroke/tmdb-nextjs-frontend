@@ -9,7 +9,7 @@ export const ratingsMockDefault = {
   locale: 'en-US',
   region: 'US',
   fallbacks: ratings.locales['en-US'].fallbacks,
-  ratingSystem: ratings.ratingSystems['US'],
+  ratingSystem: ratings.ratingSystems['US']
 };
 
 /**
@@ -19,7 +19,7 @@ export const ratingsMockDE = {
   locale: 'de-DE',
   region: 'DE',
   fallbacks: ratings.locales['de-DE'].fallbacks,
-  ratingSystem: ratings.ratingSystems['DE'],
+  ratingSystem: ratings.ratingSystems['DE']
 };
 
 /**
@@ -29,7 +29,7 @@ export const ratingsMockES = {
   locale: 'es-ES',
   region: 'ES',
   fallbacks: ratings.locales['es-ES'].fallbacks,
-  ratingSystem: ratings.ratingSystems['ES'],
+  ratingSystem: ratings.ratingSystems['ES']
 };
 
 /**
@@ -39,7 +39,7 @@ export const ratingsMockFR = {
   locale: 'fr-FR',
   region: 'FR',
   fallbacks: ratings.locales['fr-FR'].fallbacks,
-  ratingSystem: ratings.ratingSystems['FR'],
+  ratingSystem: ratings.ratingSystems['FR']
 };
 
 /**
@@ -49,7 +49,7 @@ export const ratingsMockRU = {
   locale: 'ru-RU',
   region: 'RU',
   fallbacks: ratings.locales['ru-RU'].fallbacks,
-  ratingSystem: ratings.ratingSystems['RU'],
+  ratingSystem: ratings.ratingSystems['RU']
 };
 
 /**
@@ -59,7 +59,7 @@ export const ratingsMockVN = {
   locale: 'vi-VN',
   region: 'VN',
   fallbacks: ratings.locales['vi-VN'].fallbacks,
-  ratingSystem: ratings.ratingSystems['VN'],
+  ratingSystem: ratings.ratingSystems['VN']
 };
 
 /**

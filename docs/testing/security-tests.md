@@ -11,10 +11,10 @@ Security tests check the application for common vulnerabilities. As this is a re
 
 ## Test Levels
 
-| Level | Tool | Path | Focus |
-|-------|------|------|-------|
-| **Unit** | Vitest | `tests/vitest/security/` | Input validation, API key checks |
-| **Component** | Cypress | `tests/cypress/acceptance/components/security/` | XSS prevention in UI |
+| Level         | Tool    | Path                                            | Focus                            |
+| ------------- | ------- | ----------------------------------------------- | -------------------------------- |
+| **Unit**      | Vitest  | `tests/vitest/security/`                        | Input validation, API key checks |
+| **Component** | Cypress | `tests/cypress/acceptance/components/security/` | XSS prevention in UI             |
 
 ## Scripts
 
@@ -80,12 +80,13 @@ describe('Security: API Key Handling', () => {
 describe('Security: Search XSS Prevention', () => {
   it('does not show script injection in search results', () => {
     cy.visit('/');
-    cy.findByRole('searchbox', { name: /search movies/i })
-      .type('<script>alert("xss")</script>{enter}');
-    
+    cy.findByRole('searchbox', { name: /search movies/i }).type(
+      '<script>alert("xss")</script>{enter}'
+    );
+
     // Should not show alert box and display search term safely
     cy.findByText(/<script>/i).should('not.exist');
-    
+
     // The search term should be displayed escaped
     cy.findByText(/<script>/i).should('exist');
   });

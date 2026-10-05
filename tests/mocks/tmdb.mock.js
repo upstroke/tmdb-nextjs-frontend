@@ -62,7 +62,7 @@ function okResponse(data) {
     ok: true,
     status: 200,
     json: () => Promise.resolve(data),
-    text: () => Promise.resolve(JSON.stringify(data)),
+    text: () => Promise.resolve(JSON.stringify(data))
   };
 }
 
@@ -71,6 +71,6 @@ function errorResponse(data, status = 404) {
     ok: false,
     status,
     json: () => Promise.resolve(data),
-    text: () => Promise.resolve(JSON.stringify(data)),
+    text: () => Promise.resolve(JSON.stringify(data))
   };
 }

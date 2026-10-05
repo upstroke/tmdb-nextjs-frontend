@@ -36,7 +36,7 @@ function makeFetch(responses) {
       ok: entry.ok ?? true,
       status: entry.status ?? 200,
       statusText: entry.ok === false ? 'Not Found' : 'OK',
-      json: async () => entry.body,
+      json: async () => entry.body
     };
   });
 }
@@ -60,11 +60,9 @@ const RAW_TV_SHOW = {
   production_companies: [],
   number_of_seasons: 8,
   number_of_episodes: 73,
-  seasons: [
-    { id: 3624, season_number: 1, name: 'Season 1', episode_count: 10 },
-  ],
+  seasons: [{ id: 3624, season_number: 1, name: 'Season 1', episode_count: 10 }],
   credits: { cast: [], crew: [] },
-  videos: { results: [] },
+  videos: { results: [] }
 };
 
 const RAW_MOVIE = {
@@ -81,7 +79,7 @@ const RAW_MOVIE = {
   episode_run_time: [],
   production_companies: [{ id: 1, name: 'Fox' }],
   credits: { cast: [], crew: [] },
-  videos: { results: [] },
+  videos: { results: [] }
 };
 
 const RAW_SEASON_1 = {
@@ -100,7 +98,7 @@ const RAW_SEASON_1 = {
       air_date: '2011-04-17',
       runtime: 62,
       vote_average: 9.1,
-      still_path: '/ep1_still.jpg',
+      still_path: '/ep1_still.jpg'
     },
     {
       id: 63057,
@@ -110,14 +108,14 @@ const RAW_SEASON_1 = {
       air_date: null,
       runtime: null,
       vote_average: 8.5,
-      still_path: null,
-    },
-  ],
+      still_path: null
+    }
+  ]
 };
 
 /** Minimal content-ratings response (DE region to match 'de-DE' locale). */
 const CONTENT_RATINGS_DE = {
-  results: [{ iso_3166_1: 'DE', rating: '16' }],
+  results: [{ iso_3166_1: 'DE', rating: '16' }]
 };
 
 /** Watch-providers response (no DE entry → providers will be null). */
@@ -129,10 +127,10 @@ const WATCH_PROVIDERS_DE = {
     DE: {
       link: 'https://www.justwatch.com/de',
       flatrate: [
-        { provider_id: 8, provider_name: 'Netflix', logo_path: '/netflix.png', display_priority: 1 },
-      ],
-    },
-  },
+        { provider_id: 8, provider_name: 'Netflix', logo_path: '/netflix.png', display_priority: 1 }
+      ]
+    }
+  }
 };
 
 /** Release-dates response for movie certification (DE region). */
@@ -140,13 +138,18 @@ const RELEASE_DATES_DE = {
   results: [
     {
       iso_3166_1: 'DE',
-      release_dates: [{ certification: 'FSK 16', type: 3 }],
-    },
-  ],
+      release_dates: [{ certification: 'FSK 16', type: 3 }]
+    }
+  ]
 };
 
 /** Genre list responses. */
-const GENRE_MOVIE_LIST = { genres: [{ id: 18, name: 'Drama' }, { id: 28, name: 'Action' }] };
+const GENRE_MOVIE_LIST = {
+  genres: [
+    { id: 18, name: 'Drama' },
+    { id: 28, name: 'Action' }
+  ]
+};
 const GENRE_TV_LIST = { genres: [{ id: 10765, name: 'Sci-Fi & Fantasy' }] };
 
 // ---------------------------------------------------------------------------
@@ -155,7 +158,9 @@ const GENRE_TV_LIST = { genres: [{ id: 10765, name: 'Sci-Fi & Fantasy' }] };
 
 describe('createTmdbApi — mapCardItem', () => {
   let api;
-  beforeEach(() => { api = makeApi(); });
+  beforeEach(() => {
+    api = makeApi();
+  });
 
   // Branch coverage: returns null when item has no id.
   it('returns null when item has no id', () => {
@@ -217,7 +222,9 @@ describe('createTmdbApi — mapCardItem', () => {
 
 describe('createTmdbApi — mapWatchProvider', () => {
   let api;
-  beforeEach(() => { api = makeApi(); });
+  beforeEach(() => {
+    api = makeApi();
+  });
 
   // Branch coverage: returns null when provider_id is missing.
   it('returns null when provider_id is missing', () => {
@@ -231,7 +238,12 @@ describe('createTmdbApi — mapWatchProvider', () => {
 
   // Statement coverage: maps a valid provider to the expected shape.
   it('maps a valid provider', () => {
-    const provider = { provider_id: 8, provider_name: 'Netflix', logo_path: '/netflix.png', display_priority: 1 };
+    const provider = {
+      provider_id: 8,
+      provider_name: 'Netflix',
+      logo_path: '/netflix.png',
+      display_priority: 1
+    };
     const result = api.mapWatchProvider(provider, 'flatrate', 'https://example.com');
     expect(result).toMatchObject({
       providerId: 8,
@@ -239,7 +251,7 @@ describe('createTmdbApi — mapWatchProvider', () => {
       type: 'flatrate',
       link: 'https://example.com',
       logoPath: '/netflix.png',
-      displayPriority: 1,
+      displayPriority: 1
     });
   });
 
@@ -257,7 +269,9 @@ describe('createTmdbApi — mapWatchProvider', () => {
 
 describe('createTmdbApi — mapWatchProviderList', () => {
   let api;
-  beforeEach(() => { api = makeApi(); });
+  beforeEach(() => {
+    api = makeApi();
+  });
 
   // Branch coverage: returns an empty array for an empty list.
   it('returns an empty array for an empty list', () => {
@@ -268,7 +282,7 @@ describe('createTmdbApi — mapWatchProviderList', () => {
   it('filters out invalid providers', () => {
     const providers = [
       { provider_id: 8, provider_name: 'Netflix' },
-      { provider_name: 'Ghost' }, // missing id
+      { provider_name: 'Ghost' } // missing id
     ];
     const result = api.mapWatchProviderList(providers, 'flatrate', null);
     expect(result).toHaveLength(1);
@@ -282,7 +296,9 @@ describe('createTmdbApi — mapWatchProviderList', () => {
 
 describe('createTmdbApi — getTrailerUrls', () => {
   let api;
-  beforeEach(() => { api = makeApi(); });
+  beforeEach(() => {
+    api = makeApi();
+  });
 
   // Branch coverage: returns an empty array when there are no videos.
   it('returns an empty array when there are no videos', () => {
@@ -296,9 +312,9 @@ describe('createTmdbApi — getTrailerUrls', () => {
         results: [
           { site: 'YouTube', type: 'Trailer', key: 'abc123' },
           { site: 'Vimeo', type: 'Trailer', key: 'xyz' },
-          { site: 'YouTube', type: 'Clip', key: 'clip1' },
-        ],
-      },
+          { site: 'YouTube', type: 'Clip', key: 'clip1' }
+        ]
+      }
     };
     const urls = api.getTrailerUrls(details);
     expect(urls).toEqual(['https://www.youtube.com/watch?v=abc123']);
@@ -317,7 +333,9 @@ describe('createTmdbApi — getTrailerUrls', () => {
 
 describe('createTmdbApi — mapCast', () => {
   let api;
-  beforeEach(() => { api = makeApi(); });
+  beforeEach(() => {
+    api = makeApi();
+  });
 
   // Branch coverage: returns an empty array for an empty cast.
   it('returns an empty array for an empty cast', () => {
@@ -327,8 +345,12 @@ describe('createTmdbApi — mapCast', () => {
   // Statement coverage: maps a cast member to the expected shape.
   it('maps a cast member correctly', () => {
     const person = {
-      id: 1, credit_id: 'c1', name: 'Alice', character: 'Hero',
-      order: 0, profile_path: '/alice.jpg',
+      id: 1,
+      credit_id: 'c1',
+      name: 'Alice',
+      character: 'Hero',
+      order: 0,
+      profile_path: '/alice.jpg'
     };
     const result = api.mapCast([person]);
     expect(result[0]).toMatchObject({
@@ -338,13 +360,17 @@ describe('createTmdbApi — mapCast', () => {
       character: 'Hero',
       order: 0,
       profilePath: '/alice.jpg',
-      imageUrl: 'https://image.tmdb.org/t/p/w185/alice.jpg',
+      imageUrl: 'https://image.tmdb.org/t/p/w185/alice.jpg'
     });
   });
 
   // Branch coverage: limits the result to 20 members.
   it('limits the result to 20 members', () => {
-    const cast = Array.from({ length: 30 }, (_, i) => ({ id: i, name: `Person ${i}`, credit_id: `c${i}` }));
+    const cast = Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      name: `Person ${i}`,
+      credit_id: `c${i}`
+    }));
     expect(api.mapCast(cast)).toHaveLength(20);
   });
 });
@@ -355,7 +381,9 @@ describe('createTmdbApi — mapCast', () => {
 
 describe('createTmdbApi — mapCrew', () => {
   let api;
-  beforeEach(() => { api = makeApi(); });
+  beforeEach(() => {
+    api = makeApi();
+  });
 
   // Branch coverage: returns an empty array for an empty crew.
   it('returns an empty array for an empty crew', () => {
@@ -365,8 +393,12 @@ describe('createTmdbApi — mapCrew', () => {
   // Statement coverage: maps a crew member to the expected shape.
   it('maps a crew member correctly', () => {
     const person = {
-      id: 2, credit_id: 'c2', name: 'Bob', job: 'Director',
-      department: 'Directing', profile_path: '/bob.jpg',
+      id: 2,
+      credit_id: 'c2',
+      name: 'Bob',
+      job: 'Director',
+      department: 'Directing',
+      profile_path: '/bob.jpg'
     };
     const result = api.mapCrew([person]);
     expect(result[0]).toMatchObject({
@@ -376,13 +408,17 @@ describe('createTmdbApi — mapCrew', () => {
       job: 'Director',
       department: 'Directing',
       profilePath: '/bob.jpg',
-      imageUrl: 'https://image.tmdb.org/t/p/w185/bob.jpg',
+      imageUrl: 'https://image.tmdb.org/t/p/w185/bob.jpg'
     });
   });
 
   // Branch coverage: limits the result to 20 members.
   it('limits the result to 20 members', () => {
-    const crew = Array.from({ length: 30 }, (_, i) => ({ id: i, name: `Person ${i}`, credit_id: `c${i}` }));
+    const crew = Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      name: `Person ${i}`,
+      credit_id: `c${i}`
+    }));
     expect(api.mapCrew(crew)).toHaveLength(20);
   });
 });
@@ -431,7 +467,9 @@ describe('createTmdbApi — language / region derivation', () => {
 
 describe('createTmdbApi — mapDetails', () => {
   let api;
-  beforeEach(() => { api = makeApi('de-DE'); });
+  beforeEach(() => {
+    api = makeApi('de-DE');
+  });
 
   // Statement coverage: maps a movie details object to the normalized shape.
   it('maps a movie details object correctly', () => {
@@ -457,8 +495,10 @@ describe('createTmdbApi — mapDetails', () => {
       ...RAW_MOVIE,
       credits: {
         cast: [{ id: 1, credit_id: 'c1', name: 'Actor', character: 'Hero', order: 0 }],
-        crew: [{ id: 2, credit_id: 'c2', name: 'Director', job: 'Director', department: 'Directing' }],
-      },
+        crew: [
+          { id: 2, credit_id: 'c2', name: 'Director', job: 'Director', department: 'Directing' }
+        ]
+      }
     };
     const result = api.mapDetails(details, 'movie');
     expect(result.cast).toHaveLength(1);
@@ -480,7 +520,9 @@ describe('createTmdbApi — mapDetails', () => {
 
 describe('createTmdbApi — mapFeaturedItem', () => {
   let api;
-  beforeEach(() => { api = makeApi('de-DE'); });
+  beforeEach(() => {
+    api = makeApi('de-DE');
+  });
 
   // Statement coverage: maps a tv show to the featured item shape.
   it('maps a tv show to a featured item', () => {
@@ -538,9 +580,7 @@ describe('createTmdbApi — getCertification', () => {
 
   // Branch coverage: caches the result — fetch is called only once for the same id.
   it('caches the result — fetch is called only once for the same id', async () => {
-    const fetchMock = makeFetch([
-      { ok: true, body: CONTENT_RATINGS_DE },
-    ]);
+    const fetchMock = makeFetch([{ ok: true, body: CONTENT_RATINGS_DE }]);
     const api = createTmdbApi(fetchMock, FAKE_KEY, 'de-DE');
     await api.getCertification('tv', 1399);
     await api.getCertification('tv', 1399);
@@ -582,9 +622,7 @@ describe('createTmdbApi — getWatchProviders', () => {
 
   // Branch coverage: caches the result — fetch is called only once for the same id.
   it('caches the result — fetch is called only once for the same id', async () => {
-    const fetchMock = makeFetch([
-      { ok: true, body: WATCH_PROVIDERS_EMPTY },
-    ]);
+    const fetchMock = makeFetch([{ ok: true, body: WATCH_PROVIDERS_EMPTY }]);
     const api = createTmdbApi(fetchMock, FAKE_KEY, 'de-DE');
     await api.getWatchProviders('movie', 550);
     await api.getWatchProviders('movie', 550);
@@ -609,12 +647,12 @@ describe('createTmdbApi — enrichCardCertifications', () => {
   it('attaches certification to each card', async () => {
     const fetchMock = makeFetch([
       { ok: true, body: RELEASE_DATES_DE },
-      { ok: true, body: CONTENT_RATINGS_DE },
+      { ok: true, body: CONTENT_RATINGS_DE }
     ]);
     const api = createTmdbApi(fetchMock, FAKE_KEY, 'de-DE');
     const cards = [
       { id: 550, mediaType: 'movie', title: 'Fight Club' },
-      { id: 1399, mediaType: 'tv', title: 'GoT' },
+      { id: 1399, mediaType: 'tv', title: 'GoT' }
     ];
     const result = await api.enrichCardCertifications(cards);
     expect(result).toHaveLength(2);
@@ -639,14 +677,14 @@ describe('createTmdbApi — loadGenreMaps', () => {
   it('loads genre maps and makes resolveGenres work', async () => {
     const fetchMock = makeFetch([
       { ok: true, body: GENRE_MOVIE_LIST },
-      { ok: true, body: GENRE_TV_LIST },
+      { ok: true, body: GENRE_TV_LIST }
     ]);
     const api = createTmdbApi(fetchMock, FAKE_KEY, 'en-US');
     await api.loadGenreMaps();
     const result = api.resolveGenres([18, 28], 'movie');
     expect(result).toEqual([
       { id: 18, name: 'Drama' },
-      { id: 28, name: 'Action' },
+      { id: 28, name: 'Action' }
     ]);
   });
 
@@ -654,7 +692,7 @@ describe('createTmdbApi — loadGenreMaps', () => {
   it('does not call fetch a second time if already loaded', async () => {
     const fetchMock = makeFetch([
       { ok: true, body: GENRE_MOVIE_LIST },
-      { ok: true, body: GENRE_TV_LIST },
+      { ok: true, body: GENRE_TV_LIST }
     ]);
     const api = createTmdbApi(fetchMock, FAKE_KEY, 'en-US');
     await api.loadGenreMaps();
@@ -677,7 +715,7 @@ describe('createTmdbApi — getMovieDetails', () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_MOVIE },
       { ok: true, body: RELEASE_DATES_DE },
-      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY }
     ]);
     const result = await api.getMovieDetails(550);
     expect(result.id).toBe(550);
@@ -691,7 +729,7 @@ describe('createTmdbApi — getMovieDetails', () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_MOVIE },
       { ok: true, body: RELEASE_DATES_DE },
-      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY }
     ]);
     const result = await api.getMovieDetails(550);
     expect(result.certification).toBe('FSK 16');
@@ -702,7 +740,7 @@ describe('createTmdbApi — getMovieDetails', () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_MOVIE },
       { ok: true, body: RELEASE_DATES_DE },
-      { ok: true, body: WATCH_PROVIDERS_DE },
+      { ok: true, body: WATCH_PROVIDERS_DE }
     ]);
     const result = await api.getMovieDetails(550);
     expect(result.providers).not.toBeNull();
@@ -712,7 +750,7 @@ describe('createTmdbApi — getMovieDetails', () => {
   // Branch coverage: throws when the API returns a non-ok response.
   it('throws when the API returns a non-ok response', async () => {
     const api = makeApiWithFetch([
-      { ok: false, status: 404, body: { status_message: 'Not Found' } },
+      { ok: false, status: 404, body: { status_message: 'Not Found' } }
     ]);
     await expect(api.getMovieDetails(99999)).rejects.toThrow();
   });
@@ -737,9 +775,9 @@ describe('createTmdbApi — getList and list endpoints', () => {
         title: 'Inception',
         vote_average: 8.8,
         poster_path: '/inception.jpg',
-        genre_ids: [],
-      },
-    ],
+        genre_ids: []
+      }
+    ]
   };
 
   /**
@@ -755,7 +793,7 @@ describe('createTmdbApi — getList and list endpoints', () => {
       { ok: true, body: GENRE_MOVIE_LIST },
       { ok: true, body: GENRE_TV_LIST },
       { ok: true, body: RELEASE_DATES_DE },
-      ...extra,
+      ...extra
     ]);
   }
 
@@ -787,13 +825,13 @@ describe('createTmdbApi — getList and list endpoints', () => {
   it('getTrendingTVShows returns a list response', async () => {
     const tvListBody = {
       ...LIST_BODY,
-      results: [{ id: 7, media_type: 'tv', name: 'Breaking Bad', vote_average: 9.5, genre_ids: [] }],
+      results: [{ id: 7, media_type: 'tv', name: 'Breaking Bad', vote_average: 9.5, genre_ids: [] }]
     };
     const fetch = makeFetch([
       { ok: true, body: tvListBody },
       { ok: true, body: GENRE_MOVIE_LIST },
       { ok: true, body: GENRE_TV_LIST },
-      { ok: true, body: CONTENT_RATINGS_DE },
+      { ok: true, body: CONTENT_RATINGS_DE }
     ]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
     const result = await api.getTrendingTVShows(1);
@@ -811,13 +849,13 @@ describe('createTmdbApi — getList and list endpoints', () => {
   it('getPopularTVShows returns a list response', async () => {
     const tvBody = {
       ...LIST_BODY,
-      results: [{ id: 7, media_type: 'tv', name: 'Breaking Bad', vote_average: 9.5, genre_ids: [] }],
+      results: [{ id: 7, media_type: 'tv', name: 'Breaking Bad', vote_average: 9.5, genre_ids: [] }]
     };
     const fetch = makeFetch([
       { ok: true, body: tvBody },
       { ok: true, body: GENRE_MOVIE_LIST },
       { ok: true, body: GENRE_TV_LIST },
-      { ok: true, body: CONTENT_RATINGS_DE },
+      { ok: true, body: CONTENT_RATINGS_DE }
     ]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
     const result = await api.getPopularTVShows(1);
@@ -835,13 +873,13 @@ describe('createTmdbApi — getList and list endpoints', () => {
   it('getTopRatedTVShows returns a list response', async () => {
     const tvBody = {
       ...LIST_BODY,
-      results: [{ id: 7, media_type: 'tv', name: 'Breaking Bad', vote_average: 9.5, genre_ids: [] }],
+      results: [{ id: 7, media_type: 'tv', name: 'Breaking Bad', vote_average: 9.5, genre_ids: [] }]
     };
     const fetch = makeFetch([
       { ok: true, body: tvBody },
       { ok: true, body: GENRE_MOVIE_LIST },
       { ok: true, body: GENRE_TV_LIST },
-      { ok: true, body: CONTENT_RATINGS_DE },
+      { ok: true, body: CONTENT_RATINGS_DE }
     ]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
     const result = await api.getTopRatedTVShows(1);
@@ -861,13 +899,13 @@ describe('createTmdbApi — searchMedia', () => {
       total_pages: 1,
       results: [
         { id: 42, media_type: 'movie', title: 'Inception', vote_average: 8.8, genre_ids: [] },
-        { id: 7, media_type: 'tv', name: 'Breaking Bad', vote_average: 9.5, genre_ids: [] },
-      ],
+        { id: 7, media_type: 'tv', name: 'Breaking Bad', vote_average: 9.5, genre_ids: [] }
+      ]
     };
     const fetch = makeFetch([
       { ok: true, body: searchBody },
       { ok: true, body: GENRE_MOVIE_LIST },
-      { ok: true, body: GENRE_TV_LIST },
+      { ok: true, body: GENRE_TV_LIST }
     ]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
     const result = await api.searchMedia('inception', 1);
@@ -883,13 +921,13 @@ describe('createTmdbApi — searchMedia', () => {
       total_pages: 1,
       results: [
         { id: 1, media_type: 'person', name: 'Some Actor' },
-        { id: 42, media_type: 'movie', title: 'Inception', vote_average: 8.8, genre_ids: [] },
-      ],
+        { id: 42, media_type: 'movie', title: 'Inception', vote_average: 8.8, genre_ids: [] }
+      ]
     };
     const fetch = makeFetch([
       { ok: true, body: searchBody },
       { ok: true, body: GENRE_MOVIE_LIST },
-      { ok: true, body: GENRE_TV_LIST },
+      { ok: true, body: GENRE_TV_LIST }
     ]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
     const result = await api.searchMedia('inception');
@@ -918,7 +956,7 @@ describe('createTmdbApi — getTVShowDetails', () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_TV_SHOW },
       { ok: true, body: CONTENT_RATINGS_DE },
-      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY }
     ]);
 
     const result = await api.getTVShowDetails(1399);
@@ -934,7 +972,7 @@ describe('createTmdbApi — getTVShowDetails', () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_TV_SHOW },
       { ok: true, body: CONTENT_RATINGS_DE },
-      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY }
     ]);
 
     const result = await api.getTVShowDetails(1399);
@@ -948,7 +986,7 @@ describe('createTmdbApi — getTVShowDetails', () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_TV_SHOW },
       { ok: true, body: CONTENT_RATINGS_DE },
-      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY }
     ]);
 
     const result = await api.getTVShowDetails(1399);
@@ -963,7 +1001,7 @@ describe('createTmdbApi — getTVShowDetails', () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_TV_SHOW },
       { ok: true, body: CONTENT_RATINGS_DE },
-      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY }
     ]);
 
     const result = await api.getTVShowDetails(1399);
@@ -976,7 +1014,7 @@ describe('createTmdbApi — getTVShowDetails', () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_TV_SHOW },
       { ok: true, body: CONTENT_RATINGS_DE },
-      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY }
     ]);
 
     const result = await api.getTVShowDetails(1399);
@@ -987,7 +1025,7 @@ describe('createTmdbApi — getTVShowDetails', () => {
   // Branch coverage: throws when the API returns a non-ok response.
   it('throws when the API returns a non-ok response', async () => {
     const api = makeApiWithFetch([
-      { ok: false, status: 404, body: { status_message: 'Not Found' } },
+      { ok: false, status: 404, body: { status_message: 'Not Found' } }
     ]);
 
     await expect(api.getTVShowDetails(99999)).rejects.toThrow();
@@ -999,7 +1037,7 @@ describe('createTmdbApi — getTVShowDetails', () => {
       { ok: true, body: RAW_TV_SHOW },
       { ok: true, body: CONTENT_RATINGS_DE },
       { ok: true, body: WATCH_PROVIDERS_EMPTY },
-      { ok: true, body: RAW_TV_SHOW },
+      { ok: true, body: RAW_TV_SHOW }
       // content_ratings and watch/providers must NOT be called again
     ]);
     const api = createTmdbApi(fetchMock, FAKE_KEY, 'de-DE');
@@ -1095,7 +1133,7 @@ describe('createTmdbApi — getTVSeasonDetails', () => {
   // Branch coverage: throws when the API returns a non-ok response.
   it('throws when the API returns a non-ok response', async () => {
     const api = makeApiWithFetch([
-      { ok: false, status: 404, body: { status_message: 'Season not found' } },
+      { ok: false, status: 404, body: { status_message: 'Season not found' } }
     ]);
 
     await expect(api.getTVSeasonDetails(1399, 99)).rejects.toThrow();

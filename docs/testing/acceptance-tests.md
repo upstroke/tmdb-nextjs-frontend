@@ -18,6 +18,7 @@ tests/cypress/acceptance/flows/   # E2E test files
 ## What to Test
 
 ### ✅ Test These:
+
 - Complete user flows (search → detail → navigate)
 - Cross-page navigation
 - Real browser behavior
@@ -25,6 +26,7 @@ tests/cypress/acceptance/flows/   # E2E test files
 - Happy paths and important edge cases
 
 ### ❌ Don't Test:
+
 - Individual components (use component tests)
 - Every possible user path (too slow)
 - Visual details (use visual regression tools)
@@ -37,17 +39,16 @@ describe('Search Flow', () => {
   it('finds and displays movie details', () => {
     // Start on homepage
     cy.visit('/');
-    
+
     // Search for movie
-    cy.findByRole('searchbox', { name: /search movies/i })
-      .type('Inception{enter}');
-    
+    cy.findByRole('searchbox', { name: /search movies/i }).type('Inception{enter}');
+
     // Verify results appear
     cy.findByText(/Inception/i).should('be.visible');
-    
+
     // Click on first result
     cy.findAllByTestId('movie-card').first().click();
-    
+
     // Verify detail page loads
     cy.url().should('include', '/movie/');
     cy.findByRole('heading', { name: /Inception/i }).should('be.visible');
@@ -93,13 +94,13 @@ describe('Feature Name', () => {
 
 ## Difference from Component Tests
 
-| Component Tests | Acceptance Tests |
-|-----------------|------------------|
-| Single component | Multiple pages |
-| Isolated | Full application |
-| Fast (< 1s) | Slower (seconds) |
-| Mock data | Real or fixture data |
-| Implementation focus | User flow focus |
+| Component Tests      | Acceptance Tests     |
+| -------------------- | -------------------- |
+| Single component     | Multiple pages       |
+| Isolated             | Full application     |
+| Fast (< 1s)          | Slower (seconds)     |
+| Mock data            | Real or fixture data |
+| Implementation focus | User flow focus      |
 
 ## Documentation
 

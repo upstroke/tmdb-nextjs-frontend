@@ -8,19 +8,19 @@ $breakpoint-large-screen-min: 1200px;
 $breakpoint-widescreen-min: 1400px;
 
 @mixin mobile-only {
-	@media only screen and (max-width: $breakpoint-mobile-max) {
-		@content;
-	}
+  @media only screen and (max-width: $breakpoint-mobile-max) {
+    @content;
+  }
 }
 
 @mixin tablet-up {
-	@media only screen and (min-width: $breakpoint-tablet-min) {
-		@content;
-	}
+  @media only screen and (min-width: $breakpoint-tablet-min) {
+    @content;
+  }
 }
 
 @mixin computer-up {
-	@media only screen and (min-width: $breakpoint-computer-min) {
-		@content;
-	}
+  @media only screen and (min-width: $breakpoint-computer-min) {
+    @content;
+  }
 }

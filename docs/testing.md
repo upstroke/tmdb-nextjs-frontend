@@ -5,7 +5,7 @@
 This project uses four test levels, organized by business criteria rather than by tooling:
 
 | Level                | Tool    | Path                                   | Focus                                                            |
-|----------------------|---------|----------------------------------------|------------------------------------------------------------------|
+| -------------------- | ------- | -------------------------------------- | ---------------------------------------------------------------- |
 | **Unit**             | Vitest  | `tests/vitest/`                        | Isolated functions, helpers, services                            |
 | **Integration**      | Vitest  | `tests/vitest/`                        | Interaction between multiple modules/services                    |
 | **Component**        | Cypress | `tests/cypress/acceptance/components/` | Business acceptance of UI components against acceptance criteria |

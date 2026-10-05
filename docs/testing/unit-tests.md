@@ -22,6 +22,7 @@ tests/vitest/
 ## What to Test
 
 ### ✅ Test These:
+
 - Utility functions (formatting, validation, sanitization)
 - Zod schemas (validation logic)
 - Service functions (API data transformation)
@@ -29,6 +30,7 @@ tests/vitest/
 - Edge cases and error handling
 
 ### ❌ Don't Test:
+
 - React components (use Cypress component tests)
 - DOM manipulation (use Cypress)
 - Integration behavior (use integration tests)
@@ -74,10 +76,10 @@ describe('formatDate', () => {
    it('formats rating', () => {
      // Arrange
      const rating = 8.5;
-     
+
      // Act
      const result = formatRating(rating);
-     
+
      // Assert
      expect(result).toBe('8.5');
    });

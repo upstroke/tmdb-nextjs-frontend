@@ -76,11 +76,13 @@ npm run test:a11y:watch
 ## Testing Tools
 
 ### Automated
+
 - **axe-core** (via cypress-axe)
 - **WAVE** browser extension
 - **Lighthouse** accessibility audit
 
 ### Manual
+
 - **Keyboard-only navigation** (Tab, Shift+Tab, Enter, Space, Arrow keys)
 - **Screen readers**: NVDA (Windows), VoiceOver (Mac)
 - **Browser zoom**: Test up to 200%
@@ -89,6 +91,7 @@ npm run test:a11y:watch
 ## Common Issues
 
 ### Critical
+
 - Missing alt text on images
 - Missing form labels
 - Keyboard inaccessible elements
@@ -96,6 +99,7 @@ npm run test:a11y:watch
 - Poor color contrast
 
 ### Important
+
 - Missing ARIA labels on custom controls
 - Illogical heading structure
 - Missing skip links

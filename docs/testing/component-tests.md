@@ -19,6 +19,7 @@ tests/cypress/component/
 ## What to Test
 
 ### ✅ Test These:
+
 - Component rendering with props
 - User interactions (clicks, typing, etc.)
 - State changes and re-renders
@@ -26,6 +27,7 @@ tests/cypress/component/
 - Event handlers
 
 ### ❌ Don't Test:
+
 - Implementation details
 - Child component internals (mock them)
 - API calls (mock services)
@@ -43,12 +45,12 @@ describe('MovieCard', () => {
     title: 'Inception',
     poster_path: '/inception.jpg',
     vote_average: 8.5,
-    release_date: '2010-07-16',
+    release_date: '2010-07-16'
   };
 
   it('renders movie information', () => {
     cy.mount(<MovieCard movie={mockMovie} />);
-    
+
     cy.findByText('Inception').should('be.visible');
     cy.findByText('8.5').should('be.visible');
     cy.findByAltText('Inception poster').should('have.attr', 'src');
@@ -57,7 +59,7 @@ describe('MovieCard', () => {
   it('calls onClick when clicked', () => {
     const onClick = cy.stub().as('handleClick');
     cy.mount(<MovieCard movie={mockMovie} onClick={onClick} />);
-    
+
     cy.findByTestId('movie-card').click();
     cy.get('@handleClick').should('have.been.calledOnce');
   });
@@ -65,7 +67,7 @@ describe('MovieCard', () => {
   it('shows fallback for missing poster', () => {
     const movieWithoutPoster = { ...mockMovie, poster_path: null };
     cy.mount(<MovieCard movie={movieWithoutPoster} />);
-    
+
     cy.findByAltText('Inception poster')
       .should('have.attr', 'src')
       .and('include', '/movie-placeholder.svg');
@@ -108,13 +110,13 @@ describe('ComponentName', () => {
 
 ## Difference from Acceptance Tests
 
-| Component Tests | Acceptance Tests |
-|-----------------|------------------|
-| Single component | Multiple pages |
-| Isolated | Full application |
-| Fast (< 1s) | Slower (seconds) |
-| Mock data | Real or fixture data |
-| Implementation focus | User flow focus |
+| Component Tests      | Acceptance Tests     |
+| -------------------- | -------------------- |
+| Single component     | Multiple pages       |
+| Isolated             | Full application     |
+| Fast (< 1s)          | Slower (seconds)     |
+| Mock data            | Real or fixture data |
+| Implementation focus | User flow focus      |
 
 ## Documentation
 

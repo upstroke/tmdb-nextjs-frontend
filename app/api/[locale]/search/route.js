@@ -16,7 +16,10 @@ import { LocaleParamSchema, SearchQuerySchema } from '@/lib/schemas/tmdb';
 export async function GET(request, { params }) {
   const localeParsed = LocaleParamSchema.safeParse(await params);
   if (!localeParsed.success) {
-    return NextResponse.json({ movies: [], tvShows: [], results: [], error: 'Invalid locale.' }, { status: 400 });
+    return NextResponse.json(
+      { movies: [], tvShows: [], results: [], error: 'Invalid locale.' },
+      { status: 400 }
+    );
   }
   const { locale } = localeParsed.data;
 
@@ -31,7 +34,10 @@ export async function GET(request, { params }) {
   const { q: query } = queryParsed.data;
 
   if (!apiKey) {
-    return NextResponse.json({ movies: [], tvShows: [], results: [], error: messages.apiKeyMissing }, { status: 500 });
+    return NextResponse.json(
+      { movies: [], tvShows: [], results: [], error: messages.apiKeyMissing },
+      { status: 500 }
+    );
   }
 
   try {
@@ -45,10 +51,13 @@ export async function GET(request, { params }) {
       movies: results.filter((item) => item.mediaType === 'movie'),
       tvShows: results.filter((item) => item.mediaType === 'tv'),
       results,
-      error: null,
+      error: null
     });
   } catch (e) {
     console.error('Search failed:', e);
-    return NextResponse.json({ movies: [], tvShows: [], results: [], error: messages.searchError }, { status: 500 });
+    return NextResponse.json(
+      { movies: [], tvShows: [], results: [], error: messages.searchError },
+      { status: 500 }
+    );
   }
 }

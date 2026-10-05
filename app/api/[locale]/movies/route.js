@@ -16,7 +16,10 @@ import { LocaleParamSchema, ListQuerySchema } from '@/lib/schemas/tmdb';
 export async function GET(request, { params }) {
   const localeParsed = LocaleParamSchema.safeParse(await params);
   if (!localeParsed.success) {
-    return NextResponse.json({ cards: [], page: 1, hasMore: false, error: 'Invalid locale.' }, { status: 400 });
+    return NextResponse.json(
+      { cards: [], page: 1, hasMore: false, error: 'Invalid locale.' },
+      { status: 400 }
+    );
   }
   const { locale } = localeParsed.data;
 
@@ -28,7 +31,10 @@ export async function GET(request, { params }) {
   const page = queryParsed.success ? queryParsed.data.page : 1;
 
   if (!apiKey) {
-    return NextResponse.json({ cards: [], page, hasMore: false, error: messages.apiKeyMissing }, { status: 500 });
+    return NextResponse.json(
+      { cards: [], page, hasMore: false, error: messages.apiKeyMissing },
+      { status: 500 }
+    );
   }
 
   try {
@@ -40,9 +46,17 @@ export async function GET(request, { params }) {
       new Map((movies.results ?? []).map((c) => [`${c.id}-${c.mediaType}`, c])).values()
     );
 
-    return NextResponse.json({ cards, page: movies.page ?? page, hasMore: movies.hasMore === true, error: null });
+    return NextResponse.json({
+      cards,
+      page: movies.page ?? page,
+      hasMore: movies.hasMore === true,
+      error: null
+    });
   } catch (e) {
     console.error('Failed to load more movies:', e);
-    return NextResponse.json({ cards: [], page, hasMore: false, error: messages.moreMoviesLoadError }, { status: 500 });
+    return NextResponse.json(
+      { cards: [], page, hasMore: false, error: messages.moreMoviesLoadError },
+      { status: 500 }
+    );
   }
 }

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { describe, expect, it, vi} from 'vitest';
 import { createTmdbApi } from '@/lib/services/tmdb-api.js';
 
 const FAKE_KEY = 'test-key';
@@ -15,7 +15,7 @@ function makeFetch(responses) {
       ok: entry.ok ?? true,
       status: entry.status ?? 200,
       statusText: entry.ok === false ? 'Not Found' : 'OK',
-      json: async () => entry.body,
+      json: async () => entry.body
     };
   });
 }
@@ -25,20 +25,24 @@ function makeFetch(responses) {
 // ---------------------------------------------------------------------------
 
 const GENRE_MOVIE_LIST = { genres: [{ id: 18, name: 'Drama' }] };
-const GENRE_TV_LIST    = { genres: [{ id: 10765, name: 'Sci-Fi & Fantasy' }] };
+const GENRE_TV_LIST = { genres: [{ id: 10765, name: 'Sci-Fi & Fantasy' }] };
 const RELEASE_DATES_DE = {
-  results: [{ iso_3166_1: 'DE', release_dates: [{ certification: 'FSK 16', type: 3 }] }],
+  results: [{ iso_3166_1: 'DE', release_dates: [{ certification: 'FSK 16', type: 3 }] }]
 };
-const CONTENT_RATINGS_DE  = { results: [{ iso_3166_1: 'DE', rating: '16' }] };
+const CONTENT_RATINGS_DE = { results: [{ iso_3166_1: 'DE', rating: '16' }] };
 const WATCH_PROVIDERS_EMPTY = { results: {} };
 const WATCH_PROVIDERS_RENT_BUY = {
   results: {
     DE: {
       link: 'https://www.justwatch.com/de',
-      rent: [{ provider_id: 2, provider_name: 'Amazon', logo_path: '/amz.png', display_priority: 2 }],
-      buy:  [{ provider_id: 3, provider_name: 'Apple TV', logo_path: '/apple.png', display_priority: 3 }],
-    },
-  },
+      rent: [
+        { provider_id: 2, provider_name: 'Amazon', logo_path: '/amz.png', display_priority: 2 }
+      ],
+      buy: [
+        { provider_id: 3, provider_name: 'Apple TV', logo_path: '/apple.png', display_priority: 3 }
+      ]
+    }
+  }
 };
 
 const RAW_MOVIE = {
@@ -56,7 +60,7 @@ const RAW_MOVIE = {
   production_companies: [],
   credits: { cast: [], crew: [] },
   videos: { results: [{ site: 'YouTube', type: 'Trailer', key: 'abc' }] },
-  media_type: 'movie',
+  media_type: 'movie'
 };
 
 const RAW_TV_SHOW = {
@@ -77,7 +81,7 @@ const RAW_TV_SHOW = {
   seasons: [],
   credits: { cast: [], crew: [] },
   videos: { results: [] },
-  media_type: 'tv',
+  media_type: 'tv'
 };
 
 describe('createTmdbApi — request() error branch', () => {
@@ -115,8 +119,8 @@ describe('createTmdbApi — loadGenreMaps with missing genres field', () => {
   // Branch coverage: `(data.genres ?? []).forEach(...)` — nullish coalescing falls back to [] when the API omits the `genres` key, preventing a crash.
   it('handles missing genres array gracefully (no throw)', async () => {
     const fetch = makeFetch([
-      { ok: true, body: {} },          // /genre/movie/list  — no genres key
-      { ok: true, body: {} },          // /genre/tv/list     — no genres key
+      { ok: true, body: {} }, // /genre/movie/list  — no genres key
+      { ok: true, body: {} } // /genre/tv/list     — no genres key
     ]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'en-US');
     await expect(api.loadGenreMaps()).resolves.toBeUndefined();
@@ -134,7 +138,7 @@ describe('createTmdbApi — mapCardItem with inline genres', () => {
       media_type: 'movie',
       title: 'Dune',
       vote_average: 7.8,
-      genres: [{ id: 878, name: 'Science Fiction' }],
+      genres: [{ id: 878, name: 'Science Fiction' }]
     };
     const result = api.mapCardItem(item);
     expect(result.genres).toEqual([{ id: 878, name: 'Science Fiction' }]);
@@ -161,13 +165,13 @@ describe('createTmdbApi — getList hasMore:false', () => {
     const body = {
       page: 3,
       total_pages: 3,
-      results: [{ id: 1, media_type: 'movie', title: 'Last', vote_average: 6, genre_ids: [] }],
+      results: [{ id: 1, media_type: 'movie', title: 'Last', vote_average: 6, genre_ids: [] }]
     };
     const fetch = makeFetch([
       { ok: true, body },
       { ok: true, body: GENRE_MOVIE_LIST },
       { ok: true, body: GENRE_TV_LIST },
-      { ok: true, body: RELEASE_DATES_DE },
+      { ok: true, body: RELEASE_DATES_DE }
     ]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
     const result = await api.getList('/movie/popular', 3, 'movie');
@@ -181,12 +185,14 @@ describe('createTmdbApi — searchMedia hasMore:true', () => {
     const body = {
       page: 1,
       total_pages: 5,
-      results: [{ id: 42, media_type: 'movie', title: 'Inception', vote_average: 8.8, genre_ids: [] }],
+      results: [
+        { id: 42, media_type: 'movie', title: 'Inception', vote_average: 8.8, genre_ids: [] }
+      ]
     };
     const fetch = makeFetch([
       { ok: true, body },
       { ok: true, body: GENRE_MOVIE_LIST },
-      { ok: true, body: GENRE_TV_LIST },
+      { ok: true, body: GENRE_TV_LIST }
     ]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
     const result = await api.searchMedia('inception', 1);
@@ -202,13 +208,13 @@ describe('createTmdbApi — getFeaturedToday', () => {
   //   4. GET /movie/:id/watch/providers               → WATCH_PROVIDERS_EMPTY
   function makeMovieFeaturedFetch(overrides = {}) {
     const trendingBody = {
-      results: [{ ...RAW_MOVIE, ...overrides }],
+      results: [{ ...RAW_MOVIE, ...overrides }]
     };
     return makeFetch([
       { ok: true, body: trendingBody },
       { ok: true, body: RAW_MOVIE },
       { ok: true, body: RELEASE_DATES_DE },
-      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY }
     ]);
   }
 
@@ -240,14 +246,14 @@ describe('createTmdbApi — getFeaturedToday', () => {
   it('returns a featured TV show when no movie with backdrop exists', async () => {
     const trendingBody = {
       results: [
-        { ...RAW_TV_SHOW },  // tv item with backdrop
-      ],
+        { ...RAW_TV_SHOW } // tv item with backdrop
+      ]
     };
     const fetch = makeFetch([
       { ok: true, body: trendingBody },
-      { ok: true, body: RAW_TV_SHOW },       // /tv/:id details
+      { ok: true, body: RAW_TV_SHOW }, // /tv/:id details
       { ok: true, body: CONTENT_RATINGS_DE },
-      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY }
     ]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
     const result = await api.getFeaturedToday();
@@ -278,7 +284,7 @@ describe('createTmdbApi — getFeaturedToday', () => {
       { ok: true, body: trendingBody },
       { ok: true, body: RAW_MOVIE },
       { ok: true, body: RELEASE_DATES_DE },
-      { ok: true, body: WATCH_PROVIDERS_RENT_BUY },
+      { ok: true, body: WATCH_PROVIDERS_RENT_BUY }
     ]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
     const result = await api.getFeaturedToday();
@@ -289,15 +295,15 @@ describe('createTmdbApi — getFeaturedToday', () => {
   it('falls back to first item when no movie/tv with backdrop exists', async () => {
     const trendingBody = {
       results: [
-        { id: 1, media_type: 'movie', title: 'No Backdrop', vote_average: 5, backdrop_path: null },
-      ],
+        { id: 1, media_type: 'movie', title: 'No Backdrop', vote_average: 5, backdrop_path: null }
+      ]
     };
     const movieDetails = { ...RAW_MOVIE, id: 1, title: 'No Backdrop', backdrop_path: null };
     const fetch = makeFetch([
       { ok: true, body: trendingBody },
       { ok: true, body: movieDetails },
       { ok: true, body: RELEASE_DATES_DE },
-      { ok: true, body: WATCH_PROVIDERS_EMPTY },
+      { ok: true, body: WATCH_PROVIDERS_EMPTY }
     ]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
     const result = await api.getFeaturedToday();

@@ -28,8 +28,16 @@ import { useI18n, useLocale } from '@/lib/stores/locale';
  * @returns {JSX.Element|null}
  */
 export default function CardDefault({
-  id, mediaType, title, date = '', rating = 0, certification = '',
-  genres = [], imageUrl = '', scrollId = '', isLoading = false,
+  id,
+  mediaType,
+  title,
+  date = '',
+  rating = 0,
+  certification = '',
+  genres = [],
+  imageUrl = '',
+  scrollId = '',
+  isLoading = false
 }) {
   const { labels, formats, fallbacks } = useI18n();
   const locale = useLocale();
@@ -48,7 +56,8 @@ export default function CardDefault({
   const hasValidCard = Boolean(id) && Boolean(normalizedType);
   if (!hasValidCard) return null;
 
-  const detailsHref = normalizedType === 'movie' ? `/${locale}/movies/${id}` : `/${locale}/tv-shows/${id}`;
+  const detailsHref =
+    normalizedType === 'movie' ? `/${locale}/movies/${id}` : `/${locale}/tv-shows/${id}`;
   const genreText = (genres ?? []).map((g) => g.name).join(' / ');
   const notAvailableText = fallbacks.notAvailable;
   const cardTitle = title?.trim() || notAvailableText;
@@ -58,7 +67,12 @@ export default function CardDefault({
   const hasGenres = Boolean(genreText);
 
   const certStyle = certificationMeta
-    ? { '--certification-icon-color': certificationMeta.color === '#ffffff' ? 'transparent' : certificationMeta.color, '--certification-icon-border-color': certificationMeta.color === '#ffffff' ? '#999' : certificationMeta.color }
+    ? {
+        '--certification-icon-color':
+          certificationMeta.color === '#ffffff' ? 'transparent' : certificationMeta.color,
+        '--certification-icon-border-color':
+          certificationMeta.color === '#ffffff' ? '#999' : certificationMeta.color
+      }
     : { '--certification-icon-color': '#dedede', '--certification-icon-border-color': '#dedede' };
 
   return (
@@ -68,7 +82,10 @@ export default function CardDefault({
       href={detailsHref}
     >
       <figure className="image">
-        <div className={`image-stage${(!imageLoaded || isLoading) && !imageErrored ? ' is-loading' : ''}${imageLoaded && !imageErrored ? ' is-ready' : ''}`} style={{ '--image-delay': 'var(--stagger-delay, 0ms)' }}>
+        <div
+          className={`image-stage${(!imageLoaded || isLoading) && !imageErrored ? ' is-loading' : ''}${imageLoaded && !imageErrored ? ' is-ready' : ''}`}
+          style={{ '--image-delay': 'var(--stagger-delay, 0ms)' }}
+        >
           {!imageErrored && (
             <Image
               src={cardImageUrl}
@@ -76,8 +93,18 @@ export default function CardDefault({
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 220px"
               style={{ objectFit: 'cover' }}
-              onLoad={(e) => { const img = e.currentTarget; if (img.complete && img.naturalWidth > 0) { requestAnimationFrame(() => setImageLoaded(true)); } else { setImageLoaded(true); } }}
-              onError={() => { setImageErrored(true); setImageLoaded(false); }}
+              onLoad={(e) => {
+                const img = e.currentTarget;
+                if (img.complete && img.naturalWidth > 0) {
+                  requestAnimationFrame(() => setImageLoaded(true));
+                } else {
+                  setImageLoaded(true);
+                }
+              }}
+              onError={() => {
+                setImageErrored(true);
+                setImageLoaded(false);
+              }}
             />
           )}
         </div>
@@ -93,7 +120,11 @@ export default function CardDefault({
             <dd className="meta certification" style={certStyle}>
               <span className="certification-content">
                 <span className="certification-icon" aria-hidden="true" />
-                <span className={`certification-text${certificationMeta?.label ? '' : ' u-not-available'}`}>{certificationMeta?.label ?? notAvailableText}</span>
+                <span
+                  className={`certification-text${certificationMeta?.label ? '' : ' u-not-available'}`}
+                >
+                  {certificationMeta?.label ?? notAvailableText}
+                </span>
               </span>
             </dd>
           </div>
@@ -101,14 +132,22 @@ export default function CardDefault({
             <dt className="u-sr-only">{labels.genre}</dt>
             <dd className="meta genres">
               <i className="layer group icon" aria-hidden="true" />
-              <span className={hasGenres ? '' : 'u-not-available'}>{hasGenres ? genreText : notAvailableText}</span>
+              <span className={hasGenres ? '' : 'u-not-available'}>
+                {hasGenres ? genreText : notAvailableText}
+              </span>
             </dd>
           </div>
           <div className="card-meta-item">
             <dt className="u-sr-only">{labels.releaseDate}</dt>
             <dd className="meta date">
               <i className="calendar icon" aria-hidden="true" />
-              {date ? <time className={cardDate ? '' : 'u-not-available'} dateTime={date}>{cardDate}</time> : <span className="u-not-available">{notAvailableText}</span>}
+              {date ? (
+                <time className={cardDate ? '' : 'u-not-available'} dateTime={date}>
+                  {cardDate}
+                </time>
+              ) : (
+                <span className="u-not-available">{notAvailableText}</span>
+              )}
             </dd>
           </div>
         </dl>
@@ -118,7 +157,14 @@ export default function CardDefault({
         <span>
           <i className="yellow star icon" aria-hidden="true" />
           <span className="u-sr-only">{labels.rating}</span>
-          {cardRating !== null ? (<><b className="rating-value">{cardRating}</b> <span className={formats.outOfTen ? '' : 'u-not-available'}>{formats.outOfTen}</span></>) : (<span className="u-not-available">{notAvailableText}</span>)}
+          {cardRating !== null ? (
+            <>
+              <b className="rating-value">{cardRating}</b>{' '}
+              <span className={formats.outOfTen ? '' : 'u-not-available'}>{formats.outOfTen}</span>
+            </>
+          ) : (
+            <span className="u-not-available">{notAvailableText}</span>
+          )}
         </span>
       </footer>
     </Link>

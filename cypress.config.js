@@ -7,12 +7,12 @@ export default defineConfig({
     indexHtmlFile: 'tests/cypress/support/component-index.html',
     devServer: {
       framework: 'next',
-      bundler: 'next',
-    },
+      bundler: 'next'
+    }
   },
   e2e: {
     specPattern: 'tests/cypress/acceptance/flows/**/*.cy.{js,ts,jsx,tsx}',
     supportFile: 'tests/cypress/support/e2e.ts',
-    baseUrl: 'http://localhost:3000',
-  },
+    baseUrl: 'http://localhost:3000'
+  }
 });

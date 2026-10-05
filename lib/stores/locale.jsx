@@ -29,7 +29,7 @@ function writeStoredLocale(locale) {
 
 const LocaleContext = createContext({
   locale: DEFAULT_LOCALE,
-  setLocale: () => {},
+  setLocale: () => {}
 });
 
 /* v8 ignore start */
@@ -47,7 +47,7 @@ export function LocaleProvider({ initialLocale, children }) {
       const stored = readStoredLocale();
       if (stored !== locale) setLocaleState(stored);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const setLocale = useCallback((next) => {
@@ -56,11 +56,7 @@ export function LocaleProvider({ initialLocale, children }) {
     setLocaleState(resolved);
   }, []);
 
-  return (
-    <LocaleContext.Provider value={{ locale, setLocale }}>
-      {children}
-    </LocaleContext.Provider>
-  );
+  return <LocaleContext.Provider value={{ locale, setLocale }}>{children}</LocaleContext.Provider>;
 }
 
 export function useLocale() {

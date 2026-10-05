@@ -21,7 +21,10 @@ export default function LanguageSwitcher() {
   const pathname = usePathname();
   const currentLocale = useLocale();
 
-  const locales = getSupportedLocales().map((code) => ({ value: code, label: code.split('-')[0].toUpperCase() }));
+  const locales = getSupportedLocales().map((code) => ({
+    value: code,
+    label: code.split('-')[0].toUpperCase()
+  }));
 
   function handleChange(event) {
     const nextLocale = resolveLocale(event.currentTarget.value);
@@ -39,9 +42,20 @@ export default function LanguageSwitcher() {
 
   return (
     <div className="language-switcher">
-      <label htmlFor="language-select" className="u-sr-only">{labels.languageSelect}</label>
-      <select id="language-select" value={currentLocale} aria-label={labels.languageSelect} onChange={handleChange}>
-        {locales.map((locale) => (<option key={locale.value} value={locale.value}>{locale.label}</option>))}
+      <label htmlFor="language-select" className="u-sr-only">
+        {labels.languageSelect}
+      </label>
+      <select
+        id="language-select"
+        value={currentLocale}
+        aria-label={labels.languageSelect}
+        onChange={handleChange}
+      >
+        {locales.map((locale) => (
+          <option key={locale.value} value={locale.value}>
+            {locale.label}
+          </option>
+        ))}
       </select>
     </div>
   );

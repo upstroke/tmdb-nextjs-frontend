@@ -18,7 +18,7 @@ import { DEFAULT_LOCALE } from '@/lib/i18n/config';
 
 export const metadata = {
   title: 'TMDB',
-  description: 'Movies and TV Shows powered by TMDB',
+  description: 'Movies and TV Shows powered by TMDB'
 };
 
 export default async function RootLayout({ children, params }) {
@@ -29,9 +29,7 @@ export default async function RootLayout({ children, params }) {
     <html data-scroll-behavior="smooth" lang={lang}>
       <body>
         <AppLocaleProvider>
-          <div id="root">
-            {children}
-          </div>
+          <div id="root">{children}</div>
         </AppLocaleProvider>
       </body>
     </html>

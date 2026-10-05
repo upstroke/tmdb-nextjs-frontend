@@ -36,8 +36,9 @@ describe('Security: Search Input', () => {
 describe('Security: Search XSS Prevention', () => {
   it('does not show script injection in search results', () => {
     cy.visit('/');
-    cy.findByRole('searchbox', { name: /search movies/i })
-      .type('<script>alert("xss")</script>{enter}');
+    cy.findByRole('searchbox', { name: /search movies/i }).type(
+      '<script>alert("xss")</script>{enter}'
+    );
     cy.findByText(/<script>/i).should('not.exist');
   });
 });
@@ -91,6 +92,7 @@ npm run test:security:component
 ## When to Use
 
 Use this skill when:
+
 - Adding new user input fields
 - Implementing search functionality
 - Handling API keys or secrets

@@ -75,7 +75,7 @@ describe('Color Contrast', () => {
     cy.visit('/');
     cy.injectAxe();
     cy.checkA11y(null, {
-      runOnly: ['color-contrast'],
+      runOnly: ['color-contrast']
     });
   });
 });
@@ -128,6 +128,7 @@ npm run test:a11y:watch
 ## When to Use
 
 Use this skill when:
+
 - Adding new components
 - Creating new pages
 - Modifying existing UI

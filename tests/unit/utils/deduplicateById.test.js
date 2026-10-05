@@ -39,7 +39,10 @@ describe('deduplicateById', () => {
 
   // Branch coverage: second occurrence of a duplicate ID is removed.
   it('removes the second occurrence of a duplicate ID', () => {
-    const items = [{ id: 1, name: 'first' }, { id: 1, name: 'second' }];
+    const items = [
+      { id: 1, name: 'first' },
+      { id: 1, name: 'second' }
+    ];
     expect(deduplicateById(items)).toEqual([{ id: 1, name: 'first' }]);
   });
 

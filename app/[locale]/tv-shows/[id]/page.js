@@ -41,7 +41,7 @@ export default async function TvShowDetailPage({ params }) {
     const api = createTmdbApi(fetch, apiKey, locale);
     const [details, watchProviders] = await Promise.all([
       api.getTVShowDetails(id),
-      api.getWatchProviders('tv', id),
+      api.getWatchProviders('tv', id)
     ]);
 
     /** @type {Season[]} */
@@ -80,8 +80,10 @@ export default async function TvShowDetailPage({ params }) {
   const certificationMeta = getCertificationMeta(tvShow.certification, activeRegion);
   const certStyle = certificationMeta
     ? {
-        '--certification-icon-color': certificationMeta.color === '#ffffff' ? 'transparent' : certificationMeta.color,
-        '--certification-icon-border-color': certificationMeta.color === '#ffffff' ? '#999' : certificationMeta.color,
+        '--certification-icon-color':
+          certificationMeta.color === '#ffffff' ? 'transparent' : certificationMeta.color,
+        '--certification-icon-border-color':
+          certificationMeta.color === '#ffffff' ? '#999' : certificationMeta.color
       }
     : { '--certification-icon-color': '#dedede', '--certification-icon-border-color': '#dedede' };
 
@@ -89,7 +91,7 @@ export default async function TvShowDetailPage({ params }) {
     id: String(season.season_number),
     label: season.name ?? `Season ${season.season_number}`,
     content: season.overview || fallbacks.notAvailable,
-    episodes: season.episodes ?? [],
+    episodes: season.episodes ?? []
   }));
 
   return (
@@ -107,7 +109,9 @@ export default async function TvShowDetailPage({ params }) {
           <dl className="details-meta">
             <div>
               <dt className="u-sr-only">{labels.mediaType}</dt>
-              <dd><MediaTypeLabel mediaType="tv" /></dd>
+              <dd>
+                <MediaTypeLabel mediaType="tv" />
+              </dd>
             </div>
             <div className="details-meta-item">
               <dt className="u-sr-only">{labels.certification}</dt>
@@ -126,7 +130,14 @@ export default async function TvShowDetailPage({ params }) {
                 <span className="ui label">
                   <i className="yellow star icon" aria-hidden="true" />
                   {tvShow.rating != null ? (
-                    <><b className={`rating-value${tvShow.rating ? '' : ' u-not-available'}`}>{tvShow.rating}</b><span className={formats.outOfTen ? '' : 'u-not-available'}>{formats.outOfTen}</span></>
+                    <>
+                      <b className={`rating-value${tvShow.rating ? '' : ' u-not-available'}`}>
+                        {tvShow.rating}
+                      </b>
+                      <span className={formats.outOfTen ? '' : 'u-not-available'}>
+                        {formats.outOfTen}
+                      </span>
+                    </>
                   ) : (
                     <span className="u-not-available">{fallbacks.notAvailable}</span>
                   )}
@@ -136,11 +147,18 @@ export default async function TvShowDetailPage({ params }) {
           </dl>
 
           <section aria-labelledby="genres-heading">
-            <h2 id="genres-heading" className="u-sr-only">{labels.genres}</h2>
+            <h2 id="genres-heading" className="u-sr-only">
+              {labels.genres}
+            </h2>
             {genres.length ? (
               <ul className="ui celled horizontal list genres">
                 {genres.map((genre) => (
-                  <li key={`tv-genre-${genre.id ?? genre.name}`} className={`item${genre.name ? '' : ' u-not-available'}`}>{genre.name}</li>
+                  <li
+                    key={`tv-genre-${genre.id ?? genre.name}`}
+                    className={`item${genre.name ? '' : ' u-not-available'}`}
+                  >
+                    {genre.name}
+                  </li>
                 ))}
               </ul>
             ) : (
@@ -150,15 +168,32 @@ export default async function TvShowDetailPage({ params }) {
         </header>
 
         <section aria-labelledby="overview-heading">
-          <h3 id="overview-heading" className={`ui medium dividing header${labels.overview ? '' : ' u-not-available'}`}>{labels.overview}</h3>
-          <p className={`overview${tvShow.overview ? '' : ' u-not-available'}`}>{tvShow.overview || fallbacks.notAvailable}</p>
+          <h3
+            id="overview-heading"
+            className={`ui medium dividing header${labels.overview ? '' : ' u-not-available'}`}
+          >
+            {labels.overview}
+          </h3>
+          <p className={`overview${tvShow.overview ? '' : ' u-not-available'}`}>
+            {tvShow.overview || fallbacks.notAvailable}
+          </p>
         </section>
 
         <section aria-labelledby="homepage-heading">
-          <h3 id="homepage-heading" className={`ui medium dividing header${labels.homepage ? '' : ' u-not-available'}`}>{labels.homepage}</h3>
+          <h3
+            id="homepage-heading"
+            className={`ui medium dividing header${labels.homepage ? '' : ' u-not-available'}`}
+          >
+            {labels.homepage}
+          </h3>
           <p>
             {tvShow.homepage ? (
-              <a className={`home-link${formatHomepageLabel(tvShow.homepage) ? '' : ' u-not-available'}`} href={tvShow.homepage} target="_blank" rel="noopener noreferrer">
+              <a
+                className={`home-link${formatHomepageLabel(tvShow.homepage) ? '' : ' u-not-available'}`}
+                href={tvShow.homepage}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 {formatHomepageLabel(tvShow.homepage)}
               </a>
             ) : (
@@ -168,12 +203,22 @@ export default async function TvShowDetailPage({ params }) {
         </section>
 
         <section aria-labelledby="trailer-heading">
-          <h3 id="trailer-heading" className={`ui medium dividing header${labels.trailer ? '' : ' u-not-available'}`}>{labels.trailer}</h3>
+          <h3
+            id="trailer-heading"
+            className={`ui medium dividing header${labels.trailer ? '' : ' u-not-available'}`}
+          >
+            {labels.trailer}
+          </h3>
           {tvShow.trailerUrls.length ? (
             <ul className="ui list trailer-list">
               {tvShow.trailerUrls.map((url, index) => (
                 <li key={`tvshow-trailer-${index}`}>
-                  <a className={`ui red button${buttons.watchTrailer ? '' : ' u-not-available'}`} href={url} target="_blank" rel="noopener noreferrer">
+                  <a
+                    className={`ui red button${buttons.watchTrailer ? '' : ' u-not-available'}`}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <i className="youtube icon" aria-hidden="true" />
                     {(buttons.watchTrailer ?? '').replace('{index}', String(index + 1))}
                   </a>
@@ -186,9 +231,17 @@ export default async function TvShowDetailPage({ params }) {
         </section>
 
         <section aria-labelledby="release-heading">
-          <h3 id="release-heading" className={`ui medium dividing header${labels.firstAirDate ? '' : ' u-not-available'}`}>{labels.firstAirDate}</h3>
+          <h3
+            id="release-heading"
+            className={`ui medium dividing header${labels.firstAirDate ? '' : ' u-not-available'}`}
+          >
+            {labels.firstAirDate}
+          </h3>
           <p>
-            <time className={formattedReleaseDate ? '' : 'u-not-available'} dateTime={tvShow.releaseDate || undefined}>
+            <time
+              className={formattedReleaseDate ? '' : 'u-not-available'}
+              dateTime={tvShow.releaseDate || undefined}
+            >
               {formattedReleaseDate || fallbacks.notAvailable}
             </time>
           </p>
@@ -196,14 +249,19 @@ export default async function TvShowDetailPage({ params }) {
 
         {seasonTabs.length > 0 && (
           <section aria-labelledby="seasons-heading">
-            <h3 id="seasons-heading" className="u-sr-only">{labels.seasons}</h3>
+            <h3 id="seasons-heading" className="u-sr-only">
+              {labels.seasons}
+            </h3>
             <TabGroupe tabs={seasonTabs} ariaLabel={labels.seasons} />
           </section>
         )}
 
         <section aria-labelledby="watch-providers-heading">
           <h3 id="watch-providers-heading" className="ui medium dividing header">
-            {labels.streamingProviders} <small className="justwatch-attribution">{labels.streamingDataProvidedBy} <strong>&copy;JustWatch</strong></small>
+            {labels.streamingProviders}{' '}
+            <small className="justwatch-attribution">
+              {labels.streamingDataProvidedBy} <strong>&copy;JustWatch</strong>
+            </small>
           </h3>
           {providers?.providers?.length ? (
             <ul className="ui relaxed divided list providers-list">
@@ -211,7 +269,17 @@ export default async function TvShowDetailPage({ params }) {
                 <li key={`tv-provider-${provider.providerId}-${provider.type}`}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                     {provider.logoPath && (
-                      <div style={{ position: 'relative', width: 40, height: 40, borderRadius: '0.25rem', overflow: 'hidden', background: '#f0f0f0', flexShrink: 0 }}>
+                      <div
+                        style={{
+                          position: 'relative',
+                          width: 40,
+                          height: 40,
+                          borderRadius: '0.25rem',
+                          overflow: 'hidden',
+                          background: '#f0f0f0',
+                          flexShrink: 0
+                        }}
+                      >
                         <Image
                           src={`https://image.tmdb.org/t/p/w92${provider.logoPath}`}
                           alt=""
@@ -223,11 +291,26 @@ export default async function TvShowDetailPage({ params }) {
                     )}
                     <div>
                       {provider.link ? (
-                        <a href={provider.link} target="_blank" rel="noopener noreferrer" className="home-link"><strong>{provider.providerName}</strong></a>
+                        <a
+                          href={provider.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="home-link"
+                        >
+                          <strong>{provider.providerName}</strong>
+                        </a>
                       ) : (
                         <strong>{provider.providerName}</strong>
                       )}
-                      <span> — {labels[`providerType${provider.type.charAt(0).toUpperCase() + provider.type.slice(1)}`]}</span>
+                      <span>
+                        {' '}
+                        —{' '}
+                        {
+                          labels[
+                            `providerType${provider.type.charAt(0).toUpperCase() + provider.type.slice(1)}`
+                          ]
+                        }
+                      </span>
                     </div>
                   </div>
                 </li>
@@ -239,11 +322,18 @@ export default async function TvShowDetailPage({ params }) {
         </section>
 
         <section aria-labelledby="production-heading">
-          <h3 id="production-heading" className={`ui medium dividing header${labels.production ? '' : ' u-not-available'}`}>{labels.production}</h3>
+          <h3
+            id="production-heading"
+            className={`ui medium dividing header${labels.production ? '' : ' u-not-available'}`}
+          >
+            {labels.production}
+          </h3>
           {productionCompanies.length ? (
             <ul className="ui relaxed divided list">
               {productionCompanies.map((company) => (
-                <li key={`tv-production-company-${company.id ?? company.name}`}><strong>{company.name}</strong></li>
+                <li key={`tv-production-company-${company.id ?? company.name}`}>
+                  <strong>{company.name}</strong>
+                </li>
               ))}
             </ul>
           ) : (
@@ -252,7 +342,12 @@ export default async function TvShowDetailPage({ params }) {
         </section>
 
         <section aria-labelledby="runtime-heading">
-          <h3 id="runtime-heading" className={`ui medium dividing header${labels.runtime ? '' : ' u-not-available'}`}>{labels.runtime}</h3>
+          <h3
+            id="runtime-heading"
+            className={`ui medium dividing header${labels.runtime ? '' : ' u-not-available'}`}
+          >
+            {labels.runtime}
+          </h3>
           <p>
             {tvShow.runtime != null ? (
               <span>{tvShow.runtime} min</span>
@@ -263,12 +358,18 @@ export default async function TvShowDetailPage({ params }) {
         </section>
 
         <section aria-labelledby="cast-heading">
-          <h3 id="cast-heading" className={`ui medium dividing header${labels.cast ? '' : ' u-not-available'}`}>{labels.cast}</h3>
+          <h3
+            id="cast-heading"
+            className={`ui medium dividing header${labels.cast ? '' : ' u-not-available'}`}
+          >
+            {labels.cast}
+          </h3>
           {castMembers.length ? (
             <ul className="ui relaxed divided list">
               {castMembers.map((member) => (
                 <li key={`tv-cast-${member.creditId ?? member.id ?? member.name}`}>
-                  <strong>{member.name}</strong>{member.character && <span> — {member.character}</span>}
+                  <strong>{member.name}</strong>
+                  {member.character && <span> — {member.character}</span>}
                 </li>
               ))}
             </ul>
@@ -278,12 +379,18 @@ export default async function TvShowDetailPage({ params }) {
         </section>
 
         <section aria-labelledby="crew-heading">
-          <h3 id="crew-heading" className={`ui medium dividing header${labels.crew ? '' : ' u-not-available'}`}>{labels.crew}</h3>
+          <h3
+            id="crew-heading"
+            className={`ui medium dividing header${labels.crew ? '' : ' u-not-available'}`}
+          >
+            {labels.crew}
+          </h3>
           {crew.length ? (
             <ul className="ui relaxed divided list">
               {crew.map((member) => (
                 <li key={`tv-crew-${member.creditId ?? member.id ?? member.name}`}>
-                  <strong>{member.name}</strong>{member.job && <span> — {member.job}</span>}
+                  <strong>{member.name}</strong>
+                  {member.job && <span> — {member.job}</span>}
                 </li>
               ))}
             </ul>
