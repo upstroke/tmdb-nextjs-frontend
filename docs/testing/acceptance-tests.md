@@ -1,68 +1,108 @@
-# Akzeptanztests (Acceptance Tests)
+# Acceptance Tests (E2E)
 
-## Ziel
+## Overview
 
-Akzeptanztests prüfen, ob die implementierten Features die Anforderungen der User-Stories erfüllen. Sie dienen als letzte Qualitätsstufe vor dem Release und simulieren reale Nutzungsszenarien.
+Acceptance tests (End-to-End / E2E) verify complete user flows across multiple pages. They ensure the application works from the user's perspective.
 
-## Ebenen der Akzeptanztests
+## Tool
 
-Akzeptanztests gliedern sich in zwei Ebenen:
+- **Cypress** - Browser-based testing framework
 
-1. **Komponenten-Akzeptanz** – Fachliche Abnahme einzelner UI-Komponenten gegen Akzeptanzkriterien (AC) der User-Stories.
-2. **Flow-Akzeptanz (E2E)** – Abnahme kompletter User-Flows über mehrere Seiten und Interaktionen hinweg.
+## Location
 
-## Komponententests (Component Acceptance)
+```
+tests/cypress/acceptance/flows/   # E2E test files
+*.cy.js                            # Test files
+```
 
-Komponententests sind Teil der Akzeptanztests und prüfen das fachliche Verhalten von UI-Komponenten gegen die Akzeptanzkriterien.
+## What to Test
 
-**Spezifikationen:** `tests/cypress/acceptance/components/`
+### ✅ Test These:
+- Complete user flows (search → detail → navigate)
+- Cross-page navigation
+- Real browser behavior
+- Critical user journeys
+- Happy paths and important edge cases
 
-Detaillierte Regeln und Beispiele finden sich in [component-tests.md](./component-tests.md).
+### ❌ Don't Test:
+- Individual components (use component tests)
+- Every possible user path (too slow)
+- Visual details (use visual regression tools)
 
-## Flow-Akzeptanztests (E2E)
+## Example
 
-E2E-Tests prüfen komplette Nutzerabläufe (z. B. "Film suchen → Details ansehen → zur Watchlist hinzufügen").
-
-**Spezifikationen:** `tests/cypress/acceptance/flows/`
-
-## Werkzeug
-
-- **Cypress** für beide Ebenen (Component Testing + E2E)
-- Tests laufen im echten Browser mit voller Interaktionsunterstützung
-
-## Beispiel (E2E)
-
-```ts
-// tests/cypress/acceptance/flows/search-and-add.cy.ts
-describe('User-Flow: Film suchen und zur Watchlist hinzufügen', () => {
-  it('erfolgreich gemäß AC-1 bis AC-3', () => {
+```js
+// tests/cypress/acceptance/flows/search.cy.js
+describe('Search Flow', () => {
+  it('finds and displays movie details', () => {
+    // Start on homepage
     cy.visit('/');
-    cy.findByRole('searchbox', { name: /filme suchen/i }).type('Inception{enter}');
-    cy.findByText(/inception/i).first().click();
+    
+    // Search for movie
+    cy.findByRole('searchbox', { name: /search movies/i })
+      .type('Inception{enter}');
+    
+    // Verify results appear
+    cy.findByText(/Inception/i).should('be.visible');
+    
+    // Click on first result
+    cy.findAllByTestId('movie-card').first().click();
+    
+    // Verify detail page loads
     cy.url().should('include', '/movie/');
-    cy.findByRole('button', { name: /zur watchlist hinzufügen/i }).click();
-    cy.findByText(/zur watchlist hinzugefügt/i).should('be.visible');
+    cy.findByRole('heading', { name: /Inception/i }).should('be.visible');
   });
 });
 ```
 
-## Regeln
+## Best Practices
 
-1. **Ein Test = Ein Akzeptanzkriterium oder Flow**  
-   Jede `it()`-Beschreibung referenziert explizit ACs oder einen User-Flow.
+1. **Test user flows** - Not implementation details
+2. **Use Page Objects** - For complex flows (see [Page Objects](./page-objects.md))
+3. **Keep tests independent** - Each test should be able to run alone
+4. **Use realistic data** - Fixtures from `tests/fixtures/tmdb/`
+5. **Assert on user-visible content** - Text, roles, labels
+6. **Minimize test count** - Few valuable tests > many trivial tests
 
-2. **Fachliche Sprache**  
-   Testbeschreibungen verwenden die Sprache der Product Owner.
+## Running Tests
 
-3. **Sichtbare Elemente priorisieren**  
-   Queries nutzen `findByRole`, `findByText`, `findByLabel`.
+```bash
+# All acceptance tests (headless)
+npm run test:acceptance
 
-4. **Barrierefreiheit mitprüfen**  
-   Jede Komponente und jeder Flow enthält mindestens einen Test für ARIA-Labels oder Keyboard-Interaktion.
+# Open Cypress UI
+npm run test:acceptance:ui
 
-## Zusammenhang mit anderen Test-Leveln
+# Run specific test
+npx cypress run --spec "tests/cypress/acceptance/flows/search.cy.js"
+```
 
-- **Unit-Tests** prüfen technische Helper-Funktionen.
-- **Integrationstests** prüfen das Zusammenspiel mehrerer Module.
-- **Komponententests** (dieses Dokument) prüfen fachliches Verhalten von Komponenten.
-- **Flow-Akzeptanztests** (dieses Dokument) prüfen komplette User-Flows.
+## Test Structure
+
+```js
+describe('Feature Name', () => {
+  beforeEach(() => {
+    // Setup: visit page, login, etc.
+  });
+
+  it('should complete user flow', () => {
+    // Test steps
+  });
+});
+```
+
+## Difference from Component Tests
+
+| Component Tests | Acceptance Tests |
+|-----------------|------------------|
+| Single component | Multiple pages |
+| Isolated | Full application |
+| Fast (< 1s) | Slower (seconds) |
+| Mock data | Real or fixture data |
+| Implementation focus | User flow focus |
+
+## Documentation
+
+- [Testing Strategy](../testing.md)
+- [Component Tests](./component-tests.md)
+- [Page Objects](./page-objects.md)
