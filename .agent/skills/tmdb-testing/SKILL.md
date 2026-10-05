@@ -1,7 +1,7 @@
 ---
 name: tmdb-testing
-description: Design, implement, update, or review unit, integration, and Cypress acceptance tests for the TMDB Next.js frontend, including fixtures, mocks, and page objects.
-version: 0.2.0
+description: Design, implement, update, or review Vitest unit and integration/component tests and Cypress acceptance and accessibility tests for the TMDB Next.js frontend, including fixtures, mocks, and page objects.
+version: 0.3.0
 ---
 
 # TMDB testing
@@ -15,22 +15,40 @@ Read `README.md`, `package.json`, `docs/testing.md`, and the task-relevant
 files under `docs/testing/` before editing. Inspect existing tests, fixtures,
 mocks, and page objects nearest to the feature.
 
+## Tools and scope
+
+- **Vitest** runs unit tests (`tests/unit`) and integration/component tests
+  (`tests/integration`, including `tests/integration/components`). It uses
+  React Testing Library, `user-event`, `jsdom`, and `msw`.
+- **Cypress** runs acceptance and accessibility tests in a real browser
+  (`tests/cypress/`). Accessibility checks use `cypress-axe`. Cypress is
+  configured for e2e specs in `tests/cypress/acceptance`; there is no Cypress
+  component-testing setup.
+- Do not write component or integration tests in Cypress. Do not write
+  isolated logic tests in Cypress.
+
 ## Choose the test level
 
-- Use a unit test for isolated functions, transformations, helpers, and small
-  business rules.
-- Use an integration test for component behavior, user interactions, state,
-  rendering with dependencies, or controlled API behavior.
+- Use a unit test (Vitest) for isolated functions, transformations, helpers, and
+  small business rules.
+- Use an integration or component test (Vitest) for component behavior, user
+  interactions, state, rendering with dependencies, or controlled API behavior.
 - Use a Cypress acceptance test for an end-to-end user journey, navigation,
   cross-page workflow, browser behavior, or an important regression flow.
+- Use a Cypress accessibility test (`cypress-axe`) for page-level keyboard,
+  focus, and automated accessibility checks in the browser.
 - Use a page object when a Cypress page interaction or selector is reused or
   represents meaningful user intent.
 
-## Coverage target and ISTQB classification
+## Coverage target and ISTQB classification (Vitest only)
 
-The project target is at least 80% statement coverage.
+The project target is at least 80% statement coverage, measured by
+`npm run test:vitest:coverage` on Vitest unit and integration/component tests.
 
-Classify every `it` block according to ISTQB terminology:
+This section applies only to Vitest tests. Cypress tests carry no coverage
+comment, no coverage label, and no coverage target.
+
+Classify every Vitest `it` block according to ISTQB terminology:
 
 - **Statement coverage**: the test executes statements at least once. Use this
   for straight-line code and for the single path through a function.
@@ -41,7 +59,7 @@ Classify every `it` block according to ISTQB terminology:
 Branch coverage subsumes statement coverage: a test that covers a branch also
 covers its statements, but it must still be labeled as branch coverage.
 
-Label each `it` block with a comment directly above it:
+Label each Vitest `it` block with a comment directly above it:
 
 ```js
 // Coverage: Statement
@@ -53,18 +71,16 @@ it('uses the fallback image when poster_path is missing', () => { /* ... */ })
 
 Rules:
 
-- Every `it` block carries exactly one `// Coverage:` label.
+- Every Vitest `it` block carries exactly one `// Coverage:` label.
 - A branch label names the decision and the outcome that is exercised.
 - Cover both outcomes of each relevant decision with separate `it` blocks.
 - Do not label a test as branch coverage if it exercises only one outcome and
   the other outcome has no test.
-- Cypress acceptance tests are user-journey tests; label them too, but do not
-  count them toward the 80% statement coverage target, which is measured on
-  Vitest unit and integration tests.
+- Do not add `// Coverage:` comments to Cypress specs.
 
 ## Workflow
 
-1. Identify the behavior to protect and the appropriate test level.
+1. Identify the behavior to protect and the appropriate test level and tool.
 2. For a bug, add a failing regression test before or with the smallest fix.
 3. Reuse existing setup, fixtures, mocks, helpers, and page-object conventions.
 4. Arrange test data; perform one focused user action or invocation; assert
@@ -73,10 +89,13 @@ Rules:
    selectors.
 6. Mock external boundaries rather than internal implementation details.
 7. Cover relevant success, loading, empty, error, and edge cases.
-8. Label each new or changed `it` block with its ISTQB coverage type.
+8. Label each new or changed Vitest `it` block with its ISTQB coverage type.
+   Do not label Cypress tests.
 9. Run the narrowest relevant test command first, then broader project checks
-   only when appropriate.
-10. Check the statement coverage report against the 80% target.
+   only when appropriate. Run Cypress (`npm run test:acceptance`) as a separate
+   validation step.
+10. For Vitest changes, check the statement coverage report against the 80%
+    target.
 
 ## Constraints
 
@@ -92,6 +111,8 @@ Rules:
 
 ## Completion report
 
-Report test level chosen, scenarios covered, coverage type per `it` block
-(statement or branch), files changed, exact commands run, results, the
-statement coverage figure against the 80% target, and manual checks that remain.
+Report test level and tool chosen, scenarios covered, files changed, exact
+commands run, results, and manual checks that remain. For Vitest tests, also
+report the coverage type per `it` block (statement or branch) and the statement
+coverage figure against the 80% target. For Cypress tests, report the scenario
+and result only; do not report coverage.
