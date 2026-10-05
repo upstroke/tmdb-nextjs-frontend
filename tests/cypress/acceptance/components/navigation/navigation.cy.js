@@ -1,5 +1,5 @@
-import { BasePage } from '../../POM/BasePage.js';
-import { HeaderPage } from '../../POM/HeaderPage.js';
+import { BasePage } from '../../../POM/BasePage.js';
+import { HeaderPage } from '../../../POM/HeaderPage.js';
 
 const base = BasePage();
 const header = HeaderPage();
