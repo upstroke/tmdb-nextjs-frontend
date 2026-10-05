@@ -4,7 +4,7 @@
 ## 🎯 Project Overview
 - **Framework**: Next.js 15 with App Router
 - **Language**: JavaScript (NO TypeScript)
-- **Styling**: Tailwind CSS
+- **Styling**: Fomantic UI CSS + Sass (NO Tailwind)
 - **API**: TMDB (The Movie Database)
 - **i18n**: next-intl
 
@@ -12,26 +12,32 @@
 
 ### Test Pyramid
 1. **Unit Tests (Vitest)** → `tests/vitest/`
-   - Utility functions
+   - Utility functions, mappers, Zod schemas
    - Security tests (input validation, API key handling)
    - Fast, isolated tests
 
-2. **Component Tests (Cypress)** → `tests/cypress/acceptance/components/`
+2. **Integration Tests (Vitest + MSW)** → `tests/vitest/`
+   - Pages/sections with mocked data
+   - Real integration testing
+   - Assert on rendered DOM (roles, text)
+
+3. **Component Tests (Cypress)** → `tests/cypress/acceptance/components/`
    - Individual React components
    - User interactions
-   - Accessibility checks
+   - Accessibility checks (keyboard, focus, ARIA)
 
-3. **Acceptance Tests (Cypress)** → `tests/cypress/acceptance/flows/`
+4. **Acceptance Tests (Cypress)** → `tests/cypress/acceptance/flows/`
    - Complete user flows
    - E2E scenarios
-   - Real browser testing
+   - Search, detail pages, navigation
 
-4. **Accessibility Tests** → `tests/cypress/acceptance/accessibility/`
-   - axe-core audits
+5. **Accessibility Tests** → `tests/cypress/acceptance/accessibility/`
+   - axe-core audits (`cy.checkA11y()`)
    - Keyboard navigation
    - Screen reader compatibility
+   - Color contrast checks
 
-5. **Security Tests** → `tests/vitest/security/` + `tests/cypress/acceptance/components/security/`
+6. **Security Tests** → `tests/vitest/security/` + `tests/cypress/acceptance/components/security/`
    - Input validation (XSS prevention)
    - API key handling
    - Dependency security
@@ -44,6 +50,7 @@
 - ✅ Mock APIs with MSW (Mock Service Worker)
 - ✅ Use fixtures: `tests/fixtures/tmdb/`
 - ✅ Use mocks: `tests/mocks/`
+- ✅ Run `cy.checkA11y()` on pages and after interactions
 
 ### Test File Naming
 - Cypress: `*.cy.js` → `tab-groupe.cy.js`
@@ -125,9 +132,10 @@ tmdb-nextjs-frontend/
 
 ### Components
 - Functional components with hooks
-- Tailwind CSS utility classes
-- NO inline styles (`style={{}}`)
-- NO CSS modules (`.module.css`)
+- **Fomantic UI CSS classes** (e.g., `ui button`, `ui grid`)
+- **Sass for custom styles** (`.scss` files)
+- NO Tailwind classes
+- NO inline styles (`style={{}}`) unless absolutely necessary
 - Semantic HTML (article, section, nav, etc.)
 
 ### Naming
@@ -139,7 +147,7 @@ tmdb-nextjs-frontend/
 ## 🚫 Forbidden Patterns
 
 1. **NO TypeScript** - No `.ts`, `.tsx` files
-2. **NO CSS modules** - Use Tailwind only
+2. **NO Tailwind CSS** - Use Fomantic UI + Sass only
 3. **NO class components** - Functional + hooks only
 4. **NO CSS selectors in tests** - Testing Library queries only
 5. **NO direct API calls in components** - Use API routes or server actions
@@ -161,10 +169,11 @@ tmdb-nextjs-frontend/
 - [ ] Dynamic content announced (`aria-live`)
 
 ### Testing
-- Run `npm run test:a11y` for axe-core audits
+- Run `cy.checkA11y()` (cypress-axe) on every page
 - Test keyboard-only navigation
 - Test with screen reader (NVDA/VoiceOver)
 - Test zoom up to 200%
+- Test color contrast
 
 ## 🔒 Security
 
@@ -206,12 +215,13 @@ tmdb-nextjs-frontend/
 4. **Ask questions** - If requirements ambiguous
 5. **Follow patterns** - Match existing code style exactly
 6. **Use skills** - Check `.agent/skills/` for detailed patterns
+7. **Use Fomantic UI** - Check existing components for class patterns
 
 ## ✅ Before You Finish (Checklist)
 
 - [ ] JavaScript (NOT TypeScript)
 - [ ] Testing Library queries in tests
-- [ ] Tailwind classes (no inline styles)
+- [ ] Fomantic UI + Sass (NO Tailwind)
 - [ ] No `.env` or secrets in commit
 - [ ] Test file naming: `*.cy.js` or `*.test.js`
 - [ ] Imports use `@/` alias
