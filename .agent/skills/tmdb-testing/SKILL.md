@@ -1,7 +1,7 @@
 ---
 name: tmdb-testing
-description: Design, implement, update, or review Vitest unit and integration/component tests and Cypress acceptance and accessibility tests for the TMDB Next.js frontend, including fixtures, mocks, and page objects.
-version: 0.4.0
+description: Design, implement, update, or review Vitest unit and integration tests and Cypress component-behavior, acceptance, and accessibility tests for the TMDB Next.js frontend, including fixtures, mocks, and page objects.
+version: 0.5.0
 ---
 
 # TMDB testing
@@ -17,44 +17,55 @@ mocks, and page objects nearest to the feature.
 
 ## Tools and scope
 
-- **Vitest** runs unit tests (`tests/unit`) and integration/component tests
-  (`tests/integration`, including `tests/integration/components`). It uses
-  React Testing Library, `user-event`, `jsdom`, and `msw`.
-- **Cypress** runs acceptance and accessibility tests in a real browser
-  (`tests/cypress/`). Cypress is configured for e2e specs matching
+- **Vitest** runs unit tests (`tests/unit`) and integration tests
+  (`tests/integration`). Integration tests are real integration tests only: a
+  page or section renders with mocked data (`msw`) and the values reach the
+  components. It uses React Testing Library, `user-event`, `jsdom`, and `msw`.
+- **Cypress** runs component-behavior, acceptance, and accessibility tests in a
+  real browser (`tests/cypress/`). Cypress is configured for e2e specs matching
   `tests/cypress/acceptance/**/*.{cy,spec}.js`; there is no Cypress
-  component-testing setup.
-- Acceptance specs live in `tests/cypress/acceptance/`. Accessibility specs live
-  in `tests/cypress/acceptance/accessibility/`.
-- Do not write component or integration tests in Cypress. Do not write
-  isolated logic tests in Cypress.
+  component-testing setup, so component behavior is tested through the running
+  application.
+- Component-behavior specs live in `tests/cypress/acceptance/components/`.
+  Route and flow specs live in `tests/cypress/acceptance/routes/`. Accessibility
+  specs live in `tests/cypress/acceptance/accessibility/`.
+- Do not write component tests with Vitest. jsdom has no layout and cannot
+  check color contrast or real focus behavior.
+- Do not write isolated logic tests in Cypress.
 
 ## Choose the test level
 
 - Use a unit test (Vitest) for isolated functions, transformations, helpers, and
   small business rules.
-- Use an integration or component test (Vitest) for component behavior, user
-  interactions, state, rendering with dependencies, or controlled API behavior.
+- Use an integration test (Vitest) to check that a page or section renders with
+  controlled dependencies and that data reaches the components. Assert on the
+  rendered DOM (roles, text), not on props.
+- Use a Cypress component-behavior spec for keyboard interaction, focus
+  management, ARIA states, and visibility of components with their own
+  behavior, such as tabs, modals, and dropdowns.
 - Use a Cypress acceptance test for an end-to-end user journey, navigation,
   cross-page workflow, browser behavior, or an important regression flow.
 - Use a Cypress accessibility test for page-level automated axe checks in the
   browser (see Accessibility tests).
+- Do not add a dedicated test for a purely presentational component; integration
+  or Cypress tests cover it.
 - Use a page object when a Cypress page interaction or selector is reused or
   represents meaningful user intent.
 
 ## Accessibility tests
 
 - Test whole pages and meaningful page states with Cypress and `cypress-axe`
-  (`cy.checkPageA11y()`), not every component individually. Axe results for
-  contrast, headings, landmarks, and focus are only reliable on the rendered
-  page.
+  (`cy.checkPageA11y()`). Axe results for contrast, headings, landmarks, and
+  focus are only reliable on the rendered page.
 - Add a page-level test per central page: homepage, list or search pages,
   detail pages, and error states. Add states that change the DOM, such as open
   dialogs or menus, loading and empty states, and a sample of locales.
-- Do not add a separate Cypress accessibility test for each component.
+- Do not add a separate axe test for each component. Run `cy.checkPageA11y()`
+  in a component-behavior spec only for states that change the DOM, such as an
+  opened menu or a switched tab.
 - Cover keyboard, focus, role, and label behavior of interactive components in
-  Vitest with Testing Library queries (`getByRole`, `getByLabelText`) and
-  `user-event`, as part of the component's integration test.
+  Cypress component-behavior specs, using role- and label-based selectors
+  instead of styling selectors.
 - Keep `accessibility-testplan.md` in sync: add a row with an ID, page, and state
   for every new scenario.
 - Document intentional axe exceptions in the spec directly above
@@ -66,11 +77,11 @@ mocks, and page objects nearest to the feature.
 ## Coverage target and ISTQB classification (Vitest only)
 
 The project target is at least 80% statement coverage, measured by
-`npm run test:vitest:coverage` on Vitest unit and integration/component tests.
+`npm run test:vitest:coverage` on Vitest unit and integration tests.
 
-This section applies only to Vitest tests. Cypress tests (acceptance and
-accessibility) carry no coverage comment, no coverage label, and no coverage
-target.
+This section applies only to Vitest tests. Cypress tests (component behavior,
+acceptance, and accessibility) carry no coverage comment, no coverage label, and
+no coverage target.
 
 Classify every Vitest `it` block according to ISTQB terminology:
 
