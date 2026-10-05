@@ -19,9 +19,5 @@ export default function MediaTypeLabel({ mediaType, className = '' }) {
   const labelColor = normalizedType === 'movie' ? 'blue' : 'teal';
   const labelText = normalizedType === 'movie' ? labels.movie : labels.tvShow;
 
-  return (
-    <span className={`ui label label ${labelColor} ${className}`}>
-      {labelText}
-    </span>
-  );
+  return <span className={`ui label label ${labelColor} ${className}`}>{labelText}</span>;
 }

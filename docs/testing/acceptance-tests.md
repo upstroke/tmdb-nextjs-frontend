@@ -1,117 +1,109 @@
-# Acceptance Tests
+# Acceptance Tests (E2E)
 
-This guide defines the project rules for Cypress acceptance tests. Use acceptance tests for complete user-visible flows that require a real browser and realistic navigation.
+## Overview
 
-## Scope
+Acceptance tests (End-to-End / E2E) verify complete user flows across multiple pages. They ensure the application works from the user's perspective.
 
-Acceptance tests are the right choice for:
+## Tool
 
-- complete user journeys across one or more pages
-- navigation and routing behavior
-- browser-visible loading, restore, and error flows
-- locale changes across real navigation paths
-- accessibility checks that should run on full pages
-- regressions that are best validated in the actual browser environment
+- **Cypress** - Browser-based testing framework
 
-Do not use Cypress for small isolated logic or component-only behavior that can be trusted with Vitest.
+## Location
 
-## File Location
-
-Place browser-based acceptance tests under `tests/cypress/acceptance/`:
-
-```text
-tests/cypress/
-  acceptance/
-    accessibility/
-      accessibility.spec.js
-      accessibility-testplan.md
-    components/
-      navigation/
-        navigation.spec.js
-        navigation-testplan.md
-    routes/
-      homepage.cy.js
-  POM/                 # Cypress page objects
-  fixtures/            # Cypress-specific fixture data
-  support/             # Cypress entry point and commands
+```
+tests/cypress/acceptance/flows/   # E2E test files
+*.cy.js                            # Test files
 ```
 
-`components/navigation/` contains a browser-based acceptance test for navigation, not an isolated Cypress Component Test. Use a directory per shared UI component or region when its user-visible behavior needs acceptance coverage. `routes/` contains route-oriented browser journeys; `accessibility/` contains full-page and interaction-state accessibility checks.
+## What to Test
 
-Accessibility and navigation currently have a test plan next to their specs; `routes/homepage.cy.js` does not yet have one. Existing specs use both `*.spec.js` and `*.cy.js`. The current `cypress.config.js` still targets `tests/cypress/e2e/**/*.cy.js`, so none of the specs in this structure are discovered by that pattern until the follow-up configuration and import changes are completed. Do not treat the naming shown here as a working runner configuration.
+### ✅ Test These:
 
-## General Rules
+- Complete user flows (search → detail → navigate)
+- Cross-page navigation
+- Real browser behavior
+- Critical user journeys
+- Happy paths and important edge cases
 
-- Write tests from the user perspective.
-- Prefer stable selectors based on role, label, and visible text.
-- Keep scenarios realistic and business-oriented.
-- Avoid overspecifying intermediate implementation details.
-- Keep each scenario independent and repeatable.
-- Use helper functions only when they improve clarity and do not hide the intent of the test.
+### ❌ Don't Test:
 
-## What to Cover
+- Individual components (use component tests)
+- Every possible user path (too slow)
+- Visual details (use visual regression tools)
 
-A Cypress acceptance test should cover behavior such as:
+## Example
 
-- moving between routes
-- loading and restoring paginated content
-- changing locale and preserving route context
-- using search in realistic navigation flows
-- error handling visible to real users
-- accessibility scans on central pages and meaningful interaction states
+```js
+// tests/cypress/acceptance/flows/search.cy.js
+describe('Search Flow', () => {
+  it('finds and displays movie details', () => {
+    // Start on homepage
+    cy.visit('/');
 
-## Accessibility
+    // Search for movie
+    cy.findByRole('searchbox', { name: /search movies/i }).type('Inception{enter}');
 
-Use Cypress together with axe-core for automated accessibility checks on important pages and interaction states.
+    // Verify results appear
+    cy.findByText(/Inception/i).should('be.visible');
 
-Typical examples:
+    // Click on first result
+    cy.findAllByTestId('movie-card').first().click();
 
-- homepage
-- list pages
-- detail pages
-- dialogs or menus after opening
-- error states that appear after user interaction
+    // Verify detail page loads
+    cy.url().should('include', '/movie/');
+    cy.findByRole('heading', { name: /Inception/i }).should('be.visible');
+  });
+});
+```
 
-Document intentional exceptions explicitly. Do not disable rules broadly.
+## Best Practices
 
-## Tabs and Season Views
+1. **Test user flows** - Not implementation details
+2. **Use Page Objects** - For complex flows (see [Page Objects](./page-objects.md))
+3. **Keep tests independent** - Each test should be able to run alone
+4. **Use realistic data** - Fixtures from `tests/fixtures/tmdb/`
+5. **Assert on user-visible content** - Text, roles, labels
+6. **Minimize test count** - Few valuable tests > many trivial tests
 
-User-visible tabbed detail areas should be covered at acceptance level only when the behavior matters as an actual browser journey.
+## Running Tests
 
-Good reasons to add Cypress coverage include:
+```bash
+# All acceptance tests (headless)
+npm run test:acceptance
 
-- a season tab changes visible content in a way that is central to the feature
-- per-tab loading affects real user flows
-- routing, deep linking, or browser history interacts with the active tab
-- a regression would likely be missed by component-level tests alone
+# Open Cypress UI
+npm run test:acceptance:ui
 
-If the concern is only keyboard handling, ARIA semantics, or isolated async rendering inside a reusable tab component, prefer an integration test first.
+# Run specific test
+npx cypress run --spec "tests/cypress/acceptance/flows/search.cy.js"
+```
 
-## Test Plans
+## Test Structure
 
-Keep a `*-testplan.md` beside the executable specs for a substantial acceptance feature. Accessibility and navigation already have nearby plans; the current homepage route spec does not. A plan should describe:
+```js
+describe('Feature Name', () => {
+  beforeEach(() => {
+    // Setup: visit page, login, etc.
+  });
 
-- the user story or feature goal
-- covered scenarios
-- states that must be included, for example loading, error, and success
-- special accessibility or locale considerations
+  it('should complete user flow', () => {
+    // Test steps
+  });
+});
+```
 
-Keep the plan close to the executable tests so documentation and implementation evolve together.
+## Difference from Component Tests
 
-## Assertions
+| Component Tests      | Acceptance Tests     |
+| -------------------- | -------------------- |
+| Single component     | Multiple pages       |
+| Isolated             | Full application     |
+| Fast (< 1s)          | Slower (seconds)     |
+| Mock data            | Real or fixture data |
+| Implementation focus | User flow focus      |
 
-Prefer assertions against:
+## Documentation
 
-- visible content
-- roles and accessible names
-- URL changes when routing matters
-- browser-visible restore behavior
-- dialog, menu, or tab state as the user experiences it
-
-Avoid assertions that only restate internal implementation details.
-
-## Maintenance
-
-When a new feature becomes user-visible, first decide whether confidence belongs at acceptance, integration, or unit level.
-
-Choose Cypress when the browser is part of the behavior contract. Otherwise, keep the test lower in the stack.
+- [Testing Strategy](../testing.md)
+- [Component Tests](./component-tests.md)
+- [Page Objects](./page-objects.md)

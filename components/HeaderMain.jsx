@@ -14,7 +14,7 @@ const NAV_ITEMS = [
     icon: 'home',
     getPath: (locale) => `/${locale}`,
     storageKey: null,
-    active: (pathname, locale) => pathname === `/${locale}` || pathname === `/${locale}/`,
+    active: (pathname, locale) => pathname === `/${locale}` || pathname === `/${locale}/`
   },
   {
     id: 'nav-movies',
@@ -22,7 +22,7 @@ const NAV_ITEMS = [
     icon: 'film',
     getPath: (locale) => `/${locale}/movies`,
     storageKey: 'movies-page',
-    active: (pathname, locale) => pathname.startsWith(`/${locale}/movies`),
+    active: (pathname, locale) => pathname.startsWith(`/${locale}/movies`)
   },
   {
     id: 'nav-tv',
@@ -30,8 +30,8 @@ const NAV_ITEMS = [
     icon: 'tv',
     getPath: (locale) => `/${locale}/tv-shows`,
     storageKey: 'tv-shows-page',
-    active: (pathname, locale) => pathname.startsWith(`/${locale}/tv-shows`),
-  },
+    active: (pathname, locale) => pathname.startsWith(`/${locale}/tv-shows`)
+  }
 ];
 
 /**
@@ -57,12 +57,16 @@ export default function HeaderMain() {
     icon: item.icon,
     path: item.getPath(locale),
     storageKey: item.storageKey ?? '',
-    active: (p) => item.active(p, locale),
+    active: (p) => item.active(p, locale)
   }));
 
   function getStoredPage(key) {
     if (typeof window === 'undefined' || !key) return 1;
-    try { return Math.max(1, Number(sessionStorage.getItem(key) ?? '1') || 1); } catch { return 1; }
+    try {
+      return Math.max(1, Number(sessionStorage.getItem(key) ?? '1') || 1);
+    } catch {
+      return 1;
+    }
   }
 
   function getNavHref(path, storageKey) {
@@ -84,7 +88,9 @@ export default function HeaderMain() {
         aria-controls="navmenu"
         onPointerDown={() => setMenuOpen((v) => !v)}
       >
-        <span /><span /><span />
+        <span />
+        <span />
+        <span />
       </button>
       <div className="nav-wrapper">
         <nav id="navmenu" aria-label={labels.mainNavigation}>

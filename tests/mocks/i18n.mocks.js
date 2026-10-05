@@ -16,5 +16,5 @@ export const i18nMockDefault = {
   titles: enUS.titles,
   buttons: enUS.buttons,
   formats: enUS.formats,
-  fallbacks: enUS.fallbacks,
+  fallbacks: enUS.fallbacks
 };

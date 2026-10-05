@@ -60,7 +60,7 @@ describe('deduplicateMedia', () => {
     const items = [
       { id: 1, mediaType: 'movie' },
       { id: 2, mediaType: 'movie' },
-      { id: 1, mediaType: 'tv' },
+      { id: 1, mediaType: 'tv' }
     ];
     expect(deduplicateMedia(items)).toEqual(items);
   });
@@ -69,7 +69,7 @@ describe('deduplicateMedia', () => {
   it('removes the second occurrence of a duplicate media item', () => {
     const items = [
       { id: 1, mediaType: 'movie', title: 'first' },
-      { id: 1, mediaType: 'movie', title: 'second' },
+      { id: 1, mediaType: 'movie', title: 'second' }
     ];
     expect(deduplicateMedia(items)).toEqual([{ id: 1, mediaType: 'movie', title: 'first' }]);
   });
@@ -78,7 +78,7 @@ describe('deduplicateMedia', () => {
   it('keeps items with the same id but different mediaType', () => {
     const items = [
       { id: 5, mediaType: 'movie' },
-      { id: 5, mediaType: 'tv' },
+      { id: 5, mediaType: 'tv' }
     ];
     expect(deduplicateMedia(items)).toEqual(items);
   });
@@ -88,7 +88,7 @@ describe('deduplicateMedia', () => {
     const items = [
       { id: 3, mediaType: 'movie' },
       { id: 1, mediaType: 'tv' },
-      { id: 2, mediaType: 'movie' },
+      { id: 2, mediaType: 'movie' }
     ];
     expect(deduplicateMedia(items)).toEqual(items);
   });
@@ -99,11 +99,11 @@ describe('deduplicateMedia', () => {
       { id: 1, mediaType: 'movie' },
       { id: null, mediaType: 'movie' },
       { id: 1, mediaType: 'movie' },
-      { id: 2, mediaType: 'tv' },
+      { id: 2, mediaType: 'tv' }
     ];
     expect(deduplicateMedia(items)).toEqual([
       { id: 1, mediaType: 'movie' },
-      { id: 2, mediaType: 'tv' },
+      { id: 2, mediaType: 'tv' }
     ]);
   });
 });

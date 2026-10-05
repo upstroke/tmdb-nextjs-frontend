@@ -5,11 +5,7 @@ export function middleware(request) {
   const { pathname } = request.nextUrl;
 
   // Skip non-page requests
-  if (
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/api') ||
-    pathname.includes('.')
-  ) {
+  if (pathname.startsWith('/_next') || pathname.startsWith('/api') || pathname.includes('.')) {
     return NextResponse.next();
   }
 
@@ -34,5 +30,5 @@ export function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/((?!_next|api|.*\\..*).*)'],
+  matcher: ['/((?!_next|api|.*\\..*).*)']
 };

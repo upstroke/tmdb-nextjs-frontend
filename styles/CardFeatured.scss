@@ -9,13 +9,14 @@
   margin-bottom: 5rem;
   overflow: hidden;
   background-color: #000;
-  background-image: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.92) 0%,
-    rgba(0, 0, 0, 0.7) 42%,
-    rgba(0, 0, 0, 0.35) 100%
-  ),
-  var(--featured-card-image);
+  background-image:
+    linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.92) 0%,
+      rgba(0, 0, 0, 0.7) 42%,
+      rgba(0, 0, 0, 0.35) 100%
+    ),
+    var(--featured-card-image);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;

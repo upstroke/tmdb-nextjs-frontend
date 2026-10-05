@@ -1,49 +1,28 @@
-import { BasePage } from './BasePage.js';
-import { HeaderPage } from './HeaderPage.js';
-
-/**
- * Home Page Object — encapsulates selectors and actions for the homepage.
- *
- * Extends BasePage for locale-aware navigation and composes HeaderPage
- * for header interactions. Add homepage-specific element getters and
- * action methods here as the page grows.
- *
- * @example
- * import { HomePage } from '$tests/pages/HomePage.js';
- *
- * const home = new HomePage('en-US');
- * home.visit();
- * home.header.assertVisible();
- * home.assertTrendingSectionsExist();
- */
-export class HomePage extends BasePage {
-  /**
-   * @param {string} locale - BCP 47 locale tag, e.g. 'en-US' or 'de-DE'.
-   */
-  constructor(locale) {
-    super(locale, '/');
-
-    /** @type {HeaderPage} */
-    this.header = new HeaderPage();
-  }
+export const HomePage = () => {
+  const page = () => cy.get('main.home-page');
+  const movieCards = () => cy.get('#home-card-1');
+  const searchInput = () => cy.get('#typeahead-search-input');
 
   /**
-   * All `<section>` elements inside the main content area.
-   *
-   * @returns {Cypress.Chainable}
+   * Visit the homepage with the given locale
+   * @param {string} locale - e.g. 'en-US' or 'de-DE'
    */
-  get sections() {
-    return cy.get('main section');
-  }
+  const visit = (locale) => {
+    cy.visit(`/${locale}`);
+  };
 
   /**
-   * Assert at least one trending section is rendered on the homepage.
-   * The heading text is locale-specific, so we check for section landmarks.
-   *
-   * @returns {this}
+   * Assert that the page title is visible
    */
-  assertTrendingSectionsExist() {
-    this.sections.should('have.length.greaterThan', 0);
-    return this;
-  }
-}
+  const assertTitleVisible = () => {
+    page().should('be.visible');
+  };
+
+  return {
+    page,
+    movieCards,
+    searchInput,
+    visit,
+    assertTitleVisible,
+  };
+};

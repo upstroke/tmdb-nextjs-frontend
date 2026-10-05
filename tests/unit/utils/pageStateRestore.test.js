@@ -14,11 +14,7 @@
  * deleting global.window.
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import {
-  getStoredPage,
-  storeCurrentPage,
-  restorePagedList,
-} from '@/lib/utils/pageStateRestore';
+import { getStoredPage, storeCurrentPage, restorePagedList } from '@/lib/utils/pageStateRestore';
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
@@ -29,11 +25,17 @@ import {
  */
 function makeSessionStorage() {
   const store = /** @type {Record<string, string>} */ ({});
-  return /** @type {Storage} */ (/** @type {unknown} */ ({
-    getItem: (key) => store[key] ?? null,
-    setItem: (key, value) => { store[key] = value; },
-    removeItem: (key) => { delete store[key]; },
-  }));
+  return /** @type {Storage} */ (
+    /** @type {unknown} */ ({
+      getItem: (key) => store[key] ?? null,
+      setItem: (key, value) => {
+        store[key] = value;
+      },
+      removeItem: (key) => {
+        delete store[key];
+      }
+    })
+  );
 }
 
 /**
@@ -103,9 +105,13 @@ describe('getStoredPage', () => {
 
   // Branch coverage: sessionStorage.getItem throws → catch block returns 1.
   it('returns 1 when sessionStorage throws', () => {
-    global.sessionStorage = /** @type {Storage} */ (/** @type {unknown} */ ({
-      getItem: () => { throw new Error('blocked'); },
-    }));
+    global.sessionStorage = /** @type {Storage} */ (
+      /** @type {unknown} */ ({
+        getItem: () => {
+          throw new Error('blocked');
+        }
+      })
+    );
     expect(getStoredPage('key')).toBe(1);
   });
 });
@@ -130,9 +136,13 @@ describe('storeCurrentPage', () => {
 
   // Branch coverage: sessionStorage.setItem throws → catch block suppresses the error.
   it('silently ignores storage errors', () => {
-    global.sessionStorage = /** @type {Storage} */ (/** @type {unknown} */ ({
-      setItem: () => { throw new Error('quota exceeded'); },
-    }));
+    global.sessionStorage = /** @type {Storage} */ (
+      /** @type {unknown} */ ({
+        setItem: () => {
+          throw new Error('quota exceeded');
+        }
+      })
+    );
     expect(() => storeCurrentPage('key', 3)).not.toThrow();
   });
 });
@@ -151,13 +161,13 @@ describe('restorePagedList', () => {
       featured: { id: 99 },
       cards: [card(1), card(2)],
       page: 1,
-      hasMore: true,
+      hasMore: true
     };
 
     const result = await restorePagedList({
       storageKey: 'key',
       initialData,
-      fetchPageData: vi.fn(),
+      fetchPageData: vi.fn()
     });
 
     expect(result.page).toBe(1);
@@ -174,7 +184,7 @@ describe('restorePagedList', () => {
     const result = await restorePagedList({
       storageKey: 'key',
       initialData,
-      fetchPageData: vi.fn(),
+      fetchPageData: vi.fn()
     });
 
     expect(result.page).toBe(1);
@@ -185,7 +195,8 @@ describe('restorePagedList', () => {
     getStorageMock().setItem('key', '3');
     const initialData = { cards: [card(1)], page: 1, hasMore: true };
 
-    const fetchPageData = vi.fn()
+    const fetchPageData = vi
+      .fn()
       .mockResolvedValueOnce({ cards: [card(2)], page: 2, hasMore: true })
       .mockResolvedValueOnce({ cards: [card(3)], page: 3, hasMore: false });
 
@@ -205,7 +216,7 @@ describe('restorePagedList', () => {
     const fetchPageData = vi.fn().mockResolvedValueOnce({
       cards: [card(2), card(3)],
       page: 2,
-      hasMore: false,
+      hasMore: false
     });
 
     const result = await restorePagedList({ storageKey: 'key', initialData, fetchPageData });
@@ -222,7 +233,7 @@ describe('restorePagedList', () => {
     const fetchPageData = vi.fn().mockResolvedValueOnce({
       cards: [card(1), card(2)],
       page: 2,
-      hasMore: false,
+      hasMore: false
     });
 
     const result = await restorePagedList({ storageKey: 'key', initialData, fetchPageData });
@@ -236,7 +247,7 @@ describe('restorePagedList', () => {
     const result = await restorePagedList({
       storageKey: 'key',
       initialData: {},
-      fetchPageData: vi.fn(),
+      fetchPageData: vi.fn()
     });
 
     expect(result.cards).toEqual([]);
@@ -253,7 +264,7 @@ describe('restorePagedList', () => {
     const fetchPageData = vi.fn().mockResolvedValueOnce({
       cards: [card(2)],
       page: 2,
-      hasMore: false,
+      hasMore: false
     });
 
     const result = await restorePagedList({ storageKey: 'key', initialData, fetchPageData });

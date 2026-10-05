@@ -3,12 +3,7 @@
  * Covers getMediaType, getTitle, getDate, and getImageUrl.
  */
 import { describe, expect, it } from 'vitest';
-import {
-  getMediaType,
-  getTitle,
-  getDate,
-  getImageUrl,
-} from '@/lib/services/tmdb/helpers.js';
+import { getMediaType, getTitle, getDate, getImageUrl } from '@/lib/services/tmdb/helpers.js';
 
 describe('getMediaType', () => {
   // Branch: fallback is used when provided.
@@ -62,7 +57,9 @@ describe('getTitle', () => {
 describe('getDate', () => {
   // Statement: movie release_date.
   it('returns release_date for a movie item', () => {
-    expect(getDate({ release_date: '2010-07-16', first_air_date: '2008-01-01' })).toBe('2010-07-16');
+    expect(getDate({ release_date: '2010-07-16', first_air_date: '2008-01-01' })).toBe(
+      '2010-07-16'
+    );
   });
 
   // Branch: falls back to first_air_date.

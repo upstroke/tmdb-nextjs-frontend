@@ -13,11 +13,7 @@
       "first_air_date": "2017-02-20",
       "vote_average": 5.4,
       "vote_count": 46,
-      "genre_ids": [
-        10751,
-        35,
-        18
-      ],
+      "genre_ids": [10751, 35, 18],
       "media_type": "tv"
     },
     {
@@ -30,10 +26,7 @@
       "first_air_date": "2009-07-16",
       "vote_average": 4.969,
       "vote_count": 98,
-      "genre_ids": [
-        10767,
-        35
-      ],
+      "genre_ids": [10767, 35],
       "media_type": "tv"
     },
     {
@@ -46,9 +39,7 @@
       "first_air_date": "2026-09-18",
       "vote_average": 6.6,
       "vote_count": 21,
-      "genre_ids": [
-        18
-      ],
+      "genre_ids": [18],
       "media_type": "tv"
     },
     {
@@ -61,11 +52,7 @@
       "first_air_date": "1999-09-20",
       "vote_average": 7.956,
       "vote_count": 4362,
-      "genre_ids": [
-        80,
-        18,
-        9648
-      ],
+      "genre_ids": [80, 18, 9648],
       "media_type": "tv"
     },
     {
@@ -78,9 +65,7 @@
       "first_air_date": "1962-10-01",
       "vote_average": 7.562,
       "vote_count": 97,
-      "genre_ids": [
-        10767
-      ],
+      "genre_ids": [10767],
       "media_type": "tv"
     }
   ]

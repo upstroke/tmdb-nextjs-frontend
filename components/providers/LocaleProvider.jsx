@@ -1,7 +1,12 @@
 'use client';
 
 import { useEffect } from 'react';
-import { LocaleProvider, useSetLocale, _registerExternalSetter, setLocale as setLocaleExternal } from '@/lib/stores/locale';
+import {
+  LocaleProvider,
+  useSetLocale,
+  _registerExternalSetter,
+  setLocale as setLocaleExternal
+} from '@/lib/stores/locale';
 
 function ExternalSetterRegistrar() {
   const setLocale = useSetLocale();
@@ -18,7 +23,7 @@ export function LocaleSyncer({ locale }) {
   useEffect(() => {
     setLocaleExternal(locale);
     document.documentElement.lang = locale;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locale]);
   return null;
 }

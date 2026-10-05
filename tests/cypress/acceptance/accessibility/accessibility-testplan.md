@@ -11,8 +11,8 @@ application without encountering accessibility violations.
 
 ## Covered Scenarios
 
-| ID | Page | State |
-|----|------|-------|
+| ID      | Page     | State                        |
+| ------- | -------- | ---------------------------- |
 | A11Y-01 | Homepage | Page loaded, content visible |
 
 ## States to Include

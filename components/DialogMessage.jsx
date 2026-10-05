@@ -41,7 +41,9 @@ export default function DialogMessage({ message, title, onClose }) {
         <strong id="dialog-message-title">{resolvedTitle}</strong>
         <p>{message}</p>
         <form className="dialog-message-actions" method="dialog">
-          <button className="ui button primary right floated" type="submit">{messages.dialogOk}</button>
+          <button className="ui button primary right floated" type="submit">
+            {messages.dialogOk}
+          </button>
         </form>
       </div>
     </dialog>

@@ -1,197 +1,101 @@
 # Integration Tests
 
-This guide defines the project rules for Vitest integration tests. Use integration tests when multiple controlled parts of the application must work together but a full browser-level acceptance test would be unnecessary.
+## Overview
 
-## Scope
+Integration tests verify the interaction between multiple modules or services. They ensure that different parts of the application work together correctly.
 
-Integration tests are the right choice for:
+## Tool
 
-- rendered components with props, slots, and events
-- route behavior with mocked load data or controlled dependencies
-- interaction between components, stores, and helper modules
-- accessibility-relevant rendered output that can be verified in `jsdom`
-- async UI states that are driven by mocked services
+- **Vitest** with **Testing Library** and **MSW** (Mock Service Worker)
 
-Do not use an integration test when a small unit test is sufficient. Do not use it as a substitute for a real end-to-end flow that depends on browser navigation, layout, or multi-page behavior.
+## Location
 
-## General Rules
-
-- Use Vitest together with Testing Library.
-- Test behavior through the rendered UI whenever possible.
-- Prefer queries by role, label, and accessible name.
-- Mock network and external dependencies, but keep collaboration between local parts real.
-- Assert user-visible behavior, not component internals.
-- Keep each test focused on one interaction or one rendered state.
-
-## File Location
-
-Place integration tests under `tests/integration/`.
-
-Typical structure:
-
-```text
-tests/integration/
-  components/
-  routes/
+```
+tests/vitest/
+├── integration/     # Integration test files
+└── *.test.js        # Test files
 ```
 
-Choose `components/` when the subject is a reusable component. Choose `routes/` when the subject is route-specific behavior or route composition.
+## What to Test
 
-## Rendering and Queries
+### ✅ Test These:
 
-Prefer Testing Library queries in this order:
+- Page or section rendering with mocked data
+- Data flow from API → Service → Component
+- Multiple components working together
+- State management across components
+- Real integration scenarios
 
-1. `getByRole`
-2. `getByLabelText`
-3. `getByText`
-4. `getByTestId` only when no semantic query is practical
+### ❌ Don't Test:
 
-This keeps integration tests aligned with accessibility expectations and real user behavior.
+- Single isolated functions (use unit tests)
+- Full E2E flows (use Cypress acceptance tests)
+- Pure UI components (use Cypress component tests)
 
-## Async Behavior
-
-When a component loads data asynchronously:
-
-- mock the service boundary
-- trigger the user action that starts loading
-- wait for the resulting UI state with `findBy...` or `waitFor`
-- assert loading, success, and error states where relevant
-
-Do not assert arbitrary timeouts.
-
-## Mocking API Requests with MSW
-
-Integration tests use [MSW (Mock Service Worker)](https://mswjs.io/) to intercept
-HTTP requests at the network level. MSW replaces the previous `vi.stubGlobal('fetch')`
-approach and keeps tests realistic: the component calls `fetch` as usual, MSW
-intercepts the request before it reaches the network, and returns fixture data.
-
-### Setup
-
-The MSW Node.js server is started globally in `tests/setup/vitest.js` and is
-scoped exclusively to the `integration` Vitest project. Unit tests run in their
-own project with no `setupFiles`, so MSW is never active during a unit test run.
-
-The lifecycle hooks in `tests/setup/vitest.js` are:
-
-- `beforeAll` → `server.listen({ onUnhandledRequest: 'warn' })`
-- `afterEach` → `server.resetHandlers()` — removes per-test overrides
-- `afterAll` → `server.close()`
-
-No setup is needed inside individual test files.
-
-### Default Handlers
-
-`tests/mocks/msw.handlers.js` defines default responses for all internal API routes:
-
-| Route pattern | Returns |
-|---|---|
-| `GET /api/:locale/movies` | `rawFixtures.moviesPopular` |
-| `GET /api/:locale/movies/:id` | `rawFixtures.movieDetail` |
-| `GET /api/:locale/tv` | `rawFixtures.tvPopular` |
-| `GET /api/:locale/tv/:id/season` | `rawFixtures.tvSeason1` |
-| `GET /api/:locale/tv/:id` | `rawFixtures.tvDetail` |
-| `GET /api/:locale/search` | `rawFixtures.searchMulti` |
-| `GET /api/:locale/genres/movie` | `rawFixtures.genresMovie` |
-| `GET /api/:locale/genres/tv` | `rawFixtures.genresTv` |
-
-These defaults are active for every integration test without any additional import.
-
-### Per-Test Overrides
-
-Use `server.use()` to override a handler for a single test. The override is
-removed automatically by `server.resetHandlers()` after each test.
+## Example
 
 ```js
-import { server } from '$tests/mocks/msw.server.js';
-import { tmdbErrorHandler } from '$tests/mocks/msw.handlers.js';
+// tests/vitest/integration/movie-search.test.js
+import { render, screen, waitFor } from '@testing-library/react';
+import { setupServer } from 'msw/node';
+import { handlers } from '@/mocks/msw.handlers';
+import { MovieSearch } from '@/components/MovieSearch';
 
-it('shows an error message when the API returns 503', async () => {
-  server.use(tmdbErrorHandler('/api/en-US/movies', 503));
+const server = setupServer(...handlers);
 
-  // render and assert error state ...
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
+it('displays search results after fetching', async () => {
+  render(<MovieSearch />);
+
+  // User action
+  await userEvent.type(screen.getByRole('searchbox'), 'Inception{enter}');
+
+  // Wait for results
+  await waitFor(() => {
+    expect(screen.getByText(/Inception/i)).toBeInTheDocument();
+  });
+
+  // Verify data reached the component
+  const movieCards = screen.getAllByTestId('movie-card');
+  expect(movieCards).toHaveLength(10);
 });
 ```
 
-`tmdbErrorHandler(urlPattern, status)` returns a one-off handler that responds
-with a JSON error body and the given HTTP status code.
+## Best Practices
 
-### MSW vs. cy.intercept()
+1. **Mock external APIs** - Use MSW for realistic API mocking
+2. **Test real integration** - Don't mock internal modules
+3. **Assert on rendered output** - Check what the user sees
+4. **Keep tests focused** - One integration scenario per test
+5. **Use realistic test data** - Mock data should match real API responses
 
-| Context | Tool |
-|---|---|
-| Vitest integration tests | MSW (`msw.server.js`) |
-| Vitest unit tests | `vi.stubGlobal('fetch')` |
-| Cypress acceptance tests | `cy.intercept()` |
+## Running Tests
 
-Do not use MSW in Cypress tests and do not use `cy.intercept()` in Vitest tests.
+```bash
+# All integration tests
+npm run test:integration
 
-## Components Worth Integration Testing
+# Watch mode
+npm run test:vitest:watch
 
-Integration tests are especially useful for components that combine rendering, accessibility semantics, and interaction logic, for example:
+# With coverage
+npm run test:vitest:coverage
+```
 
-- dialogs
-- typeahead search
-- pagination and load-more controls
-- language switching
-- tabs with keyboard support
-- route fragments with async content loading
+## Difference from Unit Tests
 
-### TabGroupe
+| Unit Tests             | Integration Tests         |
+| ---------------------- | ------------------------- |
+| Single function/module | Multiple modules together |
+| Mock all dependencies  | Mock only external APIs   |
+| Very fast (< 10ms)     | Fast (< 100ms)            |
+| Isolated               | Real integration          |
 
-`TabGroupe` is a strong candidate for integration tests when it coordinates user interaction and async content states.
+## Documentation
 
-Relevant behaviors to cover include:
-
-- the correct tab receives selected state and the associated panel becomes visible
-- keyboard navigation works as intended, for example arrow-key movement between tabs
-- accessible tab semantics are present, including tab roles and panel relationships
-- async tab loading shows the expected intermediate state and then renders the loaded content
-- fallback and error UI remains stable if one tab cannot load its content
-
-If `TabGroupe` is reused across route detail areas, test the generic interaction contract once at component level and cover route-specific composition separately only where needed.
-
-## Route Integration Tests
-
-Route integration tests are useful when a route combines:
-
-- load or server data
-- route parameters or query parameters
-- multiple local components
-- restore or pagination logic
-- localized rendering behavior
-
-For route tests, mock only the external boundary and keep the route-level collaboration realistic.
-
-## Assertions
-
-Good integration assertions check:
-
-- visible text and labels
-- roles and accessible names
-- loading and error states
-- emitted effects visible in the UI
-- state changes after user interaction
-
-Avoid asserting internal function calls unless that call is itself the contract being tested.
-
-## Accessibility
-
-Integration tests should reinforce accessible markup.
-
-Examples:
-
-- tabs are queried by role
-- dialogs expose title and close controls
-- icon buttons have accessible names
-- error messages and status messages are actually rendered in the DOM
-
-## When to Escalate to Cypress
-
-Move a test to acceptance level when confidence depends on:
-
-- real routing across pages
-- browser history behavior
-- viewport-specific layout behavior
-- focus movement that depends on the browser
-- interaction across multiple routes or application layers
+- [Testing Strategy](../testing.md)
+- [Unit Tests](./unit-tests.md)
+- [Component Tests](./component-tests.md)

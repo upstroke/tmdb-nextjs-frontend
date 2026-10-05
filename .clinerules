@@ -1,0 +1,61 @@
+# TMDB Next.js Frontend - Cline Rules
+
+## 🧪 Testing
+
+### Component Tests
+- **Framework**: Cypress Component Testing
+- **Location**: `tests/cypress/component/components/*.cy.js`
+- **Library**: `@testing-library/cypress`
+- **Mount**: `cy.mount(<Component />)`
+- **Queries**: `cy.findByRole()`, `cy.findByText()`, `cy.getByTestId()`
+- **Assertions**: `.should('exist')`, `.should('be.visible')`, `.should('have.focus')`
+- **Events**: `.click()`, `cy.realPress()` für Keyboard
+
+### Unit Tests
+- **Framework**: Vitest
+- **Location**: `tests/vitest/utils/*.test.js`, `tests/vitest/services/*.test.js`
+- **Library**: `@testing-library/react` + `vitest`
+
+### Acceptance Tests (E2E)
+- **Framework**: Cypress E2E
+- **Location**: `tests/cypress/acceptance/flows/*.cy.js`
+- **Focus**: User Flows über mehrere Pages
+
+## 📁 Project Structure
+
+```
+components/        # React Komponenten (*.jsx)
+styles/           # SCSS Dateien
+public/           # Static assets
+tests/
+  ├── cypress/
+  │   ├── component/   # Component Tests
+  │   └── acceptance/  # E2E Tests
+  └── vitest/        # Unit Tests
+```
+
+## 💻 Code Style
+
+- **React**: Funktionale Komponenten mit Hooks
+- **Imports**: Absolute Pfade (`@/components/...`)
+- **Exports**: Benannte Exports (`export { Component }`)
+- **No TypeScript**: Reines JavaScript (.jsx)
+
+## 🎯 Component Test Beispiel
+
+```js
+import { Component } from '@/components/Component';
+
+describe('Component', () => {
+  it('renders correctly', () => {
+    cy.mount(<Component prop="value" />);
+    cy.findByRole('button').should('exist');
+  });
+});
+```
+
+## ⚙️ Cline Settings
+
+- **max_context_tokens**: 100000
+- **auto_load_files**: true
+- **Model**: Qwen3 (lokal auf M1 Mac)

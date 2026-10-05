@@ -8,7 +8,11 @@ export default async function TvShowsPage({ params }) {
   const apiKey = process.env.TMDB_API_KEY;
 
   if (!apiKey) {
-    return <main className="ui container fluid tv-shows-page"><p>{messages.apiKeyMissing}</p></main>;
+    return (
+      <main className="ui container fluid tv-shows-page">
+        <p>{messages.apiKeyMissing}</p>
+      </main>
+    );
   }
 
   const api = createTmdbApi(fetch, apiKey, locale);
@@ -34,7 +38,7 @@ export default async function TvShowsPage({ params }) {
           homepage: details.homepage,
           genres: details.genres ?? [],
           imageUrl: details.imageUrl,
-          posterUrl: details.posterUrl,
+          posterUrl: details.posterUrl
         };
       } catch (e) {
         console.error('Featured tv show details could not be loaded:', e);

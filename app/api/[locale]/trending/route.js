@@ -16,7 +16,10 @@ import { LocaleParamSchema, ListQuerySchema } from '@/lib/schemas/tmdb';
 export async function GET(request, { params }) {
   const localeParsed = LocaleParamSchema.safeParse(await params);
   if (!localeParsed.success) {
-    return NextResponse.json({ cards: [], page: 1, hasMore: false, error: 'Invalid locale.' }, { status: 400 });
+    return NextResponse.json(
+      { cards: [], page: 1, hasMore: false, error: 'Invalid locale.' },
+      { status: 400 }
+    );
   }
   const { locale } = localeParsed.data;
 
@@ -28,16 +31,27 @@ export async function GET(request, { params }) {
   const page = queryParsed.success ? queryParsed.data.page : 1;
 
   if (!apiKey) {
-    return NextResponse.json({ cards: [], page, hasMore: false, error: messages.apiKeyMissing }, { status: 500 });
+    return NextResponse.json(
+      { cards: [], page, hasMore: false, error: messages.apiKeyMissing },
+      { status: 500 }
+    );
   }
 
   try {
     const api = createTmdbApi(fetch, apiKey, locale);
     const trending = await api.getTrendingAll(page);
 
-    return NextResponse.json({ cards: trending.results ?? [], page: trending.page ?? page, hasMore: trending.hasMore === true, error: null });
+    return NextResponse.json({
+      cards: trending.results ?? [],
+      page: trending.page ?? page,
+      hasMore: trending.hasMore === true,
+      error: null
+    });
   } catch (e) {
     console.error('Failed to load trending:', e);
-    return NextResponse.json({ cards: [], page, hasMore: false, error: messages.loadMoreError }, { status: 500 });
+    return NextResponse.json(
+      { cards: [], page, hasMore: false, error: messages.loadMoreError },
+      { status: 500 }
+    );
   }
 }

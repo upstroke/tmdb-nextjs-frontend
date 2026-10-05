@@ -13,11 +13,7 @@
       "release_date": "2026-07-29",
       "vote_average": 7.864,
       "vote_count": 2949,
-      "genre_ids": [
-        878,
-        28,
-        12
-      ],
+      "genre_ids": [878, 28, 12],
       "media_type": "movie"
     },
     {
@@ -30,11 +26,7 @@
       "release_date": "2026-09-16",
       "vote_average": 7.3,
       "vote_count": 619,
-      "genre_ids": [
-        27,
-        878,
-        12
-      ],
+      "genre_ids": [27, 878, 12],
       "media_type": "movie"
     },
     {
@@ -47,11 +39,7 @@
       "release_date": "2026-07-15",
       "vote_average": 8.012,
       "vote_count": 3978,
-      "genre_ids": [
-        12,
-        28,
-        14
-      ],
+      "genre_ids": [12, 28, 14],
       "media_type": "movie"
     },
     {
@@ -64,11 +52,7 @@
       "release_date": "2026-08-12",
       "vote_average": 7.1,
       "vote_count": 1706,
-      "genre_ids": [
-        878,
-        9648,
-        53
-      ],
+      "genre_ids": [878, 9648, 53],
       "media_type": "movie"
     },
     {
@@ -81,10 +65,7 @@
       "release_date": "2026-09-23",
       "vote_average": 8.126,
       "vote_count": 374,
-      "genre_ids": [
-        10749,
-        35
-      ],
+      "genre_ids": [10749, 35],
       "media_type": "movie"
     }
   ]

@@ -1,136 +1,115 @@
 # Unit Tests
 
-This guide defines the project rules for Vitest unit tests. Use unit tests for isolated logic with minimal dependencies and a clear, narrow subject under test.
+## Overview
 
-## Scope
+Unit tests verify individual functions, utilities, and services in isolation. They are the fastest tests and form the base of the test pyramid.
 
-Unit tests are the right choice for:
+## Tool
 
-- pure utility functions
-- isolated mapping and normalization logic
-- store helpers with controlled input and output
-- route helper logic that can be exercised without rendering the full route
-- TMDB API service methods with mocked fetch responses
-- fallback behavior and edge cases that are expensive to cover only through higher-level tests
+- **Vitest** - Fast, Jest-compatible test runner
 
-Do not use a unit test when the behavior mainly depends on rendered DOM output, browser interaction, routing, or collaboration between multiple components. Use integration or acceptance tests instead.
+## Location
 
-## General Rules
-
-- Use Vitest.
-- Keep the test subject small and explicit.
-- Mock only true external dependencies.
-- Prefer stable fixtures over ad-hoc inline objects when the same domain data is reused.
-- Keep each test focused on one behavior or one fallback path.
-- Use descriptive test names that state the expected behavior.
-- Cover both the main path and the relevant edge cases.
-
-## File Location
-
-Place unit tests under `tests/unit/`.
-
-Use subdirectories when they improve discoverability, for example:
-
-```text
-tests/unit/
-  routes/
-  tmdb-api/
+```
+tests/vitest/
+├── utils/           # Utility function tests
+├── services/        # Service layer tests
+├── schemas/         # Zod schema tests
+├── security/        # Security unit tests
+└── *.test.js        # Test files
 ```
 
-Match the test file name to the subject as closely as possible.
+## What to Test
 
-## Test Structure
+### ✅ Test These:
 
-Use the arrange-act-assert structure consistently.
+- Utility functions (formatting, validation, sanitization)
+- Zod schemas (validation logic)
+- Service functions (API data transformation)
+- Pure functions (no side effects)
+- Edge cases and error handling
+
+### ❌ Don't Test:
+
+- React components (use Cypress component tests)
+- DOM manipulation (use Cypress)
+- Integration behavior (use integration tests)
+
+## Example
 
 ```js
-import { describe, expect, it } from 'vitest';
-import { formatDate } from '$lib/utils/date.js';
+// tests/vitest/utils/format.test.js
+import { formatRating, formatDate } from '@/utils/format';
+
+describe('formatRating', () => {
+  it('formats rating to one decimal', () => {
+    expect(formatRating(8.5)).toBe('8.5');
+  });
+
+  it('handles null rating', () => {
+    expect(formatRating(null)).toBe('N/A');
+  });
+
+  it('rounds to one decimal', () => {
+    expect(formatRating(8.567)).toBe('8.6');
+  });
+});
 
 describe('formatDate', () => {
-  it('formats ISO dates for the active locale', () => {
-    const result = formatDate('2024-05-01', 'de-DE');
+  it('formats ISO date string', () => {
+    const result = formatDate('2024-01-15T10:30:00Z');
+    expect(result).toMatch(/\d{1,2}\.\d{1,2}\.\d{4}/);
+  });
 
-    expect(result).toBe('01.05.2024');
+  it('handles invalid date', () => {
+    expect(formatDate('invalid')).toBe('Invalid date');
   });
 });
 ```
 
-Guidelines:
+## Best Practices
 
-- one `describe()` block per exported function or coherent unit
-- one `it()` block per observable behavior
-- avoid assertions that duplicate implementation details
-- assert the returned structure and visible contract, not internal temporary values
+1. **Test one thing per test** - Keep tests focused
+2. **Use descriptive names** - `it('formats rating to one decimal')`
+3. **Arrange-Act-Assert pattern**:
+   ```js
+   it('formats rating', () => {
+     // Arrange
+     const rating = 8.5;
 
-## Fixtures and Mocks
+     // Act
+     const result = formatRating(rating);
 
-- Reuse shared fixtures from `tests/fixtures/` when they represent stable domain data.
-- Reuse shared mocks from `tests/mocks/` when the same dependency behavior is needed in multiple tests.
-- Keep one-off inline data only when it makes the individual test clearer.
-- Prefer small, readable fixtures over large, opaque payloads.
+     // Assert
+     expect(result).toBe('8.5');
+   });
+   ```
+4. **Test edge cases** - null, undefined, empty strings, boundary values
+5. **Keep tests fast** - No API calls, no database, no timers
 
-If a fixture grows because of a new API field, update it carefully and keep unrelated fixture shapes unchanged.
+## Running Tests
 
-## TMDB API Unit Tests
+```bash
+# All unit tests
+npm run test:unit
 
-For TMDB API service tests under `tests/unit/tmdb-api/`, prefer a consistent pattern:
+# Watch mode
+npm run test:vitest:watch
 
-- mock `fetch` responses with explicit per-call payloads
-- keep raw TMDB-like payloads separate from mapped UI expectations
-- verify the requested endpoint in addition to the returned data
-- cover both normal mapping and fallback behavior
-- add one focused test for each new service method
+# With coverage
+npm run test:vitest:coverage
 
-Typical coverage areas for TMDB API unit tests:
+# Specific file
+npx vitest tests/vitest/utils/format.test.js
+```
 
-- endpoint selection
-- request parameters
-- mapping from TMDB response shape to UI shape
-- fallback handling for missing text, images, ratings, or nested data
-- branch behavior for empty arrays, missing objects, or unsupported values
+## Coverage
 
-When possible, use reusable fixtures from `tests/fixtures/tmdb/`. If the new payload is highly specific to one method, a small local fixture inside the test file is acceptable.
+- **Goal**: 80% globally (branches, functions, lines, statements)
+- **Enforced via**: `vitest.config.js`
 
-### Mocking Network Requests
+## Documentation
 
-TMDB API unit tests mock `fetch` directly using `vi.fn()` or `vi.stubGlobal('fetch')`.
-MSW is not used at unit level — MSW is reserved for integration tests where a component
-calls `fetch` through a real service boundary. See `docs/testing/integration-tests.md`
-for the MSW setup and handler reference.
-
-The `unit` Vitest project has no `setupFiles`, so the MSW server is never
-started during a unit test run. There is no risk of MSW interference or
-unhandled-request warnings from `vi.stubGlobal('fetch')` overrides.
-
-### Season and Episode Data
-
-For TV season work, unit tests should explicitly cover the contracts of season-related methods such as `getTVShowDetails()` and `getTVSeasonDetails()`.
-
-Relevant examples include:
-
-- `numberOfSeasons`, `numberOfEpisodes`, and `seasons` are exposed on TV detail results
-- season endpoints are called with the correct show ID and season number
-- episode fields are normalized consistently, for example `episodeNumber`, `airDate`, `runtime`, `rating`, and `stillUrl`
-- missing `still_path` values fall back to `null`
-- empty episode lists return a stable empty array rather than failing or changing shape
-
-## Edge Cases
-
-Unit tests should protect edge cases that are easy to break silently, for example:
-
-- empty arrays
-- missing optional fields
-- duplicate entries
-- invalid or unknown locale values
-- null or undefined API values that should fall back safely
-
-## Coverage Expectations
-
-Unit tests should protect logic that is deterministic and cheap to validate in isolation.
-
-High coverage is useful here, but coverage numbers are only a guide. Add tests where failures would be hard to notice from the UI alone.
-
-## When to Stop
-
-Do not keep expanding a unit test once it starts simulating multiple application layers. If you need routing, rendering, browser APIs, or user interaction to trust the result, move that behavior to an integration or acceptance test.
+- [Testing Strategy](../testing.md)
+- [Integration Tests](./integration-tests.md)
+- [Security Tests](./security-tests.md)

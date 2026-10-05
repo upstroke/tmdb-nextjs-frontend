@@ -40,7 +40,7 @@ describe('getCertificationMeta', () => {
   it('returns correct metadata for US rating G', () => {
     expect(getCertificationMeta('G', 'US')).toEqual({
       value: 'G',
-      ...usRatings['G'],
+      ...usRatings['G']
     });
   });
 
@@ -50,7 +50,7 @@ describe('getCertificationMeta', () => {
       value: 'PG-13',
       label: usRatings['PG-13'].label,
       color: usRatings['PG-13'].color,
-      textColor: usRatings['PG-13'].textColor,
+      textColor: usRatings['PG-13'].textColor
     });
   });
 
@@ -59,7 +59,7 @@ describe('getCertificationMeta', () => {
     expect(getCertificationMeta('R', 'US')).toMatchObject({
       value: 'R',
       label: usRatings['R'].label,
-      color: usRatings['R'].color,
+      color: usRatings['R'].color
     });
   });
 
@@ -72,7 +72,7 @@ describe('getCertificationMeta', () => {
   it('returns correct metadata for DE rating FSK 12', () => {
     expect(getCertificationMeta('12', 'DE')).toEqual({
       value: '12',
-      ...deRatings['12'],
+      ...deRatings['12']
     });
   });
 
@@ -82,7 +82,7 @@ describe('getCertificationMeta', () => {
       value: '18',
       label: deRatings['18'].label,
       color: deRatings['18'].color,
-      textColor: deRatings['18'].textColor,
+      textColor: deRatings['18'].textColor
     });
   });
 
@@ -90,7 +90,7 @@ describe('getCertificationMeta', () => {
   it('accepts a numeric value and resolves DE rating FSK 6', () => {
     expect(getCertificationMeta(6, 'DE')).toMatchObject({
       value: '6',
-      label: deRatings['6'].label,
+      label: deRatings['6'].label
     });
   });
 
@@ -120,7 +120,7 @@ describe('getCertificationMeta', () => {
       value: 'XX',
       label: 'XX',
       color: 'transparent',
-      textColor: 'inherit',
+      textColor: 'inherit'
     });
   });
 
@@ -130,7 +130,7 @@ describe('getCertificationMeta', () => {
       value: '99',
       label: '99',
       color: 'transparent',
-      textColor: 'inherit',
+      textColor: 'inherit'
     });
   });
 
@@ -140,7 +140,7 @@ describe('getCertificationMeta', () => {
       value: 'PG',
       label: 'PG',
       color: 'transparent',
-      textColor: 'inherit',
+      textColor: 'inherit'
     });
   });
 });

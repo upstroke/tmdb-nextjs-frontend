@@ -13,11 +13,11 @@ preserved in the URL.
 
 ## Covered Scenarios
 
-| ID | Scenario | State |
-|----|----------|-------|
-| NAV-01 | Homepage loads without errors | success |
-| NAV-02 | Active locale is reflected in the URL | success |
-| NAV-03 | Global header is visible | success |
+| ID     | Scenario                                   | State   |
+| ------ | ------------------------------------------ | ------- |
+| NAV-01 | Homepage loads without errors              | success |
+| NAV-02 | Active locale is reflected in the URL      | success |
+| NAV-03 | Global header is visible                   | success |
 | NAV-04 | Language switcher is present in the header | success |
 
 ## States to Include
