@@ -1,35 +1,35 @@
-# Security-Tests
+# Security Tests
 
-## Überblick
+## Overview
 
-Security-Tests prüfen die Anwendung auf häufige Sicherheitslücken. Da es sich um eine read-only TMDB-App handelt, liegt der Fokus auf:
+Security tests check the application for common vulnerabilities. As this is a read-only TMDB app, the focus is on:
 
-1. **Input-Validierung** (Suche)
-2. **API-Key-Handling**
-3. **External Content** (TMDB-gelieferte URLs)
-4. **Dependency-Security**
+1. **Input Validation** (Search)
+2. **API Key Handling**
+3. **External Content** (TMDB-provided URLs)
+4. **Dependency Security**
 
-## Test-Level
+## Test Levels
 
-| Level | Werkzeug | Pfad | Fokus |
-|-------|----------|------|-------|
-| **Unit** | Vitest | `tests/vitest/security/` | Input-Validierung, API-Key-Checks |
-| **Komponente** | Cypress | `tests/cypress/acceptance/components/security/` | XSS-Prävention im UI |
+| Level | Tool | Path | Focus |
+|-------|------|------|-------|
+| **Unit** | Vitest | `tests/vitest/security/` | Input validation, API key checks |
+| **Component** | Cypress | `tests/cypress/acceptance/components/security/` | XSS prevention in UI |
 
 ## Scripts
 
 ```bash
-# Alle Security-Tests (Vitest + Cypress)
+# All security tests (Vitest + Cypress)
 npm run test:security
 
-# Nur Unit-Tests (Vitest)
+# Unit tests only (Vitest)
 npm run test:security:unit
 
-# Nur Komponententests (Cypress)
+# Component tests only (Cypress)
 npm run test:security:component
 ```
 
-## Unit-Tests (Vitest)
+## Unit Tests (Vitest)
 
 ### Search Input Validation
 
@@ -38,19 +38,19 @@ npm run test:security:component
 import { sanitizeSearchInput } from '@/utils/sanitize';
 
 describe('Security: Search Input', () => {
-  it('weist XSS-Versuche ab', () => {
+  it('rejects XSS attempts', () => {
     const maliciousInput = '<script>alert("xss")</script>';
     const sanitized = sanitizeSearchInput(maliciousInput);
     expect(sanitized).not.toContain('<script>');
   });
 
-  it('escapt HTML-Sonderzeichen', () => {
+  it('escapes HTML special characters', () => {
     const input = 'Movie & TV <Show>';
     const sanitized = sanitizeSearchInput(input);
     expect(sanitized).toBe('Movie & TV <Show>');
   });
 
-  it('kürzt zu lange Inputs', () => {
+  it('truncates overly long inputs', () => {
     const longInput = 'a'.repeat(200);
     const sanitized = sanitizeSearchInput(longInput);
     expect(sanitized.length).toBeLessThanOrEqual(100);
@@ -58,62 +58,62 @@ describe('Security: Search Input', () => {
 });
 ```
 
-### API-Key Handling
+### API Key Handling
 
 ```js
 // tests/vitest/security/api-key.test.js
-describe('Security: API-Key Handling', () => {
-  it('API-Key ist nicht im Client-Code exponiert', () => {
-    // Prüft, dass API-Key über Server-Side API Route gehandled wird
+describe('Security: API Key Handling', () => {
+  it('API key is not exposed in client-side code', () => {
+    // Checks that API key is handled via server-side API route
     expect(process.env.TMDB_API_KEY).toBeDefined();
     expect(typeof window !== 'undefined' && window?.TMDB_API_KEY).toBeUndefined();
   });
 });
 ```
 
-## Komponententests (Cypress)
+## Component Tests (Cypress)
 
 ### XSS Prevention in Search
 
 ```js
 // tests/cypress/acceptance/components/security/search-xss.cy.js
 describe('Security: Search XSS Prevention', () => {
-  it('zeigt keine Script-Injection in Suchergebnissen', () => {
+  it('does not show script injection in search results', () => {
     cy.visit('/');
-    cy.findByRole('searchbox', { name: /filme suchen/i })
+    cy.findByRole('searchbox', { name: /search movies/i })
       .type('<script>alert("xss")</script>{enter}');
     
-    // Sollte keine Alert-Box zeigen und Suchbegriff sicher anzeigen
+    // Should not show alert box and display search term safely
     cy.findByText(/<script>/i).should('not.exist');
     
-    // Der Suchbegriff sollte escaped angezeigt werden
+    // The search term should be displayed escaped
     cy.findByText(/<script>/i).should('exist');
   });
 });
 ```
 
-## Security-Checkliste
+## Security Checklist
 
 ### Development
 
-- [ ] **Input-Validierung**: Alle User-Inputs werden sanitisiert
-- [ ] **API-Key**: Nur server-side, nicht im Client
-- [ ] **External URLs**: Validierung von TMDB-gelieferten URLs
-- [ ] **Kein dangerouslySetInnerHTML**: Außer bei explizit vertrauenswürdigem Content
+- [ ] **Input Validation**: All user inputs are sanitized
+- [ ] **API Key**: Server-side only, not in client
+- [ ] **External URLs**: Validation of TMDB-provided URLs
+- [ ] **No dangerouslySetInnerHTML**: Except for explicitly trusted content
 
 ### CI/CD
 
-- [ ] **npm audit**: Bei jedem Build ausführen
-- [ ] **Dependencies aktuell**: Dependabot oder Renovate aktivieren
-- [ ] **ESLint security-plugin**: Statische Analyse auf Security-Issues
+- [ ] **npm audit**: Run on every build
+- [ ] **Dependencies up to date**: Dependabot or Renovate enabled
+- [ ] **ESLint security plugin**: Static analysis for security issues
 
 ## Tools
 
-- **npm audit**: `npm run audit` – Prüft auf bekannte Sicherheitslücken
-- **Dependabot**: Automatische Security-Updates für Dependencies
-- **ESLint security-plugin**: `eslint-plugin-security` für statische Analyse
+- **npm audit**: `npm run audit` – Checks for known vulnerabilities
+- **Dependabot**: Automatic security updates for dependencies
+- **ESLint security-plugin**: `eslint-plugin-security` for static analysis
 
-## Dokumentation
+## Documentation
 
 - **Security Skill**: [`.agent/skills/tmdb-security/SKILL.md`](../../.agent/skills/tmdb-security/SKILL.md)
-- **Testing-Strategie**: [`docs/testing.md`](./testing.md)
+- **Testing Strategy**: [`docs/testing.md`](./testing.md)
