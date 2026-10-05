@@ -1,190 +1,133 @@
-# Accessibility Audit Checklist for JavaScript
+# Accessibility Audit Checklist
 
-**Goal:** This checklist supports a repeatable frontend audit according to WCAG 2.2 AA. It combines automated checks with manual testing for critical user journeys.
+Diese Checkliste gliedert Accessibility-Tests nach Test-Levels und Werkzeugen.
 
-> An automated scan is not a complete accessibility audit. Additionally check keyboard, screen reader, zoom/reflow, and the actual understandability of content.
+## Übersicht
+
+| Test-Level | Werkzeug | Pfad | Fokus |
+|------------|----------|------|-------|
+| **Unit** | Vitest + axe-core | `tests/vitest/accessibility/` | Automatisierte A11y-Checks isolierter Komponenten |
+| **Komponente** | Cypress | `tests/cypress/acceptance/components/` | Interaktive A11y-Checks an einzelnen Komponenten |
+| **Akzeptanz (E2E)** | Cypress | `tests/cypress/acceptance/flows/` | A11y in kompletten User-Flows |
 
 ---
 
-## 1. Prepare the Audit
+## Unit-Tests (Vitest + axe-core)
 
-- [ ] Define audit goal: WCAG 2.2 AA (or the binding requirement for the product)
-- [ ] Define relevant browsers and devices: at least Chromium, Firefox, WebKit/Safari
-- [ ] Select critical user journeys, e.g. sign in, search, submit form, purchase/checkout, edit account
-- [ ] Capture representative states: empty, loading, success, error, unauthorized
-- [ ] Provide test data containing realistic long texts, special characters, and validation errors
-- [ ] Document findings with URL/route, component, reproduction steps, WCAG criterion, impact, priority, and fix suggestion
+**Pfad:** `tests/vitest/accessibility/`
 
-## 2. Automated Baseline Checks
+### Automatisierte Checks
 
-### Locally in the Browser
+- [ ] **ARIA-Rollen**: Alle interaktiven Elemente haben korrekte `role`-Attribute
+- [ ] **Labels**: Alle Formularelemente haben verknüpfte `<label>` oder `aria-label`
+- [ ] **Kontraste**: Text-Hintergrund-Kontrast ≥ 4.5:1 (WCAG AA)
+- [ ] **Fokus-Indikatoren**: Alle fokussierbaren Elemente haben sichtbaren Fokus
+- [ ] **Semantik**: Korrekte Überschriften-Hierarchie (`h1`–`h6`)
+- [ ] **Bilder**: Alle `<img>` haben aussagekräftige `alt`-Texte
+- [ ] **Links**: Link-Texte sind beschreibend (nicht "hier klicken")
 
-- [ ] Run Lighthouse Accessibility in Chrome DevTools
-- [ ] Use axe DevTools or WAVE for quick checks
-- [ ] Do not blindly accept findings: reproduce and evaluate each finding
+### Beispiel
 
-### E2E with Cypress and cypress-axe
+```ts
+// tests/vitest/accessibility/movie-card.test.ts
+import { axe, toHaveNoViolations } from 'jest-axe';
+import { render } from '@testing-library/react';
+import { MovieCard } from '@/components/movie-card';
 
-- [ ] Run axe checks at least for each central route
-- [ ] Also check states after interactions: modal open, menu open, forms with errors, toasts, loading states
-- [ ] If exceptions are intentionally necessary, document them specifically; do not disable rules globally
-- [ ] Run a11y E2E tests in pull requests and before releases
+expect.extend(toHaveNoViolations);
 
-### Component and Unit Tests
-
-- [ ] Test components via roles and accessible names (`getByRole`, `getByLabelText`)
-- [ ] For icon buttons, ensure a visible or programmatic name is present
-- [ ] Cover error texts, status messages, and dialog titles as test cases
-- [ ] Test reusable components like modal, dropdown, tabs, combobox, and date picker especially intensively
-
-## 3. Semantics and Structure
-
-- [ ] Set `lang` on the root `html` and adapt it on language change
-- [ ] Provide exactly one meaningful main content area per page with `<main>`
-- [ ] Use landmarks meaningfully: `<header>`, `<nav>`, `<main>`, `<footer>`, and optionally `<aside>`
-- [ ] Heading hierarchy is logical; headings are not chosen only for their visual style
-- [ ] One `<h1>` describes the main purpose of the page
-- [ ] Use native HTML elements: `<button>` for actions, `<a>` for navigation, `<input>`/`<select>`/`<textarea>` for forms
-- [ ] Do not use clickable `<div>` or `<span>` when a native element is possible
-- [ ] Lists are marked up as `<ul>`, `<ol>`, or `<dl>`
-- [ ] Use tables only for tabular data; mark up table headers and relationships correctly
-- [ ] Iframes have a meaningful `title`
-
-## 4. Keyboard and Focus
-
-- [ ] All interactive elements are reachable exclusively via keyboard
-- [ ] Tab order follows the visual and content order
-- [ ] Focus is always clearly visible and not obscured by layout/overlays
-- [ ] Buttons work with `Enter` and, where appropriate, `Space`
-- [ ] Links can be activated with `Enter`
-- [ ] There is no keyboard trap; focus can leave every component again
-- [ ] A skip link allows skipping repeated navigation to the main content
-- [ ] When opening a dialog, focus moves meaningfully into the dialog
-- [ ] A modal dialog constrains focus to its content
-- [ ] When closing a dialog, focus returns to the triggering element
-- [ ] Escape closes dialogs, popovers, or menus when this matches the expected interaction pattern
-- [ ] After client-side navigation, the new page content receives meaningful focus or is clearly announced
-
-
-## 5. Forms and Validation
-
-- [ ] Every input field has a visible `<label>` or a reliable accessible name
-- [ ] Placeholder never replaces a label
-- [ ] Required fields are recognizable both visually and programmatically, e.g. via `required`
-- [ ] Help texts are associated with the field, e.g. via `aria-describedby`
-- [ ] Errors are described in an immediately understandable way, not only marked by color
-- [ ] Errors are programmatically associated with the affected field (`aria-describedby`, `aria-invalid`)
-- [ ] After invalid submission, errors are summarized and/or focus is moved to the first error
-- [ ] Success and status messages are announced to screen readers (`role="status"` or appropriate `aria-live`)
-- [ ] Input format and expected data are clearly described before submission
-- [ ] Time limits are avoidable, extendable, or announced in good time before expiry
-
-
-## 6. Images, Media, and Content
-
-- [ ] Informative images have a precise, purpose-related alt text
-- [ ] Decorative images are marked with empty `alt=""` or implemented as CSS decoration
-- [ ] Image links and image buttons have an accessible name that explains their action or destination
-- [ ] Videos have captions; relevant audio content has a transcript or equivalent alternative
-- [ ] Autoplay audio is avoided or made reliably controllable
-- [ ] No information is conveyed exclusively via color, shape, position, or sound
-- [ ] Link texts are understandable outside their immediate context; avoid "click here"
-- [ ] Language is clear and error messages name a concrete solution or next action
-
-## 7. Visual Design and Responsive Behavior
-
-- [ ] Normal text achieves at least 4.5:1 contrast against the background
-- [ ] Large text and UI components achieve at least 3:1 contrast where the WCAG criterion applies
-- [ ] Placeholder, disabled states, focus indicators, and error messages are separately checked for sufficient recognizability
-- [ ] At 200% browser zoom, the page remains usable without loss of functionality
-- [ ] At strong zoom or narrow viewport width, horizontal scroll for normal text is largely avoidable
-- [ ] Text can be enlarged without content being clipped or overlaid
-- [ ] Touch targets have sufficient size and spacing, especially for icon buttons
-- [ ] Animations and motion can be reduced (`prefers-reduced-motion`)
-- [ ] Hover-only information is also reachable and dismissible via keyboard
-
-```css
-:focus-visible {
-  outline: 3px solid CanvasText;
-  outline-offset: 3px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-  }
-}
+it('hat keine A11y-Verstöße', async () => {
+  const { container } = render(
+    <MovieCard movie={{ title: 'Inception', releaseDate: '2010-07-16' }} />
+  );
+  const results = await axe(container);
+  expect(results).toHaveNoViolations();
+});
 ```
 
-## 8. Dynamic Interfaces
+---
 
-- [ ] Loading states describe what is happening; purely visual spinners are not sufficient
-- [ ] Async updates are announced appropriately without flooding screen reader users with messages
-- [ ] Live regions contain only the changed, relevant information
-- [ ] Route changes, filters, pagination, and search results have understandable feedback
-- [ ] Accordions, tabs, menus, and comboboxes follow expected keyboard patterns
-- [ ] Visually shown and hidden content remains consistent with focus, screen reader tree, and operability
-- [ ] Do not use ARIA when native HTML already provides semantics and interaction
-- [ ] Use ARIA roles, states, and properties only supplementarily and correctly
+## Komponententests (Cypress)
 
-## 9. Screen Reader Testing
+**Pfad:** `tests/cypress/acceptance/components/`
 
-### VoiceOver on macOS
+### Interaktive Checks
 
-- [ ] Turn on VoiceOver: `Cmd + F5`
-- [ ] Navigate through content with `Control + Option + Arrow keys`
-- [ ] Check whether headings, landmarks, links, buttons, forms, and error messages are announced understandably
+- [ ] **Keyboard-Navigation**: Alle Interaktionen sind per Tastatur möglich
+- [ ] **Fokus-Reihenfolge**: Logische Fokus-Reihenfolge (Tab-Reihenfolge)
+- [ ] **Screen-Reader-Tests**: Wichtige Inhalte werden vorgelesen
+- [ ] **Fokus-Fallen**: Kein Fokus-Trap in Modalen/Dialogen
+- [ ] **Dynamische Inhalte**: `aria-live`-Regionen für Updates
 
-### NVDA on Windows
+### Beispiel
 
-- [ ] Additionally check critical journeys with NVDA and a supported browser
-- [ ] Test browse and focus modes on complex controls
-- [ ] Check whether dynamic changes, dialog titles, and error messages are announced
+```ts
+// tests/cypress/acceptance/components/movie-card.cy.ts
+import { MovieCard } from '@/components/movie-card';
 
-### Questions for Every Flow
+describe('MovieCard (A11y)', () => {
+  it('ist per Tastatur navigierbar', () => {
+    cy.mount(<MovieCard movie={{ title: 'Inception' }} />);
+    cy.tab().should('have.focus');
+    cy.tab().should('have.focus');
+  });
 
-- [ ] Is the page purpose immediately understandable?
-- [ ] Are controls announced with role, name, and state?
-- [ ] Are groups, relationships, and instructions comprehensible?
-- [ ] Can the flow be completed successfully without visual information?
+  it('hat korrekte ARIA-Labels', () => {
+    cy.mount(<MovieCard movie={{ title: 'Inception' }} />);
+    cy.findByRole('img', { name: /inception/i }).should('exist');
+    cy.findByRole('button', { name: /favorit/i }).should('exist');
+  });
+});
+```
 
-## 10. Release Gate
+---
 
-- [ ] Linting and automated a11y tests are green in CI
-- [ ] Critical user journeys have been tested via keyboard
-- [ ] Critical user journeys have been tested at least with VoiceOver or NVDA
-- [ ] Zoom/reflow, contrast, and reduced motion have been checked
-- [ ] Severe findings (blocker/critical) are fixed before release or explicitly risk-assessed
-- [ ] Exceptions have ticket, owner, rationale, workaround, and target date
-- [ ] Fixes have been re-validated against the original finding
+## Akzeptanztests (E2E, Cypress)
 
-## 11. Finding Template
+**Pfad:** `tests/cypress/acceptance/flows/`
 
-| Field             | Content                                           |
-|-------------------|---------------------------------------------------|
-| ID                | Unique identifier, e.g. `A11Y-023`                |
-| Route / Component | Affected URL, flow, and component                 |
-| Description       | What happens and why is it a barrier?             |
-| Reproduction      | Concrete steps, browser, and assistive technology |
-| Expectation       | Accessible target behavior                        |
-| WCAG              | Success criterion and level, e.g. 2.4.7 AA        |
-| Impact            | Affected user group and practical consequence     |
-| Priority          | Blocker, high, medium, or low                     |
-| Fix               | Concrete, verifiable change suggestion            |
-| Owner / Status    | Responsible person and processing status          |
-| Validation        | Date, test method, and result after the fix       |
+### Flow-weite Checks
 
-## Short Routine per Pull Request
+- [ ] **Kompletter Flow per Tastatur**: User-Flow ist ohne Maus möglich
+- [ ] **Fokus-Management**: Fokus wird nach Navigation/Modal-Öffnung korrekt gesetzt
+- [ ] **Fehlermeldungen**: Fehler sind per Screen-Reader lesbar (`aria-invalid`, `aria-describedby`)
+- [ ] **Ladezustände**: Loading-States sind angekündigt (`aria-busy`, `aria-live`)
 
-- [ ] Semantic HTML instead of generic containers for interaction
-- [ ] New interactive elements are fully operable via keyboard
-- [ ] Accessible names for buttons, inputs, and icons are present
-- [ ] Visible focus is present
-- [ ] Forms: labels, help texts, and error association are present
-- [ ] New images and media have appropriate text alternatives
-- [ ] Contrasts checked
-- [ ] axe/Cypress test added or updated for the affected flow
-- [ ] For dynamic changes: focus and screen reader announcement checked
+### Beispiel
+
+```ts
+// tests/cypress/acceptance/flows/search-and-add.cy.ts
+describe('User-Flow: Film suchen und hinzufügen (A11y)', () => {
+  it('ist komplett per Tastatur bedienbar', () => {
+    cy.visit('/');
+    cy.findByRole('searchbox', { name: /filme suchen/i }).type('Inception{enter}');
+    cy.findByText(/inception/i).first().tab().type('{enter}');
+    cy.url().should('include', '/movie/');
+    cy.findByRole('button', { name: /zur watchlist hinzufügen/i })
+      .tab()
+      .type('{enter}');
+    cy.findByText(/zur watchlist hinzugefügt/i).should('be.visible');
+  });
+});
+```
+
+---
+
+## Manuelle Checks (alle Levels)
+
+Diese Checks erfordern manuelle Prüfung und können nicht automatisiert werden:
+
+- [ ] **Logische Lesereihenfolge**: DOM-Reihenfolge entspricht visueller Reihenfolge
+- [ ] **Bewegte Inhalte**: Animationen sind pausierbar (`prefers-reduced-motion`)
+- [ ] **Farbunabhängigkeit**: Informationen nicht nur über Farbe vermittelt
+- [ ] **Zoom**: Funktioniert bis 200% ohne Funktionsverlust
+- [ ] **Touch-Targets**: Mindestens 44×44 Pixel für interaktive Elemente
+
+---
+
+## Tools
+
+- **axe-core**: Automatisierte A11y-Checks in Vitest und Cypress
+- **WAVE Browser-Extension**: Visuelle A11y-Analyse
+- **Screen-Reader**: NVDA (Windows), VoiceOver (macOS), JAWS
+- **Tastatur-Test**: Nur Tab, Shift+Tab, Enter, Space, Pfeiltasten verwenden
