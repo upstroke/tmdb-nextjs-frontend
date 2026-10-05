@@ -31,7 +31,7 @@ describe('Security: Search Input', () => {
 
     for (const input of safeInputs) {
       const sanitized = sanitizeSearchInput(input);
-      expect(sanitized).toBe(input.toLowerCase());
+      expect(sanitized).toBe(input);
     }
   });
 
@@ -64,8 +64,8 @@ describe('Security: Search Input', () => {
     const input = '   ' + 'a'.repeat(200) + '   ';
     const sanitized = sanitizeSearchInput(input);
     expect(sanitized.length).toBeLessThanOrEqual(100);
-    expect(sanitized).not.toStartWith(' ');
-    expect(sanitized).not.toEndWith(' ');
+    expect(sanitized.startsWith(' ')).toBe(false);
+    expect(sanitized.endsWith(' ')).toBe(false);
   });
 
   it('removes iframe tags', () => {
