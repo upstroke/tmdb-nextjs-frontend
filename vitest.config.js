@@ -52,17 +52,17 @@ export default defineConfig({
     projects: [
       {
         name: 'unit',
-        resolve: sharedResolve,  // ← Explizit hier
+        resolve: sharedResolve,
         test: {
           name: 'unit',
           globals: true,
           environment: 'jsdom',
-          include: ['tests/vitest/**/*.test.{js,jsx}'],
+          include: ['tests/unit/**/*.test.{js,jsx}'],
         },
       },
       {
         name: 'integration',
-        resolve: sharedResolve,  // ← Explizit hier
+        resolve: sharedResolve,
         test: {
           name: 'integration',
           globals: true,
