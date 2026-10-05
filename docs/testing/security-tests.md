@@ -16,6 +16,19 @@ Security-Tests prüfen die Anwendung auf häufige Sicherheitslücken. Da es sich
 | **Unit** | Vitest | `tests/vitest/security/` | Input-Validierung, API-Key-Checks |
 | **Komponente** | Cypress | `tests/cypress/acceptance/components/security/` | XSS-Prävention im UI |
 
+## Scripts
+
+```bash
+# Alle Security-Tests (Vitest + Cypress)
+npm run test:security
+
+# Nur Unit-Tests (Vitest)
+npm run test:security:unit
+
+# Nur Komponententests (Cypress)
+npm run test:security:component
+```
+
 ## Unit-Tests (Vitest)
 
 ### Search Input Validation
