@@ -1,28 +1,40 @@
-const { defineConfig } = require('cypress');
+import { defineConfig } from 'cypress';
+import webpackPreprocessor from '@cypress/webpack-preprocessor';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 
-module.exports = defineConfig({
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+export default defineConfig({
   e2e: {
+    supportFile: 'tests/cypress/support/e2e.js',
     baseUrl: 'http://localhost:3000',
     specPattern: 'tests/cypress/acceptance/**/*.cy.{js,jsx}',
-    supportFile: 'tests/cypress/support/e2e.js',
     fixturesFolder: 'tests/cypress/fixtures',
+    downloadsFolder: 'tests/cypress/downloads',
     screenshotsFolder: 'tests/cypress/screenshots',
     videosFolder: 'tests/cypress/videos',
-    downloadsFolder: 'tests/cypress/downloads',
+    video: false,
     setupNodeEvents(on, config) {
-      // Add webpack preprocessor with alias
-      const webpackPreprocessor = require('@cypress/webpack-preprocessor');
       const webpackOptions = {
         resolve: {
           extensions: ['.js', '.jsx'],
           alias: {
-            '@tests': __dirname,
             '@pom': `${__dirname}/cypress/POM`,
           },
         },
       };
 
       on('file:preprocessor', webpackPreprocessor({ webpackOptions }));
+    },
+  },
+
+  component: {
+    supportFile: 'tests/cypress/support/component.js',
+    devServer: {
+      framework: 'react',
+      bundler: 'vite',
     },
   },
 });
