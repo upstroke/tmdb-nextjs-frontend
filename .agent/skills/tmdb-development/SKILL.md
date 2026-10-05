@@ -1,7 +1,7 @@
 ---
 name: tmdb-development
 description: Implement or modify application behavior in the TMDB Next.js frontend, including features, bug fixes, components, routes, styling, data flow, and refactors.
-version: 0.1.0
+version: 0.2.0
 ---
 
 # TMDB development
@@ -33,11 +33,55 @@ before creating a new pattern.
 9. Run only relevant commands that exist in `package.json` and report actual
    results.
 
+## Code rules
+
+- Prefer existing patterns, conventions, and architecture.
+- Use Server Components by default; add `'use client'` only for client state or
+  browser APIs. Reuse existing Context stores in `lib/stores/`.
+- Use only App Router patterns; no Pages Router or deprecated APIs.
+- Keep JavaScript readable; prefer `switch/case` when it makes logic clearer.
+- Document new or substantially changed non-trivial functions with JSDoc
+  (`@param`, `@returns`, `@typedef`). Keep a function and its JSDoc together.
+  Do not add JSDoc to trivial code. Documentation-only tasks must not change
+  logic.
+- Use Zod (`lib/schemas/`) only for external data: API responses, form input,
+  URL params. Use JSDoc, not Zod, for component props.
+- Use semantic HTML, avoid needless `div` elements, support keyboard and screen
+  readers; read `tmdb-accessibility` for interactive UI.
+- Keep Sass nesting to three levels at most. Use existing variables and mixins.
+  Leave central CSS/Sass library imports untouched.
+- Respect browser targets: last two versions, above 0.5% market share, no
+  obsolete browsers.
+
+## Internationalization
+
+- Add UI text to `lib/i18n/ui.json` for all locales: de-DE, en-US, es-ES,
+  fr-FR, vi-VN.
+- Never hardcode UI strings; use i18n keys via `useI18n()`.
+- Ask when a translation is uncertain.
+
+## API routes
+
+- Use `app/api/**/route.js` with exported `GET`/`POST` handlers.
+- Validate input with Zod schemas from `lib/schemas/`.
+- Call TMDB only through `lib/services/tmdb-api.js`.
+- Return consistent error responses.
+
+## Framework currency
+
+- Treat installed versions in `package.json` as the source of truth.
+- When behavior, APIs, security, or compatibility may have changed, verify
+  against official Next.js/React documentation and name the source checked.
+- If documentation is unavailable, state the uncertainty and propose a
+  conservative option.
+- Share minimal code context for external lookups and never include secrets,
+  environment values, private URLs, or personal data.
+
 ## Constraints
 
-- Do not introduce dependencies, environment variables, routes, or API changes
-  without explaining the reason and obtaining approval when the change expands
-  scope.
+- Do not introduce dependencies, libraries, environment variables, routes, or
+  API changes without explaining the reason and obtaining approval.
+- Do not use TypeScript.
 - Do not replace working code with a broad rewrite when a targeted change is
   possible.
 - Preserve loading, success, empty, and error states where the affected feature
