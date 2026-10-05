@@ -9,15 +9,17 @@ Page Objects kapseln die Selektoren und Aktionen einer Seite oder eines Flows. S
 Page Objects werden verwendet in:
 
 - **E2E-Tests (Flow-Akzeptanz):** `tests/cypress/acceptance/flows/`
-- **Page Objects selbst:** `tests/cypress/acceptance/page-objects/`
+- **Page Objects selbst:** `tests/cypress/POM/` (für alle Test-Levels verfügbar)
 
 ## Beispiel
 
-```ts
-// tests/cypress/acceptance/page-objects/movie-details-page.ts
-export class MovieDetailsPage {
-  visit(movieId: number) {
-    cy.visit(`/movie/${movieId}`);
+```js
+// tests/cypress/POM/HomePage.js
+import { BasePage } from './BasePage';
+
+export class HomePage extends BasePage {
+  visit() {
+    cy.visit('/');
     return this;
   }
 
@@ -25,31 +27,27 @@ export class MovieDetailsPage {
     return cy.findByRole('heading', { level: 1 });
   }
 
-  get releaseYear() {
-    return cy.findByText(/\d{4}/);
+  get movieCards() {
+    return cy.findByRole('list').findAllByRole('listitem');
   }
 
-  get addToWatchlistButton() {
-    return cy.findByRole('button', { name: /zur watchlist hinzufügen/i });
-  }
-
-  addToWatchlist() {
-    this.addToWatchlistButton.click();
-    return cy.findByText(/zur watchlist hinzugefügt/i);
+  navigateToMovie(movieTitle) {
+    cy.findByText(movieTitle).first().click();
+    return this;
   }
 }
 ```
 
-```ts
-// tests/cypress/acceptance/flows/movie-add-to-watchlist.cy.ts
-import { MovieDetailsPage } from '../page-objects/movie-details-page';
+```js
+// tests/cypress/acceptance/flows/homepage.cy.js
+import { HomePage } from '../../POM/HomePage';
 
-describe('User-Flow: Film zur Watchlist hinzufügen', () => {
-  it('erfolgreich gemäß AC-1 bis AC-3', () => {
-    const page = new MovieDetailsPage();
-    page.visit(123);
-    page.title.should('contain', 'Inception');
-    page.addToWatchlist().should('be.visible');
+describe('Homepage', () => {
+  const homePage = new HomePage();
+
+  it('zeigt Filmtitel gemäß AC-1', () => {
+    homePage.visit();
+    homePage.movieCards.should('exist');
   });
 });
 ```
@@ -57,7 +55,7 @@ describe('User-Flow: Film zur Watchlist hinzufügen', () => {
 ## Regeln
 
 1. **Ein Page Object = Eine Seite oder ein Flow**  
-   Jede Klasse repräsentiert eine logische Einheit (z. B. MovieDetailsPage, SearchPage).
+   Jede Klasse repräsentiert eine logische Einheit (z. B. HomePage, MovieDetailsPage).
 
 2. **Keine Assertions im Page Object**  
    Page Objects enthalten nur Selektoren und Aktionen, keine `should()`-Assertions.
@@ -75,3 +73,4 @@ describe('User-Flow: Film zur Watchlist hinzufügen', () => {
 
 - **Komponententests** testen einzelne Komponenten isoliert.
 - **Page Objects** werden in **Flow-Akzeptanztests (E2E)** verwendet, um komplette User-Flows zu testen.
+- **POM-Ordner** (`tests/cypress/POM/`) ist für alle Test-Levels verfügbar, nicht nur für Acceptance.
