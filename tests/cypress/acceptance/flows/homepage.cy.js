@@ -1,21 +1,24 @@
-import { HomePage } from '../../POM/HomePage';
+import { HomePage } from '../../POM/HomePage.js';
 
 describe('Homepage', () => {
-  const homePage = new HomePage();
+  const homePage = HomePage('en-US');
 
   beforeEach(() => {
     homePage.visit();
   });
 
   it('should display the homepage title', () => {
-    homePage.verifyTitle();
+    homePage.header.assertVisible();
   });
 
   it('should navigate to movie details when clicking on a movie card', () => {
-    homePage.navigateToMovieDetails();
+    cy.get('main a[href*="/movie/"]').first().click();
+    cy.location('pathname').should('include', '/movie/');
   });
 
   it('should search for movies when using the search bar', () => {
-    homePage.searchForMovie('Inception');
+    cy.get('input[aria-label="Search"], input[name="search"]').first()
+      .type('Inception{enter}');
+    cy.location('pathname').should('include', '/search');
   });
 });
