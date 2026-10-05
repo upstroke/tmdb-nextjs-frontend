@@ -4,10 +4,10 @@ import viteConfig from '../vitest.config.js';
 export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:3000',
-    supportFile: 'tests/cypress/support/e2e.js',
-    specPattern: 'tests/cypress/acceptance/**/*.cy.{js,jsx}',
-    downloadsFolder: 'tests/cypress/downloads',
-    fixturesFolder: 'tests/cypress/fixtures',
+    supportFile: 'cypress/support/e2e.js',
+    specPattern: 'cypress/acceptance/**/*.cy.{js,jsx}',
+    downloadsFolder: 'cypress/downloads',
+    fixturesFolder: 'cypress/fixtures',
     screenshotOnRunFailure: true,
     video: false,
     viewportWidth: 1280,
@@ -19,8 +19,8 @@ export default defineConfig({
       bundler: 'vite',
       viteConfig,
     },
-    supportFile: 'tests/cypress/support/component.js',
-    specPattern: 'tests/cypress/component/**/*.cy.{js,jsx}',
-    indexHtmlFile: 'tests/cypress/support/component-index.html',
+    supportFile: 'cypress/support/component.js',
+    specPattern: 'cypress/component/**/*.cy.{js,jsx}',
+    indexHtmlFile: 'cypress/support/component-index.html',
   },
 });
