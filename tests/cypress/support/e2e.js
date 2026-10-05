@@ -4,6 +4,7 @@
 import 'cypress-axe';
 import './commands';
 import './tmdb.commands';
+import '@testing-library/cypress';
 
 Cypress.Commands.add('checkPageA11y', (options = {}) => {
   cy.injectAxe();

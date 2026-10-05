@@ -2,48 +2,35 @@ import { BasePage } from './BasePage.js';
 import { HeaderPage } from './HeaderPage.js';
 
 /**
- * Home Page Object — encapsulates selectors and actions for the homepage.
+ * Home Page module — encapsulates homepage selectors and actions.
  *
- * Extends BasePage for locale-aware navigation and composes HeaderPage
- * for header interactions. Add homepage-specific element getters and
- * action methods here as the page grows.
+ * Composes BasePage for navigation and HeaderPage for header interactions.
  *
- * @example
- * import { HomePage } from '$tests/pages/HomePage.js';
- *
- * const home = new HomePage('en-US');
- * home.visit();
- * home.header.assertVisible();
- * home.assertTrendingSectionsExist();
+ * @param {string} [locale='en-US'] - BCP 47 locale tag
+ * @returns {Object} HomePage instance with sections and assertions
  */
-export class HomePage extends BasePage {
-  /**
-   * @param {string} locale - BCP 47 locale tag, e.g. 'en-US' or 'de-DE'.
-   */
-  constructor(locale) {
-    super(locale, '/');
+export function HomePage(locale = 'en-US') {
+  const base = BasePage(locale, '/');
+  const header = HeaderPage();
 
-    /** @type {HeaderPage} */
-    this.header = new HeaderPage();
-  }
+  return {
+    ...base,
+    header,
 
-  /**
-   * All `<section>` elements inside the main content area.
-   *
-   * @returns {Cypress.Chainable}
-   */
-  get sections() {
-    return cy.get('main section');
-  }
+    /**
+     * @returns {Cypress.Chainable}
+     */
+    get sections() {
+      return cy.get('main section');
+    },
 
-  /**
-   * Assert at least one trending section is rendered on the homepage.
-   * The heading text is locale-specific, so we check for section landmarks.
-   *
-   * @returns {this}
-   */
-  assertTrendingSectionsExist() {
-    this.sections.should('have.length.greaterThan', 0);
-    return this;
-  }
+    /**
+     * Assert at least one trending section is rendered.
+     * @returns {Object} This instance for chaining
+     */
+    assertTrendingSectionsExist() {
+      this.sections.should('have.length.greaterThan', 0);
+      return this;
+    },
+  };
 }

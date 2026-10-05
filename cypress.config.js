@@ -1,18 +1,25 @@
 import { defineConfig } from 'cypress';
 
 export default defineConfig({
-  component: {
-    specPattern: 'tests/cypress/acceptance/components/**/*.cy.{js,ts,jsx,tsx}',
-    supportFile: 'tests/cypress/support/component.ts',
-    indexHtmlFile: 'tests/cypress/support/component-index.html',
-    devServer: {
-      framework: 'next',
-      bundler: 'next'
-    }
-  },
   e2e: {
-    specPattern: 'tests/cypress/acceptance/flows/**/*.cy.{js,ts,jsx,tsx}',
-    supportFile: 'tests/cypress/support/e2e.ts',
-    baseUrl: 'http://localhost:3000'
-  }
+    supportFile: 'tests/cypress/support/e2e.js',  // Explizit .js
+    baseUrl: 'http://localhost:3000',
+    specPattern: 'tests/cypress/acceptance/**/*.cy.{js,jsx}',
+    fixturesFolder: 'tests/cypress/fixtures',
+    downloadsFolder: 'tests/cypress/downloads',
+    screenshotsFolder: 'tests/cypress/screenshots',
+    videosFolder: 'tests/cypress/videos',
+    video: false,
+    setupNodeEvents(on, config) {
+      // Implement node event listeners here
+    },
+  },
+
+  component: {
+    supportFile: 'tests/cypress/support/component.js',
+    devServer: {
+      framework: 'react',
+      bundler: 'vite',
+    },
+  },
 });

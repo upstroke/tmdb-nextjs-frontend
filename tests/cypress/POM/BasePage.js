@@ -1,56 +1,31 @@
 /**
- * Base Page Object — shared navigation helpers for all page objects.
+ * Base Page module — provides locale-aware navigation helpers.
  *
- * Every page object extends BasePage to inherit locale-aware
- * navigation and common query helpers. Direct cy.visit() calls
- * in spec files should be avoided; use page.visit() instead so
- * the locale prefix is always applied consistently.
- *
- * @example
- * import { HomePage } from '$tests/pages/HomePage.js';
- * const home = new HomePage('en-US');
- * home.visit();
+ * @param {string} locale - BCP 47 locale tag, e.g. 'en-US'
+ * @param {string} path - URL path for this page
+ * @returns {Object} BasePage instance with visit() and assertPathname()
  */
-export class BasePage {
-  /**
-   * @param {string} locale - BCP 47 locale tag, e.g. 'en-US' or 'de-DE'.
-   * @param {string} path   - Route path after the locale prefix, e.g. '/movies'.
-   */
-  constructor(locale, path) {
-    this.locale = locale;
-    this.path = path;
-  }
+export function BasePage(locale, path) {
+  return {
+    locale,
+    path,
 
-  /**
-   * Navigate to this page using the configured locale and path.
-   *
-   * Wraps cy.visitLocale() so every page object navigates via
-   * the same custom command and locale-prefix convention.
-   *
-   * @returns {this}
-   */
-  visit() {
-    cy.visitLocale(this.locale, this.path);
-    return this;
-  }
+    /**
+     * Navigate to this page with the configured locale.
+     * @returns {Object} This instance for chaining
+     */
+    visit() {
+      cy.visitWithLocale(this.path, this.locale);
+      return this;
+    },
 
-  /**
-   * Assert the current URL contains the locale prefix.
-   *
-   * @returns {this}
-   */
-  assertLocaleInUrl() {
-    cy.url().should('include', `/${this.locale}`);
-    return this;
-  }
-
-  /**
-   * Assert the main content landmark is present.
-   *
-   * @returns {this}
-   */
-  assertMainExists() {
-    cy.get('main').should('exist');
-    return this;
-  }
+    /**
+     * Assert the current pathname matches the expected locale + path.
+     * @returns {Object} This instance for chaining
+     */
+    assertPathname() {
+      cy.location('pathname').should('eq', `/${this.locale}${this.path}`);
+      return this;
+    },
+  };
 }

@@ -1,53 +1,38 @@
 /**
- * Header Page Object — encapsulates selectors and actions for the global header.
+ * Header Page module — encapsulates header selectors and assertions.
  *
- * The header is present on every page, so HeaderPage is composed into
- * other page objects rather than extended. Instantiate it wherever
- * a test needs to interact with header elements.
- *
- * @example
- * import { HeaderPage } from '$tests/pages/HeaderPage.js';
- * const header = new HeaderPage();
- * header.assertVisible();
- * header.assertLanguageSwitcherExists();
+ * @returns {Object} HeaderPage instance with header selectors and assertions
  */
-export class HeaderPage {
-  /**
-   * The `<header>` landmark element.
-   *
-   * @returns {Cypress.Chainable}
-   */
-  get root() {
-    return cy.get('header');
-  }
+export function HeaderPage() {
+  return {
+    /**
+     * @returns {Cypress.Chainable}
+     */
+    get root() {
+      return cy.get('header[role="banner"]');
+    },
 
-  /**
-   * The language switcher control inside the header.
-   * Matches data-testid, aria-label (English), and aria-label (German).
-   *
-   * @returns {Cypress.Chainable}
-   */
-  get languageSwitcher() {
-    return this.root.find('#language-select');
-  }
+    /**
+     * @returns {Cypress.Chainable}
+     */
+    get languageSwitcher() {
+      return this.root.get('[data-testid="language-switcher"]');
+    },
 
-  /**
-   * Assert the header is visible.
-   *
-   * @returns {this}
-   */
-  assertVisible() {
-    this.root.should('be.visible');
-    return this;
-  }
+    /**
+     * @returns {Object} This instance for chaining
+     */
+    assertVisible() {
+      this.root.should('be.visible');
+      return this;
+    },
 
-  /**
-   * Assert the language switcher is present inside the header.
-   *
-   * @returns {this}
-   */
-  assertLanguageSwitcherExists() {
-    this.languageSwitcher.should('exist');
-    return this;
-  }
+    /**
+     * @returns {Object} This instance for chaining
+     */
+    assertLanguageSwitcherExists() {
+      this.languageSwitcher.should('exist');
+      return this;
+    },
+  };
 }
