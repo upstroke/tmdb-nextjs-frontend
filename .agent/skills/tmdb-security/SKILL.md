@@ -1,85 +1,98 @@
 # TMDB Security Skill
 
-## Überblick
+## Purpose
 
-Dieser Skill definiert die Security-Prinzipien für das TMDB Next.js Frontend. Da es sich um eine read-only Anwendung handelt, liegt der Fokus auf Input-Validierung, API-Key-Handling und Dependency-Security.
+This skill enables the AI agent to write and maintain security-focused tests for the TMDB Next.js frontend. It focuses on identifying and preventing common security vulnerabilities in a read-only movie database application.
 
-## Security-Risiken
+## Scope
 
-| Risiko | Beschreibung | Gegenmaßnahme |
-|--------|--------------|---------------|
-| **XSS über Suche** | User-Input in Suchfeld könnte Script-Tags enthalten | Input sanitization, React escapt automatisch |
-| **API-Key-Exposure** | TMDB API-Key könnte im Client exponiert sein | API-Key server-side halten (API Route) |
-| **External Content** | TMDB liefert externe URLs (Bilder, Links) | URLs validieren, keine `dangerouslySetInnerHTML` |
-| **Dependency-Security** | Unsichere npm-Pakete | Regelmäßige `npm audit`, Dependabot |
+- Input validation (search, forms)
+- API key handling (server-side only)
+- XSS prevention
+- Dependency security
+- External content validation (TMDB-provided URLs)
 
-## Security-Tests
+## Capabilities
 
-### Unit-Tests (Vitest)
-
-**Pfad:** `tests/vitest/security/`
+### 1. Write Security Unit Tests (Vitest)
 
 ```js
 // tests/vitest/security/search-input.test.js
 import { sanitizeSearchInput } from '@/utils/sanitize';
 
 describe('Security: Search Input', () => {
-  it('weist XSS-Versuche ab', () => {
+  it('rejects XSS attempts', () => {
     const maliciousInput = '<script>alert("xss")</script>';
     const sanitized = sanitizeSearchInput(maliciousInput);
     expect(sanitized).not.toContain('<script>');
   });
-
-  it('escapt HTML-Sonderzeichen', () => {
-    const input = 'Movie & TV <Show>';
-    const sanitized = sanitizeSearchInput(input);
-    expect(sanitized).toBe('Movie & TV <Show>');
-  });
-});
-
-// tests/vitest/security/api-key.test.js
-describe('Security: API-Key Handling', () => {
-  it('API-Key ist nicht im Client-Code exponiert', () => {
-    // Prüft, dass API-Key über Server-Side API Route gehandled wird
-    expect(process.env.TMDB_API_KEY).toBeDefined();
-    expect(window?.TMDB_API_KEY).toBeUndefined();
-  });
 });
 ```
 
-### Komponententests (Cypress)
-
-**Pfad:** `tests/cypress/acceptance/components/security/`
+### 2. Write Security Component Tests (Cypress)
 
 ```js
 // tests/cypress/acceptance/components/security/search-xss.cy.js
 describe('Security: Search XSS Prevention', () => {
-  it('zeigt keine Script-Injection in Suchergebnissen', () => {
+  it('does not show script injection in search results', () => {
     cy.visit('/');
-    cy.findByRole('searchbox', { name: /filme suchen/i })
+    cy.findByRole('searchbox', { name: /search movies/i })
       .type('<script>alert("xss")</script>{enter}');
-    // Sollte keine Alert-Box zeigen und Suchbegriff sicher anzeigen
     cy.findByText(/<script>/i).should('not.exist');
   });
 });
 ```
 
-## Security-Checkliste
+### 3. Check API Key Handling
 
-- [ ] **Input-Validierung**: Alle User-Inputs werden sanitisiert
-- [ ] **API-Key**: Nur server-side, nicht im Client
-- [ ] **External URLs**: Validierung von TMDB-gelieferten URLs
-- [ ] **Kein dangerouslySetInnerHTML**: Außer bei explizit vertrauenswürdigem Content
-- [ ] **npm audit**: Regelmäßig ausführen (`npm run audit`)
-- [ ] **Dependencies aktuell**: Dependabot oder Renovate aktivieren
+```js
+// tests/vitest/security/api-key.test.js
+describe('Security: API Key Handling', () => {
+  it('API key is not exposed in client-side code', () => {
+    expect(process.env.TMDB_API_KEY).toBeDefined();
+    expect(typeof window !== 'undefined' && window?.TMDB_API_KEY).toBeUndefined();
+  });
+});
+```
 
-## Dokumentation
+## Security Checklist
 
-- **Testing-Strategie**: [`docs/testing.md`](../../docs/testing.md)
-- **Security-Tests**: [`docs/testing/security-tests.md`](../../docs/testing/security-tests.md)
+### Development
 
-## Tools
+- [ ] All user inputs are sanitized
+- [ ] API key is server-side only
+- [ ] External URLs are validated
+- [ ] No `dangerouslySetInnerHTML` except for trusted content
 
-- **npm audit**: `npm run audit` – Prüft auf bekannte Sicherheitslücken
-- **Dependabot**: Automatische Security-Updates für Dependencies
-- **ESLint security-plugin**: Statische Analyse auf Security-Issues
+### CI/CD
+
+- [ ] `npm audit` runs on every build
+- [ ] Dependencies are kept up to date
+- [ ] ESLint security plugin is enabled
+
+## Scripts
+
+```bash
+# All security tests
+npm run test:security
+
+# Unit tests only
+npm run test:security:unit
+
+# Component tests only
+npm run test:security:component
+```
+
+## Documentation
+
+- **Security Tests**: [`docs/testing/security-tests.md`](../../docs/testing/security-tests.md)
+- **Testing Strategy**: [`docs/testing.md`](../../docs/testing.md)
+
+## When to Use
+
+Use this skill when:
+- Adding new user input fields
+- Implementing search functionality
+- Handling API keys or secrets
+- Displaying external content (images, links)
+- Adding new dependencies
