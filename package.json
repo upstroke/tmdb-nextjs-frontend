@@ -13,7 +13,7 @@
     "test": "vitest run",
     "test:unit": "vitest run",
     "test:component": "cypress run --component",
-    "test:e2e": "cypress run --config-file tests/cypress.config.js",
+    "test:e2e": "cypress run --config-file tests/cypress.config.js --browser chrome",
     "test:coverage": "vitest run --coverage",
     "test:security": "vitest run tests/vitest/security/ && cypress run --component --spec 'tests/cypress/acceptance/components/security/**/*'",
     "test:security:unit": "vitest run tests/vitest/security/",
