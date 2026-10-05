@@ -14,8 +14,11 @@
     "test:vitest:coverage": "vitest run --coverage",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
-    "test:acceptance": "cypress run",
-    "test:acceptance:ui": "cypress open"
+    "test:component": "cypress run --component",
+    "test:component:ui": "cypress open --component",
+    "test:acceptance": "cypress run --e2e",
+    "test:acceptance:ui": "cypress open --e2e",
+    "test:cypress": "cypress run"
   },
   "dependencies": {
     "fomantic-ui-css": "^2.9.4",

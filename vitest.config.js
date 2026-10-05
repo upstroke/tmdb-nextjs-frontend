@@ -45,7 +45,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
-      include: ['lib/**', 'components/**', 'app/**'],
+      include: ['lib/**', 'app/**'],
       exclude: ['**/*.test.js', '**/*.test.jsx', 'node_modules/**', 'lib/schemas/tmdb.js', 'lib/i18n/config.js'],
     },
     projects: [
