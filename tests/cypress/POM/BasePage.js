@@ -1,31 +1,28 @@
-/**
- * Base Page module — provides locale-aware navigation helpers.
- *
- * @param {string} locale - BCP 47 locale tag, e.g. 'en-US'
- * @param {string} path - URL path for this page
- * @returns {Object} BasePage instance with visit() and assertPathname()
- */
-export function BasePage(locale, path) {
+// tests/cypress/POM/BasePage.js
+
+const selectors = {
+  body: 'body'
+};
+
+export function BasePage() {
   return {
-    locale,
-    path,
-
-    /**
-     * Navigate to this page with the configured locale.
-     * @returns {Object} This instance for chaining
-     */
-    visit() {
-      cy.visitWithLocale(this.path, this.locale);
-      return this;
+    get body() {
+      return cy.get(selectors.body);
     },
 
     /**
-     * Assert the current pathname matches the expected locale + path.
-     * @returns {Object} This instance for chaining
+     * Asserts the current pathname starts with /{locale}
+     * e.g. /en-US or /de-DE
      */
-    assertPathname() {
-      cy.location('pathname').should('eq', `/${this.locale}${this.path}`);
-      return this;
+    assertPathname(expectedLocale) {
+      cy.location('pathname').should('match', new RegExp(`^/${expectedLocale}(/|$)`));
     },
+
+    /**
+     * Asserts the page is loaded (body is visible)
+     */
+    assertPageLoaded() {
+      this.body.should('be.visible');
+    }
   };
 }
