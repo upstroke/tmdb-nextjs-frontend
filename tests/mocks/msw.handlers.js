@@ -88,6 +88,23 @@ export const handlers = [
     });
   }),
 
+  /** GET https://api.themoviedb.org/3/movie/:id/release_dates */
+  http.get('https://api.themoviedb.org/3/movie/:id/release_dates', () => {
+    return HttpResponse.json({
+      id: 1,
+      results: [
+        {
+          iso_3166_1: 'US',
+          release_dates: [{ certification: 'PG-13', type: 3 }],
+        },
+        {
+          iso_3166_1: 'DE',
+          release_dates: [{ certification: 'FSK 16', type: 3 }],
+        },
+      ],
+    });
+  }),
+
   // ── Movies ───────────────────────────────────────────────
 
   /** GET /api/:locale/movies — popular / top_rated / trending list */
