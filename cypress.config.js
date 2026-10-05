@@ -14,6 +14,7 @@ export default defineConfig({
     fixturesFolder: 'tests/cypress/fixtures',
 
     // Artifacts — exclude these paths from version control via .gitignore
+    downloadsFolder: 'tests/cypress/downloads',
     screenshotsFolder: 'tests/cypress/screenshots',
     videosFolder: 'tests/cypress/videos',
 
