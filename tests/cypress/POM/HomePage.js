@@ -30,6 +30,14 @@ export function HomePage() {
       return cy.get(selectors.searchInput);
     },
 
+    /**
+     * Navigate to the homepage with the specified locale
+     */
+    visit(locale = 'en-US') {
+      cy.visit(`/${locale}`);
+      return this;
+    },
+
     assertTitleVisible() {
       this.title.should('be.visible');
     },
