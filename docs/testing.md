@@ -17,6 +17,7 @@ Dieses Projekt verwendet vier Test-Levels, die sich nach fachlichen Kriterien un
 tests/
 ├── vitest/                          # Unit- und Integrationstests
 │   ├── accessibility/               # Automatisierte A11y-Tests
+│   ├── security/                    # Security-Tests (XSS, API-Key)
 │   └── *.test.js                    # Test-Dateien
 ├── cypress/
 │   ├── acceptance/                  # Cypress Acceptance Tests
@@ -39,9 +40,10 @@ tests/
 - [Integrationstests](./testing/integration-tests.md)
 - [Komponententests](./testing/component-tests.md)
 - [Akzeptanztests](./testing/acceptance-tests.md)
-- [Page Objects](./testing/page-objects.md)
+- [Security-Tests](./testing/security-tests.md)
 - [Accessibility Audit](./testing/accessibility-audit-checklist.md)
 - [Common Rules](./testing/common-rules.md)
+- [Page Objects](./testing/page-objects.md)
 - [AI-Prompts](../ai-prompts.md)
 
 ## Test-Pyramide
