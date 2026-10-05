@@ -66,10 +66,12 @@ Prefer these tools when they are available:
 # Validation
 
 - Use `npm test` for the Vitest single run.
-- Use `npm run test:watch` for watch mode.
+- Use `npm run test:vitest:watch` for Vitest watch mode.
+- Use `npm run test:unit`, `npm run test:components`, or `npm run test:integration` for focused Vitest validation.
+- Use `npm run test:vitest:coverage` when coverage is required.
 - Run `npm run build` for production-build validation.
-- Treat Cypress acceptance tests as a separate validation step.
-- Cypress discovery/import configuration currently requires alignment; consult `docs/testing.md` before relying on the acceptance suite.
+- Treat Cypress acceptance tests as a separate validation step: `npm run test:acceptance` runs headlessly and `npm run test:acceptance:ui` opens the interactive runner.
+- Cypress is configured to use `tests/cypress/` for specs, support files, fixtures, screenshots, and videos; consult `docs/testing.md` for test conventions.
 
 Do not edit files, run destructive commands, change dependencies, push commits,
 or create pull requests without the user’s explicit approval.

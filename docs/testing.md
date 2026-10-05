@@ -58,7 +58,7 @@ tests/
 - `tests/cypress/support/` contains Cypress-specific support files and commands. The existing Cypress files in `tests/setup/` remain for now; their role and imports are reviewed separately. `tests/setup/` also contains Vitest setup.
 - `tests/mocks/` contains reusable mock support for technical dependencies.
 
-Accessibility and navigation have a `*-testplan.md` file next to their specs. The current `routes/homepage.cy.js` does not have a nearby test plan. The existing Cypress specs still use both `.spec.js` and `.cy.js`; test discovery and naming are handled in the follow-up configuration step.
+Accessibility and navigation have a `*-testplan.md` file next to their specs. The current `routes/homepage.cy.js` does not have a nearby test plan. Cypress discovers the acceptance specs through `cypress.config.js`, which points to `tests/cypress/acceptance/`.
 
 ## Documentation by Test Level
 
@@ -78,6 +78,8 @@ npm run test:unit
 npm run test:components
 npm run test:integration
 npm run test:acceptance
+npm run test:acceptance:ui
+npm run test:vitest:watch
 npm run test:vitest:coverage
 ```
 
@@ -94,9 +96,8 @@ npm run dev
 Then in a second terminal:
 
 ```bash
-npm run cy:open       # Interactive Cypress UI
-npm run cy:run        # Headless, single run
-npm run test:acceptance  # Alias for CI
+npm run test:acceptance:ui  # Interactive Cypress UI
+npm run test:acceptance     # Headless, single run (suitable for CI)
 ```
 
 ### Custom Commands
