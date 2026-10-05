@@ -1,29 +1,31 @@
 # Integration Tests
 
-This guide defines the project rules for Vitest integration tests. Use integration tests when multiple controlled parts of the application must work together but a full browser-level acceptance test would be unnecessary.
+This guide defines the project rules for Vitest integration tests. Use integration tests when multiple controlled parts of the application must work together without a browser.
+
+Component tests are not part of Vitest. Isolated UI components are tested with Cypress Component Testing (see `acceptance-tests.md`, section "Component Tests"). Vitest covers unit tests and integration tests.
 
 ## Scope
 
 Integration tests are the right choice for:
 
-- rendered components with props, slots, and events
 - route behavior with mocked load data or controlled dependencies
-- interaction between components, stores, and helper modules
-- component-level accessibility semantics (roles, accessible names, ARIA state, keyboard handling) that can be verified in `jsdom`
-- async UI states that are driven by mocked services
+- interaction between stores, services, and helper modules
+- data flow from mocked API responses through mapping and state logic
+- async states that are driven by mocked services
+- route-level composition where several local parts collaborate
 
-Automated axe-core scans of full pages and browser-dependent focus behavior are not integration test concerns. They belong to Cypress acceptance tests (see `acceptance-tests.md`).
+Do not use an integration test when a small unit test is sufficient. Do not use it for isolated component rendering, ARIA semantics, or keyboard handling of a single component; use Cypress Component Testing instead. Do not use it as a substitute for a real end-to-end flow that depends on browser navigation, layout, or multi-page behavior.
 
-Do not use an integration test when a small unit test is sufficient. Do not use it as a substitute for a real end-to-end flow that depends on browser navigation, layout, or multi-page behavior.
+Automated axe-core scans and browser-dependent focus behavior belong to Cypress.
 
 ## General Rules
 
-- Use Vitest together with Testing Library.
-- Test behavior through the rendered UI whenever possible.
-- Prefer queries by role, label, and accessible name.
+- Use Vitest, with Testing Library only where route-level rendering is needed.
+- Test behavior through observable output whenever possible.
+- Prefer queries by role, label, and accessible name when rendering.
 - Mock network and external dependencies, but keep collaboration between local parts real.
-- Assert user-visible behavior, not component internals.
-- Keep each test focused on one interaction or one rendered state.
+- Assert user-visible behavior, not internals.
+- Keep each test focused on one interaction or one state.
 
 ## File Location
 
@@ -33,30 +35,27 @@ Typical structure:
 
 ```text
 tests/integration/
-  components/
   routes/
 ```
 
-Choose `components/` when the subject is a reusable component. Choose `routes/` when the subject is route-specific behavior or route composition.
+Use `routes/` for route-specific behavior or route composition. There is no `components/` directory: component tests live in `tests/cypress/component/`.
 
 ## Rendering and Queries
 
-Prefer Testing Library queries in this order:
+When a route test renders output, prefer Testing Library queries in this order:
 
 1. `getByRole`
 2. `getByLabelText`
 3. `getByText`
 4. `getByTestId` only when no semantic query is practical
 
-This keeps integration tests aligned with accessibility expectations and real user behavior.
-
 ## Async Behavior
 
-When a component loads data asynchronously:
+When a route or module loads data asynchronously:
 
 - mock the service boundary
-- trigger the user action that starts loading
-- wait for the resulting UI state with `findBy...` or `waitFor`
+- trigger the action that starts loading
+- wait for the resulting state with `findBy...` or `waitFor`
 - assert loading, success, and error states where relevant
 
 Do not assert arbitrary timeouts.
@@ -65,7 +64,7 @@ Do not assert arbitrary timeouts.
 
 Integration tests use [MSW (Mock Service Worker)](https://mswjs.io/) to intercept
 HTTP requests at the network level. MSW replaces the previous `vi.stubGlobal('fetch')`
-approach and keeps tests realistic: the component calls `fetch` as usual, MSW
+approach and keeps tests realistic: the code calls `fetch` as usual, MSW
 intercepts the request before it reaches the network, and returns fixture data.
 
 ### Setup
@@ -124,34 +123,9 @@ with a JSON error body and the given HTTP status code.
 |---|---|
 | Vitest integration tests | MSW (`msw.server.js`) |
 | Vitest unit tests | `vi.stubGlobal('fetch')` |
-| Cypress acceptance tests | `cy.intercept()` |
+| Cypress component and acceptance tests | `cy.intercept()` |
 
 Do not use MSW in Cypress tests and do not use `cy.intercept()` in Vitest tests.
-
-## Components Worth Integration Testing
-
-Integration tests are especially useful for components that combine rendering, accessibility semantics, and interaction logic, for example:
-
-- dialogs
-- typeahead search
-- pagination and load-more controls
-- language switching
-- tabs with keyboard support
-- route fragments with async content loading
-
-### TabGroupe
-
-`TabGroupe` is a strong candidate for integration tests when it coordinates user interaction and async content states.
-
-Relevant behaviors to cover include:
-
-- the correct tab receives selected state and the associated panel becomes visible
-- keyboard navigation works as intended, for example arrow-key movement between tabs
-- accessible tab semantics are present, including tab roles and panel relationships
-- async tab loading shows the expected intermediate state and then renders the loaded content
-- fallback and error UI remains stable if one tab cannot load its content
-
-If `TabGroupe` is reused across route detail areas, test the generic interaction contract once at component level and cover route-specific composition separately only where needed.
 
 ## Route Integration Tests
 
@@ -159,7 +133,7 @@ Route integration tests are useful when a route combines:
 
 - load or server data
 - route parameters or query parameters
-- multiple local components
+- multiple local parts
 - restore or pagination logic
 - localized rendering behavior
 
@@ -169,32 +143,21 @@ For route tests, mock only the external boundary and keep the route-level collab
 
 Good integration assertions check:
 
-- visible text and labels
-- roles and accessible names
+- visible text and labels where output is rendered
 - loading and error states
-- emitted effects visible in the UI
-- state changes after user interaction
+- state changes after an action
+- results of data mapping and state logic
 
 Avoid asserting internal function calls unless that call is itself the contract being tested.
 
-## Accessibility
+## When to Move a Test
 
-Integration tests should reinforce accessible markup at component level. Full-page axe-core scans run in Cypress.
+Move a test to Cypress Component Testing when the subject is a single reusable UI component, its ARIA semantics, keyboard handling, or layout.
 
-Examples:
-
-- tabs are queried by role
-- dialogs expose title and close controls
-- icon buttons have accessible names
-- error messages and status messages are actually rendered in the DOM
-
-## When to Escalate to Cypress
-
-Move a test to acceptance level when confidence depends on:
+Move a test to Cypress acceptance level when confidence depends on:
 
 - real routing across pages
 - browser history behavior
-- viewport-specific layout behavior
-- focus movement that depends on the browser
+- viewport-specific layout behavior across pages
 - automated axe-core accessibility scans of full pages
 - interaction across multiple routes or application layers

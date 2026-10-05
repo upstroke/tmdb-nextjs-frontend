@@ -39,4 +39,23 @@ export default defineConfig({
       return config;
     },
   },
+
+  component: {
+    devServer: {
+      framework: 'next',
+      bundler: 'webpack',
+    },
+
+    // Component specs in tests/cypress/component
+    specPattern: 'tests/cypress/component/**/*.cy.{js,jsx}',
+
+    // Component support entry point — registers cy.mount
+    supportFile: 'tests/cypress/support/component.js',
+    indexHtmlFile: 'tests/cypress/support/component-index.html',
+
+    fixturesFolder: 'tests/cypress/fixtures',
+
+    viewportWidth: 1280,
+    viewportHeight: 800,
+  },
 });

@@ -1,8 +1,31 @@
-# Acceptance Tests
+# Cypress Tests: Component and Acceptance
 
-This guide defines the project rules for Cypress acceptance tests. Use acceptance tests for complete user-visible flows that require a real browser and realistic navigation.
+This guide defines the project rules for Cypress tests. Cypress covers two levels: component tests for isolated UI components in a real browser, and acceptance tests for complete user-visible flows with realistic navigation. Vitest covers unit and integration tests only (see `integration-tests.md`).
 
-## Scope
+## Component Tests
+
+Use Cypress Component Testing for reusable UI components rendered in isolation in a real browser.
+
+Good candidates:
+
+- dialogs, menus, and typeahead search
+- tabs with keyboard support (for example `TabGroupe`)
+- pagination and load-more controls
+- language switching controls
+- ARIA semantics, focus handling, and keyboard behavior of a single component
+- layout behavior of a component at specific viewport sizes
+
+Rules:
+
+- Mount the component with `cy.mount()`, registered in `tests/cypress/support/component.js`.
+- Stub network requests with `cy.intercept()`; do not use MSW.
+- Prefer selectors by role, label, and visible text.
+- Test one component contract per spec: states, interactions, keyboard, and accessible names.
+- Do not test full pages or multi-page flows here; use acceptance tests.
+
+Place specs under `tests/cypress/component/`, one directory per component or component group, with the spec file named `*.cy.js`.
+
+## Acceptance Tests
 
 Acceptance tests are the right choice for:
 
@@ -13,14 +36,17 @@ Acceptance tests are the right choice for:
 - accessibility checks that should run on full pages
 - regressions that are best validated in the actual browser environment
 
-Do not use Cypress for small isolated logic or component-only behavior that can be trusted with Vitest.
+Do not use Cypress for pure logic that can be trusted with Vitest unit tests.
 
 ## File Location
 
-Place browser-based acceptance tests under `tests/cypress/acceptance/`:
+Place Cypress tests under `tests/cypress/`:
 
 ```text
 tests/cypress/
+  component/
+    tab-groupe/
+      tab-groupe.cy.js
   acceptance/
     accessibility/
       accessibility.spec.js
@@ -33,18 +59,15 @@ tests/cypress/
       homepage.cy.js
   POM/                 # Cypress page objects
   fixtures/            # Cypress-specific fixture data
-  support/             # Cypress entry point and commands
+  support/             # e2e.js, component.js, component-index.html
 ```
 
-`cypress.config.js` discovers specs with `tests/cypress/acceptance/**/*.{cy,spec}.js`, so both `*.cy.js` and the legacy `*.spec.js` naming are picked up. The support file is `tests/cypress/support/e2e.js` and fixtures live in `tests/cypress/fixtures`.
+`cypress.config.js` defines two configurations:
 
-## Component Tests: Vitest or Cypress?
+- `e2e` discovers specs with `tests/cypress/acceptance/**/*.{cy,spec}.js` and uses `tests/cypress/support/e2e.js`.
+- `component` discovers specs with `tests/cypress/component/**/*.cy.{js,jsx}` and uses `tests/cypress/support/component.js` and `tests/cypress/support/component-index.html`.
 
-Component tests are written with Vitest, as integration tests under `tests/integration/components/` (see `integration-tests.md`). The project does not use Cypress Component Testing; `cypress.config.js` only defines an `e2e` configuration.
-
-`tests/cypress/acceptance/components/` is different: it holds browser-based acceptance tests for shared UI components or regions (for example navigation) whose user-visible behavior needs coverage in a real browser. These run against the running application, not against an isolated component. Isolated component behavior, including ARIA semantics and keyboard handling inside a single reusable component, belongs in Vitest.
-
-`routes/` contains route-oriented browser journeys; `accessibility/` contains full-page and interaction-state accessibility checks.
+`acceptance/components/` contains browser-based acceptance tests for shared UI regions (for example navigation) running against the real application. It is not the place for isolated component tests; those live in `tests/cypress/component/`. `routes/` contains route-oriented browser journeys; `accessibility/` contains full-page and interaction-state accessibility checks.
 
 Accessibility and navigation currently have a test plan next to their specs; `routes/homepage.cy.js` does not yet have one.
 
@@ -57,7 +80,7 @@ Accessibility and navigation currently have a test plan next to their specs; `ro
 - Keep each scenario independent and repeatable.
 - Use helper functions only when they improve clarity and do not hide the intent of the test.
 
-## What to Cover
+## What to Cover in Acceptance Tests
 
 A Cypress acceptance test should cover behavior such as:
 
@@ -70,9 +93,9 @@ A Cypress acceptance test should cover behavior such as:
 
 ## Accessibility
 
-Use Cypress together with axe-core for automated accessibility checks on important pages and interaction states. Component-level semantics and keyboard handling are covered by Vitest integration tests; Cypress covers the full-page scans and browser-dependent focus behavior.
+Use Cypress together with axe-core for automated accessibility checks. Component tests verify semantics, keyboard handling, and focus of a single component; acceptance tests run full-page scans and verify browser-dependent focus behavior on important pages and interaction states.
 
-Typical examples:
+Typical acceptance examples:
 
 - homepage
 - list pages
@@ -84,20 +107,17 @@ Document intentional exceptions explicitly. Do not disable rules broadly.
 
 ## Tabs and Season Views
 
-User-visible tabbed detail areas should be covered at acceptance level only when the behavior matters as an actual browser journey.
+The generic interaction contract of a reusable tab component (selected state, keyboard navigation, tab roles, panel relationships, async tab loading, error fallback) is covered by a Cypress component test.
 
-Good reasons to add Cypress coverage include:
+Add acceptance coverage only when the behavior matters as an actual browser journey, for example:
 
 - a season tab changes visible content in a way that is central to the feature
 - per-tab loading affects real user flows
 - routing, deep linking, or browser history interacts with the active tab
-- a regression would likely be missed by component-level tests alone
-
-If the concern is only keyboard handling, ARIA semantics, or isolated async rendering inside a reusable tab component, prefer an integration test first.
 
 ## Test Plans
 
-Keep a `*-testplan.md` beside the executable specs for a substantial acceptance feature. Accessibility and navigation already have nearby plans; the current homepage route spec does not. A plan should describe:
+Keep a `*-testplan.md` beside the executable specs for a substantial feature. Accessibility and navigation already have nearby plans; the current homepage route spec does not. A plan should describe:
 
 - the user story or feature goal
 - covered scenarios
@@ -120,6 +140,11 @@ Avoid assertions that only restate internal implementation details.
 
 ## Maintenance
 
-When a new feature becomes user-visible, first decide whether confidence belongs at acceptance, integration, or unit level.
+When a new feature becomes user-visible, first decide the level:
 
-Choose Cypress when the browser is part of the behavior contract. Otherwise, keep the test lower in the stack.
+- unit (Vitest): pure logic
+- integration (Vitest): modules and routes with mocked APIs, no browser
+- component (Cypress): one UI component in isolation in a browser
+- acceptance (Cypress): complete flows across pages
+
+Keep the test as low in this list as the behavior allows.
