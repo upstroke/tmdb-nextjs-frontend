@@ -47,7 +47,7 @@ tests/
   unit/                 # Vitest unit tests
   fixtures/             # Shared domain test data
   mocks/                # Technical mocks for tests
-  setup/                # Vitest setup and existing legacy Cypress setup
+  setup/                # Vitest setup
 ```
 
 - `tests/unit/` contains isolated Vitest unit tests.
@@ -55,7 +55,7 @@ tests/
 - `tests/cypress/acceptance/` contains browser-based Cypress acceptance tests. Its `routes/`, `components/`, and `accessibility/` subdirectories are peer categories within the same test level: `routes/` covers individual pages and their visible behavior; `components/` covers shared UI areas such as navigation in the context of the running application; `accessibility/` covers accessibility checks on pages and interaction states.
 - `tests/cypress/POM/` contains Cypress page objects; see `docs/testing/page-objects.md`.
 - `tests/cypress/fixtures/` holds Cypress-specific fixtures. `tests/fixtures/` holds shared domain test data; do not merge them as part of the directory migration.
-- `tests/cypress/support/` contains Cypress-specific support files and commands. The existing Cypress files in `tests/setup/` remain for now; their role and imports are reviewed separately. `tests/setup/` also contains Vitest setup.
+- `tests/cypress/support/` contains Cypress-specific support files and commands. `tests/setup/` contains only the Vitest setup.
 - `tests/mocks/` contains reusable mock support for technical dependencies.
 
 Accessibility and navigation have a `*-testplan.md` file next to their specs. The current `routes/homepage.cy.js` does not have a nearby test plan. `cypress.config.js` discovers specs in `tests/cypress/acceptance/` matching `*.cy.js` and the existing `*.spec.js`; use `.cy.js` for new specs.

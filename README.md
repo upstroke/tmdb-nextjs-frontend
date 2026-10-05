@@ -139,11 +139,13 @@ Tests are separated by runner and purpose:
 Cypress Page Objects live in `tests/cypress/POM/`; Cypress-specific fixtures and support files live in `tests/cypress/fixtures/` and `tests/cypress/support/`. Shared domain fixtures remain in `tests/fixtures/`.
 
 ```bash
-npm test            # Vitest single run
-npm run test:watch  # Vitest watch mode
+npm test                    # Vitest single run
+npm run test:vitest:watch   # Vitest watch mode
+npm run test:acceptance     # Cypress headless (app must run on http://localhost:3000)
+npm run test:acceptance:ui  # Cypress interactive runner
 ```
 
-The Cypress spec-discovery configuration and imports still need to be aligned with the moved tests before the acceptance suite can run. See [docs/testing.md](docs/testing.md) for the testing strategy, commands, and conventions.
+See [docs/testing.md](docs/testing.md) for the testing strategy, commands, and conventions.
 
 ## Production Build
 
