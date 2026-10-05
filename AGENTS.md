@@ -63,14 +63,33 @@ Prefer these tools when they are available:
 - `delta` for readable Git diffs
 - `sd` for simple, targeted text changes
 
+# Test strategy
+
+Each test type has one tool and one purpose:
+
+| Level | Tool | Location | Purpose |
+|---|---|---|---|
+| Unit | Vitest | `tests/unit/` | Pure logic: mappers, Zod schemas, utilities |
+| Integration | Vitest + Testing Library + msw | `tests/integration/` | Real integration only: a page or section renders with mocked data and values reach the components |
+| Component and accessibility | Cypress + `cypress-axe` | `tests/cypress/` | Component behavior in a real browser: keyboard, focus, ARIA, visibility, contrast |
+| Acceptance | Cypress | `tests/cypress/` | User flows such as search, detail page, and navigation |
+
+Rules:
+
+- Do not write component tests with Vitest. jsdom has no layout and cannot check color contrast or real focus behavior.
+- Keep `tests/integration/` limited to true integration tests. Assert on the rendered DOM (roles, text), not on props.
+- Test keyboard interaction, focus management, and ARIA states in Cypress, for example tabs, modals, and dropdowns.
+- Run `cy.checkA11y()` (`cypress-axe`) on pages and after relevant interactions.
+- Do not add Vitest tests for purely presentational components. Integration or Cypress tests cover them.
+
 # Validation
 
-- Use `npm test` for the Vitest single run.
+- Use `npm test` for the Vitest single run (unit and integration).
 - Use `npm run test:vitest:watch` for Vitest watch mode.
-- Use `npm run test:unit`, `npm run test:components`, or `npm run test:integration` for focused Vitest validation.
+- Use `npm run test:unit` or `npm run test:integration` for focused Vitest validation.
 - Use `npm run test:vitest:coverage` when coverage is required.
 - Run `npm run build` for production-build validation.
-- Treat Cypress acceptance tests as a separate validation step: `npm run test:acceptance` runs headlessly and `npm run test:acceptance:ui` opens the interactive runner.
+- Treat Cypress as a separate validation step: `npm run test:acceptance` runs headlessly and `npm run test:acceptance:ui` opens the interactive runner.
 - Cypress is configured to use `tests/cypress/` for specs, support files, fixtures, screenshots, and videos; consult `docs/testing.md` for test conventions.
 
 Do not edit files, run destructive commands, change dependencies, push commits,
