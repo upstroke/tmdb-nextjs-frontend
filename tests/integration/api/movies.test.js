@@ -1,15 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET } from '@/app/api/[locale]/movies/route';
+import { createTmdbApi } from '@/lib/services/tmdb-api.js';
 
 // Mock TMDB API helper
-vi.mock('@/lib/services/tmdb', () => ({
-  createTmdbApi: () => ({
+vi.mock('@/lib/services/tmdb-api.js', () => ({
+  createTmdbApi: vi.fn(() => ({
     getTrending: vi.fn(),
     getMovieDetails: vi.fn(),
     getTvShowDetails: vi.fn(),
     getCertification: vi.fn(),
     getWatchProviders: vi.fn(),
-  }),
+  })),
 }));
 
 describe('GET /api/[locale]/movies', () => {
@@ -22,11 +23,9 @@ describe('GET /api/[locale]/movies', () => {
 
   let mockGetTrending;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     vi.clearAllMocks();
-    const { createTmdbApi } = await import('@/lib/services/tmdb');
-    const api = createTmdbApi();
-    mockGetTrending = api.getTrending;
+    mockGetTrending = createTmdbApi().getTrending;
   });
 
   // Statement coverage executes the successful response path.
