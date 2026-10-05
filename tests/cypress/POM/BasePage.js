@@ -11,6 +11,14 @@ export function BasePage() {
     },
 
     /**
+     * Navigate to a page and return this for chaining
+     */
+    visit(locale = 'en-US') {
+      cy.visit(`/${locale}`);
+      return this;
+    },
+
+    /**
      * Asserts the current pathname starts with /{locale}
      * e.g. /en-US or /de-DE
      */
