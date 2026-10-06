@@ -40,15 +40,20 @@ export default defineConfig({
   resolve: sharedResolve,
 
   test: {
+    // Globale Coverage-Config für alle Projekte
     coverage: {
       provider: 'istanbul',
-      reporter: ['text', 'html'],
+      reporter: ['text', 'html', 'json-summary'],
+      
+      // NUR diese Files werden instrumentiert und im Report gezeigt
       include: [
         'lib/**/*.js',
         'lib/**/*.jsx',
         'app/api/**/*.js',
         'app/api/**/*.jsx',
       ],
+      
+      // Alles andere explizit ausschließen
       exclude: [
         'vitest/**',
         'node_modules/**',
@@ -57,10 +62,25 @@ export default defineConfig({
         'components/**',
         'app/[locale]/**',
         'app/*.js',
+        'app/layout.js',
+        'app/page.js',
         'middleware.js',
         'next.config.js',
         'postcss.config.js',
+        'vite.config.js',
+        'vitest.config.js',
       ],
+      
+      // Nur instrumentierte Files im Report (verhindert 0% für andere Files)
+      all: false,
+      
+      // Globale Thresholds (für CLI-Tools)
+      thresholds: {
+        lines: 80,
+        branches: 70,
+        functions: 80,
+        statements: 80,
+      },
     },
 
     projects: [
