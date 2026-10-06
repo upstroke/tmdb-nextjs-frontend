@@ -9,8 +9,9 @@
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage --project unit --project integration && node -e \"const fs=require('fs');const p='coverage/coverage-final.json';if(fs.existsSync(p)){const d=JSON.parse(fs.readFileSync(p));const f=Object.keys(d).filter(k=>k.includes('/lib/')||k.includes('/app/api/')).reduce((o,k)=>(o[k]=d[k],o),{});fs.writeFileSync(p,JSON.stringify(f,null,2));console.log('Filtered to',Object.keys(f).length,'files');}\"",
-    "test:browser": "vitest run --project browser"
+    "test:coverage": "vitest run --coverage --project unit --project integration && node scripts/coverage-filter.js",
+    "test:browser": "vitest run --project browser",
+    "coverage:filter": "node scripts/coverage-filter.js"
   },
   "dependencies": {
     "next": "15.3.3",
