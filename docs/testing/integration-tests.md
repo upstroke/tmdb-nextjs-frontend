@@ -1,63 +1,85 @@
 # Integration Tests
 
-Integration tests verify that multiple parts of your application work together correctly. In this project, we use **Cypress** for integration testing.
+Integration tests verify that multiple components work together correctly. In this project, we use **Vitest** for integration testing of API route handlers.
 
-## Why Cypress for Integration Tests?
+## What Are Integration Tests?
 
-- ✅ **Real HTTP requests** - Tests run against the actual application server
-- ✅ **Full stack testing** - Tests the complete request/response cycle
-- ✅ **Browser automation** - Tests run in a real browser environment
-- ✅ **Consistent tooling** - Same framework as E2E and component tests
+Integration tests sit between unit tests and E2E tests:
+
+- **Unit Tests**: Test isolated functions (e.g., a utility function)
+- **Integration Tests**: Test how components work together (e.g., route handler + service + i18n)
+- **E2E Tests**: Test complete user flows in a real browser
+
+## Why Vitest for Integration Tests?
+
+- ✅ **Fast execution** - No browser overhead
+- ✅ **Direct handler testing** - Call route functions directly
+- ✅ **Easy mocking** - Mock external services (TMDB API) with MSW
+- ✅ **Coverage reports** - Included in Vitest coverage
 
 ## Running Integration Tests
 
 ```bash
-# Open Cypress UI (recommended for development)
-npm run test:e2e
+# Run all Vitest tests (includes integration tests)
+npm run test
 
-# Run Cypress tests headless (CI/CD)
-npm run test:e2e:headless
+# Run Vitest with coverage
+npm run test:coverage
 
-# Run specific integration test file
-npx cypress run --spec "tests/cypress/e2e/api/*.cy.js"
+# Run only route handler tests
+npx vitest run tests/unit/routes/
 ```
 
 ## Test Location
 
-Integration tests are located in:
+Integration tests (route handler tests) are located in:
 ```
-tests/cypress/e2e/api/
+tests/unit/routes/
 ```
 
-## Writing API Integration Tests
+## Writing Route Handler Integration Tests
 
-Use `cy.request()` to test API endpoints directly:
+Test Next.js API route handlers by calling the `GET`/`POST` function directly:
 
 ```javascript
-// tests/cypress/e2e/api/movies.cy.js
-describe('API Routes', () => {
-  describe('GET /api/[locale]/movies', () => {
-    it('returns 200 for valid locale', () => {
-      cy.request('/api/en-US/movies')
-        .its('status')
-        .should('eq', 200);
-    });
+// tests/unit/routes/movies.test.js
+import { describe, it, expect, beforeEach } from 'vitest';
+import { GET } from '@/app/api/[locale]/movies/route';
 
-    it('returns 400 for invalid locale', () => {
-      cy.request({
-        url: '/api/invalid-locale/movies',
-        failOnStatusCode: false,
-      }).then((response) => {
-        expect(response.status).to.eq(400);
-      });
-    });
+// Set TMDB API key for tests
+process.env.TMDB_API_KEY = 'test-key';
 
-    it('returns movies array in response body', () => {
-      cy.request('/api/en-US/movies')
-        .its('body')
-        .should('have.property', 'movies')
-        .and('be.an', 'array');
-    });
+describe('GET /api/[locale]/movies', () => {
+  const createRequest = (locale = 'en-US', page = '1') => {
+    const url = page 
+      ? `http://localhost:3000/api/${locale}/movies?page=${page}`
+      : `http://localhost:3000/api/${locale}/movies`;
+    return new Request(url);
+  };
+
+  const createParams = (locale = 'en-US') => {
+    return { params: Promise.resolve({ locale }) };
+  };
+
+  // Statement coverage executes the successful response path.
+  it('returns 200 for valid locale and page', async () => {
+    const response = await GET(createRequest('en-US', '1'), createParams('en-US'));
+
+    expect(response.status).toBe(200);
+  });
+
+  // Branch coverage covers the invalid-locale branch.
+  it('returns a 400 response when the locale is unsupported', async () => {
+    const response = await GET(createRequest('invalid-locale'), createParams('invalid-locale'));
+
+    expect(response.status).toBe(400);
+  });
+
+  // Statement coverage executes the pagination path.
+  it('returns 200 for page 2 request', async () => {
+    const response = await GET(createRequest('en-US', '2'), createParams('en-US'));
+
+    expect(response.status).toBe(200);
   });
 });
 ```
@@ -65,34 +87,39 @@ describe('API Routes', () => {
 ## Test Coverage
 
 Integration tests cover:
-- API route endpoints (request/response)
-- Multi-step user flows
-- Cross-component interactions
-- External service integration (TMDB API)
+- Route handler logic (request/response)
+- Service integration (TMDB API calls)
+- i18n locale handling
+- Error handling and edge cases
+- Pagination logic
 
-## Integration vs E2E Tests
+## Integration vs Unit vs E2E Tests
 
-| Aspect | Integration Test | E2E Test |
-|--------|-----------------|----------|
-| **Scope** | Single feature or API | Complete user journey |
-| **UI** | Optional (API-only possible) | Full UI interaction |
-| **Speed** | Faster | Slower |
-| **Example** | Test `/api/movies` endpoint | Search → View Details → Add to Watchlist |
+| Aspect | Unit Test | Integration Test | E2E Test |
+|--------|-----------|-----------------|----------|
+| **Scope** | Single function | Multiple components | Complete user flow |
+| **Framework** | Vitest | Vitest | Cypress |
+| **Location** | `tests/unit/utils/`, `tests/unit/services/` | `tests/unit/routes/` | `tests/cypress/e2e/`, `tests/cypress/acceptance/flows/` |
+| **Speed** | Fastest | Fast | Slowest |
+| **Example** | `formatDate()` utility | `GET /api/movies` handler | Homepage → Search → Movie Details |
 
 ## Best Practices
 
-1. **Use page objects** for complex flows (see `page-objects.md`)
-2. **Keep tests independent** - each test should run in isolation
-3. **Use fixtures** for test data (see Cypress fixtures)
-4. **Test error states** - verify 4xx and 5xx responses
-5. **Mock external services** when appropriate (MSW for Cypress)
+1. **Mock external services** - Use MSW to mock TMDB API responses
+2. **Test all branches** - Cover success, error, and edge cases
+3. **Use realistic data** - Mock responses should match real API structure
+4. **Test i18n handling** - Verify locale validation and error messages
+5. **Keep tests isolated** - Each test should run independently
 
 ## Coverage Reports
 
-Integration tests are **NOT** included in Vitest coverage reports. They are tracked separately by Cypress.
+Integration tests are **included** in Vitest coverage reports. The covered files are:
+- `app/api/**` - API route handlers
+- `lib/**` - Services, utilities, stores, i18n
 
 ## Related Documentation
 
 - [Unit Tests](unit-tests.md) - For isolated unit testing with Vitest
-- [Component Tests](component-tests.md) - For React component testing
+- [Component Tests](component-tests.md) - For React component testing with Cypress
+- [Flow Tests](../acceptance/flows/) - For multi-component user flow tests with Cypress
 - [Acceptance Tests](acceptance-tests.md) - For user story validation
