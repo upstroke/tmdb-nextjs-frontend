@@ -2,7 +2,7 @@ import { defineConfig } from 'cypress';
 
 export default defineConfig({
   e2e: {
-    supportFile: 'tests/cypress/support/e2e.js',  // Explizit .js
+    supportFile: 'tests/cypress/support/e2e.js',
     baseUrl: 'http://localhost:3000',
     specPattern: 'tests/cypress/acceptance/**/*.cy.{js,jsx}',
     fixturesFolder: 'tests/cypress/fixtures',
@@ -17,7 +17,10 @@ export default defineConfig({
 
   component: {
     supportFile: 'tests/cypress/support/component.js',
-    specPattern: 'tests/cypress/acceptance/components/**/*.cy.{js,jsx}',
+    specPattern: [
+      'tests/cypress/acceptance/components/**/*.cy.js',
+      'tests/cypress/acceptance/components/**/*.cy.jsx'
+    ],
     devServer: {
       framework: 'react',
       bundler: 'vite',
