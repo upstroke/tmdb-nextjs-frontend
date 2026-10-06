@@ -85,7 +85,7 @@ describe('GET /api/[locale]/trending', () => {
     );
 
     expect(mocks.mockJson).toHaveBeenCalledWith(
-      expect.objectContaining({ error: messages.contentLoadError }),
+      expect.objectContaining({ error: messages.loadMoreError }),
       expect.objectContaining({ status: 500 })
     );
   });
