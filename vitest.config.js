@@ -21,6 +21,24 @@ const sharedResolve = {
   },
 };
 
+const coverageConfig = {
+  provider: 'v8',
+  reporter: ['text', 'html'],
+  include: ['lib/**', 'app/api/**'],
+  exclude: [
+    '**/*.test.js',
+    '**/*.test.jsx',
+    '**/*.cy.js',
+    '**/*.cy.jsx',
+    'node_modules/**',
+    'lib/schemas/tmdb.js',
+    'lib/i18n/config.js',
+    'vitest/cypress/**',
+    'vitest/setup/**',
+    'vitest/mocks/**',
+  ],
+};
+
 export default defineConfig({
   esbuild: {
     include: /\.(js|jsx)$/,
@@ -40,24 +58,6 @@ export default defineConfig({
   resolve: sharedResolve,
 
   test: {
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'html'],
-      include: ['lib/**', 'app/api/**'],
-      exclude: [
-        '**/*.test.js',
-        '**/*.test.jsx',
-        '**/*.cy.js',
-        '**/*.cy.jsx',
-        'node_modules/**',
-        'lib/schemas/tmdb.js',
-        'lib/i18n/config.js',
-        'vitest/cypress/**',
-        'vitest/setup/**',
-        'vitest/mocks/**',
-      ],
-    },
-
     projects: [
       {
         name: 'unit',
@@ -67,6 +67,7 @@ export default defineConfig({
           globals: true,
           environment: 'jsdom',
           include: ['vitest/unit/**/*.test.{js,jsx}'],
+          coverage: coverageConfig,
         },
       },
 
@@ -83,6 +84,7 @@ export default defineConfig({
             'vitest/integration/**/*.test.jsx',
           ],
           exclude: ['vitest/integration/**/*.browser.test.{js,jsx}'],
+          coverage: coverageConfig,
         },
       },
 
