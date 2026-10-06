@@ -40,6 +40,18 @@ export default defineConfig({
   resolve: sharedResolve,
 
   test: {
+    coverage: {
+      provider: 'istanbul',
+      reporter: ['text', 'html'],
+      include: ['lib/**/*.{js,jsx}', 'app/api/**/*.{js,jsx}'],
+      exclude: [
+        'vitest/**',
+        'node_modules/**',
+        '**/*.test.{js,jsx}',
+        '**/*.cy.{js,jsx}',
+      ],
+    },
+
     projects: [
       {
         name: 'unit',
@@ -49,17 +61,6 @@ export default defineConfig({
           globals: true,
           environment: 'jsdom',
           include: ['vitest/unit/**/*.test.{js,jsx}'],
-          coverage: {
-            provider: 'istanbul',
-            reporter: ['text', 'html'],
-            include: ['lib/**/*.{js,jsx}', 'app/api/**/*.{js,jsx}'],
-            exclude: [
-              'vitest/**',
-              'node_modules/**',
-              '**/*.test.{js,jsx}',
-              '**/*.cy.{js,jsx}',
-            ],
-          },
         },
       },
 
@@ -76,17 +77,6 @@ export default defineConfig({
             'vitest/integration/**/*.test.jsx',
           ],
           exclude: ['vitest/integration/**/*.browser.test.{js,jsx}'],
-          coverage: {
-            provider: 'istanbul',
-            reporter: ['text', 'html'],
-            include: ['lib/**/*.{js,jsx}', 'app/api/**/*.{js,jsx}'],
-            exclude: [
-              'vitest/**',
-              'node_modules/**',
-              '**/*.test.{js,jsx}',
-              '**/*.cy.{js,jsx}',
-            ],
-          },
         },
       },
 
