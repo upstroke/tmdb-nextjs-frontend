@@ -21,16 +21,6 @@ const sharedResolve = {
   },
 };
 
-const coverageConfig = {
-  provider: 'v8',
-  reporter: ['text', 'html'],
-  include: ['lib/**/*.{js,jsx}', 'app/api/**/*.{js,jsx}'],
-  exclude: [
-    'node_modules/**',
-    'vitest/**',
-  ],
-};
-
 export default defineConfig({
   esbuild: {
     include: /\.(js|jsx)$/,
@@ -59,7 +49,17 @@ export default defineConfig({
           globals: true,
           environment: 'jsdom',
           include: ['vitest/unit/**/*.test.{js,jsx}'],
-          coverage: coverageConfig,
+          coverage: {
+            provider: 'v8',
+            reporter: ['text', 'html'],
+            include: ['lib/**/*.{js,jsx}', 'app/api/**/*.{js,jsx}'],
+            exclude: [
+              'node_modules/**',
+              'vitest/**',
+              '**/*.test.{js,jsx}',
+              '**/*.cy.{js,jsx}',
+            ],
+          },
         },
       },
 
@@ -76,7 +76,17 @@ export default defineConfig({
             'vitest/integration/**/*.test.jsx',
           ],
           exclude: ['vitest/integration/**/*.browser.test.{js,jsx}'],
-          coverage: coverageConfig,
+          coverage: {
+            provider: 'v8',
+            reporter: ['text', 'html'],
+            include: ['lib/**/*.{js,jsx}', 'app/api/**/*.{js,jsx}'],
+            exclude: [
+              'node_modules/**',
+              'vitest/**',
+              '**/*.test.{js,jsx}',
+              '**/*.cy.{js,jsx}',
+            ],
+          },
         },
       },
 
