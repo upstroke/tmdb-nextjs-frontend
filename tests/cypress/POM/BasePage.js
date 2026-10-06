@@ -1,23 +1,19 @@
-export const BasePage = () => {
-  /**
-   * Navigate to a pathname with locale prefix
-   * @param {string} locale - e.g. 'en-US' or 'de-DE'
-   * @param {string} pathname - e.g. '/' or '/movies/123'
-   */
-  const visit = (locale, pathname) => {
-    cy.visit(`/${locale}${pathname}`);
-  };
+// tests/cypress/POM/BasePage.js
 
-  /**
-   * Assert that the current URL pathname matches the expected pattern
-   * @param {string|RegExp} expected - Expected pathname or regex pattern
-   */
-  const assertPathname = (expected) => {
-    cy.location('pathname').should('match', new RegExp(`^/${expected}/?$`));
-  };
+export class BasePage {
+  visit(locale = 'de-DE') {
+    cy.visit(`/${locale}`);
+  }
 
-  return {
-    visit,
-    assertPathname,
-  };
-};
+  getUrl() {
+    return cy.url();
+  }
+
+  getHeader() {
+    return cy.get('header');
+  }
+
+  getLanguageSwitcher() {
+    return cy.get('[data-testid="language-switcher"]');
+  }
+}
