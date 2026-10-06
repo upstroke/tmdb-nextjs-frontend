@@ -13,7 +13,7 @@ Unit tests verify individual functions, utilities, and services in isolation. Th
 ```
 tests/unit/
 ├── i18n/            # i18n helper tests
-├── routes/          # API route handler tests
+├── routes/          # API route handler tests (Integration)
 ├── security/        # Security unit tests
 ├── services/        # Service layer tests
 ├── stores/          # Store logic tests
@@ -30,7 +30,7 @@ tests/unit/
 - Service functions (API data transformation)
 - i18n helpers and resolvers
 - Store logic
-- API route handlers
+- API route handlers (Integration Tests)
 - Pure functions (no side effects)
 - Edge cases and error handling
 
@@ -38,8 +38,8 @@ tests/unit/
 
 - React components (use Cypress component tests)
 - DOM manipulation (use Cypress)
-- Integration behavior (use integration tests)
-- E2E user flows (use Cypress E2E tests)
+- Integration behavior (use integration tests for routes)
+- Acceptance user flows (use Cypress Acceptance tests)
 
 ## Example
 
@@ -98,7 +98,7 @@ describe('formatDate', () => {
 
 ```bash
 # All unit tests (includes integration tests)
-npm run test:unit
+npm run test
 
 # With coverage (excludes Cypress tests)
 npm run test:coverage
@@ -113,13 +113,13 @@ npx vitest tests/unit/utils/format.test.js
 - **Enforced via**: `vitest.config.js`
 - **Excluded from coverage**:
   - Cypress Component Tests (`tests/cypress/component/`)
-  - Cypress E2E Tests (`tests/cypress/acceptance/`)
+  - Cypress Acceptance Tests (`tests/cypress/acceptance/flows/`)
   - Test setup files (`tests/setup/`)
   - Test mocks (`tests/mocks/`)
 
-## Documentation
+## Related Documentation
 
 - [Testing Strategy](../testing.md)
-- [Integration Tests](./integration-tests.md)
-- [Component Tests](./component-tests.md)
-- [E2E Tests](./e2e-tests.md)
+- [Integration Tests](integration-tests.md)
+- [Component Tests](component-tests.md)
+- [Acceptance Tests](acceptance-tests.md)
