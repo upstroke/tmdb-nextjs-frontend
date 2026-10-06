@@ -24,19 +24,10 @@ const sharedResolve = {
 const coverageConfig = {
   provider: 'v8',
   reporter: ['text', 'html'],
-  include: ['lib/**', 'app/api/**'],
+  include: ['lib/**/*.{js,jsx}', 'app/api/**/*.{js,jsx}'],
   exclude: [
-    '**/*.test.js',
-    '**/*.test.jsx',
-    '**/*.cy.js',
-    '**/*.cy.jsx',
     'node_modules/**',
-    'lib/schemas/tmdb.js',
-    'lib/i18n/config.js',
-    'vitest/cypress/**',
-    'vitest/fixtures/**',
-    'vitest/mocks/**',
-    'vitest/setup/**',
+    'vitest/**',
   ],
 };
 
