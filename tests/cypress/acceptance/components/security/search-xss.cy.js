@@ -11,13 +11,13 @@ describe('Security: Search XSS Prevention', () => {
     const xssInput = '<script>alert("XSS")</script>';
     
     // XSS-Input eingeben
-    header.searchInput.type(xssInput);
+    header.searchInput().type(xssInput);
     
     // Der Value im Input-Feld sollte exakt dem Input entsprechen (als Text, nicht ausgeführt)
-    header.searchInput.should('have.value', xssInput);
+    header.searchInput().should('have.value', xssInput);
     
     // Enter drücken, um Suche zu triggern
-    header.searchInput.type('{enter}');
+    header.searchInput().type('{enter}');
     
     // Seite sollte nicht crashen – wir landen auf /search
     cy.location('pathname').should('include', '/search');
@@ -39,8 +39,8 @@ describe('Security: Search XSS Prevention', () => {
   });
 
   it('akzeptiert normale Suchanfragen', () => {
-    header.searchInput.type('Batman');
-    header.searchInput.type('{enter}');
+    header.searchInput().type('Batman');
+    header.searchInput().type('{enter}');
     
     cy.location('pathname').should('include', '/search');
     
