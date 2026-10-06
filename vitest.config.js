@@ -34,8 +34,9 @@ const coverageConfig = {
     'lib/schemas/tmdb.js',
     'lib/i18n/config.js',
     'vitest/cypress/**',
-    'vitest/setup/**',
+    'vitest/fixtures/**',
     'vitest/mocks/**',
+    'vitest/setup/**',
   ],
 };
 
