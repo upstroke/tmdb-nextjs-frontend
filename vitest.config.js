@@ -1,5 +1,5 @@
 // vitest.config.js
-// Vitest configuration for unit and integration tests
+// Vitest configuration for unit, integration, and browser-based UI tests
 
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
@@ -17,7 +17,7 @@ const sharedPlugins = [
 const sharedResolve = {
   alias: {
     '@': resolve(__dirname, '.'),
-    $tests: resolve(__dirname, 'vitest'), // ← GEÄNDERT
+    $tests: resolve(__dirname, 'vitest'),
   },
 };
 
@@ -36,6 +36,7 @@ export default defineConfig({
   },
 
   plugins: sharedPlugins,
+
   resolve: sharedResolve,
 
   test: {
@@ -51,9 +52,9 @@ export default defineConfig({
         'node_modules/**',
         'lib/schemas/tmdb.js',
         'lib/i18n/config.js',
-        'vitest/cypress/**', // ← GEÄNDERT
-        'vitest/setup/**',   // ← GEÄNDERT
-        'vitest/mocks/**',   // ← GEÄNDERT
+        'vitest/cypress/**',
+        'vitest/setup/**',
+        'vitest/mocks/**',
       ],
     },
 
@@ -65,9 +66,10 @@ export default defineConfig({
           name: 'unit',
           globals: true,
           environment: 'jsdom',
-          include: ['vitest/unit/**/*.test.{js,jsx}'], // ← GEÄNDERT
+          include: ['vitest/unit/**/*.test.{js,jsx}'],
         },
       },
+
       {
         name: 'integration',
         resolve: sharedResolve,
@@ -75,11 +77,37 @@ export default defineConfig({
           name: 'integration',
           globals: true,
           environment: 'jsdom',
-          setupFiles: ['./vitest/setup/vitest.js'], // ← GEÄNDERT
+          setupFiles: ['./vitest/setup/vitest.js'],
           include: [
-            'vitest/integration/**/*.test.js',       // ← GEÄNDERT
-            'vitest/integration/**/*.test.jsx',      // ← GEÄNDERT
+            'vitest/integration/**/*.test.js',
+            'vitest/integration/**/*.test.jsx',
           ],
+        },
+      },
+
+      {
+        name: 'browser',
+        resolve: sharedResolve,
+        test: {
+          name: 'browser',
+          globals: true,
+
+          include: [
+            'vitest/component/**/*.browser.test.{js,jsx}',
+            'vitest/integration/**/*.browser.test.{js,jsx}',
+          ],
+
+          setupFiles: ['./vitest/setup/browser.js'],
+
+          browser: {
+            enabled: true,
+            provider: 'playwright',
+            instances: [
+              {
+                browser: 'chromium',
+              },
+            ],
+          },
         },
       },
     ],
