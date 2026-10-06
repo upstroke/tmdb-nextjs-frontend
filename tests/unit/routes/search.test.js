@@ -3,6 +3,17 @@
 // Coverage goal: Branch + Statement coverage for route handler
 
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+
+const mocks = vi.hoisted(() => ({
+  mockJson: vi.fn(),
+}));
+
+vi.mock('next/server', () => ({
+  NextResponse: {
+    json: mocks.mockJson,
+  },
+}));
+
 import { GET } from '@/app/api/[locale]/search/route';
 import { createTmdbApi } from '@/lib/services/tmdb-api';
 
@@ -11,22 +22,12 @@ vi.mock('@/lib/services/tmdb-api', () => ({
   createTmdbApi: vi.fn(),
 }));
 
-// Mock NextResponse
-const mockJson = vi.fn();
-
-vi.mock('next/server', () => ({
-  NextResponse: {
-    json: vi.fn((data) => ({ json: vi.fn(() => data) })),
-    error: vi.fn((data) => ({ json: vi.fn(() => data) })),
-  },
-}));
-
 describe('GET /api/[locale]/search', () => {
   let mockTmdbApi;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockJson.mockClear();
+    mocks.mockJson.mockClear();
 
     // Create mock TMDB API instance
     mockTmdbApi = {
@@ -52,7 +53,7 @@ describe('GET /api/[locale]/search', () => {
 
     await GET(mockRequest, mockParams);
 
-    expect(mockJson).toHaveBeenCalledWith(
+    expect(mocks.mockJson).toHaveBeenCalledWith(
       expect.objectContaining({
         error: expect.stringContaining('query'),
       })
@@ -96,7 +97,7 @@ describe('GET /api/[locale]/search', () => {
     await GET(mockRequest, mockParams);
 
     expect(mockTmdbApi.searchMedia).toHaveBeenCalledWith('test', 1);
-    expect(mockJson).toHaveBeenCalledWith(
+    expect(mocks.mockJson).toHaveBeenCalledWith(
       expect.objectContaining({
         success: true,
         data: mockSearchResults,
@@ -137,7 +138,7 @@ describe('GET /api/[locale]/search', () => {
 
     await GET(mockRequest, mockParams);
 
-    expect(mockJson).toHaveBeenCalledWith(
+    expect(mocks.mockJson).toHaveBeenCalledWith(
       expect.objectContaining({
         error: expect.stringContaining('query'),
       })
@@ -158,7 +159,7 @@ describe('GET /api/[locale]/search', () => {
 
     await GET(mockRequest, mockParams);
 
-    expect(mockJson).toHaveBeenCalledWith(
+    expect(mocks.mockJson).toHaveBeenCalledWith(
       expect.objectContaining({
         error: expect.stringContaining('search'),
       })
