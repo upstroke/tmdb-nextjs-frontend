@@ -50,8 +50,8 @@ export default defineConfig({
           environment: 'jsdom',
           include: ['vitest/unit/**/*.test.{js,jsx}'],
           coverage: {
-            provider: 'v8',
-            reporter: [['text', { file: null }], 'html'],
+            provider: 'istanbul',
+            reporter: ['text', 'html'],
             include: ['lib/**/*.{js,jsx}', 'app/api/**/*.{js,jsx}'],
             exclude: [
               'vitest/**',
@@ -59,7 +59,6 @@ export default defineConfig({
               '**/*.test.{js,jsx}',
               '**/*.cy.{js,jsx}',
             ],
-            allowExternal: false,
           },
         },
       },
@@ -78,8 +77,8 @@ export default defineConfig({
           ],
           exclude: ['vitest/integration/**/*.browser.test.{js,jsx}'],
           coverage: {
-            provider: 'v8',
-            reporter: [['text', { file: null }], 'html'],
+            provider: 'istanbul',
+            reporter: ['text', 'html'],
             include: ['lib/**/*.{js,jsx}', 'app/api/**/*.{js,jsx}'],
             exclude: [
               'vitest/**',
@@ -87,7 +86,6 @@ export default defineConfig({
               '**/*.test.{js,jsx}',
               '**/*.cy.{js,jsx}',
             ],
-            allowExternal: false,
           },
         },
       },
