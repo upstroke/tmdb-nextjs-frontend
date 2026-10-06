@@ -1,5 +1,6 @@
 // tests/unit/routes/search.test.js
 // Unit tests for GET /api/[locale]/search API route
+// Coverage goal: Branch + Statement coverage for route handler
 
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { GET } from '../../../../app/api/[locale]/search/route';
@@ -40,6 +41,7 @@ describe('GET /api/[locale]/search', () => {
     vi.restoreAllMocks();
   });
 
+  // Branch coverage: returns 400 when query parameter is missing
   it('returns 400 when query parameter is missing', async () => {
     const mockRequest = {
       url: 'http://localhost:3000/api/en-US/search',
@@ -54,6 +56,7 @@ describe('GET /api/[locale]/search', () => {
     );
   });
 
+  // Statement coverage: returns search results for valid query with page parameter
   it('returns search results for valid query', async () => {
     const mockSearchResults = {
       page: 1,
@@ -95,6 +98,7 @@ describe('GET /api/[locale]/search', () => {
     );
   });
 
+  // Branch coverage: uses default page=1 when page parameter is missing
   it('uses default page=1 when page parameter is missing', async () => {
     const mockSearchResults = {
       page: 1,
@@ -113,6 +117,7 @@ describe('GET /api/[locale]/search', () => {
     expect(mockTmdbApi.searchMedia).toHaveBeenCalledWith('test', 1);
   });
 
+  // Branch coverage: handles empty query string gracefully (returns 400)
   it('handles empty query string gracefully', async () => {
     const mockRequest = {
       url: 'http://localhost:3000/api/en-US/search?q=',
@@ -127,6 +132,7 @@ describe('GET /api/[locale]/search', () => {
     );
   });
 
+  // Branch coverage: returns 500 error when TMDB API throws
   it('returns 500 error when TMDB API throws', async () => {
     const mockError = new Error('TMDB API error');
     mockTmdbApi.searchMedia.mockRejectedValue(mockError);
@@ -144,6 +150,7 @@ describe('GET /api/[locale]/search', () => {
     );
   });
 
+  // Statement coverage: handles special characters in query (URL decoding)
   it('handles special characters in query', async () => {
     const mockSearchResults = {
       page: 1,
