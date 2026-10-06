@@ -46,8 +46,11 @@ describe('GET /api/[locale]/search', () => {
     const mockRequest = {
       url: 'http://localhost:3000/api/en-US/search',
     };
+    const mockParams = {
+      params: Promise.resolve({ locale: 'en-US' }),
+    };
 
-    await GET(mockRequest);
+    await GET(mockRequest, mockParams);
 
     expect(mockJson).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -86,8 +89,11 @@ describe('GET /api/[locale]/search', () => {
     const mockRequest = {
       url: 'http://localhost:3000/api/en-US/search?q=test&page=1',
     };
+    const mockParams = {
+      params: Promise.resolve({ locale: 'en-US' }),
+    };
 
-    await GET(mockRequest);
+    await GET(mockRequest, mockParams);
 
     expect(mockTmdbApi.searchMedia).toHaveBeenCalledWith('test', 1);
     expect(mockJson).toHaveBeenCalledWith(
@@ -111,8 +117,11 @@ describe('GET /api/[locale]/search', () => {
     const mockRequest = {
       url: 'http://localhost:3000/api/en-US/search?q=test',
     };
+    const mockParams = {
+      params: Promise.resolve({ locale: 'en-US' }),
+    };
 
-    await GET(mockRequest);
+    await GET(mockRequest, mockParams);
 
     expect(mockTmdbApi.searchMedia).toHaveBeenCalledWith('test', 1);
   });
@@ -122,8 +131,11 @@ describe('GET /api/[locale]/search', () => {
     const mockRequest = {
       url: 'http://localhost:3000/api/en-US/search?q=',
     };
+    const mockParams = {
+      params: Promise.resolve({ locale: 'en-US' }),
+    };
 
-    await GET(mockRequest);
+    await GET(mockRequest, mockParams);
 
     expect(mockJson).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -140,8 +152,11 @@ describe('GET /api/[locale]/search', () => {
     const mockRequest = {
       url: 'http://localhost:3000/api/en-US/search?q=test&page=1',
     };
+    const mockParams = {
+      params: Promise.resolve({ locale: 'en-US' }),
+    };
 
-    await GET(mockRequest);
+    await GET(mockRequest, mockParams);
 
     expect(mockJson).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -163,8 +178,11 @@ describe('GET /api/[locale]/search', () => {
     const mockRequest = {
       url: 'http://localhost:3000/api/en-US/search?q=Test%20Movie%20%26%20TV%20Show&page=1',
     };
+    const mockParams = {
+      params: Promise.resolve({ locale: 'en-US' }),
+    };
 
-    await GET(mockRequest);
+    await GET(mockRequest, mockParams);
 
     expect(mockTmdbApi.searchMedia).toHaveBeenCalledWith('Test Movie & TV Show', 1);
   });
