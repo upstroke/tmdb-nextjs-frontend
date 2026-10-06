@@ -42,7 +42,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
-      include: ['lib/**', 'app/**'],
+      include: ['lib/**', 'app/api/**'],
       exclude: [
         '**/*.test.js',
         '**/*.test.jsx',
@@ -54,9 +54,6 @@ export default defineConfig({
         'tests/cypress/**',
         'tests/setup/**',
         'tests/mocks/**',
-        'app/[locale]/**/page.js',
-        'app/layout.js',
-        'app/page.js',
       ],
     },
 
