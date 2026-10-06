@@ -17,11 +17,11 @@ describe('Navigation', () => {
 
   it('[NAV-03] displays a visible header', () => {
     base.visit('en-US');
-    header.assertVisible();
+    header.navMenu().should('be.visible');
   });
 
   it('[NAV-04] has a language switcher in the header', () => {
     base.visit('en-US');
-    header.assertLanguageSwitcherExists();
+    header.languageSelect().should('exist');
   });
 });
