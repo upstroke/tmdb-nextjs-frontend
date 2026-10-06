@@ -71,7 +71,7 @@ describe('GET /api/[locale]/trending', () => {
 
     expect(mockTmdbApi.getTrendingAll).toHaveBeenCalled();
     expect(mocks.mockJson).toHaveBeenCalledWith(
-      expect.objectContaining({ error: null, results })
+      expect.objectContaining({ error: null, cards: results })
     );
   });
 
@@ -85,7 +85,7 @@ describe('GET /api/[locale]/trending', () => {
     );
 
     expect(mocks.mockJson).toHaveBeenCalledWith(
-      expect.objectContaining({ error: messages.trendingError }),
+      expect.objectContaining({ error: messages.contentLoadError }),
       expect.objectContaining({ status: 500 })
     );
   });
