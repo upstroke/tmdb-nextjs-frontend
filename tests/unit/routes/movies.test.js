@@ -85,7 +85,7 @@ describe('GET /api/[locale]/movies', () => {
     );
 
     expect(mocks.mockJson).toHaveBeenCalledWith(
-      expect.objectContaining({ error: messages.moviesLoadError }),
+      expect.objectContaining({ error: messages.moreMoviesLoadError }),
       expect.objectContaining({ status: 500 })
     );
   });
