@@ -41,7 +41,6 @@ export default defineConfig({
 
   test: {
     silent: true,
-
     coverage: {
       provider: 'istanbul',
       reporter: ['text', 'html', 'json', 'json-summary'],
@@ -80,7 +79,6 @@ export default defineConfig({
         statements: 80,
       },
     },
-
     projects: [
       {
         name: 'unit',
