@@ -8,9 +8,9 @@ Acceptance tests verify the application from the **user's perspective**. They ar
 
 ```
 tests/cypress/acceptance/
-├── components/    # Abzunehmende UI-Komponenten (Stories)
-├── flows/         # User Journeys über mehrere Seiten
-└── accessibility/ # A11y-Tests (WCAG)
+├── components/      # Funktionale Abnahmetests (Components)
+├── flows/           # Funktionale Abnahmetests (User Journeys)
+└── accessibility/   # Accessibility Abnahmetests (WCAG)
 ```
 
 **No Features folder** – Feature acceptance criteria are documented in component stories.
@@ -102,27 +102,49 @@ describe('Movie Detail Flow', () => {
 
 ---
 
-## Component vs. Flow
+## Accessibility
 
-| Dimension | Component | Flow |
-|-----------|-----------|------|
-| **Scope** | Single component | Multiple pages/components |
-| **Test-Type** | Component Testing (`cy.mount()`) | E2E Testing (`cy.visit()`) |
-| **Speed** | Fast (< 5s) | Slower (> 10s) |
-| **Example** | "Card renders title" | "Homepage → Search → Detail → Watch Provider" |
+**Accessibility tests** verify WCAG 2.1/2.2 compliance. They are **acceptance tests** with special tooling.
+
+### Examples
+
+| Page | A11y Test Folder |
+|------|------------------|
+| **Homepage** | `accessibility/homepage/` |
+| **Movie Detail** | `accessibility/movieDetail/` |
+| **TV Show Detail** | `accessibility/tvShowDetail/` |
+
+### Structure per A11y Test
+
+```
+accessibility/homepage/
+├── Homepage-A11y-Testplan.md   # WCAG audit checklist
+└── homepage.cy.js              # A11y test implementation
+```
+
+### Example
+
+```javascript
+// tests/cypress/acceptance/accessibility/homepage/homepage.cy.js
+describe('Homepage Accessibility', () => {
+  it('passes WCAG 2.1 AA audit', () => {
+    cy.visitWithLocale('/', 'en-US');
+    cy.checkPageA11y();
+  });
+});
+```
 
 ---
 
-## Accessibility
+## Component vs. Flow vs. Accessibility
 
-**Accessibility tests** verify WCAG 2.1/2.2 compliance.
-
-```
-accessibility/
-├── homepage/       # Homepage A11y
-├── movieDetail/    # Movie detail A11y
-└── tvShowDetail/   # TV show detail A11y
-```
+| Dimension | Component | Flow | Accessibility |
+|-----------|-----------|------|---------------|
+| **Scope** | Single component | Multiple pages | Single page |
+| **Test-Type** | Component Testing (`cy.mount()`) | E2E Testing (`cy.visit()`) | E2E Testing (`cy.visit()`) |
+| **Speed** | Fast (< 5s) | Slower (> 10s) | Medium (~5s) |
+| **Focus** | Acceptance criteria | User journey | WCAG compliance |
+| **Example** | "Card renders title" | "Homepage → Search → Detail" | "All elements have accessible names" |
 
 ---
 
@@ -131,7 +153,7 @@ accessibility/
 ### ✅ Test These:
 - **Components**: Acceptance criteria from stories
 - **Flows**: Complete user journeys
-- **Accessibility**: WCAG compliance
+- **Accessibility**: WCAG 2.1/2.2 AA compliance
 - **Critical paths**: Happy paths + important edge cases
 
 ### ❌ Don't Test:
@@ -150,13 +172,14 @@ accessibility/
 4. **Use realistic data** – Fixtures from `tests/cypress/fixtures/`
 5. **Assert on user-visible content** – Text, roles, labels
 6. **One test plan per component/flow** – ISTQB format with Gherkin
+7. **A11y tests per page** – WCAG audit checklist
 
 ---
 
 ## Running Tests
 
 ```bash
-# All acceptance tests (component + flow)
+# All acceptance tests (component + flow + a11y)
 npm run test:component
 npm run test:e2e
 
@@ -165,6 +188,9 @@ npx cypress run --component --spec "tests/cypress/acceptance/components/cardDefa
 
 # Specific flow test
 npx cypress run --e2e --spec "tests/cypress/acceptance/flows/movieDetail/movieDetail.cy.js"
+
+# Specific a11y test
+npx cypress run --e2e --spec "tests/cypress/acceptance/accessibility/homepage/homepage.cy.js"
 ```
 
 ---
