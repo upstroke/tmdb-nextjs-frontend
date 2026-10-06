@@ -10,18 +10,18 @@ This project uses multiple testing frameworks for different purposes:
 - **Purpose:** Fast, isolated tests for utility functions, services, stores, and i18n
 - **Coverage:** Included in coverage reports
 
-### Route Handler Tests (Vitest)
+### Integration Tests (Vitest)
 - **Framework:** Vitest
 - **Location:** `tests/unit/routes/`
-- **Purpose:** Test Next.js API route handlers in isolation
-- **Coverage:** Included in coverage reports (only `app/api/**` routes)
-
-### Integration Tests (Cypress)
-- **Framework:** Cypress
-- **Location:** `tests/cypress/e2e/api/`
-- **Purpose:** API endpoint tests and multi-step flows
-- **Coverage:** NOT included in Vitest coverage reports
+- **Purpose:** Test API route handlers with service integration
+- **Coverage:** Included in coverage reports
 - **Documentation:** [Integration Tests](testing/integration-tests.md)
+
+### Flow Tests (Cypress)
+- **Framework:** Cypress
+- **Location:** `tests/cypress/acceptance/flows/`
+- **Purpose:** Multi-component user flows (e.g., homepage navigation, search)
+- **Coverage:** NOT included in Vitest coverage reports
 
 ### E2E Tests (Cypress)
 - **Framework:** Cypress
@@ -38,16 +38,16 @@ This project uses multiple testing frameworks for different purposes:
 ## Running Tests
 
 ```bash
-# Run all Vitest tests (unit + route handlers)
+# Run all Vitest tests (unit + integration)
 npm run test
 
 # Run Vitest with coverage
 npm run test:coverage
 
-# Run Cypress E2E/Integration tests (opens UI)
+# Run Cypress Flow/E2E tests (opens UI)
 npm run test:e2e
 
-# Run Cypress E2E/Integration tests (headless)
+# Run Cypress Flow/E2E tests (headless)
 npm run test:e2e:headless
 
 # Run Cypress Component Tests
@@ -71,15 +71,16 @@ Coverage reports **exclude**:
 
 ```
 tests/
-├── unit/              # Vitest unit tests
+├── unit/              # Vitest tests
 │   ├── utils/
 │   ├── services/
 │   ├── stores/
 │   ├── i18n/
-│   └── routes/        # API route handler tests
+│   └── routes/        # Integration tests (route handlers)
 └── cypress/           # Cypress tests
-    ├── e2e/           # E2E and integration tests
-    │   └── api/       # API integration tests
+    ├── acceptance/
+    │   └── flows/     # Flow tests (multi-component)
+    ├── e2e/           # E2E tests
     ├── component/     # Component tests
     └── fixtures/
 ```
@@ -89,8 +90,8 @@ tests/
 | Test Type | Use For |
 |-----------|---------|
 | **Vitest Unit** | Pure functions, utilities, services, stores |
-| **Vitest Route** | API route handler logic (request/response) |
-| **Cypress Integration** | API endpoints via HTTP, multi-step flows |
+| **Vitest Integration** | API route handlers with service integration |
+| **Cypress Flow** | Multi-component user flows (navigation, search) |
 | **Cypress E2E** | Complete user journeys through the UI |
 | **Cypress Component** | Individual React components in isolation |
 
@@ -100,5 +101,6 @@ tests/
 - [Integration Tests](testing/integration-tests.md)
 - [Component Tests](testing/component-tests.md)
 - [Acceptance Tests](testing/acceptance-tests.md)
+- [Flow Tests](cypress/acceptance/flows/)
 - [Page Objects](testing/page-objects.md)
 - [Common Rules](testing/common-rules.md)
