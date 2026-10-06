@@ -22,12 +22,16 @@ vi.mock('@/lib/services/tmdb-api', () => ({
   createTmdbApi: vi.fn(),
 }));
 
+// Mock process.env.TMDB_API_KEY
+const originalEnv = process.env;
+
 describe('GET /api/[locale]/search', () => {
   let mockTmdbApi;
 
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.mockJson.mockClear();
+    process.env = { ...originalEnv, TMDB_API_KEY: 'test-api-key' };
 
     // Create mock TMDB API instance
     mockTmdbApi = {
@@ -39,11 +43,12 @@ describe('GET /api/[locale]/search', () => {
   });
 
   afterEach(() => {
+    process.env = originalEnv;
     vi.restoreAllMocks();
   });
 
-  // Branch coverage: returns 400 when query parameter is missing
-  it('returns 400 when query parameter is missing', async () => {
+  // Branch coverage: returns empty results when query parameter is missing
+  it('returns empty results when query parameter is missing', async () => {
     const mockRequest = {
       url: 'http://localhost:3000/api/en-US/search',
     };
@@ -55,7 +60,10 @@ describe('GET /api/[locale]/search', () => {
 
     expect(mocks.mockJson).toHaveBeenCalledWith(
       expect.objectContaining({
-        error: expect.stringContaining('query'),
+        error: null,
+        movies: [],
+        tvShows: [],
+        results: [],
       })
     );
   });
@@ -68,6 +76,7 @@ describe('GET /api/[locale]/search', () => {
         {
           id: 1,
           mediatype: 'movie',
+          mediaType: 'movie',
           title: 'Test Movie',
           vote_average: 7.5,
           poster_path: '/test.jpg',
@@ -76,6 +85,7 @@ describe('GET /api/[locale]/search', () => {
         {
           id: 2,
           mediatype: 'tv',
+          mediaType: 'tv',
           name: 'Test TV Show',
           vote_average: 8.0,
           poster_path: '/test2.jpg',
@@ -96,38 +106,16 @@ describe('GET /api/[locale]/search', () => {
 
     await GET(mockRequest, mockParams);
 
-    expect(mockTmdbApi.searchMedia).toHaveBeenCalledWith('test', 1);
+    expect(mockTmdbApi.searchMedia).toHaveBeenCalledWith('test');
     expect(mocks.mockJson).toHaveBeenCalledWith(
       expect.objectContaining({
-        success: true,
-        data: mockSearchResults,
+        error: null,
+        results: mockSearchResults.results,
       })
     );
   });
 
-  // Branch coverage: uses default page=1 when page parameter is missing
-  it('uses default page=1 when page parameter is missing', async () => {
-    const mockSearchResults = {
-      page: 1,
-      results: [],
-      total_pages: 0,
-    };
-
-    mockTmdbApi.searchMedia.mockResolvedValue(mockSearchResults);
-
-    const mockRequest = {
-      url: 'http://localhost:3000/api/en-US/search?q=test',
-    };
-    const mockParams = {
-      params: Promise.resolve({ locale: 'en-US' }),
-    };
-
-    await GET(mockRequest, mockParams);
-
-    expect(mockTmdbApi.searchMedia).toHaveBeenCalledWith('test', 1);
-  });
-
-  // Branch coverage: handles empty query string gracefully (returns 400)
+  // Branch coverage: handles empty query string gracefully (returns empty results)
   it('handles empty query string gracefully', async () => {
     const mockRequest = {
       url: 'http://localhost:3000/api/en-US/search?q=',
@@ -140,18 +128,45 @@ describe('GET /api/[locale]/search', () => {
 
     expect(mocks.mockJson).toHaveBeenCalledWith(
       expect.objectContaining({
-        error: expect.stringContaining('query'),
+        error: null,
+        movies: [],
+        tvShows: [],
+        results: [],
       })
     );
   });
 
-  // Branch coverage: returns 500 error when TMDB API throws
-  it('returns 500 error when TMDB API throws', async () => {
-    const mockError = new Error('TMDB API error');
+  // Branch coverage: returns 500 error when TMDB_API_KEY is missing
+  it('returns 500 error when TMDB_API_KEY is missing', async () => {
+    process.env = { ...originalEnv };
+    delete process.env.TMDB_API_KEY;
+
+    const mockRequest = {
+      url: 'http://localhost:3000/api/en-US/search?q=test',
+    };
+    const mockParams = {
+      params: Promise.resolve({ locale: 'en-US' }),
+    };
+
+    await GET(mockRequest, mockParams);
+
+    expect(mocks.mockJson).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error: expect.stringContaining('TMDB_API_KEY'),
+      }),
+      expect.objectContaining({
+        status: 500,
+      })
+    );
+  });
+
+  // Branch coverage: returns 500 error when search throws
+  it('returns 500 error when search throws', async () => {
+    const mockError = new Error('Search failed');
     mockTmdbApi.searchMedia.mockRejectedValue(mockError);
 
     const mockRequest = {
-      url: 'http://localhost:3000/api/en-US/search?q=test&page=1',
+      url: 'http://localhost:3000/api/en-US/search?q=test',
     };
     const mockParams = {
       params: Promise.resolve({ locale: 'en-US' }),
@@ -162,6 +177,9 @@ describe('GET /api/[locale]/search', () => {
     expect(mocks.mockJson).toHaveBeenCalledWith(
       expect.objectContaining({
         error: expect.stringContaining('search'),
+      }),
+      expect.objectContaining({
+        status: 500,
       })
     );
   });
@@ -177,7 +195,7 @@ describe('GET /api/[locale]/search', () => {
     mockTmdbApi.searchMedia.mockResolvedValue(mockSearchResults);
 
     const mockRequest = {
-      url: 'http://localhost:3000/api/en-US/search?q=Test%20Movie%20%26%20TV%20Show&page=1',
+      url: 'http://localhost:3000/api/en-US/search?q=Test%20Movie%20%26%20TV%20Show',
     };
     const mockParams = {
       params: Promise.resolve({ locale: 'en-US' }),
@@ -185,6 +203,6 @@ describe('GET /api/[locale]/search', () => {
 
     await GET(mockRequest, mockParams);
 
-    expect(mockTmdbApi.searchMedia).toHaveBeenCalledWith('Test Movie & TV Show', 1);
+    expect(mockTmdbApi.searchMedia).toHaveBeenCalledWith('Test Movie & TV Show');
   });
 });
