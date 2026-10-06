@@ -19,6 +19,7 @@ Unit tests verify individual functions, utilities, and modules in isolation.
   - i18n helpers and resolvers
   - Store logic
   - Service layer functions
+  - API route handlers
 
 **Run unit tests:**
 ```bash
@@ -82,6 +83,20 @@ End-to-end tests verify complete user flows through the entire application.
 npm run test:e2e
 ```
 
+## Coverage
+
+### What's Included in Coverage Reports
+
+**Unit + Integration Tests (Vitest):**
+- All code covered by tests in `tests/unit/` and `tests/integration/`
+- Reported via `npm run test:coverage`
+
+**NOT Included:**
+- Cypress Component Tests (`tests/cypress/component/`)
+- Cypress E2E Tests (`tests/cypress/acceptance/`)
+
+Cypress tests have their own separate reporting and are excluded from Vitest coverage.
+
 ## Test Commands
 
 ```bash
@@ -94,7 +109,7 @@ npm run test:component
 # Run E2E tests
 npm run test:e2e
 
-# Run unit tests with coverage
+# Run unit tests with coverage (excludes Cypress tests)
 npm run test:coverage
 ```
 
@@ -111,6 +126,7 @@ npm run test:coverage
 tests/
 ├── unit/                    # Unit tests (Vitest)
 │   ├── i18n/
+│   ├── routes/              # API route handler tests
 │   ├── security/
 │   ├── services/
 │   ├── stores/
@@ -128,7 +144,7 @@ tests/
 
 ## Configuration Files
 
-- **`vitest.config.js`** – Vitest configuration for unit and integration tests
+- **`vitest.config.js`** – Vitest configuration for unit and integration tests (includes coverage exclude patterns)
 - **`vite.config.js`** – Vite configuration for Cypress Component Testing
 - **`tests/cypress.config.js`** – Cypress configuration for E2E and component tests
 

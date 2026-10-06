@@ -1,3 +1,6 @@
+// vitest.config.js
+// Vitest configuration for unit and integration tests
+
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
@@ -39,13 +42,18 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
-      include: ['lib/**', 'app/**'],
+      include: ['lib/**', 'app/api/**'],
       exclude: [
         '**/*.test.js',
         '**/*.test.jsx',
+        '**/*.cy.js',
+        '**/*.cy.jsx',
         'node_modules/**',
         'lib/schemas/tmdb.js',
         'lib/i18n/config.js',
+        'tests/cypress/**',
+        'tests/setup/**',
+        'tests/mocks/**',
       ],
     },
 
