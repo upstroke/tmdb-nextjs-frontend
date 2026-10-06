@@ -51,7 +51,7 @@ export default defineConfig({
           include: ['vitest/unit/**/*.test.{js,jsx}'],
           coverage: {
             provider: 'v8',
-            reporter: ['text', 'html'],
+            reporter: [['text', { file: null }], 'html'],
             include: ['lib/**/*.{js,jsx}', 'app/api/**/*.{js,jsx}'],
             exclude: [
               'vitest/**',
@@ -79,7 +79,7 @@ export default defineConfig({
           exclude: ['vitest/integration/**/*.browser.test.{js,jsx}'],
           coverage: {
             provider: 'v8',
-            reporter: ['text', 'html'],
+            reporter: [['text', { file: null }], 'html'],
             include: ['lib/**/*.{js,jsx}', 'app/api/**/*.{js,jsx}'],
             exclude: [
               'vitest/**',
