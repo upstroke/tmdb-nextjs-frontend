@@ -6,7 +6,7 @@ import './tmdb.commands.js';
 import '@testing-library/cypress';
 
 Cypress.Commands.add('checkPageA11y', (options = {}) => {
-  cy.injectAxe({ axeCorePath: 'node_modules/axe-core/axe.min.js' });
+  cy.injectAxe();
   cy.checkA11y(
     null,
     {
