@@ -1,3 +1,8 @@
+// vitest.config.js
+// Configuration for Vitest unit and integration tests
+// This config is used for running unit tests (tests/unit/) and integration tests (tests/integration/)
+// For Cypress E2E tests, see vite.config.js
+
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
