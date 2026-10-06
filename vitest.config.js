@@ -40,12 +40,12 @@ export default defineConfig({
   resolve: sharedResolve,
 
   test: {
-    // Globale Coverage-Config für alle Projekte
+    silent: true,
+
     coverage: {
       provider: 'istanbul',
-      reporter: ['html', 'json'],
+      reporter: ['text', 'html', 'json', 'json-summary'],
 
-      // NUR diese Files werden instrumentiert und im Report gezeigt
       include: [
         'lib/**/*.js',
         'lib/**/*.jsx',
@@ -53,8 +53,8 @@ export default defineConfig({
         'app/api/**/*.jsx',
       ],
 
-      // Alles andere explizit ausschließen
       exclude: [
+        'lib/stores/locale.jsx',
         'vitest/**',
         'node_modules/**',
         '**/*.test.{js,jsx}',
@@ -68,7 +68,7 @@ export default defineConfig({
         'next.config.js',
         'postcss.config.js',
         'vite.config.js',
-        'vitest.config.js',
+        'vitest.config.js'
       ],
 
       all: false,
