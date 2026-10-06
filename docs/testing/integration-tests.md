@@ -1,101 +1,98 @@
 # Integration Tests
 
-## Overview
+Integration tests verify that multiple parts of your application work together correctly. In this project, we use **Cypress** for integration testing.
 
-Integration tests verify the interaction between multiple modules or services. They ensure that different parts of the application work together correctly.
+## Why Cypress for Integration Tests?
 
-## Tool
+- ✅ **Real HTTP requests** - Tests run against the actual application server
+- ✅ **Full stack testing** - Tests the complete request/response cycle
+- ✅ **Browser automation** - Tests run in a real browser environment
+- ✅ **Consistent tooling** - Same framework as E2E and component tests
 
-- **Vitest** with **Testing Library** and **MSW** (Mock Service Worker)
+## Running Integration Tests
 
-## Location
+```bash
+# Open Cypress UI (recommended for development)
+npm run test:e2e
 
+# Run Cypress tests headless (CI/CD)
+npm run test:e2e:headless
+
+# Run specific integration test file
+npx cypress run --spec "tests/cypress/e2e/api/*.cy.js"
 ```
-tests/vitest/
-├── integration/     # Integration test files
-└── *.test.js        # Test files
+
+## Test Location
+
+Integration tests are located in:
+```
+tests/cypress/e2e/api/
 ```
 
-## What to Test
+## Writing API Integration Tests
 
-### ✅ Test These:
+Use `cy.request()` to test API endpoints directly:
 
-- Page or section rendering with mocked data
-- Data flow from API → Service → Component
-- Multiple components working together
-- State management across components
-- Real integration scenarios
+```javascript
+// tests/cypress/e2e/api/movies.cy.js
+describe('API Routes', () => {
+  describe('GET /api/[locale]/movies', () => {
+    it('returns 200 for valid locale', () => {
+      cy.request('/api/en-US/movies')
+        .its('status')
+        .should('eq', 200);
+    });
 
-### ❌ Don't Test:
+    it('returns 400 for invalid locale', () => {
+      cy.request({
+        url: '/api/invalid-locale/movies',
+        failOnStatusCode: false,
+      }).then((response) => {
+        expect(response.status).to.eq(400);
+      });
+    });
 
-- Single isolated functions (use unit tests)
-- Full E2E flows (use Cypress acceptance tests)
-- Pure UI components (use Cypress component tests)
-
-## Example
-
-```js
-// tests/vitest/integration/movie-search.test.js
-import { render, screen, waitFor } from '@testing-library/react';
-import { setupServer } from 'msw/node';
-import { handlers } from '@/mocks/msw.handlers';
-import { MovieSearch } from '@/components/MovieSearch';
-
-const server = setupServer(...handlers);
-
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
-
-it('displays search results after fetching', async () => {
-  render(<MovieSearch />);
-
-  // User action
-  await userEvent.type(screen.getByRole('searchbox'), 'Inception{enter}');
-
-  // Wait for results
-  await waitFor(() => {
-    expect(screen.getByText(/Inception/i)).toBeInTheDocument();
+    it('returns movies array in response body', () => {
+      cy.request('/api/en-US/movies')
+        .its('body')
+        .should('have.property', 'movies')
+        .and('be.an', 'array');
+    });
   });
-
-  // Verify data reached the component
-  const movieCards = screen.getAllByTestId('movie-card');
-  expect(movieCards).toHaveLength(10);
 });
 ```
 
+## Test Coverage
+
+Integration tests cover:
+- API route endpoints (request/response)
+- Multi-step user flows
+- Cross-component interactions
+- External service integration (TMDB API)
+
+## Integration vs E2E Tests
+
+| Aspect | Integration Test | E2E Test |
+|--------|-----------------|----------|
+| **Scope** | Single feature or API | Complete user journey |
+| **UI** | Optional (API-only possible) | Full UI interaction |
+| **Speed** | Faster | Slower |
+| **Example** | Test `/api/movies` endpoint | Search → View Details → Add to Watchlist |
+
 ## Best Practices
 
-1. **Mock external APIs** - Use MSW for realistic API mocking
-2. **Test real integration** - Don't mock internal modules
-3. **Assert on rendered output** - Check what the user sees
-4. **Keep tests focused** - One integration scenario per test
-5. **Use realistic test data** - Mock data should match real API responses
+1. **Use page objects** for complex flows (see `page-objects.md`)
+2. **Keep tests independent** - each test should run in isolation
+3. **Use fixtures** for test data (see Cypress fixtures)
+4. **Test error states** - verify 4xx and 5xx responses
+5. **Mock external services** when appropriate (MSW for Cypress)
 
-## Running Tests
+## Coverage Reports
 
-```bash
-# All integration tests
-npm run test:integration
+Integration tests are **NOT** included in Vitest coverage reports. They are tracked separately by Cypress.
 
-# Watch mode
-npm run test:vitest:watch
+## Related Documentation
 
-# With coverage
-npm run test:vitest:coverage
-```
-
-## Difference from Unit Tests
-
-| Unit Tests             | Integration Tests         |
-| ---------------------- | ------------------------- |
-| Single function/module | Multiple modules together |
-| Mock all dependencies  | Mock only external APIs   |
-| Very fast (< 10ms)     | Fast (< 100ms)            |
-| Isolated               | Real integration          |
-
-## Documentation
-
-- [Testing Strategy](../testing.md)
-- [Unit Tests](./unit-tests.md)
-- [Component Tests](./component-tests.md)
+- [Unit Tests](unit-tests.md) - For isolated unit testing with Vitest
+- [Component Tests](component-tests.md) - For React component testing
+- [Acceptance Tests](acceptance-tests.md) - For user story validation
