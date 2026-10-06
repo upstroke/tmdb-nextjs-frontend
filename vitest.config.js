@@ -54,6 +54,9 @@ export default defineConfig({
         'tests/cypress/**',
         'tests/setup/**',
         'tests/mocks/**',
+        'app/[locale]/**/page.js',
+        'app/layout.js',
+        'app/page.js',
       ],
     },
 
