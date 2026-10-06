@@ -176,7 +176,7 @@ describe('GET /api/[locale]/search', () => {
 
     expect(mocks.mockJson).toHaveBeenCalledWith(
       expect.objectContaining({
-        error: expect.stringContaining('search'),
+        error: 'Search could not be loaded.',
       }),
       expect.objectContaining({
         status: 500,
