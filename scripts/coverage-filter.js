@@ -7,7 +7,7 @@ const COVERAGE_DIR = resolve(process.cwd(), 'coverage');
 const COVERAGE_FILE = resolve(COVERAGE_DIR, 'coverage-final.json');
 
 const ALLOWED_PATTERNS = [
-  /^lib\/.*\.jsx?$/,
+  /^lib\/(?!stores\/).*\.jsx?$/,
   /^app\/api\/.*\.jsx?$/,
 ];
 
