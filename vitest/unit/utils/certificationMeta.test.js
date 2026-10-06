@@ -10,7 +10,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { getCertificationMeta } from '@/lib/utils/certificationMeta';
-import { ratingsMockDefault, ratingsMockDE } from '@/tests/mocks/ratings.mocks';
+import { ratingsMockDefault, ratingsMockDE } from '@/vitest/mocks/ratings.mocks';
 
 const usRatings = ratingsMockDefault.ratingSystem.ratings;
 const deRatings = ratingsMockDE.ratingSystem.ratings;

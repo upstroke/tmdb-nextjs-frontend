@@ -69,15 +69,15 @@ Each test type has one tool and one purpose:
 
 | Level                       | Tool                           | Location             | Purpose                                                                                           |
 | --------------------------- | ------------------------------ | -------------------- | ------------------------------------------------------------------------------------------------- |
-| Unit                        | Vitest                         | `tests/unit/`        | Pure logic: mappers, Zod schemas, utilities                                                       |
-| Integration                 | Vitest + Testing Library + msw | `tests/integration/` | Real integration only: a page or section renders with mocked data and values reach the components |
-| Component and accessibility | Cypress + `cypress-axe`        | `tests/cypress/`     | Component behavior in a real browser: keyboard, focus, ARIA, visibility, contrast                 |
-| Acceptance                  | Cypress                        | `tests/cypress/`     | User flows such as search, detail page, and navigation                                            |
+| Unit                        | Vitest                         | `vitest`        | Pure logic: mappers, Zod schemas, utilities                                                       |
+| Integration                 | Vitest + Testing Library + msw | `vitest` | Real integration only: a page or section renders with mocked data and values reach the components |
+| Component and accessibility | Cypress + `cypress-axe`        | `vitest`     | Component behavior in a real browser: keyboard, focus, ARIA, visibility, contrast                 |
+| Acceptance                  | Cypress                        | `vitest`     | User flows such as search, detail page, and navigation                                            |
 
 Rules:
 
 - Do not write component tests with Vitest. jsdom has no layout and cannot check color contrast or real focus behavior.
-- Keep `tests/integration/` limited to true integration tests. Assert on the rendered DOM (roles, text), not on props.
+- Keep `vitest` limited to true integration tests. Assert on the rendered DOM (roles, text), not on props.
 - Test keyboard interaction, focus management, and ARIA states in Cypress, for example tabs, modals, and dropdowns.
 - Run `cy.checkA11y()` (`cypress-axe`) on pages and after relevant interactions.
 - Do not add Vitest tests for purely presentational components. Integration or Cypress tests cover them.
@@ -90,10 +90,10 @@ Rules:
 - Use `npm run test:vitest:coverage` when coverage is required.
 - Run `npm run build` for production-build validation.
 - Treat Cypress as a separate validation step. Cypress has two modes:
-  - E2E (`cypress.config.js` `e2e`, specs in `tests/cypress/acceptance/`): `npm run test:acceptance` runs headlessly (`cypress run --e2e`) and `npm run test:acceptance:ui` opens the interactive runner. The app must run on `http://localhost:3000`.
-  - Component (`cypress.config.js` `component`, specs in `tests/cypress/component/**/*.cy.{js,jsx}`): `npm run test:component` runs headlessly (`cypress run --component`) and `npm run test:component:ui` opens the interactive runner.
+  - E2E (`cypress.config.js` `e2e`, specs in `vitest`): `npm run test:acceptance` runs headlessly (`cypress run --e2e`) and `npm run test:acceptance:ui` opens the interactive runner. The app must run on `http://localhost:3000`.
+  - Component (`cypress.config.js` `component`, specs in `vitest`): `npm run test:component` runs headlessly (`cypress run --component`) and `npm run test:component:ui` opens the interactive runner.
   - `npm run test:cypress` runs `cypress run` for both modes.
-- Cypress is configured to use `tests/cypress/` for specs, support files, fixtures, screenshots, and videos; consult `docs/testing.md` for test conventions.
+- Cypress is configured to use `vitest` for specs, support files, fixtures, screenshots, and videos; consult `docs/testing.md` for test conventions.
 
 Do not edit files, run destructive commands, change dependencies, push commits,
 or create pull requests without the user’s explicit approval.

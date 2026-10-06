@@ -112,10 +112,10 @@ npx vitest tests/unit/utils/format.test.js
 - **Goal**: 80% globally (branches, functions, lines, statements)
 - **Enforced via**: `vitest.config.js`
 - **Excluded from coverage**:
-  - Cypress Component Tests (`tests/cypress/component/`)
-  - Cypress Acceptance Tests (`tests/cypress/acceptance/flows/`)
-  - Test setup files (`tests/setup/`)
-  - Test mocks (`tests/mocks/`)
+  - Cypress Component Tests (`../../vitest`)
+  - Cypress Acceptance Tests (`../../vitest`)
+  - Test setup files (`../../vitest`)
+  - Test mocks (`../../vitest`)
 
 ## Related Documentation
 

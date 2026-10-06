@@ -7,9 +7,9 @@
 /coverage
 
 # Cypress artifacts
-tests/cypress/downloads
-tests/cypress/screenshots
-tests/cypress/videos
+vitest/cypress/downloads
+vitest/cypress/screenshots
+vitest/cypress/videos
 cypress.env.json
 
 # next.js

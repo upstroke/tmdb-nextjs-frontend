@@ -20,7 +20,7 @@ These rules apply to all automated tests in this project.
 - Reuse existing fixtures, mocks, and setup utilities before creating new ones.
 - Create new fixtures or mocks only when no suitable existing item can be reused or extended without creating confusion.
 - Keep tests independent, deterministic, readable, and focused on one clearly described behavior.
-- Keep test data concise and local when it is unique to one test. Move recurring stable domain data to `tests/fixtures/`.
+- Keep test data concise and local when it is unique to one test. Move recurring stable domain data to `../../vitest`.
 - Do not use real secrets, production credentials, or uncontrolled external APIs.
 - Mock or stub external technical boundaries when the selected test level requires controlled behavior.
 

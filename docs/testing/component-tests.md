@@ -27,9 +27,9 @@ Component tests are ideal for:
 
 ## When to Use Flow Tests Instead
 
-- **Flow Tests** (`tests/cypress/acceptance/flows/`): Complete user journeys, cross-page navigation
-- **Integration Tests** (`tests/unit/routes/`): API route handlers with service integration (Vitest)
-- **Unit Tests** (`tests/unit/`): Isolated utility functions, services, stores (Vitest)
+- **Flow Tests** (`../../vitest`): Complete user journeys, cross-page navigation
+- **Integration Tests** (`../../vitest`): API route handlers with service integration (Vitest)
+- **Unit Tests** (`../../vitest`): Isolated utility functions, services, stores (Vitest)
 
 ---
 
@@ -95,7 +95,7 @@ describe('Component Name', () => {
 
 ## Best Practices
 
-1. **Use Page Objects** – Reusable selectors in `tests/cypress/POM/`
+1. **Use Page Objects** – Reusable selectors in `../../vitest`
 2. **Test acceptance criteria** – From component stories
 3. **Keep tests independent** – Each test mounts its own component instance
 4. **Use realistic props** – Match story data

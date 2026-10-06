@@ -10,10 +10,10 @@ Use this information to generate tests in the correct style and location:
 
 | Level            | Tool    | Path                                   | File Extension |
 | ---------------- | ------- | -------------------------------------- | -------------- |
-| Unit             | Vitest  | `tests/vitest/`                        | `.test.js`     |
-| Integration      | Vitest  | `tests/vitest/`                        | `.test.js`     |
-| Component        | Cypress | `tests/cypress/acceptance/components/` | `.cy.js`       |
-| Acceptance (E2E) | Cypress | `tests/cypress/acceptance/flows/`      | `.cy.js`       |
+| Unit             | Vitest  | `../vitest`                        | `.test.js`     |
+| Integration      | Vitest  | `../vitest`                        | `.test.js`     |
+| Component        | Cypress | `../vitest` | `.cy.js`       |
+| Acceptance (E2E) | Cypress | `../vitest`      | `.cy.js`       |
 
 ### Important Rules
 

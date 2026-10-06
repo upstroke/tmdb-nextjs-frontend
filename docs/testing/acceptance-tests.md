@@ -92,7 +92,7 @@ describe('Movie Detail Flow', () => {
   it('opens movie detail from homepage', () => {
     cy.visitWithLocale('/', 'en-US');
     cy.interceptTmdb();
-    
+
     cy.findByTestId('card-default').first().click();
     cy.url().should('include', '/movies/');
     cy.findByRole('heading', { level: 1 }).should('be.visible');
@@ -169,7 +169,7 @@ describe('Homepage Accessibility', () => {
 1. **Organize by business functionality** – Not technology
 2. **Use Page Objects** – For reusable selectors (see [Page Objects](page-objects.md))
 3. **Keep tests independent** – Each test runs alone
-4. **Use realistic data** – Fixtures from `tests/cypress/fixtures/`
+4. **Use realistic data** – Fixtures from `../../vitest`
 5. **Assert on user-visible content** – Text, roles, labels
 6. **One test plan per component/flow** – ISTQB format with Gherkin
 7. **A11y tests per page** – WCAG audit checklist

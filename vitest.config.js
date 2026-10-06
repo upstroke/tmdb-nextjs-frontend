@@ -17,7 +17,7 @@ const sharedPlugins = [
 const sharedResolve = {
   alias: {
     '@': resolve(__dirname, '.'),
-    $tests: resolve(__dirname, 'tests'),
+    $tests: resolve(__dirname, 'vitest'), // ← GEÄNDERT
   },
 };
 
@@ -51,9 +51,9 @@ export default defineConfig({
         'node_modules/**',
         'lib/schemas/tmdb.js',
         'lib/i18n/config.js',
-        'tests/cypress/**',
-        'tests/setup/**',
-        'tests/mocks/**',
+        'vitest/cypress/**', // ← GEÄNDERT
+        'vitest/setup/**',   // ← GEÄNDERT
+        'vitest/mocks/**',   // ← GEÄNDERT
       ],
     },
 
@@ -65,7 +65,7 @@ export default defineConfig({
           name: 'unit',
           globals: true,
           environment: 'jsdom',
-          include: ['tests/unit/**/*.test.{js,jsx}'],
+          include: ['vitest/unit/**/*.test.{js,jsx}'], // ← GEÄNDERT
         },
       },
       {
@@ -75,10 +75,10 @@ export default defineConfig({
           name: 'integration',
           globals: true,
           environment: 'jsdom',
-          setupFiles: ['./tests/setup/vitest.js'],
+          setupFiles: ['./vitest/setup/vitest.js'], // ← GEÄNDERT
           include: [
-            'tests/integration/**/*.test.js',
-            'tests/integration/**/*.test.jsx',
+            'vitest/integration/**/*.test.js',       // ← GEÄNDERT
+            'vitest/integration/**/*.test.jsx',      // ← GEÄNDERT
           ],
         },
       },

@@ -8,8 +8,8 @@ Page Objects kapseln die Selektoren und Aktionen einer Seite oder eines Flows. S
 
 Page Objects werden verwendet in:
 
-- **Akzeptanztests (Flow-Tests):** `tests/cypress/acceptance/flows/`
-- **Page Objects selbst:** `tests/cypress/POM/` (für alle Test-Levels verfügbar)
+- **Akzeptanztests (Flow-Tests):** `../../vitest`
+- **Page Objects selbst:** `../../vitest` (für alle Test-Levels verfügbar)
 
 ## Beispiel
 
@@ -54,26 +54,26 @@ describe('Homepage', () => {
 
 ## Regeln
 
-1. **Ein Page Object = Eine Seite oder ein Flow**  
+1. **Ein Page Object = Eine Seite oder ein Flow**
    Jede Klasse repräsentiert eine logische Einheit (z. B. HomePage, MovieDetailsPage).
 
-2. **Keine Assertions im Page Object**  
+2. **Keine Assertions im Page Object**
    Page Objects enthalten nur Selektoren und Aktionen, keine `should()`-Assertions.
 
-3. **Methoden returnen `this` oder `cy`**  
+3. **Methoden returnen `this` oder `cy`**
    Für Fluent Interface: Methoden returnen `this` oder das Cypress-Objekt für Chaining.
 
-4. **Stabile Selektoren priorisieren**  
+4. **Stabile Selektoren priorisieren**
    Verwende `findByRole`, `findByText`, `findByLabel` statt `data-testid` oder CSS-Selektoren.
 
-5. **Aktionen kapseln**  
+5. **Aktionen kapseln**
    Komplexe Interaktionen (z. B. "Film zur Watchlist hinzufügen") werden in einer Methode gekapselt.
 
 ## Zusammenhang mit anderen Test-Leveln
 
 - **Komponententests** testen einzelne Komponenten isoliert.
 - **Page Objects** werden in **Flow-Akzeptanztests** verwendet, um komplette User-Flows zu testen.
-- **POM-Ordner** (`tests/cypress/POM/`) ist für alle Test-Levels verfügbar, nicht nur für Acceptance.
+- **POM-Ordner** (`../../vitest`) ist für alle Test-Levels verfügbar, nicht nur für Acceptance.
 
 ## Related Documentation
 
