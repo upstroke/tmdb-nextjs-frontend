@@ -6,14 +6,23 @@ import { resolve } from 'node:path';
 const COVERAGE_DIR = resolve(process.cwd(), 'coverage');
 const COVERAGE_FILE = resolve(COVERAGE_DIR, 'coverage-final.json');
 
-const ALLOWED_PATTERNS = [
-  /^lib\/(?!stores\/).*\.jsx?$/,
-  /^app\/api\/.*\.jsx?$/,
-];
-
 function isAllowed(filePath) {
   const normalizedPath = filePath.replace(/\\/g, '/');
-  return ALLOWED_PATTERNS.some(pattern => pattern.test(normalizedPath));
+  
+  // Exclude lib/stores/ entirely (React-based, tested indirectly)
+  if (normalizedPath.startsWith('lib/stores/')) {
+    return false;
+  }
+  
+  // Include only lib/ (except stores/) and app/api/
+  if (normalizedPath.startsWith('lib/') && normalizedPath.match(/\.jsx?$/)) {
+    return true;
+  }
+  if (normalizedPath.startsWith('app/api/') && normalizedPath.match(/\.jsx?$/)) {
+    return true;
+  }
+  
+  return false;
 }
 
 function filterCoverage() {
