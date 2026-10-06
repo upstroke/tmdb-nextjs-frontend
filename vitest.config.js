@@ -33,11 +33,15 @@ export default defineConfig({
         '.js': 'jsx',
       },
     },
+    include: ['@testing-library/react', '@testing-library/jest-dom/vitest'],
   },
 
   plugins: sharedPlugins,
 
-  resolve: sharedResolve,
+  resolve: {
+    ...sharedResolve,
+    extensions: ['.js', '.jsx', '.json'],
+  },
 
   test: {
     coverage: {
@@ -88,7 +92,10 @@ export default defineConfig({
 
       {
         name: 'browser',
-        resolve: sharedResolve,
+        resolve: {
+          ...sharedResolve,
+          extensions: ['.js', '.jsx', '.json'],
+        },
         test: {
           name: 'browser',
           globals: true,
