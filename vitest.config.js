@@ -98,6 +98,12 @@ export default defineConfig({
             'vitest/integration/**/*.browser.test.{js,jsx}',
           ],
 
+          exclude: [
+            'vitest/unit/**',
+            'vitest/integration/**/*.test.{js,jsx}',
+            'node_modules/**',
+          ],
+
           setupFiles: ['./vitest/setup/browser.js'],
 
           browser: {
