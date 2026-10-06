@@ -34,7 +34,7 @@ describe('GET /api/[locale]/movies', () => {
     vi.clearAllMocks();
     mocks.mockJson.mockClear();
     process.env = { ...originalEnv, TMDB_API_KEY: 'test-api-key' };
-    mockTmdbApi = { getMovies: vi.fn() };
+    mockTmdbApi = { getTrendingMovies: vi.fn() };
     createTmdbApi.mockReturnValue(mockTmdbApi);
   });
 
@@ -62,14 +62,14 @@ describe('GET /api/[locale]/movies', () => {
   // Statement coverage: returns movies successfully
   it('returns movies successfully', async () => {
     const movies = [{ id: 1, title: 'Test Movie' }];
-    mockTmdbApi.getMovies.mockResolvedValue({ page: 1, results: movies, total_pages: 1 });
+    mockTmdbApi.getTrendingMovies.mockResolvedValue({ page: 1, results: movies, total_pages: 1 });
 
     await GET(
       { url: `http://localhost:3000/api/${locale}/movies` },
       { params: Promise.resolve({ locale }) }
     );
 
-    expect(mockTmdbApi.getMovies).toHaveBeenCalled();
+    expect(mockTmdbApi.getTrendingMovies).toHaveBeenCalled();
     expect(mocks.mockJson).toHaveBeenCalledWith(
       expect.objectContaining({ error: null, movies })
     );
@@ -77,7 +77,7 @@ describe('GET /api/[locale]/movies', () => {
 
   // Branch coverage: returns 500 when the TMDB call fails
   it('returns 500 when TMDB call fails', async () => {
-    mockTmdbApi.getMovies.mockRejectedValue(new Error('TMDB error'));
+    mockTmdbApi.getTrendingMovies.mockRejectedValue(new Error('TMDB error'));
 
     await GET(
       { url: `http://localhost:3000/api/${locale}/movies` },
