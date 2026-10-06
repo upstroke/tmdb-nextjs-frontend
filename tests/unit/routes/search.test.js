@@ -3,11 +3,11 @@
 // Coverage goal: Branch + Statement coverage for route handler
 
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import { GET } from '../../../../src/app/api/[locale]/search/route';
-import { createTmdbApi } from '../../../../src/lib/services/tmdb-api';
+import { GET } from '@/app/api/[locale]/search/route';
+import { createTmdbApi } from '@/lib/services/tmdb-api';
 
 // Mock createTmdbApi
-vi.mock('../../../../src/lib/services/tmdb-api', () => ({
+vi.mock('@/lib/services/tmdb-api', () => ({
   createTmdbApi: vi.fn(),
 }));
 
