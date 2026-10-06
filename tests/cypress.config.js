@@ -14,13 +14,14 @@ export default defineConfig({
     viewportHeight: 720,
   },
   component: {
+    supportFile: 'tests/cypress/support/component.js',
+    specPattern: 'tests/cypress/acceptance/components/cardDefault/cardDefault.cy.js',
     devServer: {
       framework: 'react',
       bundler: 'vite',
-      viteConfig,
+      viteConfig: {
+        root: '.',
+      },
     },
-    supportFile: 'cypress/support/component.js',
-    specPattern: 'cypress/component/**/*.cy.{js,jsx}',
-    indexHtmlFile: 'cypress/support/component-index.html',
   },
 });
