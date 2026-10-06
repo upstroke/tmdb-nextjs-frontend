@@ -55,16 +55,17 @@ Component tests are ideal for:
 - Testing individual React components in isolation
 - Verifying component behavior with different props and states
 - Testing user interactions within a single component
-- Faster feedback than E2E tests (no full app boot required)
+- Faster feedback than Acceptance tests (no full app boot required)
 
-## When to Use Integration or E2E Tests Instead
+## When to Use Acceptance Tests Instead
 
-- **Integration Tests** (`tests/integration/`): Multiple components working together, state management, API mocking
-- **E2E Tests** (`tests/cypress/acceptance/`): Complete user flows, navigation, full app behavior
+- **Acceptance Tests** (`tests/cypress/acceptance/flows/`): Complete user flows, navigation, full app behavior
+- **Integration Tests** (`tests/unit/routes/`): API route handlers with service integration (Vitest)
+- **Unit Tests** (`tests/unit/`): Isolated utility functions, services, stores (Vitest)
 
 ## Related Documentation
 
-- [Testing Overview](./testing.md) – Complete testing strategy
-- [Unit Tests](./testing/unit-tests.md) – Vitest unit testing
-- [Integration Tests](./testing/integration-tests.md) – Testing Library integration tests
-- [E2E Tests](./testing/e2e-tests.md) – Cypress end-to-end testing
+- [Testing Overview](../testing.md) – Complete testing strategy
+- [Unit Tests](unit-tests.md) – Vitest unit testing
+- [Integration Tests](integration-tests.md) – Vitest route handler testing
+- [Acceptance Tests](acceptance-tests.md) – Cypress flow testing

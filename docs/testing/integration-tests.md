@@ -1,101 +1,125 @@
 # Integration Tests
 
-## Overview
+Integration tests verify that multiple components work together correctly. In this project, we use **Vitest** for integration testing of API route handlers.
 
-Integration tests verify the interaction between multiple modules or services. They ensure that different parts of the application work together correctly.
+## What Are Integration Tests?
 
-## Tool
+Integration tests sit between unit tests and E2E tests:
 
-- **Vitest** with **Testing Library** and **MSW** (Mock Service Worker)
+- **Unit Tests**: Test isolated functions (e.g., a utility function)
+- **Integration Tests**: Test how components work together (e.g., route handler + service + i18n)
+- **E2E Tests**: Test complete user flows in a real browser
 
-## Location
+## Why Vitest for Integration Tests?
 
+- ✅ **Fast execution** - No browser overhead
+- ✅ **Direct handler testing** - Call route functions directly
+- ✅ **Easy mocking** - Mock external services (TMDB API) with MSW
+- ✅ **Coverage reports** - Included in Vitest coverage
+
+## Running Integration Tests
+
+```bash
+# Run all Vitest tests (includes integration tests)
+npm run test
+
+# Run Vitest with coverage
+npm run test:coverage
+
+# Run only route handler tests
+npx vitest run tests/unit/routes/
 ```
-tests/vitest/
-├── integration/     # Integration test files
-└── *.test.js        # Test files
+
+## Test Location
+
+Integration tests (route handler tests) are located in:
+```
+tests/unit/routes/
 ```
 
-## What to Test
+## Writing Route Handler Integration Tests
 
-### ✅ Test These:
+Test Next.js API route handlers by calling the `GET`/`POST` function directly:
 
-- Page or section rendering with mocked data
-- Data flow from API → Service → Component
-- Multiple components working together
-- State management across components
-- Real integration scenarios
+```javascript
+// tests/unit/routes/movies.test.js
+import { describe, it, expect, beforeEach } from 'vitest';
+import { GET } from '@/app/api/[locale]/movies/route';
 
-### ❌ Don't Test:
+// Set TMDB API key for tests
+process.env.TMDB_API_KEY = 'test-key';
 
-- Single isolated functions (use unit tests)
-- Full E2E flows (use Cypress acceptance tests)
-- Pure UI components (use Cypress component tests)
+describe('GET /api/[locale]/movies', () => {
+  const createRequest = (locale = 'en-US', page = '1') => {
+    const url = page 
+      ? `http://localhost:3000/api/${locale}/movies?page=${page}`
+      : `http://localhost:3000/api/${locale}/movies`;
+    return new Request(url);
+  };
 
-## Example
+  const createParams = (locale = 'en-US') => {
+    return { params: Promise.resolve({ locale }) };
+  };
 
-```js
-// tests/vitest/integration/movie-search.test.js
-import { render, screen, waitFor } from '@testing-library/react';
-import { setupServer } from 'msw/node';
-import { handlers } from '@/mocks/msw.handlers';
-import { MovieSearch } from '@/components/MovieSearch';
+  // Statement coverage executes the successful response path.
+  it('returns 200 for valid locale and page', async () => {
+    const response = await GET(createRequest('en-US', '1'), createParams('en-US'));
 
-const server = setupServer(...handlers);
-
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
-
-it('displays search results after fetching', async () => {
-  render(<MovieSearch />);
-
-  // User action
-  await userEvent.type(screen.getByRole('searchbox'), 'Inception{enter}');
-
-  // Wait for results
-  await waitFor(() => {
-    expect(screen.getByText(/Inception/i)).toBeInTheDocument();
+    expect(response.status).toBe(200);
   });
 
-  // Verify data reached the component
-  const movieCards = screen.getAllByTestId('movie-card');
-  expect(movieCards).toHaveLength(10);
+  // Branch coverage covers the invalid-locale branch.
+  it('returns a 400 response when the locale is unsupported', async () => {
+    const response = await GET(createRequest('invalid-locale'), createParams('invalid-locale'));
+
+    expect(response.status).toBe(400);
+  });
+
+  // Statement coverage executes the pagination path.
+  it('returns 200 for page 2 request', async () => {
+    const response = await GET(createRequest('en-US', '2'), createParams('en-US'));
+
+    expect(response.status).toBe(200);
+  });
 });
 ```
 
+## Test Coverage
+
+Integration tests cover:
+- Route handler logic (request/response)
+- Service integration (TMDB API calls)
+- i18n locale handling
+- Error handling and edge cases
+- Pagination logic
+
+## Integration vs Unit vs E2E Tests
+
+| Aspect | Unit Test | Integration Test | E2E Test |
+|--------|-----------|-----------------|----------|
+| **Scope** | Single function | Multiple components | Complete user flow |
+| **Framework** | Vitest | Vitest | Cypress |
+| **Location** | `tests/unit/utils/`, `tests/unit/services/` | `tests/unit/routes/` | `tests/cypress/e2e/`, `tests/cypress/acceptance/flows/` |
+| **Speed** | Fastest | Fast | Slowest |
+| **Example** | `formatDate()` utility | `GET /api/movies` handler | Homepage → Search → Movie Details |
+
 ## Best Practices
 
-1. **Mock external APIs** - Use MSW for realistic API mocking
-2. **Test real integration** - Don't mock internal modules
-3. **Assert on rendered output** - Check what the user sees
-4. **Keep tests focused** - One integration scenario per test
-5. **Use realistic test data** - Mock data should match real API responses
+1. **Mock external services** - Use MSW to mock TMDB API responses
+2. **Test all branches** - Cover success, error, and edge cases
+3. **Use realistic data** - Mock responses should match real API structure
+4. **Test i18n handling** - Verify locale validation and error messages
+5. **Keep tests isolated** - Each test should run independently
 
-## Running Tests
+## Coverage Reports
 
-```bash
-# All integration tests
-npm run test:integration
+Integration tests are **included** in Vitest coverage reports. The covered files are:
+- `app/api/**` - API route handlers
+- `lib/**` - Services, utilities, stores, i18n
 
-# Watch mode
-npm run test:vitest:watch
+## Related Documentation
 
-# With coverage
-npm run test:vitest:coverage
-```
-
-## Difference from Unit Tests
-
-| Unit Tests             | Integration Tests         |
-| ---------------------- | ------------------------- |
-| Single function/module | Multiple modules together |
-| Mock all dependencies  | Mock only external APIs   |
-| Very fast (< 10ms)     | Fast (< 100ms)            |
-| Isolated               | Real integration          |
-
-## Documentation
-
-- [Testing Strategy](../testing.md)
-- [Unit Tests](./unit-tests.md)
-- [Component Tests](./component-tests.md)
+- [Unit Tests](unit-tests.md) - For isolated unit testing with Vitest
+- [Component Tests](component-tests.md) - For React component testing with Cypress
+- [Flow Tests](../acceptance/flows/) - For multi-component user flow tests with Cypress
+- [Acceptance Tests](acceptance-tests.md) - For user story validation
