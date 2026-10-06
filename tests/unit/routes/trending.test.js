@@ -205,7 +205,7 @@ describe('GET /api/[locale]/trending', () => {
 
     expect(mocks.mockJson).toHaveBeenCalledWith(
       expect.objectContaining({
-        error: 'Failed to load more.',
+        error: 'More content could not be loaded.',
       }),
       expect.objectContaining({
         status: 500,
