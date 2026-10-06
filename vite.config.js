@@ -1,6 +1,7 @@
 // vite.config.js
-// Configuration for Cypress E2E tests
-// This config is used by Cypress for end-to-end testing
+// Vite configuration for Cypress Component Testing
+// This config is used by Cypress when running component tests (tests/cypress/component/)
+// Cypress Component Testing uses Vite as its dev server
 // For Vitest unit/integration tests, see vitest.config.js
 
 import { defineConfig } from 'vite';
