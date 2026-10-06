@@ -34,7 +34,7 @@ describe('GET /api/[locale]/tv-shows', () => {
     vi.clearAllMocks();
     mocks.mockJson.mockClear();
     process.env = { ...originalEnv, TMDB_API_KEY: 'test-api-key' };
-    mockTmdbApi = { getTvShows: vi.fn() };
+    mockTmdbApi = { getTrendingTVShows: vi.fn() };
     createTmdbApi.mockReturnValue(mockTmdbApi);
   });
 
@@ -62,14 +62,14 @@ describe('GET /api/[locale]/tv-shows', () => {
   // Statement coverage: returns TV shows successfully
   it('returns TV shows successfully', async () => {
     const tvShows = [{ id: 1, name: 'Test Show' }];
-    mockTmdbApi.getTvShows.mockResolvedValue({ page: 1, results: tvShows, total_pages: 1 });
+    mockTmdbApi.getTrendingTVShows.mockResolvedValue({ page: 1, results: tvShows, total_pages: 1 });
 
     await GET(
       { url: `http://localhost:3000/api/${locale}/tv-shows` },
       { params: Promise.resolve({ locale }) }
     );
 
-    expect(mockTmdbApi.getTvShows).toHaveBeenCalled();
+    expect(mockTmdbApi.getTrendingTVShows).toHaveBeenCalled();
     expect(mocks.mockJson).toHaveBeenCalledWith(
       expect.objectContaining({ error: null, tvShows })
     );
@@ -77,7 +77,7 @@ describe('GET /api/[locale]/tv-shows', () => {
 
   // Branch coverage: returns 500 when the TMDB call fails
   it('returns 500 when TMDB call fails', async () => {
-    mockTmdbApi.getTvShows.mockRejectedValue(new Error('TMDB error'));
+    mockTmdbApi.getTrendingTVShows.mockRejectedValue(new Error('TMDB error'));
 
     await GET(
       { url: `http://localhost:3000/api/${locale}/tv-shows` },
