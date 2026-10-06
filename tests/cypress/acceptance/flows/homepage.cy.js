@@ -4,7 +4,7 @@ const homePage = HomePage();
 
 describe('Homepage', () => {
   beforeEach(() => {
-    homePage.visit();
+    homePage.visit('en-US');
   });
 
   it('should display the homepage title', () => {
@@ -12,14 +12,14 @@ describe('Homepage', () => {
   });
 
   it('should navigate to movie details when clicking on a movie card', () => {
-    homePage.visit();
-    homePage.movieCards.first().click();
+    homePage.visit('en-US');
+    homePage.movieCards().first().click();
     cy.location('pathname').should('match', /^\/(en-US|de-DE)\/movies\//);
   });
 
   it('should search for movies when using the search bar', () => {
-    homePage.visit();
-    homePage.searchInput
+    homePage.visit('en-US');
+    homePage.searchInput()
       .should('be.visible')
       .type('Batman');
 
