@@ -17,17 +17,12 @@ This project uses multiple testing frameworks for different purposes:
 - **Coverage:** Included in coverage reports
 - **Documentation:** [Integration Tests](testing/integration-tests.md)
 
-### Flow Tests (Cypress)
+### Acceptance Tests (Cypress)
 - **Framework:** Cypress
 - **Location:** `tests/cypress/acceptance/flows/`
-- **Purpose:** Multi-component user flows (e.g., homepage navigation, search)
+- **Purpose:** Fachliche User-Flows und E2E-Tests (z.B. Homepage-Navigation, Search, Movie-Details)
 - **Coverage:** NOT included in Vitest coverage reports
-
-### E2E Tests (Cypress)
-- **Framework:** Cypress
-- **Location:** `tests/cypress/e2e/`
-- **Purpose:** Complete user journeys through the UI
-- **Coverage:** NOT included in Vitest coverage reports
+- **Documentation:** [Acceptance Tests](testing/acceptance-tests.md)
 
 ### Component Tests (Cypress)
 - **Framework:** Cypress
@@ -44,10 +39,10 @@ npm run test
 # Run Vitest with coverage
 npm run test:coverage
 
-# Run Cypress Flow/E2E tests (opens UI)
+# Run Cypress Acceptance Tests (opens UI)
 npm run test:e2e
 
-# Run Cypress Flow/E2E tests (headless)
+# Run Cypress Acceptance Tests (headless)
 npm run test:e2e:headless
 
 # Run Cypress Component Tests
@@ -79,8 +74,7 @@ tests/
 │   └── routes/        # Integration tests (route handlers)
 └── cypress/           # Cypress tests
     ├── acceptance/
-    │   └── flows/     # Flow tests (multi-component)
-    ├── e2e/           # E2E tests
+    │   └── flows/     # Acceptance/Flow tests (fachliche E2E)
     ├── component/     # Component tests
     └── fixtures/
 ```
@@ -91,16 +85,14 @@ tests/
 |-----------|---------|
 | **Vitest Unit** | Pure functions, utilities, services, stores |
 | **Vitest Integration** | API route handlers with service integration |
-| **Cypress Flow** | Multi-component user flows (navigation, search) |
-| **Cypress E2E** | Complete user journeys through the UI |
+| **Cypress Acceptance** | Fachliche User-Flows (E2E-Tests) |
 | **Cypress Component** | Individual React components in isolation |
 
 ## Documentation
 
 - [Unit Tests](testing/unit-tests.md)
 - [Integration Tests](testing/integration-tests.md)
-- [Component Tests](testing/component-tests.md)
 - [Acceptance Tests](testing/acceptance-tests.md)
-- [Flow Tests](cypress/acceptance/flows/)
+- [Component Tests](testing/component-tests.md)
 - [Page Objects](testing/page-objects.md)
 - [Common Rules](testing/common-rules.md)
