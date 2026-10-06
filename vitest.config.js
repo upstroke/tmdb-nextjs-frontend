@@ -82,6 +82,7 @@ export default defineConfig({
             'vitest/integration/**/*.test.js',
             'vitest/integration/**/*.test.jsx',
           ],
+          exclude: ['vitest/integration/**/*.browser.test.{js,jsx}'],
         },
       },
 
