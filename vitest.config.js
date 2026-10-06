@@ -43,12 +43,23 @@ export default defineConfig({
     coverage: {
       provider: 'istanbul',
       reporter: ['text', 'html'],
-      include: ['lib/**/*.{js,jsx}', 'app/api/**/*.{js,jsx}'],
+      include: [
+        'lib/**/*.js',
+        'lib/**/*.jsx',
+        'app/api/**/*.js',
+        'app/api/**/*.jsx',
+      ],
       exclude: [
         'vitest/**',
         'node_modules/**',
         '**/*.test.{js,jsx}',
         '**/*.cy.{js,jsx}',
+        'components/**',
+        'app/[locale]/**',
+        'app/*.js',
+        'middleware.js',
+        'next.config.js',
+        'postcss.config.js',
       ],
     },
 
