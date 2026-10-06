@@ -17,7 +17,7 @@
     "test:browser": "vitest run --project browser",
     "test:e2e": "cypress run --e2e --browser chrome",
     "test:e2e:open": "cypress open --e2e --browser chrome",
-    "test:coverage": "vitest run --coverage --project unit && node scripts/coverage-filter.js",
+    "test:coverage": "vitest run --coverage --project unit --coverage.reporter=json && node scripts/coverage-filter.js",
     "test:security:unit": "vitest run vitest/vitest/security/"
   },
   "dependencies": {

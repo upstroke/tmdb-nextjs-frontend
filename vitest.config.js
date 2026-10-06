@@ -43,8 +43,8 @@ export default defineConfig({
     // Globale Coverage-Config für alle Projekte
     coverage: {
       provider: 'istanbul',
-      reporter: ['text', 'html', 'json', 'json-summary'],
-      
+      reporter: ['html', 'json'],
+
       // NUR diese Files werden instrumentiert und im Report gezeigt
       include: [
         'lib/**/*.js',
@@ -52,7 +52,7 @@ export default defineConfig({
         'app/api/**/*.js',
         'app/api/**/*.jsx',
       ],
-      
+
       // Alles andere explizit ausschließen
       exclude: [
         'vitest/**',
@@ -70,11 +70,9 @@ export default defineConfig({
         'vite.config.js',
         'vitest.config.js',
       ],
-      
-      // Nur instrumentierte Files im Report (verhindert 0% für andere Files)
+
       all: false,
-      
-      // Globale Thresholds (für CLI-Tools)
+
       thresholds: {
         lines: 80,
         branches: 70,
