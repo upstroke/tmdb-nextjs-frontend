@@ -85,7 +85,7 @@ describe('GET /api/[locale]/tv-shows', () => {
     );
 
     expect(mocks.mockJson).toHaveBeenCalledWith(
-      expect.objectContaining({ error: messages.tvShowsLoadError }),
+      expect.objectContaining({ error: messages.moreTvShowsLoadError }),
       expect.objectContaining({ status: 500 })
     );
   });
