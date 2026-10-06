@@ -1,12 +1,12 @@
 // tests/cypress/POM/CardDefault.js
-import CardDefault from '../../../components/CardDefault';
+import CardDefaultComponent from '../../../components/CardDefault';
 
 export const CardDefault = () => {
   const card = () => cy.get('.ui.card.default-card');
   const title = () => cy.get('.ui.card.default-card h3.header');
   const rating = () => cy.get('.ui.card.default-card .rating-value');
   const poster = () => cy.get('.ui.card.default-card .image-stage img');
-  const posterPlaceholder = () => cy.get('.ui.card.default-card.image-error');
+  const posterPlaceholder = () => cy.get('.ui.card.default-card .image-error');
   const genre = () => cy.get('.ui.card.default-card .genres');
   const releaseDate = () => cy.get('.ui.card.default-card .date time');
   const certification = () => cy.get('.ui.card.default-card .certification-text');
@@ -24,7 +24,7 @@ export const CardDefault = () => {
    * @param {string} [props.imageUrl] - Poster image URL
    */
   const mount = (props) => {
-    cy.mount(<CardDefault {...props} />);
+    cy.mount(<CardDefaultComponent {...props} />);
     return card();
   };
 
