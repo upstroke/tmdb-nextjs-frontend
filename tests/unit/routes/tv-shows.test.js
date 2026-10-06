@@ -71,7 +71,7 @@ describe('GET /api/[locale]/tv-shows', () => {
 
     expect(mockTmdbApi.getTrendingTVShows).toHaveBeenCalled();
     expect(mocks.mockJson).toHaveBeenCalledWith(
-      expect.objectContaining({ error: null, tvShows })
+      expect.objectContaining({ error: null, cards: tvShows })
     );
   });
 
@@ -85,7 +85,7 @@ describe('GET /api/[locale]/tv-shows', () => {
     );
 
     expect(mocks.mockJson).toHaveBeenCalledWith(
-      expect.objectContaining({ error: messages.tvShowsError }),
+      expect.objectContaining({ error: messages.tvShowsLoadError }),
       expect.objectContaining({ status: 500 })
     );
   });
