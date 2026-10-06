@@ -11,11 +11,13 @@ Unit tests verify individual functions, utilities, and services in isolation. Th
 ## Location
 
 ```
-tests/vitest/
-├── utils/           # Utility function tests
-├── services/        # Service layer tests
-├── schemas/         # Zod schema tests
+tests/unit/
+├── i18n/            # i18n helper tests
+├── routes/          # API route handler tests
 ├── security/        # Security unit tests
+├── services/        # Service layer tests
+├── stores/          # Store logic tests
+├── utils/           # Utility function tests
 └── *.test.js        # Test files
 ```
 
@@ -26,6 +28,9 @@ tests/vitest/
 - Utility functions (formatting, validation, sanitization)
 - Zod schemas (validation logic)
 - Service functions (API data transformation)
+- i18n helpers and resolvers
+- Store logic
+- API route handlers
 - Pure functions (no side effects)
 - Edge cases and error handling
 
@@ -34,11 +39,12 @@ tests/vitest/
 - React components (use Cypress component tests)
 - DOM manipulation (use Cypress)
 - Integration behavior (use integration tests)
+- E2E user flows (use Cypress E2E tests)
 
 ## Example
 
 ```js
-// tests/vitest/utils/format.test.js
+// tests/unit/utils/format.test.js
 import { formatRating, formatDate } from '@/utils/format';
 
 describe('formatRating', () => {
@@ -86,30 +92,34 @@ describe('formatDate', () => {
    ```
 4. **Test edge cases** - null, undefined, empty strings, boundary values
 5. **Keep tests fast** - No API calls, no database, no timers
+6. **Use mocks for external dependencies** - Mock services, stores, i18n
 
 ## Running Tests
 
 ```bash
-# All unit tests
+# All unit tests (includes integration tests)
 npm run test:unit
 
-# Watch mode
-npm run test:vitest:watch
-
-# With coverage
-npm run test:vitest:coverage
+# With coverage (excludes Cypress tests)
+npm run test:coverage
 
 # Specific file
-npx vitest tests/vitest/utils/format.test.js
+npx vitest tests/unit/utils/format.test.js
 ```
 
 ## Coverage
 
 - **Goal**: 80% globally (branches, functions, lines, statements)
 - **Enforced via**: `vitest.config.js`
+- **Excluded from coverage**:
+  - Cypress Component Tests (`tests/cypress/component/`)
+  - Cypress E2E Tests (`tests/cypress/acceptance/`)
+  - Test setup files (`tests/setup/`)
+  - Test mocks (`tests/mocks/`)
 
 ## Documentation
 
 - [Testing Strategy](../testing.md)
 - [Integration Tests](./integration-tests.md)
-- [Security Tests](./security-tests.md)
+- [Component Tests](./component-tests.md)
+- [E2E Tests](./e2e-tests.md)
