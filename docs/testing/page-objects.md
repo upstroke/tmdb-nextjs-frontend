@@ -1,14 +1,14 @@
-# Page Objects für Akzeptanztests (E2E)
+# Page Objects für Akzeptanztests
 
 ## Ziel
 
-Page Objects kapseln die Selektoren und Aktionen einer Seite oder eines Flows. Sie machen E2E-Tests lesbarer, wartbarer und robuster gegenüber Änderungen im UI.
+Page Objects kapseln die Selektoren und Aktionen einer Seite oder eines Flows. Sie machen Akzeptanztests lesbarer, wartbarer und robuster gegenüber Änderungen im UI.
 
 ## Test-Ort
 
 Page Objects werden verwendet in:
 
-- **E2E-Tests (Flow-Akzeptanz):** `tests/cypress/acceptance/flows/`
+- **Akzeptanztests (Flow-Tests):** `tests/cypress/acceptance/flows/`
 - **Page Objects selbst:** `tests/cypress/POM/` (für alle Test-Levels verfügbar)
 
 ## Beispiel
@@ -42,9 +42,9 @@ export class HomePage extends BasePage {
 // tests/cypress/acceptance/flows/homepage.cy.js
 import { HomePage } from '../../POM/HomePage';
 
-describe('Homepage', () => {
-  const homePage = new HomePage();
+const homePage = HomePage();
 
+describe('Homepage', () => {
   it('zeigt Filmtitel gemäß AC-1', () => {
     homePage.visit();
     homePage.movieCards.should('exist');
@@ -72,5 +72,11 @@ describe('Homepage', () => {
 ## Zusammenhang mit anderen Test-Leveln
 
 - **Komponententests** testen einzelne Komponenten isoliert.
-- **Page Objects** werden in **Flow-Akzeptanztests (E2E)** verwendet, um komplette User-Flows zu testen.
+- **Page Objects** werden in **Flow-Akzeptanztests** verwendet, um komplette User-Flows zu testen.
 - **POM-Ordner** (`tests/cypress/POM/`) ist für alle Test-Levels verfügbar, nicht nur für Acceptance.
+
+## Related Documentation
+
+- [Acceptance Tests](acceptance-tests.md)
+- [Component Tests](component-tests.md)
+- [Testing Overview](../testing.md)
