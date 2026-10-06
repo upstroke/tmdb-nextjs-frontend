@@ -43,7 +43,7 @@ export default defineConfig({
     // Globale Coverage-Config für alle Projekte
     coverage: {
       provider: 'istanbul',
-      reporter: ['text', 'html', 'json-summary'],
+      reporter: ['text', 'html', 'json', 'json-summary'],
       
       // NUR diese Files werden instrumentiert und im Report gezeigt
       include: [
