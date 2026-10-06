@@ -94,7 +94,6 @@ export default defineConfig({
         test: {
           name: 'browser',
           globals: true,
-          coverage: false,
 
           include: [
             'vitest/component/**/*.browser.test.{js,jsx}',
