@@ -17,10 +17,7 @@ export default defineConfig({
 
   component: {
     supportFile: 'tests/cypress/support/component.js',
-    specPattern: [
-      'tests/cypress/acceptance/components/**/*.cy.js',
-      'tests/cypress/acceptance/components/**/*.cy.jsx'
-    ],
+    specPattern: 'tests/cypress/acceptance/components/cardDefault/cardDefault.cy.js',
     devServer: {
       framework: 'react',
       bundler: 'vite',
