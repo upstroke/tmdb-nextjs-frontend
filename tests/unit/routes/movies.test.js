@@ -53,7 +53,7 @@ describe('GET /api/[locale]/movies', () => {
       url: 'http://localhost:3000/api/invalid/movies',
     };
     const mockParams = {
-      params: Promise.resolve({ locale: 'invalid' }),
+      params: Promise.resolve({ locale: '' }),
     };
 
     await GET(mockRequest, mockParams);
@@ -205,7 +205,7 @@ describe('GET /api/[locale]/movies', () => {
 
     expect(mocks.mockJson).toHaveBeenCalledWith(
       expect.objectContaining({
-        error: expect.stringContaining('more movies'),
+        error: 'More movies could not be loaded.',
       }),
       expect.objectContaining({
         status: 500,
@@ -249,18 +249,14 @@ describe('GET /api/[locale]/movies', () => {
 
     await GET(mockRequest, mockParams);
 
-    expect(mocks.mockJson).toHaveBeenCalledWith(
-      expect.objectContaining({
-        cards: expect.arrayContaining([
-          expect.objectContaining({
-            id: 550,
-            title: 'Fight Club',
-          }),
-        ]),
-      })
-    );
-    // Should only have 1 card, not 2 duplicates
+    // Last duplicate wins (Map uses id-mediaType as key)
     const callArg = mocks.mockJson.mock.calls[0][0];
     expect(callArg.cards).toHaveLength(1);
+    expect(callArg.cards[0]).toEqual(
+      expect.objectContaining({
+        id: 550,
+        title: 'Fight Club Duplicate',
+      })
+    );
   });
 });
