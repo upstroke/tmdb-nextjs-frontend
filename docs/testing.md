@@ -6,27 +6,27 @@ This project uses multiple testing frameworks for different purposes:
 
 ### Unit Tests (Vitest)
 - **Framework:** Vitest
-- **Location:** `tests/unit/`
+- **Location:** `../vitest`
 - **Purpose:** Fast, isolated tests for utility functions, services, stores, and i18n
 - **Coverage:** Included in coverage reports
 
 ### Integration Tests (Vitest)
 - **Framework:** Vitest
-- **Location:** `tests/unit/routes/`
+- **Location:** `../vitest`
 - **Purpose:** Test API route handlers with service integration
 - **Coverage:** Included in coverage reports
 - **Documentation:** [Integration Tests](testing/integration-tests.md)
 
 ### Acceptance Tests (Cypress)
 - **Framework:** Cypress
-- **Location:** `tests/cypress/acceptance/flows/`
+- **Location:** `../vitest`
 - **Purpose:** Fachliche User-Flows und E2E-Tests (z.B. Homepage-Navigation, Search, Movie-Details)
 - **Coverage:** NOT included in Vitest coverage reports
 - **Documentation:** [Acceptance Tests](testing/acceptance-tests.md)
 
 ### Component Tests (Cypress)
 - **Framework:** Cypress
-- **Location:** `tests/cypress/component/`
+- **Location:** `../vitest`
 - **Purpose:** Test individual React components in isolation
 - **Coverage:** NOT included in Vitest coverage reports
 
@@ -60,7 +60,7 @@ Coverage reports **exclude**:
 - `**/*.cy.js`, `**/*.cy.jsx` - Cypress tests
 - `app/[locale]/**` - Pages (tested via Cypress only)
 - `app/layout.js`, `app/page.js` - Root layout and page
-- `node_modules/**`, `tests/**` - Dependencies and test helpers
+- `node_modules/**`, `../vitest` - Dependencies and test helpers
 
 ## Test Structure
 

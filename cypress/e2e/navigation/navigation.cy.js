@@ -1,5 +1,5 @@
-import { BasePage } from '../../../POM/BasePage.js';
-import { HeaderPage } from '../../../POM/HeaderPage.js';
+import { BasePage } from '../../POM/BasePage.js';
+import { HeaderPage } from '../../POM/HeaderPage.js';
 
 const base = BasePage();
 const header = HeaderPage();
@@ -17,11 +17,11 @@ describe('Navigation', () => {
 
   it('[NAV-03] displays a visible header', () => {
     base.visit('en-US');
-    header.assertVisible();
+    header.navMenu().should('be.visible');
   });
 
   it('[NAV-04] has a language switcher in the header', () => {
     base.visit('en-US');
-    header.assertLanguageSwitcherExists();
+    header.languageSelect().should('exist');
   });
 });

@@ -51,7 +51,7 @@ process.env.TMDB_API_KEY = 'test-key';
 
 describe('GET /api/[locale]/movies', () => {
   const createRequest = (locale = 'en-US', page = '1') => {
-    const url = page 
+    const url = page
       ? `http://localhost:3000/api/${locale}/movies?page=${page}`
       : `http://localhost:3000/api/${locale}/movies`;
     return new Request(url);
@@ -99,7 +99,7 @@ Integration tests cover:
 |--------|-----------|-----------------|----------|
 | **Scope** | Single function | Multiple components | Complete user flow |
 | **Framework** | Vitest | Vitest | Cypress |
-| **Location** | `tests/unit/utils/`, `tests/unit/services/` | `tests/unit/routes/` | `tests/cypress/e2e/`, `tests/cypress/acceptance/flows/` |
+| **Location** | `../../vitest`, `../../vitest` | `../../vitest` | `../../vitest`, `../../vitest` |
 | **Speed** | Fastest | Fast | Slowest |
 | **Example** | `formatDate()` utility | `GET /api/movies` handler | Homepage → Search → Movie Details |
 

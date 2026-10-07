@@ -13,8 +13,8 @@ Security tests check the application for common vulnerabilities. As this is a re
 
 | Level         | Tool    | Path                                            | Focus                            |
 | ------------- | ------- | ----------------------------------------------- | -------------------------------- |
-| **Unit**      | Vitest  | `tests/vitest/security/`                        | Input validation, API key checks |
-| **Component** | Cypress | `tests/cypress/acceptance/components/security/` | XSS prevention in UI             |
+| **Unit**      | Vitest  | `../../vitest`                        | Input validation, API key checks |
+| **Component** | Cypress | `../../vitest` | XSS prevention in UI             |
 
 ## Scripts
 

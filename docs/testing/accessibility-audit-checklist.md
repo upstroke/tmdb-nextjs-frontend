@@ -2,32 +2,71 @@
 
 ## Overview
 
-This checklist ensures the application meets WCAG 2.1 AA accessibility standards. Use it during development and before releases.
+This checklist ensures the application meets **WCAG 2.1 AA** accessibility standards. Accessibility tests are **acceptance tests** organized by page/component.
+
+## Test Structure
+
+```
+tests/cypress/acceptance/accessibility/
+├── homepage/          # Homepage A11y audit
+├── movieDetail/       # Movie detail page A11y
+├── tvShowDetail/      # TV show detail page A11y
+└── components/        # Component-specific A11y (CardDefault, Navigation, etc.)
+```
+
+---
 
 ## Automated Testing
 
 ### Cypress + axe-core
 
-```js
-// tests/cypress/acceptance/accessibility/homepage.cy.js
+```javascript
+// tests/cypress/acceptance/accessibility/homepage/homepage.cy.js
 describe('Homepage Accessibility', () => {
-  it('has no accessibility violations', () => {
-    cy.visit('/');
-    cy.injectAxe();
-    cy.checkA11y();
+  it('passes WCAG 2.1 AA audit', () => {
+    cy.visitWithLocale('/', 'en-US');
+    cy.checkPageA11y();
   });
 });
 ```
 
-### Running Audits
+### Component A11y
+
+```javascript
+// tests/cypress/acceptance/components/cardDefault/cardDefault.cy.js
+import { CardDefault } from '../../POM/CardDefault';
+
+const card = CardDefault();
+
+describe('CardDefault Accessibility', () => {
+  it('has accessible name and role', () => {
+    const movieData = {
+      id: 123,
+      mediaType: 'movie',
+      title: 'Test Movie',
+    };
+
+    card.mount(movieData);
+    card.card().should('have.attr', 'role', 'link');
+    card.title().should('have.attr', 'aria-label');
+  });
+});
+```
+
+---
+
+## Running Audits
 
 ```bash
-# All accessibility tests
-npm run test:a11y
+# All acceptance tests (includes accessibility)
+npm run test:component
+npm run test:e2e
 
-# Watch mode
-npm run test:a11y:watch
+# Specific accessibility test
+npx cypress run --e2e --spec "tests/cypress/acceptance/accessibility/homepage/homepage.cy.js"
 ```
+
+---
 
 ## Manual Checklist
 
@@ -73,11 +112,13 @@ npm run test:a11y:watch
 - [ ] Lists are marked up correctly
 - [ ] Tables have headers (if used)
 
+---
+
 ## Testing Tools
 
 ### Automated
 
-- **axe-core** (via cypress-axe)
+- **axe-core** (via cypress-axe) – `cy.checkPageA11y()`
 - **WAVE** browser extension
 - **Lighthouse** accessibility audit
 
@@ -87,6 +128,8 @@ npm run test:a11y:watch
 - **Screen readers**: NVDA (Windows), VoiceOver (Mac)
 - **Browser zoom**: Test up to 200%
 - **High contrast mode**
+
+---
 
 ## Common Issues
 
@@ -105,8 +148,30 @@ npm run test:a11y:watch
 - Missing skip links
 - Auto-playing media without controls
 
-## Documentation
+---
+
+## A11y Test Plans
+
+Each page/component should have a test plan:
+
+```
+accessibility/homepage/
+├── Homepage-A11y-Testplan.md   # WCAG audit checklist + Gherkin scenarios
+└── homepage.cy.js              # Automated tests
+```
+
+### Test Plan Content
+
+- **WCAG Success Criteria** – Relevant A/B level criteria
+- **Test Scenarios** – Keyboard, Screen Reader, Visual
+- **Pass/Fail Criteria** – Zero violations for A + AA
+- **Manual Checklist** – Page-specific items
+
+---
+
+## Related Documentation
 
 - [Testing Strategy](../testing.md)
-- [Component Tests](./component-tests.md)
+- [Acceptance Tests](acceptance-tests.md)
+- [Component Tests](component-tests.md)
 - [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)

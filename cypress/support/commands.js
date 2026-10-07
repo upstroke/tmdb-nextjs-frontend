@@ -17,20 +17,9 @@ Cypress.Commands.add('visitLocale', (locale, path = '/') => {
 
 /**
  * Load i18n translations for a given locale directly from lib/i18n/ui.json.
- * Uses cy.readFile() to avoid duplicating translation files into cypress/fixtures.
  *
  * @param {string} [locale='en-US'] - locale code, e.g. 'en-US' or 'de-DE'
- * @returns {Cypress.Chainable<object>} the locale object with labels, messages, titles, etc.
- *
- * @example
- * cy.i18n().then((t) => {
- *   cy.contains(t.labels.searchInput).should('exist');
- * });
- *
- * @example
- * cy.i18n('de-DE').then((t) => {
- *   cy.contains(t.labels.searchInput).should('exist');
- * });
+ * @returns {Cypress.Chainable<object>} the locale object
  */
 Cypress.Commands.add('i18n', (locale = 'en-US') => {
   return cy.readFile('lib/i18n/ui.json').then((ui) => ui.locales[locale]);

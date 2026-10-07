@@ -132,11 +132,11 @@ npm run dev
 
 Tests are separated by runner and purpose:
 
-- [Vitest](https://vitest.dev/) unit tests: `tests/unit/`.
-- Vitest integration tests: `tests/integration/`.
-- Cypress browser-based acceptance tests: `tests/cypress/acceptance/`. Route tests (`routes/`), shared UI behavior (`components/`), and accessibility checks (`accessibility/`) are peer categories.
+- [Vitest](https://vitest.dev/) unit tests: `vitest`.
+- Vitest integration tests: `vitest`.
+- Cypress browser-based acceptance tests: `vitest`. Route tests (`routes/`), shared UI behavior (`components/`), and accessibility checks (`accessibility/`) are peer categories.
 
-Cypress Page Objects live in `tests/cypress/POM/`; Cypress-specific fixtures and support files live in `tests/cypress/fixtures/` and `tests/cypress/support/`. Shared domain fixtures remain in `tests/fixtures/`.
+Cypress Page Objects live in `vitest`; Cypress-specific fixtures and support files live in `vitest` and `vitest`. Shared domain fixtures remain in `vitest`.
 
 ```bash
 npm test                    # Vitest single run
