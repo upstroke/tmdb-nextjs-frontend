@@ -17,7 +17,7 @@
     "test:browser": "vitest run --project browser",
     "test:e2e": "cypress run --e2e --browser chrome",
     "test:e2e:open": "cypress open --e2e --browser chrome",
-    "test:coverage": "vitest run --coverage --project unit"
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "fomantic-ui-css": "^2.9.4",
@@ -53,6 +53,7 @@
     "sass": "^1.105.1",
     "typescript": "^5.8.3",
     "vite": "^5.4.21",
+    "vite-plugin-istanbul": "^6.0.2",
     "vitest": "^3.2.4"
   }
 }

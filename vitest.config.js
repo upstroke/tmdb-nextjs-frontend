@@ -1,8 +1,7 @@
 // vitest.config.js
-// Vitest configuration for unit, integration, and browser-based UI tests
-
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
+import istanbul from 'vite-plugin-istanbul';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -11,6 +10,12 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const sharedPlugins = [
   react({
     jsxRuntime: 'automatic',
+  }),
+  istanbul({
+    include: ['components/**/*'],
+    exclude: ['node_modules/**', 'vitest/**', 'components/providers/**'],
+    requireEnv: false,
+    forceBuildInstrument: true,
   }),
 ];
 
@@ -27,24 +32,24 @@ export default defineConfig({
 
   test: {
     silent: true,
+
     coverage: {
       provider: 'istanbul',
       reporter: ['text', 'html', 'json', 'json-summary'],
-
       include: [
         'lib/**/*.js',
         'lib/**/*.jsx',
         'app/api/**/*.js',
         'app/api/**/*.jsx',
+        'components/**/*.js',
+        'components/**/*.jsx',
       ],
-
       exclude: [
         'lib/stores/locale.jsx',
         'vitest/**',
         'node_modules/**',
         '**/*.test.{js,jsx}',
         '**/*.cy.{js,jsx}',
-        'components/**',
         'app/[locale]/**',
         'app/*.js',
         'app/layout.js',
@@ -54,10 +59,9 @@ export default defineConfig({
         'postcss.config.js',
         'vite.config.js',
         'vitest.config.js',
+        'components/providers/**',
       ],
-
-      all: false,
-
+      all: true,
       thresholds: {
         lines: 80,
         branches: 70,
@@ -65,6 +69,7 @@ export default defineConfig({
         statements: 80,
       },
     },
+
     projects: [
       {
         name: 'unit',
@@ -77,7 +82,6 @@ export default defineConfig({
           include: ['vitest/unit/**/*.test.{js,jsx}'],
         },
       },
-
       {
         name: 'integration',
         resolve: sharedResolve,
@@ -87,14 +91,10 @@ export default defineConfig({
           globals: true,
           environment: 'jsdom',
           setupFiles: ['./vitest/setup/vitest.js'],
-          include: [
-            'vitest/integration/**/*.test.js',
-            'vitest/integration/**/*.test.jsx',
-          ],
+          include: ['vitest/integration/**/*.test.js', 'vitest/integration/**/*.test.jsx'],
           exclude: ['vitest/integration/**/*.browser.test.{js,jsx}'],
         },
       },
-
       {
         name: 'browser',
         resolve: sharedResolve,
@@ -102,19 +102,32 @@ export default defineConfig({
         test: {
           name: 'browser',
           globals: true,
-
           include: [
             'vitest/component/**/*.browser.test.{js,jsx}',
             'vitest/integration/**/*.browser.test.{js,jsx}',
           ],
-
-          exclude: [
-            'vitest/unit/**',
-            'vitest/integration/**/*.test.{js,jsx}',
-            'node_modules/**',
-          ],
-
+          exclude: ['vitest/unit/**', 'vitest/integration/**/*.test.{js,jsx}', 'node_modules/**'],
           setupFiles: ['./vitest/setup/browser.jsx'],
+
+          optimizeDeps: {
+            include: [
+              'next/router',
+              'next/navigation',
+              'next/link',
+              'next/image',
+              '@testing-library/react'
+            ]
+          },
+
+          server: {
+            deps: {
+              optimizer: {
+                web: {
+                  exclude: ['components/**/*']
+                }
+              }
+            }
+          },
 
           browser: {
             enabled: true,

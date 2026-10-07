@@ -8,10 +8,19 @@ const COVERAGE_DIR = resolve(process.cwd(), 'coverage');
 const COVERAGE_FILE = resolve(COVERAGE_DIR, 'coverage-final.json');
 
 function isAllowed(filePath) {
-  const relativePath = relative(PROJECT_ROOT, filePath).replace(/\\/g, '/');
+  let absolutePath = filePath;
+  if (!isAbsolute(filePath)) {
+    absolutePath = resolve(PROJECT_ROOT, filePath);
+  }
+
+  const relativePath = relative(PROJECT_ROOT, absolutePath).replace(/\\/g, '/');
 
   if (relativePath.startsWith('lib/stores/')) {
     return false;
+  }
+
+  if (relativePath.startsWith('components/') && relativePath.match(/\.jsx?$/)) {
+    return true;
   }
 
   if (relativePath.startsWith('lib/') && relativePath.match(/\.jsx?$/)) {
