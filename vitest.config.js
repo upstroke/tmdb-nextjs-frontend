@@ -10,7 +10,7 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 const sharedPlugins = [
   react({
-    include: ['**/*.jsx', '**/*.js'],
+    jsxRuntime: 'automatic',
   }),
 ];
 
@@ -22,21 +22,7 @@ const sharedResolve = {
 };
 
 export default defineConfig({
-  esbuild: {
-    include: /\.(js|jsx)$/,
-    loader: 'jsx',
-  },
-
-  optimizeDeps: {
-    esbuildOptions: {
-      loader: {
-        '.js': 'jsx',
-      },
-    },
-  },
-
   plugins: sharedPlugins,
-
   resolve: sharedResolve,
 
   test: {
@@ -67,7 +53,7 @@ export default defineConfig({
         'next.config.js',
         'postcss.config.js',
         'vite.config.js',
-        'vitest.config.js'
+        'vitest.config.js',
       ],
 
       all: false,
@@ -83,6 +69,7 @@ export default defineConfig({
       {
         name: 'unit',
         resolve: sharedResolve,
+        plugins: sharedPlugins,
         test: {
           name: 'unit',
           globals: true,
@@ -94,6 +81,7 @@ export default defineConfig({
       {
         name: 'integration',
         resolve: sharedResolve,
+        plugins: sharedPlugins,
         test: {
           name: 'integration',
           globals: true,
@@ -110,6 +98,7 @@ export default defineConfig({
       {
         name: 'browser',
         resolve: sharedResolve,
+        plugins: sharedPlugins,
         test: {
           name: 'browser',
           globals: true,
@@ -125,7 +114,7 @@ export default defineConfig({
             'node_modules/**',
           ],
 
-          setupFiles: ['./vitest/setup/browser.js'],
+          setupFiles: ['./vitest/setup/browser.jsx'],
 
           browser: {
             enabled: true,

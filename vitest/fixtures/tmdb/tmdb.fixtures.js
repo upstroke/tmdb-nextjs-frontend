@@ -24,7 +24,8 @@ export const mappedFixtures = {
     backdropPath: '/qeQJx07rK2xm8SD2sJxFKhE7gs0.jpg',
     releaseDate: '2026-07-29',
     voteAverage: 7.864,
-    genreIds: [878, 28, 12]
+    genreIds: [878, 28, 12],
+    certification: 'PG',
   },
   tvShowListItem: {
     id: 91759,
@@ -36,7 +37,8 @@ export const mappedFixtures = {
     backdropPath: '/dyFTt1a9ZpFdKE96kPlE9fQvXOJ.jpg',
     firstAirDate: '2017-02-20',
     voteAverage: 5.4,
-    genreIds: [10751, 35, 18]
+    genreIds: [10751, 35, 18],
+    certification: 'PG',
   },
   moviesPopular: {
     page: 1,
@@ -53,7 +55,8 @@ export const mappedFixtures = {
         backdropPath: '/qeQJx07rK2xm8SD2sJxFKhE7gs0.jpg',
         releaseDate: '2026-07-29',
         voteAverage: 7.864,
-        genreIds: [878, 28, 12]
+        genreIds: [878, 28, 12],
+        certification: 'PG',
       },
       {
         id: 1423191,
@@ -65,7 +68,8 @@ export const mappedFixtures = {
         backdropPath: '/3icyRAqgakNcQn6aDVz9libFmBA.jpg',
         releaseDate: '2026-09-16',
         voteAverage: 7.3,
-        genreIds: [27, 878, 12]
+        genreIds: [27, 878, 12],
+        certification: 'PG',
       },
       {
         id: 1368337,
@@ -77,7 +81,8 @@ export const mappedFixtures = {
         backdropPath: '/bulFtfy3oBQtCnAMSi7g6DSSds3.jpg',
         releaseDate: '2026-07-15',
         voteAverage: 8.012,
-        genreIds: [12, 28, 14]
+        genreIds: [12, 28, 14],
+        certification: 'PG',
       },
       {
         id: 1101383,
@@ -89,7 +94,8 @@ export const mappedFixtures = {
         backdropPath: '/b9q9VmbXDvJmTziRqkwdEmFdwhr.jpg',
         releaseDate: '2026-08-12',
         voteAverage: 7.1,
-        genreIds: [878, 9648, 53]
+        genreIds: [878, 9648, 53],
+        certification: 'PG',
       },
       {
         id: 1032863,
@@ -101,7 +107,8 @@ export const mappedFixtures = {
         backdropPath: '/o7Oy9Gbx1CCyaweL8xUhtMW4Puq.jpg',
         releaseDate: '2026-09-23',
         voteAverage: 8.126,
-        genreIds: [10749, 35]
+        genreIds: [10749, 35],
+        certification: 'PG',
       }
     ]
   },
@@ -120,7 +127,8 @@ export const mappedFixtures = {
         backdropPath: '/dyFTt1a9ZpFdKE96kPlE9fQvXOJ.jpg',
         firstAirDate: '2017-02-20',
         voteAverage: 5.4,
-        genreIds: [10751, 35, 18]
+        genreIds: [10751, 35, 18],
+        certification: 'PG',
       },
       {
         id: 22980,
@@ -132,7 +140,8 @@ export const mappedFixtures = {
         backdropPath: '/hINekSpbcBxjnjGqmIm6I4bz2ab.jpg',
         firstAirDate: '2009-07-16',
         voteAverage: 4.969,
-        genreIds: [10767, 35]
+        genreIds: [10767, 35],
+        certification: 'PG',
       },
       {
         id: 275102,
@@ -144,7 +153,8 @@ export const mappedFixtures = {
         backdropPath: '/uc1p1PEbEMpdIHqnU9TESNC6Jhp.jpg',
         firstAirDate: '2026-09-18',
         voteAverage: 6.6,
-        genreIds: [18]
+        genreIds: [18],
+        certification: 'PG',
       },
       {
         id: 2734,
@@ -156,7 +166,8 @@ export const mappedFixtures = {
         backdropPath: '/obtdxPgmfykYwVnvuYXC5f2xKlQ.jpg',
         firstAirDate: '1999-09-20',
         voteAverage: 7.956,
-        genreIds: [80, 18, 9648]
+        genreIds: [80, 18, 9648],
+        certification: 'PG',
       },
       {
         id: 2261,
@@ -168,7 +179,8 @@ export const mappedFixtures = {
         backdropPath: '/qFfWFwfaEHzDLWLuttWiYq7Poy2.jpg',
         firstAirDate: '1962-10-01',
         voteAverage: 7.562,
-        genreIds: [10767]
+        genreIds: [10767],
+        certification: 'PG',
       }
     ]
   },
