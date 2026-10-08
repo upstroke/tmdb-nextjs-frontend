@@ -15,7 +15,7 @@ implementation plan.
 
 # Project constraints
 
-- Use Next.js 15 with the App Router and React 19.
+- Use Next.js 16 with the App Router and React 19.
 - Use JavaScript, not TypeScript.
 - Preserve the existing separation between `app/`, `components/`, and `lib/`.
 - Use Fomantic UI CSS and Sass consistently with the existing codebase.
@@ -67,12 +67,12 @@ Prefer these tools when they are available:
 
 Each test type has one tool and one purpose:
 
-| Level                       | Tool                           | Location             | Purpose                                                                                           |
-| --------------------------- | ------------------------------ | -------------------- | ------------------------------------------------------------------------------------------------- |
-| Unit                        | Vitest                         | `vitest`        | Pure logic: mappers, Zod schemas, utilities                                                       |
-| Integration                 | Vitest + Testing Library + msw | `vitest` | Real integration only: a page or section renders with mocked data and values reach the components |
-| Component and accessibility | Cypress + `cypress-axe`        | `vitest`     | Component behavior in a real browser: keyboard, focus, ARIA, visibility, contrast                 |
-| Acceptance                  | Cypress                        | `vitest`     | User flows such as search, detail page, and navigation                                            |
+| Level                       | Tool                           | Location   | Purpose                                                                                           |
+| --------------------------- | ------------------------------ | ---------- | ------------------------------------------------------------------------------------------------- |
+| Unit                        | Vitest                         | `vitest`   | Pure logic: mappers, Zod schemas, utilities                                                       |
+| Integration                 | Vitest + Testing Library + msw | `vitest`   | Real integration only: a page or section renders with mocked data and values reach the components |
+| Component and accessibility | Cypress + `cypress-axe`        | `cypress`  | Component behavior in a real browser: keyboard, focus, ARIA, visibility, contrast                 |
+| e2e                         | Cypress                        | `cypress`  | User flows such as search, detail page, and navigation                                            |
 
 Rules:
 
@@ -93,7 +93,6 @@ Rules:
   - E2E (`cypress.config.js` `e2e`, specs in `vitest`): `npm run test:acceptance` runs headlessly (`cypress run --e2e`) and `npm run test:acceptance:ui` opens the interactive runner. The app must run on `http://localhost:3000`.
   - Component (`cypress.config.js` `component`, specs in `vitest`): `npm run test:component` runs headlessly (`cypress run --component`) and `npm run test:component:ui` opens the interactive runner.
   - `npm run test:cypress` runs `cypress run` for both modes.
-- Cypress is configured to use `vitest` for specs, support files, fixtures, screenshots, and videos; consult `docs/testing.md` for test conventions.
 
 Do not edit files, run destructive commands, change dependencies, push commits,
 or create pull requests without the user’s explicit approval.

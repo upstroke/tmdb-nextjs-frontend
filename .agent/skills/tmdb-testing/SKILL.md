@@ -7,7 +7,7 @@ This skill enables the AI agent to write and maintain comprehensive tests for th
 ## Scope
 
 - Unit tests (Vitest)
-- Component tests (Cypress)
+- Component tests (Vitest)
 - Integration tests (Cypress)
 - Acceptance tests (Cypress)
 - Accessibility tests (axe-core)
@@ -18,16 +18,13 @@ This skill enables the AI agent to write and maintain comprehensive tests for th
 ### 1. Write Unit Tests (Vitest)
 
 ```js
-// tests/vitest/utils/format.test.js
+// vitest/unit/utils/formatHomepageLabel.test.js
 import { formatRating } from '@/utils/format';
 
-describe('formatRating', () => {
-  it('formats rating to one decimal', () => {
-    expect(formatRating(8.5)).toBe('8.5');
-  });
-
-  it('handles null rating', () => {
-    expect(formatRating(null)).toBe('N/A');
+describe('formatHomepageLabel', () => {
+  // Statement coverage: no argument uses the default empty string and returns empty.
+  it('returns an empty string when called without arguments', () => {
+    expect(formatHomepageLabel()).toBe('');
   });
 });
 ```
@@ -35,13 +32,28 @@ describe('formatRating', () => {
 ### 2. Write Component Tests (Cypress)
 
 ```js
-// tests/cypress/acceptance/components/movie-card.cy.js
-describe('MovieCard Component', () => {
-  it('renders movie title and poster', () => {
-    cy.mount(<MovieCard movie={mockMovie} />);
-    cy.findByText(mockMovie.title).should('exist');
-    cy.findByAltText(mockMovie.title).should('exist');
-  });
+// vitest/component/CardDefault.browser.test.jsx
+// Statement Coverage: Covers normal variables, element rendering, custom styles.
+it('renders movie card with correct route, title, genres, date, rating and certification', () => {
+  render(
+    <CardDefault
+      id={movie.id}
+      mediaType="movie"
+      title={movie.title}
+      date={movie.releaseDate}
+      rating={movie.voteAverage}
+      certification={movie.certification}
+      genres={genres}
+      imageUrl={movie.posterUrl}
+    />
+  );
+
+  const link = screen.getByRole('link');
+  expect(link).toHaveAttribute('href', `/en-US/movies/${movie.id}`);
+  expect(screen.getByText(movie.title)).toBeInTheDocument();
+
+  const timeElement = document.querySelector(`time[datetime="${movie.releaseDate}"]`);
+  expect(timeElement).toBeInTheDocument();
 });
 ```
 
@@ -61,12 +73,11 @@ describe('Search Flow', () => {
 ### 4. Write Accessibility Tests
 
 ```js
-// tests/cypress/acceptance/accessibility/homepage.cy.js
-describe('Homepage Accessibility', () => {
-  it('has no accessibility violations', () => {
-    cy.visit('/');
-    cy.injectAxe();
-    cy.checkA11y();
+// cypress/e2e/navigation/navigation.cy.js
+describe('Navigation', () => {
+  it('[NAV-01] loads the homepage without errors', () => {
+    base.visit('en-US');
+    base.assertPathname('en-US');
   });
 });
 ```
@@ -74,20 +85,41 @@ describe('Homepage Accessibility', () => {
 ## Test Structure
 
 ```
-tests/
-├── vitest/              # Unit tests
-│   ├── utils/
-│   └── security/
-└── cypress/
-    └── acceptance/
-        ├── components/  # Component tests
-        ├── flows/       # Acceptance tests
-        └── accessibility/
+cypress/
+│   ├── accessibility/
+│   ├── e2e/
+│   ├── fixtures/
+│   ├── POM/
+│   └── support/
+│
+└── vitest
+    ├── component/
+    ├── fixtures/
+    ├── mocks/
+    ├── reporters
+    ├── setup
+    └── unit
 ```
 
 ## Scripts
 
 ```bash
+"dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:unit": "vitest run --project unit",
+    "test:component": "vitest run --project browser vitest/component",
+    "test:integration": "vitest run --project browser vitest/integration",
+    "test:browser": "vitest run --project browser",
+    "test:e2e": "cypress run --e2e --browser chrome",
+    "test:e2e:open": "cypress open --e2e --browser chrome",
+    "test:coverage": "vitest run --coverage"
+
+
 # All tests
 npm run test
 
@@ -97,8 +129,8 @@ npm run test:unit
 # Component tests only
 npm run test:component
 
-# Acceptance tests only
-npm run test:acceptance
+# e2ee tests only
+npm run test:e2e
 
 # Accessibility audit
 npm run test:a11y

@@ -5,19 +5,33 @@ import istanbul from 'vite-plugin-istanbul';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
+// ============================================================================
+// 1. SYSTEM-LEVEL LOG FILTER (Safely silences compiler noise without breaking lifecycle)
+// ============================================================================
+const filterIstanbulLogs = (stream) => {
+  const originalWrite = stream.write;
+  stream.write = function (chunk, encoding, callback) {
+    const rawString = chunk.toString();
 
-const sharedPlugins = [
-  react({
-    jsxRuntime: 'automatic',
-  }),
-  istanbul({
-    include: ['components/**/*'],
-    exclude: ['node_modules/**', 'vitest/**', 'components/providers/**'],
-    requireEnv: false,
-    forceBuildInstrument: true,
-  }),
-];
+    if (
+      rawString.includes('vite:istanbul>') ||
+      rawString.includes('Sourcemaps was automatically enabled')
+    ) {
+      if (typeof callback === 'function') callback();
+      return true;
+    }
+    return originalWrite.call(stream, chunk, encoding, callback);
+  };
+};
+
+filterIstanbulLogs(process.stdout);
+filterIstanbulLogs(process.stderr);
+
+// ============================================================================
+// 2. SHARED VARIABLES & HELPERS (Reused across different test environments)
+// ============================================================================
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const isCoverageRun = process.argv.includes('--coverage');
 
 const sharedResolve = {
   alias: {
@@ -26,13 +40,56 @@ const sharedResolve = {
   },
 };
 
+const preOptimizedDeps = [
+  'next/router',
+  'next/navigation',
+  'next/link',
+  'next/image',
+  '@testing-library/react',
+  'react',
+  'react-dom',
+  'react/jsx-runtime',
+  '@testing-library/jest-dom/vitest'
+];
+
+function getProjectPlugins() {
+  const plugins = [
+    react({ jsxRuntime: 'automatic' }),
+  ];
+
+  if (isCoverageRun) {
+    plugins.push(
+      istanbul({
+        include: ['components/**/*'],
+        exclude: ['node_modules/**', 'vitest/**', 'components/providers/**'],
+        requireEnv: false,
+        forceBuildInstrument: true,
+        quiet: true,
+      })
+    );
+  }
+  return plugins;
+}
+
+// ============================================================================
+// 3. MAIN VITEST CONFIGURATION (Global settings and isolated workspaces)
+// ============================================================================
 export default defineConfig({
-  plugins: sharedPlugins,
+  plugins: [react({ jsxRuntime: 'automatic' })],
   resolve: sharedResolve,
+
+  optimizeDeps: {
+    include: preOptimizedDeps
+  },
+
+  build: {
+    sourcemap: true,
+  },
 
   test: {
     silent: true,
 
+    // Global coverage engine settings
     coverage: {
       provider: 'istanbul',
       reporter: ['text', 'html', 'json', 'json-summary'],
@@ -70,11 +127,15 @@ export default defineConfig({
       },
     },
 
+    // Isolated workspaces for different testing strategies
     projects: [
       {
         name: 'unit',
         resolve: sharedResolve,
-        plugins: sharedPlugins,
+        plugins: getProjectPlugins(),
+        optimizeDeps: {
+          include: preOptimizedDeps
+        },
         test: {
           name: 'unit',
           globals: true,
@@ -85,7 +146,10 @@ export default defineConfig({
       {
         name: 'integration',
         resolve: sharedResolve,
-        plugins: sharedPlugins,
+        plugins: getProjectPlugins(),
+        optimizeDeps: {
+          include: preOptimizedDeps
+        },
         test: {
           name: 'integration',
           globals: true,
@@ -98,7 +162,10 @@ export default defineConfig({
       {
         name: 'browser',
         resolve: sharedResolve,
-        plugins: sharedPlugins,
+        plugins: getProjectPlugins(),
+        optimizeDeps: {
+          include: preOptimizedDeps
+        },
         test: {
           name: 'browser',
           globals: true,
@@ -108,17 +175,6 @@ export default defineConfig({
           ],
           exclude: ['vitest/unit/**', 'vitest/integration/**/*.test.{js,jsx}', 'node_modules/**'],
           setupFiles: ['./vitest/setup/browser.jsx'],
-
-          optimizeDeps: {
-            include: [
-              'next/router',
-              'next/navigation',
-              'next/link',
-              'next/image',
-              '@testing-library/react'
-            ]
-          },
-
           server: {
             deps: {
               optimizer: {
@@ -128,15 +184,10 @@ export default defineConfig({
               }
             }
           },
-
           browser: {
             enabled: true,
             provider: 'playwright',
-            instances: [
-              {
-                browser: 'chromium',
-              },
-            ],
+            instances: [{ browser: 'chromium' }],
           },
         },
       },
