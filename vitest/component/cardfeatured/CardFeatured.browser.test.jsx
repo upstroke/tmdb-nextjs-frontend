@@ -3,8 +3,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
-import CardFeatured from '../../components/CardFeatured';
-import { rawFixtures } from '../fixtures/tmdb/tmdb.browser.fixtures.js';
+import CardFeatured from '../../../components/CardFeatured.jsx';
+import { rawFixtures } from '../../fixtures/tmdb/tmdb.browser.fixtures.js';
 
 // Global mocks for i18n store and Next.js internal components inside the browser sandbox
 vi.mock('@/lib/stores/locale', () => ({

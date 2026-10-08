@@ -3,8 +3,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
-import DetailsHero from '../../components/DetailsHero';
-import { rawFixtures } from '../fixtures/tmdb/tmdb.browser.fixtures.js';
+import DetailsHero from '../../../components/DetailsHero.jsx';
+import { rawFixtures } from '../../fixtures/tmdb/tmdb.browser.fixtures.js';
 
 // Global mock for i18n store inside the browser sandbox to handle default fallbacks
 vi.mock('@/lib/stores/locale', () => ({

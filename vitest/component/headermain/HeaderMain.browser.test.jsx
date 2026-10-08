@@ -3,7 +3,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import HeaderMain from '../../components/HeaderMain';
+import HeaderMain from '../../../components/HeaderMain.jsx';
 
 // ============================================================================
 // STABLE SYSTEM & CORE MODULE MOCKS

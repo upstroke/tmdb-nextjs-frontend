@@ -3,7 +3,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import LoadMore from '../../components/LoadMore';
+import LoadMore from '../../../components/LoadMore.jsx';
 
 vi.mock('@/lib/stores/locale', () => ({
   useI18n: () => ({

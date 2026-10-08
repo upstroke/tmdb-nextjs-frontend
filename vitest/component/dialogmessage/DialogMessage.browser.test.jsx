@@ -3,7 +3,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
-import DialogMessage from '../../components/DialogMessage';
+import DialogMessage from '../../../components/DialogMessage.jsx';
 
 // Global mock for i18n store infrastructure inside the browser sandbox
 vi.mock('@/lib/stores/locale', () => ({

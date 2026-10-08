@@ -3,7 +3,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
-import PagedList from '../../components/PagedList';
+import PagedList from '../../../components/PagedList.jsx';
 
 // ============================================================================
 // SYSTEM & UTILITY MOCKS
@@ -127,7 +127,7 @@ describe('PagedList (browser)', () => {
 
   // Branch Coverage: Enters the layout view when empty fallback labels require structural mapping evaluations.
   it('renders default empty container status view when no items are supplied', async () => {
-    const { restorePagedList } = await import('@/lib/utils/pageStateRestore');
+    const { restorePagedList } = await import('@/lib/utils/pageStateRestore.js');
     restorePagedList.mockResolvedValueOnce({ featured: null, cards: [], page: 1, hasMore: false });
 
     render(
@@ -146,7 +146,7 @@ describe('PagedList (browser)', () => {
 
   // Statement Coverage: Covers catch exception assignment logic for fetch failures.
   it('displays dialog message overlays upon encountering unexpected network API faults', async () => {
-    const { restorePagedList } = await import('@/lib/utils/pageStateRestore');
+    const { restorePagedList } = await import('@/lib/utils/pageStateRestore.js');
     restorePagedList.mockResolvedValueOnce({ featured: null, cards: sampleInitialData.cards, page: 1, hasMore: true });
 
     // Inject network fault failure response using the fetch spy
@@ -171,7 +171,7 @@ describe('PagedList (browser)', () => {
 
   // Branch Coverage: Verifies that AbortError exceptions seamlessly map into unique visibility warning layouts.
   it('handles pagination loading request timeouts properly', async () => {
-    const { restorePagedList } = await import('@/lib/utils/pageStateRestore');
+    const { restorePagedList } = await import('@/lib/utils/pageStateRestore.js');
     restorePagedList.mockResolvedValueOnce({ featured: null, cards: sampleInitialData.cards, page: 1, hasMore: true });
 
     // Inject explicit structural AbortError throw event mimic via the spy
@@ -195,7 +195,7 @@ describe('PagedList (browser)', () => {
 
   // Statement Coverage: Covers the duplicate-only pagination path that stops further loading and stores the unchanged current page.
   it('stops pagination when the next page only contains duplicate media items', async () => {
-    const { restorePagedList, storeCurrentPage } = await import('@/lib/utils/pageStateRestore');
+    const { restorePagedList, storeCurrentPage } = await import('@/lib/utils/pageStateRestore.js');
 
     restorePagedList.mockResolvedValueOnce({
       featured: null,
@@ -240,7 +240,7 @@ describe('PagedList (browser)', () => {
 
   // Statement Coverage: Covers the initial restore failure path and renders the recovered error message.
   it('shows an error dialog when restoring the paged list fails on mount', async () => {
-    const { restorePagedList } = await import('@/lib/utils/pageStateRestore');
+    const { restorePagedList } = await import('@/lib/utils/pageStateRestore.js');
 
     restorePagedList.mockRejectedValueOnce(new Error('Restore failed.'));
 
@@ -259,7 +259,7 @@ describe('PagedList (browser)', () => {
 
   // Statement Coverage: Covers the initial restore mapping for featured item, cards, current page, and hasMore.
   it('restores featured content, cards, page, and hasMore state on mount', async () => {
-    const { restorePagedList } = await import('@/lib/utils/pageStateRestore');
+    const { restorePagedList } = await import('@/lib/utils/pageStateRestore.js');
 
     restorePagedList.mockResolvedValueOnce({
       featured: { id: 99, title: 'Restored Featured', mediaType: 'movie' },

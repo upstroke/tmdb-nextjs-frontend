@@ -3,8 +3,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import CardDefault from '../../components/CardDefault';
-import { rawFixtures } from '../fixtures/tmdb/tmdb.browser.fixtures.js';
+import CardDefault from '../../../components/CardDefault.jsx';
+import { rawFixtures } from '../../fixtures/tmdb/tmdb.browser.fixtures.js';
 
 // ============================================================================
 // MOCKS & FIXTURES CONFIGURATION

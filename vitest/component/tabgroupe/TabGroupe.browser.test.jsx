@@ -3,7 +3,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import TabGroupe from '../../components/TabGroupe';
+import TabGroupe from '../../../components/TabGroupe.jsx';
 
 // Global mocks for i18n store infrastructure inside the browser sandbox
 vi.mock('@/lib/stores/locale', () => ({
