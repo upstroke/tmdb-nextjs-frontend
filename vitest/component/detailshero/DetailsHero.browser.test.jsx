@@ -17,7 +17,7 @@ vi.mock('@/lib/stores/locale', () => ({
 const rawDetail = rawFixtures.movieDetail;
 
 describe('DetailsHero (browser)', () => {
-
+  // TC-DH-001
   // Statement Coverage: Covers normal layout structure, background image assignment, and mapping list elements.
   // Branch Coverage: productionCompanies.length > 0 -> true (renders full production companies list branch)
   it('renders a detailed hero section with backdrop, poster, title, and production companies', () => {
@@ -43,6 +43,7 @@ describe('DetailsHero (browser)', () => {
     expect(screen.queryByText('No companies listed')).not.toBeInTheDocument();
   });
 
+  // TC-DH-002
   // Branch Coverage:
   //   - backdrop URL missing -> true (falls back to posterUrl string evaluated branch)
   //   - productionCompanies.length > 0 -> false (triggers the empty list placeholder fallback branch)
@@ -61,6 +62,7 @@ describe('DetailsHero (browser)', () => {
     expect(screen.getByText('Custom Empty Label')).toBeInTheDocument();
   });
 
+  // TC-DH-003
   // Branch Coverage: All input variables missing/falsy -> triggers default i18n "N/A" fallback chains for title and label
   it('renders default global fallback text when all operational props are omitted', () => {
     render(

@@ -15,6 +15,7 @@ vi.mock('@/lib/stores/locale', () => ({
 }));
 
 describe('MediaTypeLabel (browser)', () => {
+  // TC-MT-001
   // Statement Coverage: Covers the movie branch and the default empty className value.
   it('renders a blue movie label with translated movie text', () => {
     render(<MediaTypeLabel mediaType="movie" />);
@@ -25,6 +26,7 @@ describe('MediaTypeLabel (browser)', () => {
     expect(label).toHaveClass('ui', 'label', 'blue');
   });
 
+  // TC-MT-002
   // Statement Coverage: Covers the TV branch and appends a custom className.
   it('renders a teal tv label with translated tv text and custom className', () => {
     render(<MediaTypeLabel mediaType="tv" className="custom-class" />);
@@ -35,6 +37,7 @@ describe('MediaTypeLabel (browser)', () => {
     expect(label).toHaveClass('ui', 'label', 'teal', 'custom-class');
   });
 
+  // TC-MT-003
   // Statement Coverage: Covers the guard clause that returns null for unsupported media types.
   it('renders nothing for an unsupported media type', () => {
     const { container } = render(<MediaTypeLabel mediaType="podcast" />);

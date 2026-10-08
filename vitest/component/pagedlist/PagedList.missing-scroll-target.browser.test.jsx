@@ -87,6 +87,7 @@ describe('PagedList missing scroll target (browser)', () => {
     }));
   });
 
+  // TC-PL-MST-01
   // Statement Coverage: Covers the scroll restoration branch where the computed target id does not exist in the DOM.
   it('clears the pending scroll target when the loaded card id cannot be found', async () => {
     render(

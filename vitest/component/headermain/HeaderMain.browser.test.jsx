@@ -30,7 +30,7 @@ vi.mock('@/lib/stores/locale', () => ({
 }));
 
 // ignore LanguageSwitcher for now - test with integration test
-vi.mock('../../components/LanguageSwitcher', () => ({
+vi.mock('@/components/LanguageSwitcher', () => ({
   default: () => React.createElement('div', { 'data-testid': 'mock-language-switcher' }, 'Language')
 }));
 
@@ -46,6 +46,7 @@ describe('HeaderMain (browser)', () => {
     mockUsePathname.mockReturnValue('/en-US');
   });
 
+  // TC-HM-001
   // Statement Coverage: Covers list navigation loops, standard layouts, and pointer interactive bindings.
   it('mounts, processes navigation item configurations, and toggles mobile responsive overlays on pointer interaction', () => {
     render(<HeaderMain />);
@@ -71,6 +72,7 @@ describe('HeaderMain (browser)', () => {
     expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
   });
 
+  // TC-HM-002
   // Statement Coverage: Covers custom sessionStorage extraction steps and dynamic arithmetic calculations.
   it('reads state from sessionStorage and modifies navigation routing targets dynamically based on state restoration histories', () => {
     sessionStorage.setItem('movies-page', '5');
@@ -85,6 +87,7 @@ describe('HeaderMain (browser)', () => {
     expect(moviesLink).toHaveAttribute('href', '/en-US/movies?page=5');
   });
 
+  // TC-HM-003
   // Branch Coverage: Safely intercepts storage failures inside the try/catch runtime block
   it('safely handles internal sessionStorage exceptions and falls back to baseline values', () => {
     vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {

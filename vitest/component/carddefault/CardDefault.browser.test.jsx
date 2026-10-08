@@ -35,6 +35,7 @@ const genres = rawFixtures.genresMovie.genres;
 
 describe('CardDefault (browser)', () => {
 
+  // TC-CD-001
   // Statement Coverage: Covers normal variables, element rendering, custom styles.
   it('renders movie card with correct route, title, genres, date, rating and certification', () => {
     render(
@@ -58,6 +59,7 @@ describe('CardDefault (browser)', () => {
     expect(timeElement).toBeInTheDocument();
   });
 
+  // TC-CD-002
   // Statement Coverage: Covers alternative URL variable evaluation.
   it('renders tv show card with correct route format', () => {
     render(
@@ -73,6 +75,7 @@ describe('CardDefault (browser)', () => {
     expect(link).toHaveAttribute('href', '/en-US/tv-shows/999');
   });
 
+  // TC-CD-003
   // Statement Coverage: Covers the inline early exit statement: return null.
   // Branch Coverage: hasValidCard -> false (triggers the early 'return null' branch)
   it('returns null and renders nothing when id or mediaType is invalid', () => {
@@ -86,7 +89,7 @@ describe('CardDefault (browser)', () => {
     expect(container.firstChild).toBeNull();
   });
 
-
+  // TC-CD-004
   // Statement Coverage: Covers the evaluation of missing state items.
   // Branch Coverage:
   //   - rating > 0 -> false (triggers rating fallback view)
@@ -110,7 +113,7 @@ describe('CardDefault (browser)', () => {
     expect(placeholders.length).toBeGreaterThan(0);
   });
 
-
+  // TC-CD-005
   // Statement Coverage: Covers image lifecycle handlers: onLoad, onError statements.
   // Branch Coverage:
   //   - imageLoaded hook toggles -> true (triggers dynamic className .image-loaded)

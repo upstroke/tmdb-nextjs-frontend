@@ -16,7 +16,7 @@ vi.mock('@/lib/stores/locale', () => ({
 }));
 
 describe('DialogMessage (browser)', () => {
-
+  // TC-DM-001
   // Statement Coverage: Covers DOM mount, automatic side-effect triggers (showModal), and custom title strings resolution.
   // Branch Coverage: !dialog || !message -> false; !dialog.open -> true; title ?? messages.dialogErrorTitle -> false.
   it('opens natively as a modal, renders custom title strings, and triggers the onClose callback upon submission', async () => {
@@ -51,6 +51,7 @@ describe('DialogMessage (browser)', () => {
     });
   });
 
+  // TC-DM-002
   // Statement Coverage: Covers global fallback resolutions.
   // Branch Coverage: title ?? messages.dialogErrorTitle -> true.
   it('resolves and falls back to global i18n text placeholders when explicit title properties are omitted', () => {
@@ -69,6 +70,7 @@ describe('DialogMessage (browser)', () => {
     expect(screen.getByText('System Error')).toBeInTheDocument();
   });
 
+  // TC-DM-003
   // Statement Coverage: Covers the early exit guard clause return line.
   // Branch Coverage: !dialog || !message -> true.
   it('bypasses visual state updates and keeps the dialog hidden when message props are falsy', () => {
