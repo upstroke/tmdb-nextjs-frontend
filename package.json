@@ -13,7 +13,7 @@
     "test": "vitest run",
     "test:unit": "vitest run --project unit",
     "test:component": "vitest run --project browser vitest/component",
-    "test:integration": "vitest run --project browser vitest/integration",
+    "test:integration": "vitest run --project integration vitest/integration",
     "test:browser": "vitest run --project browser",
     "test:e2e": "cypress run --e2e --browser chrome",
     "test:e2e:open": "cypress open --e2e --browser chrome",

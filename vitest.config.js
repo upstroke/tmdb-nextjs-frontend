@@ -142,6 +142,30 @@ export default defineConfig({
         }
       },
       {
+        // Integration tests run in jsdom (Node) so async Server Components such as
+        // app/[locale]/**/page.js can be called directly and process.env works.
+        name: 'integration',
+        resolve: sharedResolve,
+        plugins: getProjectPlugins(),
+        // Pages under app/ are .js files that contain JSX.
+        esbuild: {
+          loader: 'jsx',
+          include: /\.[jt]sx?$/,
+          exclude: /node_modules/,
+          jsx: 'automatic'
+        },
+        optimizeDeps: {
+          include: preOptimizedDeps
+        },
+        test: {
+          name: 'integration',
+          globals: true,
+          environment: 'jsdom',
+          include: ['vitest/integration/**/*.test.{js,jsx}'],
+          setupFiles: ['./vitest/setup/browser.jsx']
+        }
+      },
+      {
         name: 'browser',
         resolve: sharedResolve,
         plugins: getProjectPlugins(),
@@ -151,11 +175,8 @@ export default defineConfig({
         test: {
           name: 'browser',
           globals: true,
-          include: [
-            'vitest/component/**/*.browser.test.{js,jsx}',
-            'vitest/integration/**/*.browser.test.{js,jsx}'
-          ],
-          exclude: ['vitest/unit/**', 'vitest/integration/**/*.test.{js,jsx}', 'node_modules/**'],
+          include: ['vitest/component/**/*.browser.test.{js,jsx}'],
+          exclude: ['vitest/unit/**', 'vitest/integration/**', 'node_modules/**'],
           setupFiles: ['./vitest/setup/browser.jsx'],
           server: {
             deps: {
