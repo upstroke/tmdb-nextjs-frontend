@@ -40,6 +40,15 @@ const sharedResolve = {
   }
 };
 
+// Pages under app/ are .js files that contain JSX. Shared so that every project
+// transforms the same source identically (keeps merged coverage consistent).
+const sharedEsbuild = {
+  loader: 'jsx',
+  include: /\.[jt]sx?$/,
+  exclude: /node_modules/,
+  jsx: 'automatic'
+};
+
 const preOptimizedDeps = [
   'next/router',
   'next/navigation',
@@ -75,6 +84,7 @@ function getProjectPlugins() {
 export default defineConfig({
   plugins: [react({ jsxRuntime: 'automatic' })],
   resolve: sharedResolve,
+  esbuild: sharedEsbuild,
 
   optimizeDeps: {
     include: preOptimizedDeps
@@ -127,6 +137,7 @@ export default defineConfig({
       {
         name: 'unit',
         resolve: sharedResolve,
+        esbuild: sharedEsbuild,
         plugins: getProjectPlugins(),
         optimizeDeps: {
           include: preOptimizedDeps
@@ -143,14 +154,8 @@ export default defineConfig({
         // app/[locale]/**/page.js can be called directly and process.env works.
         name: 'integration',
         resolve: sharedResolve,
+        esbuild: sharedEsbuild,
         plugins: getProjectPlugins(),
-        // Pages under app/ are .js files that contain JSX.
-        esbuild: {
-          loader: 'jsx',
-          include: /\.[jt]sx?$/,
-          exclude: /node_modules/,
-          jsx: 'automatic'
-        },
         optimizeDeps: {
           include: preOptimizedDeps
         },
@@ -165,6 +170,7 @@ export default defineConfig({
       {
         name: 'browser',
         resolve: sharedResolve,
+        esbuild: sharedEsbuild,
         plugins: getProjectPlugins(),
         optimizeDeps: {
           include: preOptimizedDeps
