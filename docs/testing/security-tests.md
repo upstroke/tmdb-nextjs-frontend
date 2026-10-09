@@ -1,8 +1,8 @@
 # Security tests
 
-Security tests check that manipulated input does not run code in the browser, does not crash the server, and does not expose the TMDB API key. They run with Cypress in `cypress/e2e/security/`.
+Security tests check that manipulated input does not run code in the browser, does not crash the server, and does not expose the TMDB API key. They also check the security response headers. They run with Cypress in `cypress/e2e/security/`.
 
-The full list of test cases (SEC-01 to SEC-18) is in [`cypress/e2e/security/security-testplan.md`](../../cypress/e2e/security/security-testplan.md). Keep the plan and the specs in sync.
+The full list of test cases (SEC-01 to SEC-19) is in [`cypress/e2e/security/security-testplan.md`](../../cypress/e2e/security/security-testplan.md). Keep the plan and the specs in sync.
 
 ## Scope
 
@@ -11,6 +11,7 @@ The app is read-only, and TMDB secures its own API. The tests cover the parts wh
 - search box and search API (`/api/[locale]/search`)
 - paginated list routes (`/api/[locale]/movies`, `/trending`, `/tv-shows`)
 - invalid ids in detail routes
+- security headers from `next.config.js`
 - the TMDB API key, which must stay on the server
 
 ## Specs
@@ -21,6 +22,7 @@ The app is read-only, and TMDB secures its own API. The tests cover the parts wh
 | `search-api.cy.js` | Query limits, special queries, locales, HTTP methods, burst, invalid ids      |
 | `api-key.cy.js`    | Key in network traffic, HTML, JavaScript bundles, and API responses           |
 | `list-api.cy.js`   | `page`, `type`, locale, extra parameters, and HTTP methods on the list routes |
+| `headers.cy.js`    | `nosniff`, `X-Frame-Options`, and Content-Security-Policy on pages and APIs   |
 
 ## Run
 
@@ -60,11 +62,13 @@ After changing server code, restart the server. Without a rebuild, `next start` 
 - The name `TMDB_API_KEY` is allowed in bundles because of the `apiKeyMissing` messages. Search for `api_key=` and the key value instead.
 - Server-side TMDB requests cannot be intercepted with `cy.intercept()`. Stub only requests made by the browser.
 - Validate every new query parameter with a Zod schema that has an upper limit, and add a test.
+- Header tests read lowercase header names from `cy.request()`.
 
 ## Limits
 
 - Detail pages are not tested with malicious TMDB data.
 - Requests to the list routes and queries with 4 or more characters reach the real TMDB API.
+- HSTS is not tested, because browsers ignore it over HTTP.
 - Rate limiting is not implemented and not tested.
 
 ## Known open points

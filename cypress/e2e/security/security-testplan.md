@@ -2,7 +2,7 @@
 
 ## Scope
 
-The app is read-only and TMDB is responsible for its own API security. The tests focus on the search, because it is the only place where users enter free text that reaches the server, on the paginated list routes, and on keeping the API key on the server.
+The app is read-only and TMDB is responsible for its own API security. The tests focus on the search, because it is the only place where users enter free text that reaches the server, on the paginated list routes, on the response headers, and on keeping the API key on the server.
 
 Goal: manipulated input must not execute code in the browser and must not crash the server. A `400`, an empty result, or a fallback to page 1 is an accepted answer. A `5xx` caused by input is not.
 
@@ -11,6 +11,7 @@ Goal: manipulated input must not execute code in the browser and must not crash 
 - TMDB data is fetched server-side in server components and cannot be intercepted by `cy.intercept()`. Detail pages are therefore not tested with malicious data in Cypress.
 - Requests with a query of 4 or more characters, and all list requests, reach the real TMDB API and need `TMDB_API_KEY` on the server.
 - Rate limiting is not implemented and not tested.
+- HSTS is not tested. Browsers ignore `Strict-Transport-Security` over HTTP, and the tests run on `http://localhost:3000`.
 - The tests read the optional key value with `cy.env()`, because `allowCypressEnv` is `false`. Do not use `Cypress.env()`.
 
 ## Test cases
@@ -35,8 +36,9 @@ Goal: manipulated input must not execute code in the browser and must not crash 
 | SEC-16 | `list-api.cy.js`   | Invalid `page` (`abc`, `0`, `-1`, `1.5`, empty, `<script>`) and unknown `type` fall back to page 1 |
 | SEC-17 | `list-api.cy.js`   | `page` above the TMDB limit of 500 (`501`, `10000`, `999999999`) never returns 5xx                |
 | SEC-18 | `list-api.cy.js`   | Extra query parameters are ignored; manipulated locales never return 5xx; locales over 10 characters return 400; other HTTP methods are rejected |
+| SEC-19 | `headers.cy.js`    | Homepage, 404 page, search API, and list API send `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, and a CSP with `default-src 'self'`, `frame-ancestors 'none'`, and no wildcard source |
 
-Set the Cypress env `TMDB_API_KEY` to also search for the exact key value, for example `CYPRESS_TMDB_API_KEY=... npm run test:e2e`. Without it, the tests search for `api_key` in requests and responses, and for `api_key=` in HTML and bundles.
+Set the Cypress env `TMDB_API_KEY` to also search for the exact key value, for example `CYPRESS_TMDB_API_KEY=... npm run test:e2e:security`. Without it, the tests search for `api_key` in requests and responses, and for `api_key=` in HTML and bundles.
 
 The name `TMDB_API_KEY` appears in the client bundle on purpose: it is part of the `apiKeyMissing` messages in `lib/i18n/ui.json`. It is not a leak.
 
@@ -46,6 +48,8 @@ The name `TMDB_API_KEY` appears in the client bundle on purpose: it is part of t
 
 ## Known open points
 
+- `next.config.js` writes `TMDB_API_KEY` into the build with the `env` option. Run the security specs once with `CYPRESS_TMDB_API_KEY` set to check that the value is not in the bundles.
+- `Referrer-Policy` and `Permissions-Policy` are not set. `X-XSS-Protection` is obsolete, and the CSP allows `'unsafe-inline'` for scripts.
 - `LocaleParamSchema` only checks the length (2 to 10), not a list of supported locales.
 - `SeasonQuerySchema` has no upper limit for `season`.
 - `homepage` and watch provider links are not checked for `http(s)`.
