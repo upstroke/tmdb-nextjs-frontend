@@ -12,10 +12,10 @@ const person = (id, name, extra = {}) => ({
 
 export const apiResponses = {
   movieCertification: {
-    results: [{ iso_3166_1: 'US', release_dates: [{ certification: 'PG' }] }]
+    results: [{ iso_3166_1: 'US', release_dates: [{ certification: 'PG-13' }] }]
   },
   tvCertification: {
-    results: [{ iso_3166_1: 'US', rating: 'PG' }]
+    results: [{ iso_3166_1: 'US', rating: 'TV-MA' }]
   },
   movieWatchProviders: {
     results: {
