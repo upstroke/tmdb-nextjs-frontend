@@ -13,11 +13,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, act, cleanup } from '@testing-library/react';
 import React from 'react';
-import LanguageSwitcher from '../../components/LanguageSwitcher.jsx';
-import { AppLocaleProvider, LocaleSyncer } from '@/components/providers/LocaleProvider';
-import { useLocale, useI18n, setLocale } from '@/lib/stores/locale';
-import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/lib/i18n/config';
-import { getLocaleText, getSupportedLocales } from '@/lib/i18n/helpers';
+import LanguageSwitcher from '../../../components/LanguageSwitcher.jsx';
+import { AppLocaleProvider, LocaleSyncer } from '@/components/providers/LocaleProvider.jsx';
+import { useLocale, useI18n, setLocale } from '@/lib/stores/locale.jsx';
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/lib/i18n/config.js';
+import { getLocaleText, getSupportedLocales } from '@/lib/i18n/helpers.js';
 
 const STORAGE_KEY = 'app-locale';
 const OTHER_LOCALES = SUPPORTED_LOCALES.filter((locale) => locale !== DEFAULT_LOCALE);
