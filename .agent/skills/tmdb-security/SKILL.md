@@ -2,99 +2,60 @@
 
 ## Purpose
 
-This skill enables the AI agent to write and maintain security-focused tests for the TMDB Next.js frontend. It focuses on identifying and preventing common security vulnerabilities in a read-only movie database application.
+This skill enables the AI agent to review, test, and harden the TMDB Next.js frontend against manipulated input and key exposure.
 
 ## Scope
 
-- Input validation (search, forms)
-- API key handling (server-side only)
-- XSS prevention
-- Dependency security
-- External content validation (TMDB-provided URLs)
+- Search box and search API route
+- Paginated list routes: `movies`, `trending`, `tv-shows`
+- Zod validation at the API boundary (`lib/schemas/tmdb.js`)
+- Keeping `TMDB_API_KEY` on the server
+- Cypress security specs in `cypress/e2e/security/`
 
-## Capabilities
+## Rules
 
-### 1. Write Security Unit Tests (Vitest)
+1. Treat every query parameter, route parameter, and `sessionStorage` value as untrusted.
+2. Validate input with a Zod schema from `lib/schemas/`. Give numbers an upper limit. TMDB allows `page` from 1 to 500.
+3. Manipulated input must give a `400`, an empty result, or a fallback to defaults. It must never give a `5xx`.
+4. Add the TMDB key only in `lib/services/tmdb-api.js`, on the server. Never pass it to client components, responses, headers, or logs.
+5. Do not render API data as HTML. Render titles and other text as text.
+6. Keep the plan in `cypress/e2e/security/security-testplan.md` in sync with the specs.
 
-```js
-// tests/vitest/security/search-input.test.js
-import { sanitizeSearchInput } from '@/utils/sanitize';
+## Workflow
 
-describe('Security: Search Input', () => {
-  it('rejects XSS attempts', () => {
-    const maliciousInput = '<script>alert("xss")</script>';
-    const sanitized = sanitizeSearchInput(maliciousInput);
-    expect(sanitized).not.toContain('<script>');
-  });
-});
-```
+1. Read `docs/testing/security-tests.md` and the test plan.
+2. Check the existing schema and route before adding new validation.
+3. Add or change the Zod schema, then the route.
+4. Add a Cypress test in `cypress/e2e/security/` and a row in the test plan.
+5. Restart the server, then run the security specs. Report the result to the user.
 
-### 2. Write Security Component Tests (Cypress)
-
-```js
-// tests/cypress/acceptance/components/security/search-xss.cy.js
-describe('Security: Search XSS Prevention', () => {
-  it('does not show script injection in search results', () => {
-    cy.visit('/');
-    cy.findByRole('searchbox', { name: /search movies/i }).type(
-      '<script>alert("xss")</script>{enter}'
-    );
-    cy.findByText(/<script>/i).should('not.exist');
-  });
-});
-```
-
-### 3. Check API Key Handling
-
-```js
-// tests/vitest/security/api-key.test.js
-describe('Security: API Key Handling', () => {
-  it('API key is not exposed in client-side code', () => {
-    expect(process.env.TMDB_API_KEY).toBeDefined();
-    expect(typeof window !== 'undefined' && window?.TMDB_API_KEY).toBeUndefined();
-  });
-});
-```
-
-## Security Checklist
-
-### Development
-
-- [ ] All user inputs are sanitized
-- [ ] API key is server-side only
-- [ ] External URLs are validated
-- [ ] No `dangerouslySetInnerHTML` except for trusted content
-
-### CI/CD
-
-- [ ] `npm audit` runs on every build
-- [ ] Dependencies are kept up to date
-- [ ] ESLint security plugin is enabled
-
-## Scripts
+## Run
 
 ```bash
-# All security tests
-npm run test:security
-
-# Unit tests only
-npm run test:security:unit
-
-# Component tests only
-npm run test:security:component
+npm run build && npm start
+npm run test:e2e:security
 ```
+
+Set `CYPRESS_TMDB_API_KEY` to also search for the exact key value.
+
+## Pitfalls
+
+- `allowCypressEnv` is `false`: use `cy.env()`, not `Cypress.env()`.
+- The text `TMDB_API_KEY` is part of the `apiKeyMissing` i18n messages and appears in bundles. Search for `api_key=` and the key value.
+- `cy.intercept()` cannot stub server-side TMDB requests.
+- `next start` serves the last build. Rebuild after changing server code.
 
 ## Documentation
 
-- **Security Tests**: [`docs/testing/security-tests.md`](../../docs/testing/security-tests.md)
-- **Testing Strategy**: [`docs/testing.md`](../../docs/testing.md)
+- **Security Tests**: [`docs/testing/security-tests.md`](../../../docs/testing/security-tests.md)
+- **Test plan**: [`cypress/e2e/security/security-testplan.md`](../../../cypress/e2e/security/security-testplan.md)
+- **Testing skill**: [`tmdb-testing`](../tmdb-testing/SKILL.md)
 
 ## When to Use
 
 Use this skill when:
 
-- Adding new user input fields
-- Implementing search functionality
-- Handling API keys or secrets
-- Displaying external content (images, links)
-- Adding new dependencies
+- Adding or changing API routes or query parameters
+- Changing the search, the list routes, or the TMDB service layer
+- Handling environment variables or secrets
+- Reviewing the app for security problems
