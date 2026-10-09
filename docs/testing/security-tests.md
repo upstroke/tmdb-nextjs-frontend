@@ -2,119 +2,50 @@
 
 ## Overview
 
-Security tests check the application for common vulnerabilities. As this is a read-only TMDB app, the focus is on:
+This is a read-only TMDB app. Security checks focus on:
 
-1. **Input Validation** (Search)
-2. **API Key Handling**
-3. **External Content** (TMDB-provided URLs)
-4. **Dependency Security**
+1. **Input validation** (search)
+2. **API key handling**
+3. **External content** (TMDB-provided URLs)
+4. **Dependency security**
 
-## Test Levels
+The security skill is described in [`.agent/skills/tmdb-security/SKILL.md`](../../.agent/skills/tmdb-security/SKILL.md).
 
-| Level         | Tool    | Path           | Focus                            |
-| ------------- | ------- | -------------- | -------------------------------- |
-| **Unit**      | Vitest  | `../../vitest` | Input validation, API key checks |
-| **Component** | Cypress | `../../vitest` | XSS prevention in UI             |
+## Status
 
-## Scripts
+There are no dedicated security test suites and no `test:security` scripts yet. The planned tests below use the existing runners.
 
-```bash
-# All security tests (Vitest + Cypress)
-npm run test:security
+## Planned Tests
 
-# Unit tests only (Vitest)
-npm run test:security:unit
+| Topic                    | Runner                      | Location (planned)      | Check                                                                              |
+| ------------------------ | --------------------------- | ----------------------- | ---------------------------------------------------------------------------------- |
+| Search input validation  | Vitest (jsdom)              | `vitest/unit/`          | Invalid or overly long queries are rejected by the search route and Zod schema     |
+| API key handling         | Vitest (jsdom)              | `vitest/integration/`   | `TMDB_API_KEY` is only used server-side and does not appear in a response body     |
+| XSS in search            | Cypress                     | `cypress/e2e/`          | A script tag typed into the search box is shown as text and is not executed       |
+| External URLs            | Vitest (jsdom)              | `vitest/unit/`          | Image and link URLs from TMDB are validated before they are rendered               |
 
-# Component tests only (Cypress)
-npm run test:security:component
-```
-
-## Unit Tests (Vitest)
-
-### Search Input Validation
-
-```js
-// tests/vitest/security/search-input.test.js
-import { sanitizeSearchInput } from '@/utils/sanitize';
-
-describe('Security: Search Input', () => {
-  it('rejects XSS attempts', () => {
-    const maliciousInput = '<script>alert("xss")</script>';
-    const sanitized = sanitizeSearchInput(maliciousInput);
-    expect(sanitized).not.toContain('<script>');
-  });
-
-  it('escapes HTML special characters', () => {
-    const input = 'Movie & TV <Show>';
-    const sanitized = sanitizeSearchInput(input);
-    expect(sanitized).toBe('Movie & TV <Show>');
-  });
-
-  it('truncates overly long inputs', () => {
-    const longInput = 'a'.repeat(200);
-    const sanitized = sanitizeSearchInput(longInput);
-    expect(sanitized.length).toBeLessThanOrEqual(100);
-  });
-});
-```
-
-### API Key Handling
-
-```js
-// tests/vitest/security/api-key.test.js
-describe('Security: API Key Handling', () => {
-  it('API key is not exposed in client-side code', () => {
-    // Checks that API key is handled via server-side API route
-    expect(process.env.TMDB_API_KEY).toBeDefined();
-    expect(typeof window !== 'undefined' && window?.TMDB_API_KEY).toBeUndefined();
-  });
-});
-```
-
-## Component Tests (Cypress)
-
-### XSS Prevention in Search
-
-```js
-// tests/cypress/acceptance/components/security/search-xss.cy.js
-describe('Security: Search XSS Prevention', () => {
-  it('does not show script injection in search results', () => {
-    cy.visit('/');
-    cy.findByRole('searchbox', { name: /search movies/i }).type(
-      '<script>alert("xss")</script>{enter}'
-    );
-
-    // Should not show alert box and display search term safely
-    cy.findByText(/<script>/i).should('not.exist');
-
-    // The search term should be displayed escaped
-    cy.findByText(/<script>/i).should('exist');
-  });
-});
-```
+Existing tests already cover parts of this: the search route rejects short queries and invalid locales, and the missing API key is handled (see [Integration Tests](integration-tests.md)).
 
 ## Security Checklist
 
 ### Development
 
-- [ ] **Input Validation**: All user inputs are sanitized
-- [ ] **API Key**: Server-side only, not in client
-- [ ] **External URLs**: Validation of TMDB-provided URLs
-- [ ] **No dangerouslySetInnerHTML**: Except for explicitly trusted content
+- [ ] **Input validation:** User input is validated (Zod)
+- [ ] **API key:** Server-side only, not in client code
+- [ ] **External URLs:** TMDB-provided URLs are validated
+- [ ] **No `dangerouslySetInnerHTML`:** Except for explicitly trusted content
 
 ### CI/CD
 
-- [ ] **npm audit**: Run on every build
-- [ ] **Dependencies up to date**: Dependabot or Renovate enabled
-- [ ] **ESLint security plugin**: Static analysis for security issues
+- [ ] **`npm audit`:** Run on every build
+- [ ] **Dependencies up to date:** Dependabot or Renovate enabled
 
 ## Tools
 
-- **npm audit**: `npm run audit` – Checks for known vulnerabilities
-- **Dependabot**: Automatic security updates for dependencies
-- **ESLint security-plugin**: `eslint-plugin-security` for static analysis
+- **npm audit:** `npm audit` checks for known vulnerabilities
+- **Dependabot:** Automatic security updates for dependencies
 
 ## Documentation
 
-- **Security Skill**: [`.agent/skills/tmdb-security/SKILL.md`](../../.agent/skills/tmdb-security/SKILL.md)
-- **Testing Strategy**: [`docs/testing.md`](./testing.md)
+- [Testing Strategy](../testing.md)
+- [Common Rules](common-rules.md)
