@@ -15,12 +15,14 @@ import TypeHeadSearch from '../../components/TypeHeadSearch.jsx';
 import { GET as searchRoute } from '../../app/api/[locale]/search/route.js';
 import MovieDetailPage from '../../app/[locale]/movies/[id]/page.js';
 import TvShowDetailPage from '../../app/[locale]/tv-shows/[id]/page.js';
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/lib/i18n/config';
 import { searchToDetailsFixture } from '../fixtures/tmdb/search-to-details.browser.fixtures.js';
 import { rawFixtures } from '../fixtures/tmdb/tmdb.browser.fixtures.js';
 import { i18nMockDefault } from '../mocks/i18n.mocks.js';
 
 const { movie, tv } = searchToDetailsFixture.flows;
 const QUERY = 'Dark Breaking';
+const OTHER_LOCALES = SUPPORTED_LOCALES.filter((locale) => locale !== DEFAULT_LOCALE);
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn() })
@@ -36,10 +38,13 @@ vi.mock('next/image', async () => {
   return { default: MockImage };
 });
 
-vi.mock('@/lib/stores/locale', () => ({
-  useI18n: () => i18nMockDefault,
-  useLocale: () => 'en-US'
-}));
+vi.mock('@/lib/stores/locale', async () => {
+  const { DEFAULT_LOCALE: defaultLocale } = await import('@/lib/i18n/config');
+  return {
+    useI18n: () => i18nMockDefault,
+    useLocale: () => defaultLocale
+  };
+});
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -94,14 +99,14 @@ function mockFetch(overrides) {
   const tmdb = tmdbFetch(overrides);
   vi.spyOn(globalThis, 'fetch').mockImplementation((url) => {
     const u = String(url);
-    if (u.includes('/api/en-US/search')) {
+    if (u.includes(`/api/${DEFAULT_LOCALE}/search`)) {
       return callSearchRoute(new URL(u, 'http://localhost').searchParams.get('q'));
     }
     return tmdb(url);
   });
 }
 
-function callSearchRoute(q, locale = 'en-US') {
+function callSearchRoute(q, locale = DEFAULT_LOCALE) {
   const url = new URL(`http://localhost/api/${locale}/search`);
   if (q !== null && q !== undefined) url.searchParams.set('q', q);
   return searchRoute(new Request(url), { params: Promise.resolve({ locale }) });
@@ -110,7 +115,14 @@ function callSearchRoute(q, locale = 'en-US') {
 const tmdbCalls = (fragment) =>
   globalThis.fetch.mock.calls.filter(([url]) => String(url).includes(fragment));
 
-const detailParams = (id, locale = 'en-US') => ({ params: Promise.resolve({ locale, id: String(id) }) });
+const languageOfLastSearchCall = () => {
+  const calls = tmdbCalls('/search/multi');
+  return new URL(String(calls[calls.length - 1][0])).searchParams.get('language');
+};
+
+const detailParams = (id, locale = DEFAULT_LOCALE) => ({
+  params: Promise.resolve({ locale, id: String(id) })
+});
 
 async function renderMovie(id = movie.result.id, locale) {
   return render(await MovieDetailPage(detailParams(id, locale)));
@@ -157,23 +169,28 @@ describe('Search to details (integration)', () => {
       expect(searchCall.searchParams.get('query')).toBe(QUERY);
     });
 
+    it.each(['ab', ''])('returns empty lists without calling TMDB for the query "%s"', async (q) => {
+      mockFetch();
+
+      const response = await callSearchRoute(q);
+
+      expect(response.status).toBe(200);
+      expect(await response.json()).toMatchObject({
+        movies: [],
+        tvShows: [],
+        results: [],
+        error: null
+      });
+      expect(tmdbCalls('/search/multi')).toHaveLength(0);
+    });
+
     it('returns empty lists without calling TMDB when the query is missing', async () => {
       mockFetch();
 
       const response = await callSearchRoute(null);
-      const body = await response.json();
 
       expect(response.status).toBe(200);
-      expect(body).toMatchObject({ movies: [], tvShows: [], results: [], error: null });
-      expect(tmdbCalls('/search/multi')).toHaveLength(0);
-    });
-
-    it('answers 400 for an invalid locale', async () => {
-      mockFetch();
-
-      const response = await callSearchRoute(QUERY, 'xx-XX');
-
-      expect(response.status).toBe(400);
+      expect(await response.json()).toMatchObject({ results: [], error: null });
       expect(tmdbCalls('/search/multi')).toHaveLength(0);
     });
 
@@ -199,6 +216,52 @@ describe('Search to details (integration)', () => {
       expect(response.status).toBe(500);
       expect(body.error).toBeTruthy();
       expect(body.movies).toEqual([]);
+    });
+  });
+
+  describe('locale handling', () => {
+    // LocaleParamSchema only checks the length (2-10 characters), not the supported list.
+    it.each(['x', 'this-is-too-long'])('answers 400 for the locale "%s"', async (locale) => {
+      mockFetch();
+
+      const response = await callSearchRoute(QUERY, locale);
+      const body = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(body.error).toBe('Invalid locale.');
+      expect(tmdbCalls('/search/multi')).toHaveLength(0);
+    });
+
+    it.each(SUPPORTED_LOCALES)('passes the supported locale %s to TMDB as language', async (locale) => {
+      mockFetch();
+
+      const response = await callSearchRoute(QUERY, locale);
+
+      expect(response.status).toBe(200);
+      expect(languageOfLastSearchCall()).toBe(locale);
+    });
+
+    it('uses the default UI texts but keeps the requested language for an unknown locale', async () => {
+      vi.stubEnv('TMDB_API_KEY', '');
+      mockFetch();
+      const unknown = await (await callSearchRoute(QUERY, 'xx-XX')).json();
+      const standard = await (await callSearchRoute(QUERY, DEFAULT_LOCALE)).json();
+      expect(unknown.error).toBe(standard.error);
+
+      vi.stubEnv('TMDB_API_KEY', 'test-key');
+      await callSearchRoute(QUERY, 'xx-XX');
+      expect(languageOfLastSearchCall()).toBe('xx-XX');
+    });
+
+    it('uses different UI texts for another supported locale', async () => {
+      vi.stubEnv('TMDB_API_KEY', '');
+      mockFetch();
+
+      const standard = await (await callSearchRoute(QUERY, DEFAULT_LOCALE)).json();
+      const other = await (await callSearchRoute(QUERY, OTHER_LOCALES[0])).json();
+
+      expect(other.error).toBeTruthy();
+      expect(other.error).not.toBe(standard.error);
     });
   });
 
@@ -275,20 +338,35 @@ describe('Search to details (integration)', () => {
 
       expect(screen.getAllByText(tv.expected.title).length).toBeGreaterThan(0);
     });
+  });
 
-    it('shows watch providers only for the region of the locale', async () => {
+  describe('detail pages per locale', () => {
+    // The fixture providers exist for the region of the default locale only.
+    it('shows the watch providers for the region of the default locale', async () => {
       mockFetch();
 
-      await renderMovie(movie.result.id, 'en-US');
+      await renderMovie(movie.result.id, DEFAULT_LOCALE);
+
       expect(screen.getByText(movie.expected.providerName)).toBeInTheDocument();
     });
 
-    it('hides US-only watch providers for a German locale', async () => {
+    it.each(OTHER_LOCALES)('hides the default-region watch providers for %s', async (locale) => {
       mockFetch();
 
-      await renderMovie(movie.result.id, 'de-DE');
+      await renderMovie(movie.result.id, locale);
 
       expect(screen.queryByText(movie.expected.providerName)).not.toBeInTheDocument();
+    });
+
+    it.each(SUPPORTED_LOCALES)('renders movie and tv detail pages for %s', async (locale) => {
+      mockFetch();
+
+      const { unmount } = await renderMovie(movie.result.id, locale);
+      expect(screen.getAllByText(movie.expected.title).length).toBeGreaterThan(0);
+      unmount();
+
+      await renderTv(tv.result.id, locale);
+      expect(screen.getAllByText(tv.expected.title).length).toBeGreaterThan(0);
     });
   });
 
