@@ -16,6 +16,7 @@ import { GET as searchRoute } from '../../app/api/[locale]/search/route.js';
 import MovieDetailPage from '../../app/[locale]/movies/[id]/page.js';
 import TvShowDetailPage from '../../app/[locale]/tv-shows/[id]/page.js';
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/lib/i18n/config';
+import { getLocaleText } from '@/lib/i18n/helpers';
 import { searchToDetailsFixture } from '../fixtures/tmdb/search-to-details.browser.fixtures.js';
 import { rawFixtures } from '../fixtures/tmdb/tmdb.browser.fixtures.js';
 import { i18nMockDefault } from '../mocks/i18n.mocks.js';
@@ -23,6 +24,7 @@ import { i18nMockDefault } from '../mocks/i18n.mocks.js';
 const { movie, tv } = searchToDetailsFixture.flows;
 const QUERY = 'Dark Breaking';
 const OTHER_LOCALES = SUPPORTED_LOCALES.filter((locale) => locale !== DEFAULT_LOCALE);
+const { messages } = getLocaleText(DEFAULT_LOCALE);
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn() })
@@ -202,7 +204,7 @@ describe('Search to details (integration)', () => {
       const body = await response.json();
 
       expect(response.status).toBe(500);
-      expect(body.error).toBeTruthy();
+      expect(body.error).toBe(messages.apiKeyMissing);
       expect(body.results).toEqual([]);
       expect(tmdbCalls('/search/multi')).toHaveLength(0);
     });
@@ -214,7 +216,7 @@ describe('Search to details (integration)', () => {
       const body = await response.json();
 
       expect(response.status).toBe(500);
-      expect(body.error).toBeTruthy();
+      expect(body.error).toBe(messages.searchError);
       expect(body.movies).toEqual([]);
     });
   });
@@ -247,21 +249,21 @@ describe('Search to details (integration)', () => {
       const unknown = await (await callSearchRoute(QUERY, 'xx-XX')).json();
       const standard = await (await callSearchRoute(QUERY, DEFAULT_LOCALE)).json();
       expect(unknown.error).toBe(standard.error);
+      expect(unknown.error).toBe(messages.apiKeyMissing);
 
       vi.stubEnv('TMDB_API_KEY', 'test-key');
       await callSearchRoute(QUERY, 'xx-XX');
       expect(languageOfLastSearchCall()).toBe('xx-XX');
     });
 
-    it('uses different UI texts for another supported locale', async () => {
+    it('uses the UI texts of another supported locale', async () => {
       vi.stubEnv('TMDB_API_KEY', '');
       mockFetch();
 
-      const standard = await (await callSearchRoute(QUERY, DEFAULT_LOCALE)).json();
       const other = await (await callSearchRoute(QUERY, OTHER_LOCALES[0])).json();
 
-      expect(other.error).toBeTruthy();
-      expect(other.error).not.toBe(standard.error);
+      expect(other.error).toBe(getLocaleText(OTHER_LOCALES[0]).messages.apiKeyMissing);
+      expect(other.error).not.toBe(messages.apiKeyMissing);
     });
   });
 
@@ -390,7 +392,7 @@ describe('Search to details (integration)', () => {
       render(<TypeHeadSearch />);
       fireEvent.change(screen.getByRole('combobox'), { target: { value: QUERY } });
 
-      expect((await screen.findAllByText(/could not be loaded/i)).length).toBeGreaterThan(0);
+      expect((await screen.findAllByText(messages.searchError)).length).toBeGreaterThan(0);
       expect(screen.queryByText(new RegExp(`^${movie.result.title}$`, 'i'))).not.toBeInTheDocument();
     });
   });
