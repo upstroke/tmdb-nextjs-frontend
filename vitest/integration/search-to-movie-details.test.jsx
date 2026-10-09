@@ -1,5 +1,7 @@
 /**
- * Integration (jsdom): search -> click movie result -> render movie detail page.
+ * Integration (jsdom): search -> search results -> redirect to movie detail page.
+ * All flow data (query, API responses, link, expected values) comes from
+ * searchToDetailsFixture.flows.movie.
  * Real: TypeHeadSearch, MovieDetailPage, createTmdbApi.
  * Mocked: fetch (search API + TMDB API), next/navigation, next/link, next/image, locale store.
  */
@@ -9,8 +11,9 @@ import React from 'react';
 import TypeHeadSearch from '../../components/TypeHeadSearch.jsx';
 import MovieDetailPage from '../../app/[locale]/movies/[id]/page.js';
 import { searchToDetailsFixture } from '../fixtures/tmdb/search-to-details.browser.fixtures.js';
-import { apiResponses } from '../fixtures/tmdb/tmdb.api.fixtures.js';
 import { i18nMockDefault } from '../mocks/i18n.mocks.js';
+
+const flow = searchToDetailsFixture.flows.movie;
 
 const { mockPush } = vi.hoisted(() => ({ mockPush: vi.fn() }));
 
@@ -39,10 +42,10 @@ function routeFetch(url) {
   const json = (body) =>
     Promise.resolve({ ok: true, status: 200, statusText: 'OK', json: async () => body });
 
-  if (u.includes('/api/en-US/search')) return json(searchToDetailsFixture.apiResponse);
-  if (u.includes('/release_dates')) return json(apiResponses.movieCertification);
-  if (u.includes('/watch/providers')) return json(apiResponses.movieWatchProviders);
-  if (/\/movie\/155(\?|$)/.test(u)) return json(apiResponses.movieDetailFull);
+  if (u.includes('/api/en-US/search')) return json(flow.search.apiResponse);
+  if (u.includes('/release_dates')) return json(flow.tmdb.certification);
+  if (u.includes('/watch/providers')) return json(flow.tmdb.providers);
+  if (new RegExp(`/movie/${flow.result.id}(\\?|$)`).test(u)) return json(flow.tmdb.details);
   return Promise.resolve({
     ok: false,
     status: 404,
@@ -51,7 +54,7 @@ function routeFetch(url) {
   });
 }
 
-describe('Search -> movie detail page (integration)', () => {
+describe('Search -> results -> movie detail page (integration)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     sessionStorage.clear();
@@ -68,27 +71,29 @@ describe('Search -> movie detail page (integration)', () => {
   it('follows a movie search result to its detail page and shows the movie data', async () => {
     // 1. Search
     const { unmount } = render(<TypeHeadSearch />);
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'Dark' } });
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: flow.search.query } });
 
-    // 2. Pick the movie result and follow its link
-    const movieTitle = await screen.findByText(/^The Dark Knight$/i);
+    // 2. Search results: pick the movie and follow its link
+    const movieTitle = await screen.findByText(new RegExp(`^${flow.result.title}$`, 'i'));
     const movieOption = movieTitle.closest('a[role="option"]');
-    expect(movieOption).toHaveAttribute('href', searchToDetailsFixture.expectedLinks.movie.href);
+    expect(movieOption).toHaveAttribute('href', flow.result.href);
 
     fireEvent.click(movieOption);
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith(searchToDetailsFixture.expectedLinks.movie.href);
+      expect(mockPush).toHaveBeenCalledWith(flow.result.href);
     });
     unmount();
 
-    // 3. Render the page the link points to
+    // 3. Redirect: render the page the link points to
     const [, locale, , id] = mockPush.mock.calls[0][0].split('/');
     const ui = await MovieDetailPage({ params: Promise.resolve({ locale, id }) });
     render(ui);
 
-    // 4. Assertions on the detail page
-    expect(screen.getAllByText('The Dark Knight').length).toBeGreaterThan(0);
-    expect(screen.getByText('152 min')).toBeInTheDocument();
-    expect(screen.getByText(/Christian Bale/)).toBeInTheDocument();
+    // 4. Detail page shows the expected data
+    expect(screen.getAllByText(flow.expected.title).length).toBeGreaterThan(0);
+    expect(screen.getByText(flow.expected.runtime)).toBeInTheDocument();
+    flow.expected.castNames.forEach((name) => {
+      expect(screen.getByText(new RegExp(name))).toBeInTheDocument();
+    });
   });
 });
