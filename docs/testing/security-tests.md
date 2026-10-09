@@ -1,51 +1,64 @@
-# Security Tests
+# Security tests
 
-## Overview
+Security tests check that manipulated input does not run code in the browser, does not crash the server, and does not expose the TMDB API key. They run with Cypress in `cypress/e2e/security/`.
 
-This is a read-only TMDB app. Security checks focus on:
+The full list of test cases (SEC-01 to SEC-18) is in [`cypress/e2e/security/security-testplan.md`](../../cypress/e2e/security/security-testplan.md). Keep the plan and the specs in sync.
 
-1. **Input validation** (search)
-2. **API key handling**
-3. **External content** (TMDB-provided URLs)
-4. **Dependency security**
+## Scope
 
-The security skill is described in [`.agent/skills/tmdb-security/SKILL.md`](../../.agent/skills/tmdb-security/SKILL.md).
+The app is read-only, and TMDB secures its own API. The tests cover the parts where user input reaches the server or the browser:
 
-## Status
+- search box and search API (`/api/[locale]/search`)
+- paginated list routes (`/api/[locale]/movies`, `/trending`, `/tv-shows`)
+- invalid ids in detail routes
+- the TMDB API key, which must stay on the server
 
-There are no dedicated security test suites and no `test:security` scripts yet. The planned tests below use the existing runners.
+## Specs
 
-## Planned Tests
+| Spec               | Purpose                                                                     |
+| ------------------ | --------------------------------------------------------------------------- |
+| `search-xss.cy.js` | XSS payloads, malicious API data, error and unexpected response shapes      |
+| `search-api.cy.js` | Query limits, special queries, locales, HTTP methods, burst, invalid ids    |
+| `api-key.cy.js`    | Key in network traffic, HTML, JavaScript bundles, and API responses         |
+| `list-api.cy.js`   | `page`, `type`, locale, extra parameters, and HTTP methods on the list routes |
 
-| Topic                    | Runner                      | Location (planned)      | Check                                                                              |
-| ------------------------ | --------------------------- | ----------------------- | ---------------------------------------------------------------------------------- |
-| Search input validation  | Vitest (jsdom)              | `vitest/unit/`          | Invalid or overly long queries are rejected by the search route and Zod schema     |
-| API key handling         | Vitest (jsdom)              | `vitest/integration/`   | `TMDB_API_KEY` is only used server-side and does not appear in a response body     |
-| XSS in search            | Cypress                     | `cypress/e2e/`          | A script tag typed into the search box is shown as text and is not executed       |
-| External URLs            | Vitest (jsdom)              | `vitest/unit/`          | Image and link URLs from TMDB are validated before they are rendered               |
+## Run
 
-Existing tests already cover parts of this: the search route rejects short queries and invalid locales, and the missing API key is handled (see [Integration Tests](integration-tests.md)).
+The app must run on `http://localhost:3000` and needs `TMDB_API_KEY`. For the bundle check, use a production build:
 
-## Security Checklist
+```bash
+npm run build && npm start
+```
 
-### Development
+In a second terminal:
 
-- [ ] **Input validation:** User input is validated (Zod)
-- [ ] **API key:** Server-side only, not in client code
-- [ ] **External URLs:** TMDB-provided URLs are validated
-- [ ] **No `dangerouslySetInnerHTML`:** Except for explicitly trusted content
+```bash
+npx cypress run --e2e --browser chrome --spec "cypress/e2e/security/**/*.cy.js"
+```
 
-### CI/CD
+To also search for the exact key value:
 
-- [ ] **`npm audit`:** Run on every build
-- [ ] **Dependencies up to date:** Dependabot or Renovate enabled
+```bash
+CYPRESS_TMDB_API_KEY=... npx cypress run --e2e --browser chrome --spec "cypress/e2e/security/**/*.cy.js"
+```
 
-## Tools
+After changing server code, restart the server. Without a rebuild, `next start` keeps serving the old code.
 
-- **npm audit:** `npm audit` checks for known vulnerabilities
-- **Dependabot:** Automatic security updates for dependencies
+## Rules
 
-## Documentation
+- The expected result for manipulated input is a `400`, an empty result, or a fallback to defaults. Never a `5xx`.
+- Do not use `Cypress.env()`. `allowCypressEnv` is `false`, so read env values with `cy.env()`.
+- Use the constant `en-US` as locale, the same as `DEFAULT_LOCALE` in `lib/i18n/config.js`.
+- The name `TMDB_API_KEY` is allowed in bundles because of the `apiKeyMissing` messages. Search for `api_key=` and the key value instead.
+- Server-side TMDB requests cannot be intercepted with `cy.intercept()`. Stub only requests made by the browser.
+- Validate every new query parameter with a Zod schema that has an upper limit, and add a test.
 
-- [Testing Strategy](../testing.md)
-- [Common Rules](common-rules.md)
+## Limits
+
+- Detail pages are not tested with malicious TMDB data.
+- Requests to the list routes and queries with 4 or more characters reach the real TMDB API.
+- Rate limiting is not implemented and not tested.
+
+## Known open points
+
+See the section "Known open points" in the test plan.

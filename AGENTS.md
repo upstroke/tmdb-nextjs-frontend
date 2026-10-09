@@ -7,6 +7,7 @@ Select and read the applicable `SKILL.md` before acting:
 - `tmdb-development` — features, fixes, refactors, components, routes, and styling
 - `tmdb-testing` — unit, integration, component, and Cypress acceptance tests
 - `tmdb-accessibility` — keyboard, focus, semantics, ARIA, and accessibility audits
+- `tmdb-security` — input validation, API key handling, and Cypress security tests
 - `tmdb-ai-collaboration` — planning, review, validation, and collaboration boundaries
 
 For work that spans several areas, read each applicable skill. Begin with
@@ -43,6 +44,13 @@ implementation plan.
 - Remove duplicates when loading additional paginated data.
 - Preserve locale information in TMDB requests.
 
+# Security
+
+- Keep `TMDB_API_KEY` on the server. Add it only in `lib/services/tmdb-api.js`.
+- Treat query parameters, route parameters, and `sessionStorage` values as untrusted. Validate them with Zod and give numbers an upper limit (`page` max 500).
+- Manipulated input must give a `400`, an empty result, or a fallback. It must never give a `5xx`.
+- Read `.agent/skills/tmdb-security/SKILL.md` and `docs/testing/security-tests.md` before changing API routes or schemas.
+
 # API and browser capabilities
 
 - Use the project's Next.js API mechanisms for application/API work where they fit the existing architecture.
@@ -74,6 +82,7 @@ Each test type has one tool and one purpose:
 | Component   | Vitest browser mode (Playwright, Chromium) | `vitest/component/`                      | Component behavior in a real browser: rendering, props, interaction                               |
 | e2e         | Cypress                                    | `cypress/e2e/`                           | User flows such as search, detail page, and navigation                                            |
 | Accessibility | Cypress + `cypress-axe`                  | `cypress/accessibility/`, `cypress/e2e/` | Keyboard, focus, ARIA, visibility, contrast                                                       |
+| Security    | Cypress                                    | `cypress/e2e/security/`                  | Manipulated input, XSS, API key exposure, list and search API routes                              |
 
 Rules:
 
@@ -83,6 +92,7 @@ Rules:
 - Run `cy.checkA11y()` (`cypress-axe`) on pages and after relevant interactions.
 - Do not add tests for purely presentational components. Integration or Cypress tests cover them.
 - Check whether a dialog is really open and visible in Cypress. jsdom has no `showModal`, so Vitest tests stub it and only assert the message text.
+- In Cypress specs, do not use `Cypress.env()`. `allowCypressEnv` is `false`, so use `cy.env()`.
 
 # Validation
 
@@ -92,6 +102,7 @@ Rules:
 - Use `npm run test:coverage` when coverage is required.
 - Run `npm run build` for production-build validation.
 - Treat Cypress as a separate validation step. `npm run test:e2e` runs the specs headlessly (`cypress run --e2e --browser chrome`) and `npm run test:e2e:open` opens the interactive runner. The app must run on `http://localhost:3000`.
+- Run only the security specs with `npx cypress run --e2e --browser chrome --spec "cypress/e2e/security/**/*.cy.js"`. Restart or rebuild the server first if server code changed.
 
 Do not edit files, run destructive commands, change dependencies, push commits,
 or create pull requests without the user’s explicit approval.
