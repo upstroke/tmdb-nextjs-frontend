@@ -4,17 +4,14 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import CardDefault from '../../../components/CardDefault.jsx';
+import { i18nMockDefault } from '../../mocks/i18n.mocks.js';
 import { rawFixtures } from '../../fixtures/tmdb/tmdb.browser.fixtures.js';
 
 // ============================================================================
 // MOCKS & FIXTURES CONFIGURATION
 // ============================================================================
 vi.mock('@/lib/stores/locale', () => ({
-  useI18n: () => ({
-    labels: { certification: 'Age Rating', genre: 'Genre', releaseDate: 'Release date', rating: 'Rating' },
-    formats: { outOfTen: 'out of 10' },
-    fallbacks: { notAvailable: 'N/A' }
-  }),
+  useI18n: () => i18nMockDefault,
   useLocale: () => 'en-US'
 }));
 
@@ -52,7 +49,10 @@ describe('CardDefault (browser)', () => {
     );
 
     const link = screen.getByRole('link');
-    expect(link).toHaveAttribute('href', `/en-US/movies/${movie.id}`);
+    expect(link).toHaveAttribute(
+      'href',
+      `/${i18nMockDefault.locale}/movies/${movie.id}`
+    );
     expect(screen.getByText(movie.title)).toBeInTheDocument();
 
     const timeElement = document.querySelector(`time[datetime="${movie.releaseDate}"]`);
