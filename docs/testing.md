@@ -59,6 +59,8 @@ npm run test:e2e:open
 
 ## Coverage
 
+Unit, integration, and component tests contribute to the coverage report (`npm run test:coverage` runs all Vitest projects). Cypress tests do not.
+
 Coverage reports include:
 
 - `lib/**` - Utilities, services, stores, i18n
