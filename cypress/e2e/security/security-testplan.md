@@ -45,10 +45,10 @@ The name `TMDB_API_KEY` appears in the client bundle on purpose: it is part of t
 ## Findings fixed by these tests
 
 - `page` above 500 returned 500, because TMDB rejects those pages. `ListQuerySchema` now limits `page` to 1 to 500, and the routes fall back to page 1.
+- `next.config.js` inlined `TMDB_API_KEY` into the build with the `env` option. The entry is removed. Server code reads `process.env.TMDB_API_KEY` at runtime. Run the security specs with `CYPRESS_TMDB_API_KEY` set after every change to `next.config.js` to confirm that the value is not in the bundles.
 
 ## Known open points
 
-- `next.config.js` writes `TMDB_API_KEY` into the build with the `env` option. Run the security specs once with `CYPRESS_TMDB_API_KEY` set to check that the value is not in the bundles.
 - `Referrer-Policy` and `Permissions-Policy` are not set. `X-XSS-Protection` is obsolete, and the CSP allows `'unsafe-inline'` for scripts.
 - `LocaleParamSchema` only checks the length (2 to 10), not a list of supported locales.
 - `SeasonQuerySchema` has no upper limit for `season`.
