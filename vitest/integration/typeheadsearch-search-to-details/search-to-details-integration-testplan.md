@@ -29,6 +29,7 @@ This test plan documents the automated integration tests in `search-to-details.t
 - Fallback to default UI texts for an unknown locale, own texts for supported locales
 - Using search result ids to render movie and TV detail pages
 - Detail pages with failing or missing data (providers, certification, credits, runtime, season)
+- TV detail page: load error message, invalid id, fallback texts for empty data
 - Watch providers per region, rendering for all supported locales
 - Typeahead result links and error message with the real search route
 
@@ -36,6 +37,8 @@ This test plan documents the automated integration tests in `search-to-details.t
 
 - Real TMDB API and real network
 - Real Next.js routing and clicking through pages (Cypress)
+- Switching between season tabs (`TabGroupe`, Cypress or component tests)
+- Missing `TMDB_API_KEY` on the detail pages (covered on the home page, because without a key the first page already fails)
 - Component details of `TypeHeadSearch` such as keyboard navigation (TP-THS-001)
 - Visual styling, image loading, ranking quality of search results
 
@@ -70,8 +73,11 @@ All tests follow Arrange–Act–Assert. A fetch router answers TMDB endpoints f
 | TC-SD-21 | `shows an error message when TMDB fails`                                           | Typeahead shows `messages.searchError`, no results                         |
 | TC-SD-22 | `drops search results that are neither a movie nor a tv show`                      | A `person` result is missing in `results`, `movies` and `tvShows`          |
 | TC-SD-23 | `answers 200 with empty lists when TMDB finds nothing`                             | Status 200, empty lists, `error` null, one TMDB call                       |
+| TC-SD-24 | `shows the load error instead of the tv page when the details request fails`       | `messages.tvShowLoadError` shown, no title                                 |
+| TC-SD-25 | `shows a message for an invalid tv id without calling TMDB`                        | `Invalid URL parameters.` shown, no `/tv/` request                         |
+| TC-SD-26 | `renders the tv page with fallback texts when overview, genres and credits are empty` | Title shown, `fallbacks.notAvailable` shown, no cast                    |
 
-TC-SD-22 and TC-SD-23 are at the end of the test file, in the group `search route with unusual TMDB responses`.
+TC-SD-22 and TC-SD-23 are in the group `search route with unusual TMDB responses`, TC-SD-24 to TC-SD-26 in the group `detail pages with invalid or empty data`. Both groups are at the end of the test file.
 
 ## Detailed Test Cases
 
@@ -174,6 +180,26 @@ TC-SD-22 and TC-SD-23 are at the end of the test file, in the group `search rout
 **Steps:** Call the route with `Dark Breaking`.
 **Expected Result:** Status 200, `movies`, `tvShows` and `results` are empty, `error` is `null`, exactly one `search/multi` call (in contrast to TC-SD-02, TMDB is asked).
 
+### TC-SD-24: TV details request fails
+
+**Objective:** Verify the error message when the main TV request fails.
+**Preconditions:** The `tv` endpoint answers with an error.
+**Steps:** Render the TV page with the fixture id.
+**Expected Result:** `messages.tvShowLoadError` is shown, the title is not.
+
+### TC-SD-25: Invalid TV id
+
+**Objective:** Verify that an invalid `id` is rejected before any request.
+**Steps:** Render the TV page with the id `abc`.
+**Expected Result:** `Invalid URL parameters.` is shown, no request to a `/tv/` endpoint.
+
+### TC-SD-26: Empty TV data
+
+**Objective:** Verify the fallback texts for missing overview, genres and credits.
+**Preconditions:** The `tv` endpoint answers with `overview: ''`, `genres: []` and no `credits`.
+**Steps:** Render the TV page with the fixture id.
+**Expected Result:** The title is shown, `fallbacks.notAvailable` appears at least once, the cast names are not shown.
+
 ## Pass/Fail Criteria
 
 A test case passes when every assertion within its `it(...)` block succeeds. It fails if a status code, response field, rendered text, link, TMDB request parameter or number of TMDB calls differs from the expectation.
@@ -186,6 +212,7 @@ A test case passes when every assertion within its `it(...)` block succeeds. It 
 - The fixture `href` values must match `DEFAULT_LOCALE` (currently `en-US`).
 - TC-SD-21 depends on `TypeHeadSearch` showing the text of `searchError`; a different mock text in `i18nMockDefault` would make it fail.
 - TC-SD-22 and TC-SD-23 build their TMDB body from `searchToDetailsFixture.searchResponse` and assume it has a `results` array like the TMDB response.
+- TC-SD-25 assumes that `IdParamSchema` rejects non-numeric ids; TC-SD-26 assumes that the TV schema accepts an empty `overview` and missing `credits`.
 - Navigation by clicking and real routing are only covered by Cypress.
 
 ## Execution

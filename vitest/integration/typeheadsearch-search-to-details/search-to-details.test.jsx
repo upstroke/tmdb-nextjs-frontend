@@ -25,7 +25,7 @@ import { i18nMockDefault } from '../../mocks/i18n.mocks.js';
 const { movie, tv } = searchToDetailsFixture.flows;
 const QUERY = 'Dark Breaking';
 const OTHER_LOCALES = SUPPORTED_LOCALES.filter((locale) => locale !== DEFAULT_LOCALE);
-const { messages } = getLocaleText(DEFAULT_LOCALE);
+const { messages, fallbacks } = getLocaleText(DEFAULT_LOCALE);
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn() })
@@ -464,6 +464,43 @@ describe('Search to details (integration)', () => {
       expect(response.status).toBe(200);
       expect(body).toMatchObject({ movies: [], tvShows: [], results: [], error: null });
       expect(tmdbCalls('/search/multi')).toHaveLength(1);
+    });
+  });
+
+  describe('detail pages with invalid or empty data', () => {
+    // TC-SD-24
+    it('shows the load error instead of the tv page when the details request fails', async () => {
+      mockFetch({ tv: 'fail' });
+
+      await renderTv();
+
+      expect(screen.getByText(messages.tvShowLoadError)).toBeInTheDocument();
+      expect(screen.queryByText(tv.expected.title)).not.toBeInTheDocument();
+    });
+
+    // TC-SD-25
+    it('shows a message for an invalid tv id without calling TMDB', async () => {
+      mockFetch();
+
+      await renderTv('abc');
+
+      expect(screen.getByText('Invalid URL parameters.')).toBeInTheDocument();
+      expect(tmdbCalls('/tv/')).toHaveLength(0);
+    });
+
+    // TC-SD-26
+    it('renders the tv page with fallback texts when overview, genres and credits are empty', async () => {
+      mockFetch({
+        tv: { ...tv.tmdb.details, overview: '', genres: [], credits: undefined }
+      });
+
+      await renderTv();
+
+      expect(screen.getAllByText(tv.expected.title).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(fallbacks.notAvailable).length).toBeGreaterThan(0);
+      tv.expected.castNames.forEach((name) => {
+        expect(screen.queryByText(name)).not.toBeInTheDocument();
+      });
     });
   });
 });
