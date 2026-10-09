@@ -1,7 +1,7 @@
 /**
  * Integration: search -> click movie result -> render movie detail page.
  * Real: TypeHeadSearch, MovieDetailPage, createTmdbApi.
- * Mocked: fetch (search API + TMDB API), next/navigation, next/image, locale store.
+ * Mocked: fetch (search API + TMDB API), next/navigation, next/link, next/image, locale store.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
@@ -18,10 +18,15 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: mockPush, replace: vi.fn(), prefetch: vi.fn() })
 }));
 
-vi.mock('next/image', () => ({
-  // eslint-disable-next-line @next/next/no-img-element
-  default: ({ src, alt }) => <img src={src} alt={alt} />
-}));
+vi.mock('next/link', async () => {
+  const { MockLink } = await import('../mocks/next-components.js');
+  return { default: MockLink };
+});
+
+vi.mock('next/image', async () => {
+  const { MockImage } = await import('../mocks/next-components.js');
+  return { default: MockImage };
+});
 
 vi.mock('@/lib/stores/locale', () => ({
   useI18n: () => i18nMockDefault,
