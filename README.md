@@ -52,7 +52,7 @@ The displayed streaming providers and watch links are supplied through the TMDB 
 
 ## Tech Stack
 
-- Next.js 15 (App Router)
+- Next.js 16 (App Router)
 - React 19
 - JavaScript (no TypeScript)
 - Fomantic UI CSS
@@ -134,7 +134,7 @@ npm run dev
 Tests are separated by runner and purpose:
 
 - [Vitest](https://vitest.dev/) unit tests: `vitest/unit/`
-- Vitest component tests: `vitest/component/`
+- Vitest component tests (browser mode): `vitest/component/`
 - Vitest integration tests: `vitest/integration/`
 - Cypress browser-based acceptance tests: `cypress/e2e/` for route tests and shared UI behavior, `cypress/accessibility/` for accessibility checks
 
@@ -142,9 +142,12 @@ Cypress Page Objects live in `cypress/POM/`; Cypress-specific fixtures and suppo
 
 ```bash
 npm test                    # Vitest single run
-npm run test:vitest:watch   # Vitest watch mode
-npm run test:acceptance     # Cypress headless (app must run on http://localhost:3000)
-npm run test:acceptance:ui  # Cypress interactive runner
+npm run test:unit           # Vitest unit tests only
+npm run test:component      # Vitest component tests (browser mode)
+npm run test:integration    # Vitest integration tests only
+npm run test:coverage       # Vitest with coverage
+npm run test:e2e            # Cypress headless (app must run on http://localhost:3000)
+npm run test:e2e:open       # Cypress interactive runner
 ```
 
 See [docs/testing.md](docs/testing.md) for the testing strategy, commands, and conventions.
