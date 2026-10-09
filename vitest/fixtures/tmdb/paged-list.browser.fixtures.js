@@ -1,7 +1,8 @@
 // vitest/fixtures/tmdb/paged-list.browser.fixtures.js
-// Trending pages (3 pages) for movies and tv shows, used by the PagedList integration test.
+// Trending pages (3 pages) for movies, tv shows and the mixed home list, used by the PagedList integration test.
 // Page 2 contains the last card of page 1 again (duplicate) plus one new card.
 // Items 1-3 of the movie list and item 1 of the tv list come from tmdb.browser.fixtures.js.
+// The home list mixes both: tv, movie, tv, movie, tv (first item is a tv show).
 import { rawFixtures } from './tmdb.browser.fixtures.js';
 
 const TOTAL_PAGES = 3;
@@ -55,6 +56,8 @@ const tvItems = [
   show(1200005, 'Fixture Show Five')
 ];
 
+const homeItems = [tvItems[0], movieItems[0], tvItems[1], movieItems[1], tvItems[2]];
+
 const movieFeatured = {
   id: movieItems[1].id,
   title: movieItems[1].title,
@@ -91,9 +94,21 @@ const tvFeatured = {
   videos: { results: [] }
 };
 
+// The home page takes the first trending item as featured item (a tv show here).
+const homeFeatured = {
+  ...tvFeatured,
+  id: homeItems[0].id,
+  name: homeItems[0].name,
+  original_name: homeItems[0].name,
+  poster_path: homeItems[0].poster_path,
+  backdrop_path: homeItems[0].backdrop_path,
+  first_air_date: homeItems[0].first_air_date
+};
+
 function buildList(items, featured, titleOf) {
   return {
     featured,
+    items,
     pages: {
       1: page(1, items.slice(0, 3)),
       2: page(2, [items[2], items[3]]),
@@ -110,5 +125,6 @@ function buildList(items, featured, titleOf) {
 export const pagedListFixture = {
   totalPages: TOTAL_PAGES,
   movies: buildList(movieItems, movieFeatured, (item) => item.title),
-  tv: buildList(tvItems, tvFeatured, (item) => item.name)
+  tv: buildList(tvItems, tvFeatured, (item) => item.name),
+  home: buildList(homeItems, homeFeatured, (item) => item.title ?? item.name)
 };

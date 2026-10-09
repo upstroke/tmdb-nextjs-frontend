@@ -1,5 +1,5 @@
 /**
- * Integration tests (jsdom): PagedList on the movies and tv shows pages with the real
+ * Integration tests (jsdom): PagedList on the home, movies and tv shows pages with the real
  * list pages, API routes, TMDB service, schemas, locale store, cards and dialog.
  * Only the TMDB network (globalThis.fetch) is mocked.
  * Test plan: TP-PL-001 (test case IDs TC-PL-xx are noted above each it block).
@@ -14,8 +14,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, act, cleanup } from '@testing-library/react';
 import React from 'react';
+import HomePage from '../../../app/[locale]/page.js';
 import MoviesPage from '../../../app/[locale]/movies/page.js';
 import TvShowsPage from '../../../app/[locale]/tv-shows/page.js';
+import { GET as trendingRoute } from '../../../app/api/[locale]/trending/route.js';
 import { GET as moviesRoute } from '../../../app/api/[locale]/movies/route.js';
 import { GET as tvShowsRoute } from '../../../app/api/[locale]/tv-shows/route.js';
 import { AppLocaleProvider } from '@/components/providers/LocaleProvider.jsx';
@@ -39,6 +41,20 @@ vi.mock('next/image', async () => {
 });
 
 const LISTS = [
+  {
+    name: 'home',
+    Page: HomePage,
+    route: trendingRoute,
+    apiPath: 'trending',
+    storageKey: 'home-page',
+    cardIdPrefix: 'home-card',
+    emptyKey: undefined,
+    loadErrorKey: 'contentLoadError',
+    heading: titles.trendingToday,
+    trendingPath: '/trending/all/day',
+    detailsPath: '/tv/',
+    fixture: pagedListFixture.home
+  },
   {
     name: 'movies',
     Page: MoviesPage,
@@ -69,6 +85,8 @@ const LISTS = [
   }
 ];
 
+const HOME = LISTS.find((list) => list.name === 'home');
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -90,6 +108,7 @@ const hang = (signal) =>
 /**
  * overrides.pages: page number -> 'fail' | custom TMDB body (trending endpoint)
  * overrides.hangFrom: internal API requests from this page on never answer (until aborted)
+ * overrides.details: URL fragment -> custom TMDB body (details endpoints)
  */
 function mockFetch(list, overrides = {}) {
   vi.spyOn(globalThis, 'fetch').mockImplementation((url, init) => {
@@ -115,6 +134,10 @@ function mockFetch(list, overrides = {}) {
       const override = overrides.pages?.[pageNumber];
       if (override === 'fail') return Promise.resolve(failResponse());
       return Promise.resolve(okResponse(override ?? list.fixture.pages[pageNumber]));
+    }
+
+    for (const [fragment, body] of Object.entries(overrides.details ?? {})) {
+      if (s.includes(fragment)) return Promise.resolve(okResponse(body));
     }
 
     if (s.includes(`${list.detailsPath}${list.fixture.featured.id}`)) {
@@ -144,45 +167,48 @@ const waitForTitles = (container, expected) =>
 
 const getLoadMore = () => screen.getByRole('button', { name: messages.loadMore });
 
+function setupEnvironment() {
+  vi.clearAllMocks();
+  sessionStorage.clear();
+  io.callback = null;
+  io.observed = [];
+  vi.stubEnv('TMDB_API_KEY', 'test-key');
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+
+  vi.stubGlobal(
+    'IntersectionObserver',
+    vi.fn(function (callback) {
+      io.callback = callback;
+      return {
+        observe: (element) => io.observed.push(element),
+        unobserve: vi.fn(),
+        disconnect: vi.fn()
+      };
+    })
+  );
+
+  Element.prototype.scrollIntoView = vi.fn();
+  HTMLDialogElement.prototype.showModal = vi.fn(function showModal() {
+    this.open = true;
+  });
+}
+
+function teardownEnvironment() {
+  cleanup();
+  vi.useRealTimers();
+  vi.unstubAllEnvs();
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+  sessionStorage.clear();
+}
+
 // ---------------------------------------------------------------------------
-// Tests
+// Tests for all lists (home, movies, tv-shows)
 // ---------------------------------------------------------------------------
 describe.each(LISTS)('PagedList on the $name page (integration)', (list) => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    sessionStorage.clear();
-    io.callback = null;
-    io.observed = [];
-    vi.stubEnv('TMDB_API_KEY', 'test-key');
-    vi.spyOn(console, 'warn').mockImplementation(() => {});
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-
-    vi.stubGlobal(
-      'IntersectionObserver',
-      vi.fn(function (callback) {
-        io.callback = callback;
-        return {
-          observe: (element) => io.observed.push(element),
-          unobserve: vi.fn(),
-          disconnect: vi.fn()
-        };
-      })
-    );
-
-    Element.prototype.scrollIntoView = vi.fn();
-    HTMLDialogElement.prototype.showModal = vi.fn(function showModal() {
-      this.open = true;
-    });
-  });
-
-  afterEach(() => {
-    cleanup();
-    vi.useRealTimers();
-    vi.unstubAllEnvs();
-    vi.unstubAllGlobals();
-    vi.restoreAllMocks();
-    sessionStorage.clear();
-  });
+  beforeEach(setupEnvironment);
+  afterEach(teardownEnvironment);
 
   // TC-PL-01
   it('renders heading, featured item and the cards of the first trending page', async () => {
@@ -340,5 +366,57 @@ describe.each(LISTS)('PagedList on the $name page (integration)', (list) => {
     const emptyMessage = messages[list.emptyKey] ?? messages.noContent;
     expect(screen.queryByText(emptyMessage)).not.toBeInTheDocument();
     expect(container.querySelectorAll('.default-card')).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tests only for the home page
+// ---------------------------------------------------------------------------
+describe('PagedList on the home page (integration, home only)', () => {
+  const list = HOME;
+
+  beforeEach(setupEnvironment);
+  afterEach(teardownEnvironment);
+
+  // TC-PL-12
+  it('shows the invalid URL message for missing locale parameter without any request', async () => {
+    mockFetch(list);
+
+    const ui = await list.Page({ params: Promise.resolve({}) });
+    const { container } = render(<AppLocaleProvider>{ui}</AppLocaleProvider>);
+
+    expect(screen.getByText('Invalid URL parameters.')).toBeInTheDocument();
+    expect(container.querySelectorAll('.default-card')).toHaveLength(0);
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  // TC-PL-13
+  it('loads the details of a movie when the first trending item is a movie', async () => {
+    const [tvItem, movieItem, secondTvItem] = list.fixture.items;
+    const movieDetails = {
+      id: movieItem.id,
+      title: movieItem.title,
+      original_title: movieItem.title,
+      overview: 'Featured movie overview.',
+      homepage: '',
+      poster_path: movieItem.poster_path,
+      backdrop_path: movieItem.backdrop_path,
+      release_date: movieItem.release_date,
+      genres: [{ id: 28, name: 'Action' }],
+      runtime: 100,
+      vote_average: 7.3,
+      credits: { cast: [], crew: [] },
+      videos: { results: [] }
+    };
+    mockFetch(list, {
+      pages: { 1: { ...list.fixture.pages[1], results: [movieItem, tvItem, secondTvItem] } },
+      details: { [`/movie/${movieItem.id}?`]: movieDetails }
+    });
+
+    await renderList(list);
+
+    expect((await screen.findAllByText(movieItem.title)).length).toBeGreaterThan(0);
+    expect(tmdbCalls(`/movie/${movieItem.id}?`).length).toBeGreaterThan(0);
+    expect(tmdbCalls(`/tv/${tvItem.id}?`)).toHaveLength(0);
   });
 });
