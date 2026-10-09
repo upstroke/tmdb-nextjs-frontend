@@ -17,8 +17,9 @@ import DialogMessage from '@/components/DialogMessage';
  * sessionStorage via `restorePagedList`. Subsequent pages are fetched from the
  * internal API route at `/api/[locale]/[apiPath]`.
  *
- * Errors are surfaced through `DialogMessage`. Duplicate items across pages are
- * removed using `deduplicateMedia`.
+ * Errors are surfaced through `DialogMessage`. This includes an error that the
+ * server page passes in `initialData.error` when the first page could not be
+ * loaded. Duplicate items across pages are removed using `deduplicateMedia`.
  *
  * @param {object} props
  * @param {object} props.initialData - Server-rendered first page data passed as initial state.
@@ -72,6 +73,7 @@ export default function PagedList({
         setCards(restored.cards ?? []);
         setCurrentPage(restored.page ?? 1);
         setHasMore(restored.hasMore ?? false);
+        if (initialData?.error) setError(initialData.error);
       })
       .catch((e) => {
         setError(e instanceof Error ? e.message : messages.unknownError);

@@ -47,6 +47,7 @@ const LISTS = [
     storageKey: 'movies-page',
     cardIdPrefix: 'movie-card',
     emptyKey: 'noMoviesFound',
+    loadErrorKey: 'moviesLoadError',
     heading: titles.movies,
     trendingPath: '/trending/movie/day',
     detailsPath: '/movie/',
@@ -60,6 +61,7 @@ const LISTS = [
     storageKey: 'tv-shows-page',
     cardIdPrefix: 'tv-card',
     emptyKey: 'noTvShows',
+    loadErrorKey: 'tvShowsLoadError',
     heading: titles.tvShows,
     trendingPath: '/trending/tv/day',
     detailsPath: '/tv/',
@@ -326,5 +328,17 @@ describe.each(LISTS)('PagedList on the $name page (integration)', (list) => {
       behavior: 'smooth',
       block: 'start'
     });
+  });
+
+  // TC-PL-11
+  it('shows the load error of the server page instead of the empty message', async () => {
+    mockFetch(list, { pages: { 1: 'fail' } });
+
+    const { container } = await renderList(list);
+
+    expect((await screen.findAllByText(messages[list.loadErrorKey])).length).toBeGreaterThan(0);
+    const emptyMessage = messages[list.emptyKey] ?? messages.noContent;
+    expect(screen.queryByText(emptyMessage)).not.toBeInTheDocument();
+    expect(container.querySelectorAll('.default-card')).toHaveLength(0);
   });
 });

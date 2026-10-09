@@ -28,6 +28,7 @@ This test plan documents the automated integration tests in `paged-list.test.jsx
 - Error dialog for a failing next page and the timeout message after 15 seconds
 - Missing API key and empty first page
 - Scrolling to the first new card after loading
+- Error dialog for a failing first page (`initialData.error` from the server page)
 
 ## Features Not to Be Tested
 
@@ -35,11 +36,10 @@ This test plan documents the automated integration tests in `paged-list.test.jsx
 - Real Next.js routing and navigation to detail pages (Cypress)
 - Visual styling, image loading and the layout of `CardFeatured`
 - Details of single components (card content, certification badge)
-- Error handling of the first server request (`initialData.error` is not displayed by `PagedList`)
 
 ## Test Approach
 
-A fetch router answers TMDB endpoints from `paged-list.browser.fixtures.js` and forwards internal `/api/{locale}/{apiPath}?page=n` calls to the real route handler. The fixture has 3 trending pages: page 1 with three items, page 2 with the last item of page 1 again plus one new item, page 3 with one item. Error cases are triggered per page via `overrides.pages` (`'fail'` or a custom body); the timeout via `overrides.hangFrom`. The test reads the cards from `.default-card h3`, locale texts come from `getLocaleText(DEFAULT_LOCALE)`, so no text is hard-coded. `IntersectionObserver` is replaced by a fake that exposes its callback; `showModal` of the `<dialog>` is replaced because jsdom does not implement it.
+A fetch router answers TMDB endpoints from `paged-list.browser.fixtures.js` and forwards internal `/api/{locale}/{apiPath}?page=n` calls to the real route handler. The fixture has 3 trending pages: page 1 with three items, page 2 with the last item of page 1 again plus one new item, page 3 with one item. Error cases are triggered per page via `overrides.pages` (`'fail'` or a custom body); the timeout via `overrides.hangFrom`. The test reads the cards from `.default-card h3`, locale texts come from `getLocaleText(DEFAULT_LOCALE)`, so no text is hard-coded. Per list, `LISTS` holds the message keys for the empty state (`emptyKey`) and for the server load error (`loadErrorKey`). `IntersectionObserver` is replaced by a constructor function that exposes its callback; `showModal` of the `<dialog>` is replaced because jsdom does not implement it.
 
 ## Test Cases
 
@@ -57,6 +57,7 @@ Each test case is executed for `movies` and `tv-shows`.
 | TC-PL-08 | `shows the missing API key message without any request` | `apiKeyMissing`, no cards, no fetch |
 | TC-PL-09 | `shows the empty message when the first page has no results` | Message of `noMoviesFound` / `noTvShows`, no cards |
 | TC-PL-10 | `scrolls to the first new card after loading the next page` | Observed element id `{cardIdPrefix}-4`, `scrollIntoView` with `smooth` / `start` |
+| TC-PL-11 | `shows the load error of the server page instead of the empty message` | `moviesLoadError` / `tvShowsLoadError` visible, no empty message, no cards |
 
 ## Detailed Test Cases
 
@@ -127,6 +128,13 @@ Each test case is executed for `movies` and `tv-shows`.
 **Steps:** Click load more; trigger the callback of the fake observer with `isIntersecting: true`.
 **Expected Result:** The observed element has the id `{cardIdPrefix}-4`; `scrollIntoView` is called with `{ behavior: 'smooth', block: 'start' }`.
 
+### TC-PL-11: Failing first page
+
+**Objective:** Verify that an error of the server page reaches the user (`initialData.error`).
+**Preconditions:** TMDB answers page 1 of the trending endpoint with an error, so the list page catches it and passes `moviesLoadError` (movies) or `tvShowsLoadError` (tv-shows) in `initialData.error`.
+**Steps:** Render the page.
+**Expected Result:** The dialog shows the load error message, the empty message is not displayed, no cards are rendered.
+
 ## Pass/Fail Criteria
 
 A test case passes when every assertion within its `it(...)` block succeeds. It fails if a card list, request URL, stored page, button state, message text or scroll call differs from the expectation.
@@ -137,8 +145,8 @@ A test case passes when every assertion within its `it(...)` block succeeds. It 
 - The test assumes the TV route `app/api/[locale]/tv-shows/route.js` has the same structure as the movies route.
 - `HTMLDialogElement.showModal` and `IntersectionObserver` are replaced; real browser behavior is only covered by Cypress.
 - Fixtures are shared by both lists and have 3 pages; a page 4 is not covered.
-- `PagedList` ignores `initialData.error`; a failing first request shows the empty message and is not tested.
 - The card order and the featured item (item 2 of page 1) follow `results?.[1]` in the list pages.
+- TC-PL-11 fails without the line `if (initialData?.error) setError(initialData.error);` in `PagedList.jsx`.
 
 ## Execution
 
