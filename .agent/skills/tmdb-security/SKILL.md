@@ -33,7 +33,7 @@ This skill enables the AI agent to review, test, and harden the TMDB Next.js fro
 
 ```bash
 npm run build && npm start
-npx cypress run --e2e --browser chrome --spec "cypress/e2e/security/**/*.cy.js"
+npm run test:e2e:security
 ```
 
 Set `CYPRESS_TMDB_API_KEY` to also search for the exact key value.

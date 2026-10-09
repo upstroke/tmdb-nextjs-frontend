@@ -15,11 +15,11 @@ The app is read-only, and TMDB secures its own API. The tests cover the parts wh
 
 ## Specs
 
-| Spec               | Purpose                                                                     |
-| ------------------ | --------------------------------------------------------------------------- |
-| `search-xss.cy.js` | XSS payloads, malicious API data, error and unexpected response shapes      |
-| `search-api.cy.js` | Query limits, special queries, locales, HTTP methods, burst, invalid ids    |
-| `api-key.cy.js`    | Key in network traffic, HTML, JavaScript bundles, and API responses         |
+| Spec               | Purpose                                                                       |
+| ------------------ | ----------------------------------------------------------------------------- |
+| `search-xss.cy.js` | XSS payloads, malicious API data, error and unexpected response shapes        |
+| `search-api.cy.js` | Query limits, special queries, locales, HTTP methods, burst, invalid ids      |
+| `api-key.cy.js`    | Key in network traffic, HTML, JavaScript bundles, and API responses           |
 | `list-api.cy.js`   | `page`, `type`, locale, extra parameters, and HTTP methods on the list routes |
 
 ## Run
@@ -33,13 +33,21 @@ npm run build && npm start
 In a second terminal:
 
 ```bash
-npx cypress run --e2e --browser chrome --spec "cypress/e2e/security/**/*.cy.js"
+npm run test:e2e:security
 ```
+
+The script runs `cypress run --e2e --browser chrome` for `cypress/e2e/security/**/*.cy.js`.
 
 To also search for the exact key value:
 
 ```bash
-CYPRESS_TMDB_API_KEY=... npx cypress run --e2e --browser chrome --spec "cypress/e2e/security/**/*.cy.js"
+CYPRESS_TMDB_API_KEY=... npm run test:e2e:security
+```
+
+To run a single spec, pass it to Cypress directly:
+
+```bash
+npx cypress run --e2e --browser chrome --spec cypress/e2e/security/list-api.cy.js
 ```
 
 After changing server code, restart the server. Without a rebuild, `next start` keeps serving the old code.

@@ -102,7 +102,7 @@ Rules:
 - Use `npm run test:coverage` when coverage is required.
 - Run `npm run build` for production-build validation.
 - Treat Cypress as a separate validation step. `npm run test:e2e` runs the specs headlessly (`cypress run --e2e --browser chrome`) and `npm run test:e2e:open` opens the interactive runner. The app must run on `http://localhost:3000`.
-- Run only the security specs with `npx cypress run --e2e --browser chrome --spec "cypress/e2e/security/**/*.cy.js"`. Restart or rebuild the server first if server code changed.
+- Use `npm run test:e2e:security` to run only the security specs. Restart or rebuild the server first if server code changed.
 
 Do not edit files, run destructive commands, change dependencies, push commits,
 or create pull requests without the user’s explicit approval.

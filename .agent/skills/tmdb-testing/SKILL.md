@@ -176,7 +176,7 @@ npm run test:coverage
 npm run test:e2e
 
 # Cypress security specs only
-npx cypress run --e2e --browser chrome --spec "cypress/e2e/security/**/*.cy.js"
+npm run test:e2e:security
 
 # Cypress interactive runner
 npm run test:e2e:open
