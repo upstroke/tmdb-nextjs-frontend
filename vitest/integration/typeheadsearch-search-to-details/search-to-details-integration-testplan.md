@@ -1,8 +1,8 @@
 # Test Plan: Search to Details Integration Test
 
 **Test Plan ID:** TP-SD-001
-**Components:** `app/api/[locale]/search/route.js`, `components/TypeHeadSearch.jsx`, `app/[locale]/movies/[id]/page.js`, `app/[locale]/tv-shows/[id]/page.js`
-**Test File:** `vitest/integration/search-to-details.test.jsx`
+**Components:** `../../../app/api/[locale]/search/route.js`, `components/TypeHeadSearch.jsx`, `app/[locale]/movies/[id]/page.js`, `app/[locale]/tv-shows/[id]/page.js`
+**Test File:** `search-to-details.test.jsx`
 **Fixture:** `vitest/fixtures/tmdb/search-to-details.browser.fixtures.js`
 **Test Level:** Integration Test
 **Framework:** Vitest (jsdom) + React Testing Library
@@ -11,10 +11,10 @@ This test plan documents the automated integration tests in `search-to-details.t
 
 ## Test Items
 
-- `GET` handler of `app/api/[locale]/search/route.js`
+- `GET` handler of `../../../app/api/[locale]/search/route.js`
 - `createTmdbApi` and the zod schemas
 - `MovieDetailPage` and `TvShowDetailPage` (async server components, rendered via `render(await Page(...))`)
-- `components/TypeHeadSearch.jsx` (together with the real search route)
+- `../../../components/TypeHeadSearch.jsx` (together with the real search route)
 - `lib/i18n/config` (`DEFAULT_LOCALE`, `SUPPORTED_LOCALES`) and `lib/i18n/helpers` (`getLocaleText`)
 - Mocks: `next/navigation`, `next/link`, `next/image`, `@/lib/stores/locale`, `globalThis.fetch`, `TMDB_API_KEY` (`vi.stubEnv`)
 

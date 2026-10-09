@@ -12,15 +12,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import TypeHeadSearch from '../../components/TypeHeadSearch.jsx';
-import { GET as searchRoute } from '../../app/api/[locale]/search/route.js';
-import MovieDetailPage from '../../app/[locale]/movies/[id]/page.js';
-import TvShowDetailPage from '../../app/[locale]/tv-shows/[id]/page.js';
-import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/lib/i18n/config';
-import { getLocaleText } from '@/lib/i18n/helpers';
-import { searchToDetailsFixture } from '../fixtures/tmdb/search-to-details.browser.fixtures.js';
-import { rawFixtures } from '../fixtures/tmdb/tmdb.browser.fixtures.js';
-import { i18nMockDefault } from '../mocks/i18n.mocks.js';
+import TypeHeadSearch from '../../../components/TypeHeadSearch.jsx';
+import { GET as searchRoute } from '../../../app/api/[locale]/search/route.js';
+import MovieDetailPage from '../../../app/[locale]/movies/[id]/page.js';
+import TvShowDetailPage from '../../../app/[locale]/tv-shows/[id]/page.js';
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/lib/i18n/config.js';
+import { getLocaleText } from '@/lib/i18n/helpers.js';
+import { searchToDetailsFixture } from '../../fixtures/tmdb/search-to-details.browser.fixtures.js';
+import { rawFixtures } from '../../fixtures/tmdb/tmdb.browser.fixtures.js';
+import { i18nMockDefault } from '../../mocks/i18n.mocks.js';
 
 const { movie, tv } = searchToDetailsFixture.flows;
 const QUERY = 'Dark Breaking';
@@ -32,17 +32,17 @@ vi.mock('next/navigation', () => ({
 }));
 
 vi.mock('next/link', async () => {
-  const { MockLink } = await import('../mocks/next-components.js');
+  const { MockLink } = await import('../../mocks/next-components.js');
   return { default: MockLink };
 });
 
 vi.mock('next/image', async () => {
-  const { MockImage } = await import('../mocks/next-components.js');
+  const { MockImage } = await import('../../mocks/next-components.js');
   return { default: MockImage };
 });
 
 vi.mock('@/lib/stores/locale', async () => {
-  const { DEFAULT_LOCALE: defaultLocale } = await import('@/lib/i18n/config');
+  const { DEFAULT_LOCALE: defaultLocale } = await import('@/lib/i18n/config.js');
   return {
     useI18n: () => i18nMockDefault,
     useLocale: () => defaultLocale
