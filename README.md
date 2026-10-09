@@ -59,7 +59,7 @@ The displayed streaming providers and watch links are supplied through the TMDB 
 - Sass
 - Zod for runtime validation
 - Vitest for unit, component, and integration testing
-- Cypress for browser-based acceptance (end-to-end) testing
+- Cypress for browser-based acceptance (end-to-end), accessibility, and security testing
 - Prettier and ESLint for formatting and code quality
 
 ## Type Safety Strategy
@@ -94,7 +94,7 @@ lib/
 styles/           # Sass styles (Fomantic UI)
 docs/             # Project documentation
 vitest/           # Vitest tests (unit, component, integration), fixtures, mocks, setup
-cypress/          # Cypress acceptance tests, page objects, fixtures, support
+cypress/          # Cypress acceptance and security tests, page objects, fixtures, support
 ```
 
 ## Environment Variables
@@ -117,6 +117,8 @@ You can create your own API key in your TMDB account:
 - [TMDB Getting Started](https://developer.themoviedb.org/docs/getting-started)
 - [TMDB API Settings](https://www.themoviedb.org/settings/api)
 
+The key is only used on the server. Do not add it to client code or to the `env` option in `next.config.js`, because that would put it into the browser bundles.
+
 ## Requirements
 
 - Node.js `v26.6.0`
@@ -137,6 +139,7 @@ Tests are separated by runner and purpose:
 - Vitest component tests (browser mode): `vitest/component/`
 - Vitest integration tests: `vitest/integration/`
 - Cypress browser-based acceptance tests: `cypress/e2e/` for route tests and shared UI behavior, `cypress/accessibility/` for accessibility checks
+- Cypress security tests: `cypress/e2e/security/` for manipulated input, security headers, redirects, and API key exposure
 
 Cypress Page Objects live in `cypress/POM/`; Cypress-specific fixtures and support files live in `cypress/fixtures/` and `cypress/support/`. Shared domain fixtures for Vitest live in `vitest/fixtures/`.
 
@@ -147,6 +150,7 @@ npm run test:component      # Vitest component tests (browser mode)
 npm run test:integration    # Vitest integration tests only
 npm run test:coverage       # Vitest with coverage
 npm run test:e2e            # Cypress headless (app must run on http://localhost:3000)
+npm run test:e2e:security   # Cypress security tests only (app must run on http://localhost:3000)
 npm run test:e2e:open       # Cypress interactive runner
 ```
 
@@ -162,4 +166,5 @@ npm run start
 ## Documentation
 
 - `docs/testing.md` — testing strategy, commands, and test-level guidance
+- `docs/testing/security-tests.md` — security tests, test plan, and run instructions
 - `docs/ai-prompts.md` — AI-assisted development rules
