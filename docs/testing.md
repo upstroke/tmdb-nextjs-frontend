@@ -36,6 +36,14 @@ This project uses multiple test runners for different purposes:
 - **Coverage:** NOT included in Vitest coverage reports
 - **Documentation:** [Acceptance Tests](testing/acceptance-tests.md)
 
+### Security Tests (Cypress)
+
+- **Framework:** Cypress
+- **Location:** `../cypress/e2e/security/`
+- **Purpose:** Manipulated input on the search, list routes, locale middleware, and detail pages; XSS; security headers; the TMDB API key must not reach the browser
+- **Coverage:** NOT included in Vitest coverage reports
+- **Documentation:** [Security Tests](testing/security-tests.md) and the [test plan](../cypress/e2e/security/security-testplan.md)
+
 ## Running Tests
 
 ```bash
@@ -52,6 +60,9 @@ npm run test:coverage
 
 # Run Cypress acceptance tests (headless, app must run on http://localhost:3000)
 npm run test:e2e
+
+# Run only the Cypress security tests (app must run on http://localhost:3000)
+npm run test:e2e:security
 
 # Open the Cypress interactive runner
 npm run test:e2e:open
@@ -92,6 +103,7 @@ vitest/
 └── reporters/         # Custom reporters
 cypress/
 ├── e2e/               # Acceptance / flow tests
+│   └── security/      # Security tests and test plan
 ├── accessibility/     # Accessibility checks
 ├── POM/               # Page Objects
 ├── fixtures/          # Cypress fixtures
@@ -106,6 +118,7 @@ cypress/
 | **Vitest Integration** | API route handlers and pages with service integration    |
 | **Vitest Component**   | Individual React components in isolation                 |
 | **Cypress Acceptance** | User flows (E2E tests), keyboard, focus, accessibility   |
+| **Cypress Security**   | Manipulated input, headers, redirects, API key exposure  |
 
 ## Documentation
 
