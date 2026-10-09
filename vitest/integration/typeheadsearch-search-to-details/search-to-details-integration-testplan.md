@@ -218,8 +218,8 @@ A test case passes when every assertion within its `it(...)` block succeeds. It 
 - The fixture `href` values must match `DEFAULT_LOCALE` (currently `en-US`).
 - TC-SD-21 depends on `TypeHeadSearch` showing the text of `searchError`; a different mock text in `i18nMockDefault` would make it fail.
 - TC-SD-22 and TC-SD-23 build their TMDB body from `searchToDetailsFixture.searchResponse` and assume it has a `results` array like the TMDB response.
-- TC-SD-25 assumes that `IdParamSchema` rejects non-numeric ids; TC-SD-26 assumes that the TV schema accepts an empty `overview` and missing `credits`.
 - TC-SD-24 and TC-SD-25 depend on the `showModal` stub; without it the TV page fails in jsdom. The real dialog behavior is not covered here.
+- TC-SD-25 assumes that `IdParamSchema` rejects non-numeric ids; TC-SD-26 assumes that the TV schema accepts an empty `overview` and missing `credits`.
 - Navigation by clicking and real routing are only covered by Cypress.
 
 ## Execution
