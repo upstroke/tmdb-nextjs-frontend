@@ -5,6 +5,10 @@
  * route and in server components. These tests check what the browser sees:
  * its network traffic, the page HTML, and the loaded JavaScript bundles.
  *
+ * The name TMDB_API_KEY alone is allowed in bundles: it appears in the
+ * apiKeyMissing i18n messages ("TMDB_API_KEY is missing"). A leak means the
+ * query parameter `api_key=` or the key value itself.
+ *
  * Optional: set CYPRESS_TMDB_API_KEY to also search for the exact key value.
  * The value is read with cy.env() because allowCypressEnv is false.
  *
@@ -14,11 +18,12 @@
  */
 describe('Security: API key exposure', () => {
   const locale = 'en-US';
-  const keyPattern = /api_key|TMDB_API_KEY/i;
+  const keyPattern = /api_key/i;
+  const leakPattern = /api_key=/i;
 
-  /** Fails if the text contains the key name or, when known, the key value. */
-  function expectNoKey(text, where, keyValue) {
-    expect(text, `${where}: key name`).to.not.match(keyPattern);
+  /** Fails if the text matches the pattern or, when known, contains the key value. */
+  function expectNoKey(text, where, keyValue, pattern = keyPattern) {
+    expect(text, `${where}: key parameter`).to.not.match(pattern);
     if (keyValue) {
       expect(text.includes(keyValue), `${where}: key value`).to.equal(false);
     }
@@ -47,7 +52,7 @@ describe('Security: API key exposure', () => {
   it('does not contain the key in the homepage HTML', () => {
     cy.request(`/${locale}`).then((res) => {
       cy.env(['TMDB_API_KEY']).then(({ TMDB_API_KEY: keyValue }) => {
-        expectNoKey(res.body, 'homepage HTML', keyValue);
+        expectNoKey(res.body, 'homepage HTML', keyValue, leakPattern);
       });
     });
   });
@@ -62,7 +67,7 @@ describe('Security: API key exposure', () => {
       cy.env(['TMDB_API_KEY']).then(({ TMDB_API_KEY: keyValue }) => {
         cy.wrap(scripts).each((path) => {
           cy.request(path).then((script) => {
-            expectNoKey(String(script.body), path, keyValue);
+            expectNoKey(String(script.body), path, keyValue, leakPattern);
           });
         });
       });
