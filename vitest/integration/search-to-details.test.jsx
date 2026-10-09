@@ -1,6 +1,7 @@
 /**
  * Integration tests (jsdom): real modules wired together, only the TMDB network is mocked.
  * Named after its fixture (vitest/fixtures/tmdb/search-to-details.browser.fixtures.js).
+ * Test plan: TP-SD-001 (test case IDs TC-SD-xx are noted above each it block).
  *
  * Chain under test:
  *   search route handler (GET) -> createTmdbApi -> zod schemas -> result ids
@@ -153,6 +154,7 @@ describe('Search to details (integration)', () => {
   });
 
   describe('search route + TMDB service + schemas', () => {
+    // TC-SD-01
     it('maps one search/multi response to movies, tvShows and results', async () => {
       mockFetch();
 
@@ -171,6 +173,7 @@ describe('Search to details (integration)', () => {
       expect(searchCall.searchParams.get('query')).toBe(QUERY);
     });
 
+    // TC-SD-02
     it.each(['ab', ''])('returns empty lists without calling TMDB for the query "%s"', async (q) => {
       mockFetch();
 
@@ -186,6 +189,7 @@ describe('Search to details (integration)', () => {
       expect(tmdbCalls('/search/multi')).toHaveLength(0);
     });
 
+    // TC-SD-03
     it('returns empty lists without calling TMDB when the query is missing', async () => {
       mockFetch();
 
@@ -196,6 +200,7 @@ describe('Search to details (integration)', () => {
       expect(tmdbCalls('/search/multi')).toHaveLength(0);
     });
 
+    // TC-SD-04
     it('answers 500 with an error message when the API key is missing', async () => {
       vi.stubEnv('TMDB_API_KEY', '');
       mockFetch();
@@ -209,6 +214,7 @@ describe('Search to details (integration)', () => {
       expect(tmdbCalls('/search/multi')).toHaveLength(0);
     });
 
+    // TC-SD-05
     it('answers 500 with an error message when TMDB fails', async () => {
       mockFetch({ search: 'fail' });
 
@@ -222,6 +228,7 @@ describe('Search to details (integration)', () => {
   });
 
   describe('locale handling', () => {
+    // TC-SD-06
     // LocaleParamSchema only checks the length (2-10 characters), not the supported list.
     it.each(['x', 'this-is-too-long'])('answers 400 for the locale "%s"', async (locale) => {
       mockFetch();
@@ -234,6 +241,7 @@ describe('Search to details (integration)', () => {
       expect(tmdbCalls('/search/multi')).toHaveLength(0);
     });
 
+    // TC-SD-07
     it.each(SUPPORTED_LOCALES)('passes the supported locale %s to TMDB as language', async (locale) => {
       mockFetch();
 
@@ -243,6 +251,7 @@ describe('Search to details (integration)', () => {
       expect(languageOfLastSearchCall()).toBe(locale);
     });
 
+    // TC-SD-08
     it('uses the default UI texts but keeps the requested language for an unknown locale', async () => {
       vi.stubEnv('TMDB_API_KEY', '');
       mockFetch();
@@ -256,6 +265,7 @@ describe('Search to details (integration)', () => {
       expect(languageOfLastSearchCall()).toBe('xx-XX');
     });
 
+    // TC-SD-09
     it('uses the UI texts of another supported locale', async () => {
       vi.stubEnv('TMDB_API_KEY', '');
       mockFetch();
@@ -268,6 +278,7 @@ describe('Search to details (integration)', () => {
   });
 
   describe('search results feed the detail pages', () => {
+    // TC-SD-10
     it('uses the id of a movie search result to render the movie detail page', async () => {
       mockFetch();
       const { movies } = await (await callSearchRoute(QUERY)).json();
@@ -282,6 +293,7 @@ describe('Search to details (integration)', () => {
       expect(screen.getByText(movie.expected.providerName)).toBeInTheDocument();
     });
 
+    // TC-SD-11
     it('uses the id of a tv search result to render the tv show detail page', async () => {
       mockFetch();
       const { tvShows } = await (await callSearchRoute(QUERY)).json();
@@ -298,6 +310,7 @@ describe('Search to details (integration)', () => {
   });
 
   describe('detail pages with partial or missing TMDB data', () => {
+    // TC-SD-12
     it('renders the movie page when watch providers fail', async () => {
       mockFetch({ movieProviders: 'fail' });
 
@@ -307,6 +320,7 @@ describe('Search to details (integration)', () => {
       expect(screen.queryByText(movie.expected.providerName)).not.toBeInTheDocument();
     });
 
+    // TC-SD-13
     it('renders the movie page when the certification fails', async () => {
       mockFetch({ movieCertification: 'fail' });
 
@@ -315,6 +329,7 @@ describe('Search to details (integration)', () => {
       expect(screen.getAllByText(movie.expected.title).length).toBeGreaterThan(0);
     });
 
+    // TC-SD-14
     it('renders the movie page without credits', async () => {
       mockFetch({ movie: { ...movie.tmdb.details, credits: undefined } });
 
@@ -324,6 +339,7 @@ describe('Search to details (integration)', () => {
       expect(screen.queryByText(new RegExp(movie.expected.castNames[0]))).not.toBeInTheDocument();
     });
 
+    // TC-SD-15
     it('renders the movie page without a runtime', async () => {
       mockFetch({ movie: { ...movie.tmdb.details, runtime: null } });
 
@@ -333,6 +349,7 @@ describe('Search to details (integration)', () => {
       expect(screen.queryByText(movie.expected.runtime)).not.toBeInTheDocument();
     });
 
+    // TC-SD-16
     it('renders the tv page when the season request fails', async () => {
       mockFetch({ tvSeason: 'fail' });
 
@@ -344,6 +361,7 @@ describe('Search to details (integration)', () => {
 
   describe('detail pages per locale', () => {
     // The fixture providers exist for the region of the default locale only.
+    // TC-SD-17
     it('shows the watch providers for the region of the default locale', async () => {
       mockFetch();
 
@@ -352,6 +370,7 @@ describe('Search to details (integration)', () => {
       expect(screen.getByText(movie.expected.providerName)).toBeInTheDocument();
     });
 
+    // TC-SD-18
     it.each(OTHER_LOCALES)('hides the default-region watch providers for %s', async (locale) => {
       mockFetch();
 
@@ -360,6 +379,7 @@ describe('Search to details (integration)', () => {
       expect(screen.queryByText(movie.expected.providerName)).not.toBeInTheDocument();
     });
 
+    // TC-SD-19
     it.each(SUPPORTED_LOCALES)('renders movie and tv detail pages for %s', async (locale) => {
       mockFetch();
 
@@ -373,6 +393,7 @@ describe('Search to details (integration)', () => {
   });
 
   describe('typeahead + real search route', () => {
+    // TC-SD-20
     it('lists movie and tv results with links to their detail pages', async () => {
       mockFetch();
 
@@ -386,6 +407,7 @@ describe('Search to details (integration)', () => {
       expect(tvTitle.closest('a[role="option"]')).toHaveAttribute('href', tv.result.href);
     });
 
+    // TC-SD-21
     it('shows an error message when TMDB fails', async () => {
       mockFetch({ search: 'fail' });
 
