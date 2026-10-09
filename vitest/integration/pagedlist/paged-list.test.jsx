@@ -155,17 +155,17 @@ describe.each(LISTS)('PagedList on the $name page (integration)', (list) => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    class FakeIntersectionObserver {
-      constructor(callback) {
+    vi.stubGlobal(
+      'IntersectionObserver',
+      vi.fn(function (callback) {
         io.callback = callback;
-      }
-      observe(element) {
-        io.observed.push(element);
-      }
-      unobserve() {}
-      disconnect() {}
-    }
-    vi.stubGlobal('IntersectionObserver', FakeIntersectionObserver);
+        return {
+          observe: (element) => io.observed.push(element),
+          unobserve: vi.fn(),
+          disconnect: vi.fn()
+        };
+      })
+    );
 
     Element.prototype.scrollIntoView = vi.fn();
     HTMLDialogElement.prototype.showModal = vi.fn(function showModal() {
