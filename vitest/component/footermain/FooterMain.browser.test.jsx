@@ -3,10 +3,10 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
-import FooterMain from '../../components/FooterMain';
+import FooterMain from '../../../components/FooterMain.jsx';
 
 describe('FooterMain (browser)', () => {
-
+  // TC-FM-001
   // Statement Coverage: Covers the entire layout rendering, text nodes, and strict verification of external attribution URLs.
   // Branch Coverage: Enters the single baseline render path (no logical branches present).
   it('renders site-wide footer with legal labels and verified external attribution links', () => {

@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import TypeHeadSearch from '../../components/TypeHeadSearch';
+import TypeHeadSearch from '../../../components/TypeHeadSearch.jsx';
 
 // ============================================================================
 // STABLE SYSTEM & CORE MODULE MOCKS
@@ -86,6 +86,7 @@ describe('TypeHeadSearch (browser)', () => {
     );
   });
 
+  // TC-THS-01
   // Statement Coverage: Covers mounting state restoration, inputs bindings, and layouts generation.
   // Branch Coverage: hasSearchTerm && hasResults -> true (renders combobox lists grid layers)
   it('mounts, restores data from sessionStorage, and opens suggestions grid layer upon entering query keys', async () => {
@@ -107,6 +108,7 @@ describe('TypeHeadSearch (browser)', () => {
     expect(container.textContent).toContain('8.4');
   });
 
+  // TC-THS-02
   // Statement Coverage: Covers input debouncing timers setup and abort controllers allocations.
   // Branch Coverage: query.trim().length >= 4 -> true (invokes backend API fetch hooks)
   it('debounces input queries, triggers backend API requests, and lists suggestions successfully', async () => {
@@ -127,6 +129,7 @@ describe('TypeHeadSearch (browser)', () => {
     vi.useRealTimers();
   });
 
+  // TC-THS-03
   // Statement Coverage: Covers resetResults cleanup statements and sessionStorage clear invocations.
   // Branch Coverage: query.trim().length < 4 -> true (triggers immediate state purges code path)
   it('collapses the dropdown layer instantly when input falls below 4 characters', async () => {
@@ -149,6 +152,7 @@ describe('TypeHeadSearch (browser)', () => {
     });
   });
 
+  // TC-THS-04
   // Statement Coverage: Covers debounced cache invalidation logic and sessionStorage cleanup paths.
   // Branch Coverage: query.trim().length < 4 -> true after previously populated results (purges persisted search state)
   it('purges the sessionStorage cache when character thresholds are under-run', async () => {
@@ -174,6 +178,7 @@ describe('TypeHeadSearch (browser)', () => {
     });
   });
 
+  // TC-THS-05
   // Branch Coverage: res.ok -> false & empty results sets
   it('handles backend server network crashes and empty results sets elegantly', async () => {
     vi.useFakeTimers();
@@ -202,6 +207,7 @@ describe('TypeHeadSearch (browser)', () => {
     expect(await screen.findByText('Search request failed.')).toBeInTheDocument();
   });
 
+  // TC-THS-06
   // Statement Coverage: Covers keyboard-only focus entry, result activation updates, and directional navigation state changes.
   // Branch Coverage: activeResultIndex moves forward on ArrowDown and backward on ArrowUp while results remain open
   it('navigates through search results using keyboard only', async () => {
@@ -255,6 +261,7 @@ describe('TypeHeadSearch (browser)', () => {
     expect(input).toHaveFocus();
   });
 
+  // TC-THS-07
   // Statement Coverage: Covers Home/End keyboard navigation handlers and result selection updates.
   // Branch Coverage: Home -> selects first result; End -> selects last result while results remain open
   it('navigates to first and last search results using Home/End keys', async () => {
@@ -298,6 +305,7 @@ describe('TypeHeadSearch (browser)', () => {
     expect(input).toHaveFocus();
   });
 
+  // TC-THS-08
   // Statement Coverage: Covers Escape key handler and dropdown closing state update.
   // Branch Coverage: results open -> Escape closes suggestions layer without clearing input value
   it('closes search results using Escape key', async () => {
@@ -328,6 +336,7 @@ describe('TypeHeadSearch (browser)', () => {
     expect(input).toHaveFocus();
   });
 
+  // TC-THS-09
   // Branch Coverage: Covers the Escape key path when results exist and the listbox remains rendered but hidden after closing.
   it('closes the results panel on Escape by hiding the rendered listbox', async () => {
     render(<TypeHeadSearch />);
@@ -353,6 +362,7 @@ describe('TypeHeadSearch (browser)', () => {
     });
   });
 
+  // TC-THS-10
   // Statement Coverage: Covers the fallback rendering path for missing poster, title, date, and rating values.
   it('renders fallback values for incomplete movie search results', async () => {
     sessionStorage.clear();
@@ -396,6 +406,7 @@ describe('TypeHeadSearch (browser)', () => {
     expect(screen.getByText('N/A')).toBeInTheDocument();
   });
 
+  // TC-THS-11
   // Statement Coverage: Covers invalid date formatting and the rating=0 render path.
   it('renders an empty year for invalid dates and marks a zero rating as not available styled', async () => {
     sessionStorage.clear();
@@ -444,6 +455,7 @@ describe('TypeHeadSearch (browser)', () => {
     expect(image).toHaveAttribute('src', '/not-available.png');
   });
 
+  // TC-THS-12
   // Statement Coverage: Covers the Enter key activation path for a focused result and triggers router navigation.
   it('navigates to the focused result when Enter is pressed', async () => {
     sessionStorage.clear();
@@ -484,6 +496,7 @@ describe('TypeHeadSearch (browser)', () => {
     });
   });
 
+  // TC-THS-13
   // Statement Coverage: Covers result click handling and the TV-show navigation href branch.
   it('navigates to a TV show when its result is clicked', async () => {
     sessionStorage.clear();
@@ -515,6 +528,7 @@ describe('TypeHeadSearch (browser)', () => {
     expect(mockPush).toHaveBeenCalledWith('/en-US/tv-shows/72705');
   });
 
+  // TC-THS-14
   // Statement Coverage: Covers the outside-click closeResults path when the results list is open.
   it('closes the results when clicking outside', async () => {
     sessionStorage.clear();
@@ -541,6 +555,7 @@ describe('TypeHeadSearch (browser)', () => {
     });
   });
 
+  // TC-THS-15
 // Statement Coverage: Covers the Escape handler when no visible results are available and restores input focus.
   it('restores focus to the input when Escape is pressed without visible results', async () => {
     sessionStorage.clear();
@@ -556,5 +571,4 @@ describe('TypeHeadSearch (browser)', () => {
       expect(input).toHaveFocus();
     });
   });
-
 });

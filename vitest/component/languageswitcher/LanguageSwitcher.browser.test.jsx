@@ -3,7 +3,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import LanguageSwitcher from '../../components/LanguageSwitcher';
+import LanguageSwitcher from '../../../components/LanguageSwitcher.jsx';
 
 // ============================================================================
 // STABLE SYSTEM & PROJECT HOOK MOCKS
@@ -49,6 +49,7 @@ describe('LanguageSwitcher (browser)', () => {
     mockUsePathname.mockReturnValue('/en-US/movies');
   });
 
+  // TC-LS-001
   // Statement Coverage: Covers DOM mount initialization loops, option node mapping, and store state syncs.
   // Branch Coverage:
   //   - currentSegment evaluated -> true (successfully replaces active matching path segments)
@@ -70,6 +71,7 @@ describe('LanguageSwitcher (browser)', () => {
     expect(mockReplace).toHaveBeenCalledWith('/de-DE/movies', { scroll: false });
   });
 
+  // TC-LS-002
   // Branch Coverage:
   //   - currentSegment evaluated -> false (appends the locale prefix when matching patterns fail)
   it('prepends the new locale configuration when the current pathname lacks matching structural prefixes', () => {
@@ -88,6 +90,7 @@ describe('LanguageSwitcher (browser)', () => {
     expect(mockReplace).toHaveBeenCalledWith('/fr-FR/unmapped-deep-route/details', { scroll: false });
   });
 
+  // TC-LS-003
   // Branch Coverage: Enforces absolute exact text match condition loops checking
   it('handles switching states perfectly when path precisely equals the base locale string structure', () => {
     mockUsePathname.mockReturnValue('/en-US');

@@ -3,8 +3,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
-import CardFeatured from '../../components/CardFeatured';
-import { rawFixtures } from '../fixtures/tmdb/tmdb.browser.fixtures.js';
+import CardFeatured from '../../../components/CardFeatured.jsx';
+import { rawFixtures } from '../../fixtures/tmdb/tmdb.browser.fixtures.js';
 
 // Global mocks for i18n store and Next.js internal components inside the browser sandbox
 vi.mock('@/lib/stores/locale', () => ({
@@ -23,7 +23,7 @@ const sampleGenres = [
 ];
 
 describe('CardFeatured (browser)', () => {
-
+  //TC-CF-001
   // Statement Coverage: Covers regular layout rendering, description parsing, and dynamic CSS variable styles.
   it('renders a featured movie card with correct route, title, genres, and homepage links', () => {
     render(
@@ -59,6 +59,7 @@ describe('CardFeatured (browser)', () => {
     expect(externalLink).toHaveAttribute('href', 'https://spiderman-movie.com');
   });
 
+  //TC-CF-002
   // Branch Coverage: mediaType === 'tv' evaluates to true, verifying alternative detail routes.
   it('renders a featured tv show card with alternative routing format', () => {
     render(
@@ -79,6 +80,7 @@ describe('CardFeatured (browser)', () => {
     expect(moreInfoLink).toHaveAttribute('href', '/en-US/tv-shows/142');
   });
 
+  //TC-CF-003
   // Branch Coverage: mediaType evaluation falls back to null, detailsHref becomes undefined, and missing values fall back to "N/A".
   it('renders fallback placeholders and omits structural actions when fields are missing or unknown', () => {
     render(

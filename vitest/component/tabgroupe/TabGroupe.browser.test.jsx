@@ -3,7 +3,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import TabGroupe from '../../components/TabGroupe';
+import TabGroupe from '../../../components/TabGroupe.jsx';
 
 // Global mocks for i18n store infrastructure inside the browser sandbox
 vi.mock('@/lib/stores/locale', () => ({
@@ -44,7 +44,7 @@ const sampleTabs = [
 ];
 
 describe('TabGroupe (browser)', () => {
-
+  // TC-TG-01
   // Statement Coverage: Covers basic DOM structure, mounting initialization state, and default active tab properties.
   // Branch Coverage:
   //   - initialTab missing -> true (falls back to tabs[0].id initialization evaluation)
@@ -82,6 +82,7 @@ describe('TabGroupe (browser)', () => {
     expect(screen.getByText('1. Goodbye Earl')).toBeInTheDocument();
   });
 
+  // TC-TG-02
   // Statement Coverage: Covers keyboard mapping loop jumps, preventDefault calls, and explicit tab focus routing logic.
   // Branch Coverage: Fully explores all conditional entries inside handleTabKeydown mapping branches (ArrowRight, ArrowLeft, Home, End).
   it('supports interactive keyboard navigation patterns across sequential tab items', () => {
@@ -106,6 +107,7 @@ describe('TabGroupe (browser)', () => {
     expect(screen.getByRole('tab', { name: 'Season 1' })).toHaveAttribute('aria-selected', 'true');
   });
 
+  // TC-TG-03
   // Statement Coverage: Covers structured lists item focus shifts, delayed microtask indexing, and sub-queries DOM nodes focus handlers.
   // Branch Coverage: Fully explores all conditional entries inside handleEpisodeKeydown mapping branches (ArrowDown, ArrowUp, Home, End).
   it('supports focused accessibility keyboard navigation tracking inside active episodes list panels', () => {
@@ -131,6 +133,7 @@ describe('TabGroupe (browser)', () => {
     expect(firstEpisode).toBeInTheDocument();
   });
 
+  // TC-TG-04
   // Branch Coverage: Evaluates tab.loading === true and checks the plain text fallback rendering when episodes are omitted.
   it('handles distinct loading templates and plain text fallbacks correctly', () => {
     render(<TabGroupe tabs={sampleTabs} initialTab="season-3" ariaLabel="State Fallbacks" />);

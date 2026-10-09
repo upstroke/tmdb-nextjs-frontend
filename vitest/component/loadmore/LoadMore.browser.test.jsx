@@ -3,7 +3,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import LoadMore from '../../components/LoadMore';
+import LoadMore from '../../../components/LoadMore.jsx';
 
 vi.mock('@/lib/stores/locale', () => ({
   useI18n: () => ({
@@ -15,7 +15,7 @@ vi.mock('@/lib/stores/locale', () => ({
 }));
 
 describe('LoadMore (browser)', () => {
-
+  // TC-LM-001
   // Statement Coverage: Covers standard active button click handler paths.
   it('renders a standard active button and fires the onLoad callback when clicked', () => {
     const handleLoad = vi.fn();
@@ -27,6 +27,7 @@ describe('LoadMore (browser)', () => {
     expect(handleLoad).toHaveBeenCalledTimes(1);
   });
 
+  // TC-LM-002
   // Statement Coverage: GUARANTEED FIX FOR LINE 26 (Bypasses browser disabled blocks)
   // Branch Coverage: loading -> true
   it('renders a disabled loading skeleton button and forces execution of its onClick statement block', () => {
@@ -50,6 +51,7 @@ describe('LoadMore (browser)', () => {
     expect(handleLoad).toHaveBeenCalled();
   });
 
+  // TC-LM-003
   // Branch Coverage: loading -> false; !hasMore -> true
   it('renders a disabled button when the list boundary has reached the end', () => {
     render(<LoadMore hasMore={false} loading={false} onLoad={null} />);
