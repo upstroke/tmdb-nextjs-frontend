@@ -23,6 +23,6 @@ export const HomePage = () => {
     movieCards,
     searchInput,
     visit,
-    assertTitleVisible,
+    assertTitleVisible
   };
 };

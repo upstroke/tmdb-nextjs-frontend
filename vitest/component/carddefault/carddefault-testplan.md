@@ -52,13 +52,13 @@ This plan describes the component tests for `CardDefault`, the default card used
 
 ### 8. Coverage Matrix
 
-| Test Case | Input class | Statement Coverage | Branch Coverage |
-|---|---|---|---|
-| TC-CD-001 | Valid movie, all fields | Variables, element rendering, styles | - |
-| TC-CD-002 | Valid TV show | Alternative URL evaluation | - |
-| TC-CD-003 | Invalid `id` / `mediaType` | `return null` | `hasValidCard` = false |
-| TC-CD-004 | Missing fields | Evaluation of missing values | `rating > 0` = false, `title?.trim()` = false, `date` = false, `certificationMeta` = false, `hasGenres` = false |
-| TC-CD-005 | Image events | `onLoad`, `onError` handlers | `imageLoaded` = true, `imageErrored` = true, `img.complete && img.naturalWidth > 0` |
+| Test Case | Input class                | Statement Coverage                   | Branch Coverage                                                                                                 |
+| --------- | -------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| TC-CD-001 | Valid movie, all fields    | Variables, element rendering, styles | -                                                                                                               |
+| TC-CD-002 | Valid TV show              | Alternative URL evaluation           | -                                                                                                               |
+| TC-CD-003 | Invalid `id` / `mediaType` | `return null`                        | `hasValidCard` = false                                                                                          |
+| TC-CD-004 | Missing fields             | Evaluation of missing values         | `rating > 0` = false, `title?.trim()` = false, `date` = false, `certificationMeta` = false, `hasGenres` = false |
+| TC-CD-005 | Image events               | `onLoad`, `onError` handlers         | `imageLoaded` = true, `imageErrored` = true, `img.complete && img.naturalWidth > 0`                             |
 
 ### 9. Derived Test Cases
 
@@ -136,10 +136,10 @@ npx vitest run --config vitest.config.js vitest/component/carddefault
 
 ### 13. Traceability Matrix
 
-| Feature | Test Case |
-|---|---|
+| Feature                     | Test Case |
+| --------------------------- | --------- |
 | Movie route and main fields | TC-CD-001 |
-| TV show route | TC-CD-002 |
-| Guard for invalid input | TC-CD-003 |
-| Fallback for missing data | TC-CD-004 |
-| Image load/error handling | TC-CD-005 |
+| TV show route               | TC-CD-002 |
+| Guard for invalid input     | TC-CD-003 |
+| Fallback for missing data   | TC-CD-004 |
+| Image load/error handling   | TC-CD-005 |

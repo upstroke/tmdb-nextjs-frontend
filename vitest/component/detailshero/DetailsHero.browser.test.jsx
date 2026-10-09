@@ -32,7 +32,9 @@ describe('DetailsHero (browser)', () => {
     );
 
     // Verify main title rendering
-    expect(screen.getByRole('heading', { level: 1, name: new RegExp(rawDetail.title, 'i') })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: new RegExp(rawDetail.title, 'i') })
+    ).toBeInTheDocument();
 
     // Verify list layout mapping for production companies
     rawDetail.genres.forEach((company) => {

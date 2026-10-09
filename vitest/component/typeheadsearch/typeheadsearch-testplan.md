@@ -53,7 +53,7 @@ The keyboard scenarios are aligned with the ARIA combobox pattern: the input rem
 ## Test Cases
 
 | ID        | Automated Test                                                                                         | Covered Behavior                                                                                                      |
-|-----------|--------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| --------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
 | TC-THS-01 | `mounts, restores data from sessionStorage, and opens suggestions grid layer upon entering query keys` | Restores query and cached movie results from `sessionStorage`; renders a result option with year and formatted rating |
 | TC-THS-02 | `debounces input queries, triggers backend API requests, and lists suggestions successfully`           | Debounces a four-character query and calls `/api/en-US/search?q=Batm`                                                 |
 | TC-THS-03 | `collapses the dropdown layer instantly when input falls below 4 characters`                           | Removes visible suggestions after the query is reduced below four characters                                          |

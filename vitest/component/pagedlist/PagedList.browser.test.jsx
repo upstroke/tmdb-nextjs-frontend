@@ -22,7 +22,8 @@ vi.mock('@/lib/stores/locale', () => ({
 
 // Mock sub-components to bypass complex child layouts and keep metrics focused
 vi.mock('@/components/CardDefault', () => ({
-  default: ({ title, scrollId }) => React.createElement('div', { 'data-testid': 'mock-card', id: scrollId }, title)
+  default: ({ title, scrollId }) =>
+    React.createElement('div', { 'data-testid': 'mock-card', id: scrollId }, title)
 }));
 
 vi.mock('@/components/CardFeatured', () => ({
@@ -31,7 +32,13 @@ vi.mock('@/components/CardFeatured', () => ({
 
 vi.mock('@/components/LoadMore', () => ({
   default: ({ hasMore, loading, onLoad }) =>
-    hasMore ? React.createElement('button', { onClick: onLoad, disabled: loading, 'data-testid': 'load-more-btn' }, loading ? 'Loading...' : 'Load More') : null
+    hasMore
+      ? React.createElement(
+          'button',
+          { onClick: onLoad, disabled: loading, 'data-testid': 'load-more-btn' },
+          loading ? 'Loading...' : 'Load More'
+        )
+      : null
 }));
 
 vi.mock('@/components/DialogMessage', () => ({
@@ -40,12 +47,14 @@ vi.mock('@/components/DialogMessage', () => ({
 
 // Mock helper core utilities to isolate state behavior
 vi.mock('@/lib/utils/pageStateRestore', () => ({
-  restorePagedList: vi.fn(({ initialData }) => Promise.resolve({
-    featured: initialData.featured,
-    cards: initialData.cards,
-    page: 1,
-    hasMore: true
-  })),
+  restorePagedList: vi.fn(({ initialData }) =>
+    Promise.resolve({
+      featured: initialData.featured,
+      cards: initialData.cards,
+      page: 1,
+      hasMore: true
+    })
+  ),
   storeCurrentPage: vi.fn()
 }));
 
@@ -92,11 +101,12 @@ describe('PagedList (browser)', () => {
     // Mock successful lazy load API responses using the spy instance
     fetchSpy.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({
-        page: 2,
-        hasMore: false,
-        cards: [{ id: 30, title: 'Movie Thirty', mediaType: 'movie' }]
-      })
+      json: () =>
+        Promise.resolve({
+          page: 2,
+          hasMore: false,
+          cards: [{ id: 30, title: 'Movie Thirty', mediaType: 'movie' }]
+        })
     });
 
     render(
@@ -111,7 +121,9 @@ describe('PagedList (browser)', () => {
     );
 
     // Await asynchronously until the state mapping renders structural layouts inside the DOM
-    expect(await screen.findByRole('heading', { level: 2, name: 'Trending Highlights' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { level: 2, name: 'Trending Highlights' })
+    ).toBeInTheDocument();
     expect(await screen.findByTestId('mock-featured')).toBeInTheDocument();
     expect(screen.getAllByTestId('mock-card')).toHaveLength(2);
 
@@ -122,7 +134,10 @@ describe('PagedList (browser)', () => {
     // Await async items insertions and verify observer triggers smooth scrolls
     await waitFor(() => {
       expect(screen.getAllByTestId('mock-card')).toHaveLength(3);
-      expect(elementMock.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+      expect(elementMock.scrollIntoView).toHaveBeenCalledWith({
+        behavior: 'smooth',
+        block: 'start'
+      });
     });
   });
 
@@ -150,7 +165,12 @@ describe('PagedList (browser)', () => {
   // Statement Coverage: Covers catch exception assignment logic for fetch failures.
   it('displays dialog message overlays upon encountering unexpected network API faults', async () => {
     const { restorePagedList } = await import('@/lib/utils/pageStateRestore.js');
-    restorePagedList.mockResolvedValueOnce({ featured: null, cards: sampleInitialData.cards, page: 1, hasMore: true });
+    restorePagedList.mockResolvedValueOnce({
+      featured: null,
+      cards: sampleInitialData.cards,
+      page: 1,
+      hasMore: true
+    });
 
     // Inject network fault failure response using the fetch spy
     fetchSpy.mockResolvedValueOnce({ ok: false });
@@ -169,14 +189,21 @@ describe('PagedList (browser)', () => {
     fireEvent.click(btn);
 
     // Verify alert message rendering
-    expect(await screen.findByTestId('mock-dialog')).toHaveTextContent('Failed to fetch more content.');
+    expect(await screen.findByTestId('mock-dialog')).toHaveTextContent(
+      'Failed to fetch more content.'
+    );
   });
 
   // TC-PL-04
   // Branch Coverage: Verifies that AbortError exceptions seamlessly map into unique visibility warning layouts.
   it('handles pagination loading request timeouts properly', async () => {
     const { restorePagedList } = await import('@/lib/utils/pageStateRestore.js');
-    restorePagedList.mockResolvedValueOnce({ featured: null, cards: sampleInitialData.cards, page: 1, hasMore: true });
+    restorePagedList.mockResolvedValueOnce({
+      featured: null,
+      cards: sampleInitialData.cards,
+      page: 1,
+      hasMore: true
+    });
 
     // Inject explicit structural AbortError throw event mimic via the spy
     fetchSpy.mockRejectedValueOnce({ name: 'AbortError' });

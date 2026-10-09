@@ -34,7 +34,7 @@ export class FilteredCoverageReporter extends CoverageReporter {
 
     const fileReports = filtered.map((file) => {
       const path = file.filepath.replace(/\\/g, '/').split('/').slice(-3).join('/');
-      
+
       const statements = file.summary.statements;
       const branches = file.summary.branches;
       const functions = file.summary.functions;
@@ -54,7 +54,7 @@ export class FilteredCoverageReporter extends CoverageReporter {
         statements: statements.pct,
         branches: branches.pct,
         functions: functions.pct,
-        lines: lines.pct,
+        lines: lines.pct
       };
     });
 

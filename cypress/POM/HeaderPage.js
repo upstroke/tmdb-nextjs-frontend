@@ -17,6 +17,6 @@ export const HeaderPage = () => {
     navMenu,
     searchInput,
     languageSelect,
-    visit,
+    visit
   };
 };

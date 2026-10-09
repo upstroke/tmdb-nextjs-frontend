@@ -11,15 +11,15 @@ import TypeHeadSearch from '../../../components/TypeHeadSearch.jsx';
 // ============================================================================
 const { mockReplace, mockPush } = vi.hoisted(() => ({
   mockReplace: vi.fn(),
-  mockPush: vi.fn(),
+  mockPush: vi.fn()
 }));
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     replace: mockReplace,
     push: mockPush,
-    prefetch: vi.fn(),
-  }),
+    prefetch: vi.fn()
+  })
 }));
 
 vi.mock('@/lib/stores/locale', () => ({
@@ -36,7 +36,7 @@ vi.mock('@/lib/stores/locale', () => ({
     messages: {
       searchLoading: 'Searching for suggestions...',
       searchNoResults: 'No results found',
-      searchError: 'Search request failed.',
+      searchError: 'Search request failed.'
     },
     formats: { outOfTen: 'out of 10' },
     titles: {},
@@ -76,7 +76,7 @@ describe('TypeHeadSearch (browser)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    Element.prototype.scrollIntoView = function() {};
+    Element.prototype.scrollIntoView = function () {};
 
     fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(() =>
       Promise.resolve({
@@ -379,11 +379,11 @@ describe('TypeHeadSearch (browser)', () => {
             date: '',
             rating: null,
             posterUrl: '',
-            imageUrl: '',
-          },
+            imageUrl: ''
+          }
         ],
-        tvShows: [],
-      }),
+        tvShows: []
+      })
     });
 
     render(<TypeHeadSearch />);
@@ -423,11 +423,11 @@ describe('TypeHeadSearch (browser)', () => {
             date: 'invalid-date',
             rating: 0,
             posterUrl: '',
-            imageUrl: '',
-          },
+            imageUrl: ''
+          }
         ],
-        tvShows: [],
-      }),
+        tvShows: []
+      })
     });
 
     render(<TypeHeadSearch />);
@@ -465,7 +465,7 @@ describe('TypeHeadSearch (browser)', () => {
     const input = screen.getByRole('combobox');
 
     fireEvent.change(input, {
-      target: { value: 'Spider' },
+      target: { value: 'Spider' }
     });
 
     await waitFor(() => {
@@ -476,7 +476,7 @@ describe('TypeHeadSearch (browser)', () => {
 
     fireEvent.keyDown(window, {
       key: 'ArrowDown',
-      code: 'ArrowDown',
+      code: 'ArrowDown'
     });
 
     const firstOption = document.getElementById('movie-101');
@@ -488,7 +488,7 @@ describe('TypeHeadSearch (browser)', () => {
     fireEvent.keyDown(window, {
       key: 'Enter',
       code: 'Enter',
-      keyCode: 13,
+      keyCode: 13
     });
 
     await waitFor(() => {
@@ -506,7 +506,7 @@ describe('TypeHeadSearch (browser)', () => {
     const input = screen.getByRole('combobox');
 
     fireEvent.change(input, {
-      target: { value: 'Spider' },
+      target: { value: 'Spider' }
     });
 
     await waitFor(() => {
@@ -538,7 +538,7 @@ describe('TypeHeadSearch (browser)', () => {
     const input = screen.getByRole('combobox');
 
     fireEvent.change(input, {
-      target: { value: 'Spider' },
+      target: { value: 'Spider' }
     });
 
     await waitFor(() => {
@@ -556,7 +556,7 @@ describe('TypeHeadSearch (browser)', () => {
   });
 
   // TC-THS-15
-// Statement Coverage: Covers the Escape handler when no visible results are available and restores input focus.
+  // Statement Coverage: Covers the Escape handler when no visible results are available and restores input focus.
   it('restores focus to the input when Escape is pressed without visible results', async () => {
     sessionStorage.clear();
 

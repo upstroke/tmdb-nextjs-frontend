@@ -22,7 +22,7 @@ const embeddedData = {
         vote_count: 2949,
         genre_ids: [878, 28, 12],
         media_type: 'movie',
-        certification: 'PG',
+        certification: 'PG'
       },
       {
         id: 1423191,
@@ -53,8 +53,8 @@ const embeddedData = {
         genre_ids: [12, 28, 14],
         media_type: 'movie',
         certification: 'PG'
-      },
-    ],
+      }
+    ]
   },
   movieDetail: {
     id: 155,
@@ -71,12 +71,12 @@ const embeddedData = {
     genres: [
       { id: 28, name: 'Action' },
       { id: 53, name: 'Thriller' },
-      { id: 80, name: 'Crime' },
+      { id: 80, name: 'Crime' }
     ],
     status: 'Released',
     tagline: 'Some men just want to watch the world burn.',
     budget: 185000000,
-    revenue: 1004558444,
+    revenue: 1004558444
   },
   tvPopular: {
     page: 1,
@@ -87,24 +87,22 @@ const embeddedData = {
         id: 91759,
         name: 'Come Home Love: Lo and Behold',
         original_name: '愛·回家之開心速遞',
-        overview:
-          "Hung Sue Gan starting from the bottom, established his own logistics company...",
+        overview: 'Hung Sue Gan starting from the bottom, established his own logistics company...',
         poster_path: '/lgD4j9gUGmMckZpWWRJjorWqGVT.jpg',
         backdrop_path: '/dyFTt1a9ZpFdKE96kPlE9fQvXOJ.jpg',
         first_air_date: '2017-02-20',
         vote_average: 5.4,
         vote_count: 46,
         genre_ids: [10751, 35, 18],
-        media_type: 'tv',
-      },
-    ],
+        media_type: 'tv'
+      }
+    ]
   },
   tvDetail: {
     id: 1396,
     name: 'Breaking Bad',
     original_name: 'Breaking Bad',
-    overview:
-      "Walter White, a New Mexico chemistry teacher, is diagnosed with Stage III cancer...",
+    overview: 'Walter White, a New Mexico chemistry teacher, is diagnosed with Stage III cancer...',
     poster_path: '/anFx9aTOOYqgS3v7x3R84Kz67ly.jpg',
     backdrop_path: '/tsRy63Mu5cu8etL1X7ZLyf7UP1M.jpg',
     first_air_date: '2008-01-20',
@@ -113,11 +111,11 @@ const embeddedData = {
     vote_count: 18726,
     genres: [
       { id: 18, name: 'Drama' },
-      { id: 80, name: 'Crime' },
+      { id: 80, name: 'Crime' }
     ],
     status: 'Ended',
     number_of_seasons: 5,
-    number_of_episodes: 62,
+    number_of_episodes: 62
   },
   tvSeason1: {
     id: 3572,
@@ -137,9 +135,9 @@ const embeddedData = {
         air_date: '2008-01-20',
         still_path: '/ydlY3iPfeOAvu8gVqrxPoMvzNCn.jpg',
         vote_average: 8.504,
-        runtime: 59,
-      },
-    ],
+        runtime: 59
+      }
+    ]
   },
   searchMulti: {
     page: 1,
@@ -154,9 +152,9 @@ const embeddedData = {
         poster_path: '/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg',
         media_type: 'movie',
         release_date: '2010-07-15',
-        vote_average: 8.373,
-      },
-    ],
+        vote_average: 8.373
+      }
+    ]
   },
   genresMovie: {
     genres: [
@@ -178,8 +176,8 @@ const embeddedData = {
       { id: 10770, name: 'TV Movie' },
       { id: 53, name: 'Thriller' },
       { id: 10752, name: 'War' },
-      { id: 37, name: 'Western' },
-    ],
+      { id: 37, name: 'Western' }
+    ]
   },
   genresTv: {
     genres: [
@@ -198,14 +196,14 @@ const embeddedData = {
       { id: 10766, name: 'Soap' },
       { id: 10767, name: 'Talk' },
       { id: 10768, name: 'War & Politics' },
-      { id: 37, name: 'Western' },
-    ],
+      { id: 37, name: 'Western' }
+    ]
   },
   error404: {
     success: false,
     status_code: 34,
-    status_message: 'The resource you requested could not be found.',
-  },
+    status_message: 'The resource you requested could not be found.'
+  }
 };
 
 // Map to app-internal format (same structure as tmdb.fixtures.js)
@@ -219,7 +217,7 @@ export const mappedFixtures = {
     backdropPath: movie.backdrop_path,
     releaseDate: movie.release_date,
     voteAverage: movie.vote_average,
-    genreIds: movie.genre_ids,
+    genreIds: movie.genre_ids
   })),
   tvShows: embeddedData.tvPopular.results.map((show) => ({
     id: show.id,
@@ -230,7 +228,7 @@ export const mappedFixtures = {
     backdropPath: show.backdrop_path,
     firstAirDate: show.first_air_date,
     voteAverage: show.vote_average,
-    genreIds: show.genre_ids,
+    genreIds: show.genre_ids
   })),
   movieDetails: {
     id: embeddedData.movieDetail.id,
@@ -244,7 +242,7 @@ export const mappedFixtures = {
     voteAverage: embeddedData.movieDetail.vote_average,
     genres: embeddedData.movieDetail.genres,
     status: embeddedData.movieDetail.status,
-    tagline: embeddedData.movieDetail.tagline,
+    tagline: embeddedData.movieDetail.tagline
   },
   tvShowDetails: {
     id: embeddedData.tvDetail.id,
@@ -259,7 +257,7 @@ export const mappedFixtures = {
     genres: embeddedData.tvDetail.genres,
     status: embeddedData.tvDetail.status,
     numberOfSeasons: embeddedData.tvDetail.number_of_seasons,
-    numberOfEpisodes: embeddedData.tvDetail.number_of_episodes,
+    numberOfEpisodes: embeddedData.tvDetail.number_of_episodes
   },
   tvSeasonWithEpisodes: {
     id: embeddedData.tvSeason1.id,
@@ -277,8 +275,8 @@ export const mappedFixtures = {
       airDate: ep.air_date,
       stillPath: ep.still_path,
       voteAverage: ep.vote_average,
-      runtime: ep.runtime,
-    })),
+      runtime: ep.runtime
+    }))
   },
   searchResults: embeddedData.searchMulti.results.map((item) => ({
     id: item.id,
@@ -287,9 +285,9 @@ export const mappedFixtures = {
     posterPath: item.poster_path,
     releaseDate: item.release_date,
     voteAverage: item.vote_average,
-    overview: item.overview,
+    overview: item.overview
   })),
-  genres: embeddedData.genresMovie.genres,
+  genres: embeddedData.genresMovie.genres
 };
 
 // Export raw fixtures for API mocking

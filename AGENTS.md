@@ -67,12 +67,12 @@ Prefer these tools when they are available:
 
 Each test type has one tool and one purpose:
 
-| Level                       | Tool                           | Location   | Purpose                                                                                           |
-| --------------------------- | ------------------------------ | ---------- | ------------------------------------------------------------------------------------------------- |
-| Unit                        | Vitest                         | `vitest`   | Pure logic: mappers, Zod schemas, utilities                                                       |
-| Integration                 | Vitest + Testing Library + msw | `vitest`   | Real integration only: a page or section renders with mocked data and values reach the components |
-| Component and accessibility | Cypress + `cypress-axe`        | `cypress`  | Component behavior in a real browser: keyboard, focus, ARIA, visibility, contrast                 |
-| e2e                         | Cypress                        | `cypress`  | User flows such as search, detail page, and navigation                                            |
+| Level                       | Tool                           | Location  | Purpose                                                                                           |
+| --------------------------- | ------------------------------ | --------- | ------------------------------------------------------------------------------------------------- |
+| Unit                        | Vitest                         | `vitest`  | Pure logic: mappers, Zod schemas, utilities                                                       |
+| Integration                 | Vitest + Testing Library + msw | `vitest`  | Real integration only: a page or section renders with mocked data and values reach the components |
+| Component and accessibility | Cypress + `cypress-axe`        | `cypress` | Component behavior in a real browser: keyboard, focus, ARIA, visibility, contrast                 |
+| e2e                         | Cypress                        | `cypress` | User flows such as search, detail page, and navigation                                            |
 
 Rules:
 

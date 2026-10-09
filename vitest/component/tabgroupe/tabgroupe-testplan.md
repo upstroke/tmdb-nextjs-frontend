@@ -41,7 +41,7 @@ The tab keyboard scenarios align with the WAI-ARIA Tabs pattern: `ArrowRight`, `
 ## Test Cases
 
 | ID       | Automated Test                                                                                   | Covered Behavior                                                                                                                                  |
-|----------|--------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| -------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | TC-TG-01 | `renders tab list and default active panel contents including episode structures`                | Initial rendering, tab list accessibility, default selected tab, default episode content, mouse selection of Season 2, and `onTabSelect` callback |
 | TC-TG-02 | `supports interactive keyboard navigation patterns across sequential tab items`                  | Tab keyboard handling for `ArrowRight`, `End`, `Home`, and unsupported `Enter`                                                                    |
 | TC-TG-03 | `supports focused accessibility keyboard navigation tracking inside active episodes list panels` | Episode-list keyboard handling for `ArrowDown`, `ArrowUp`, `End`, `Home`, and unsupported `Escape`                                                |

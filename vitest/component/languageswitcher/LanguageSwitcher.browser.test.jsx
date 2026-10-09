@@ -87,7 +87,9 @@ describe('LanguageSwitcher (browser)', () => {
 
     expect(mockSetLocale).toHaveBeenCalledWith('fr-FR');
     // Confirm it prepended the locale structure dynamically to the path
-    expect(mockReplace).toHaveBeenCalledWith('/fr-FR/unmapped-deep-route/details', { scroll: false });
+    expect(mockReplace).toHaveBeenCalledWith('/fr-FR/unmapped-deep-route/details', {
+      scroll: false
+    });
   });
 
   // TC-LS-003

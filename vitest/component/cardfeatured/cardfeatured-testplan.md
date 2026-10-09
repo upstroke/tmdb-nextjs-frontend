@@ -54,11 +54,11 @@ This plan describes the component tests for `CardFeatured`, the large featured c
 
 ### 8. Coverage Matrix
 
-| Test Case | Input class | Statement Coverage | Branch Coverage |
-|---|---|---|---|
-| TC-CF-001 | Valid movie, all fields | Layout rendering, description parsing, dynamic CSS variable styles | - |
-| TC-CF-002 | Valid TV show, minimal fields | TV label and route | `mediaType === 'tv'` = true |
-| TC-CF-003 | Unknown media type, empty fields | Fallback rendering | `normalizedType === null`, empty title, empty overview, empty homepage, empty genres, empty release date |
+| Test Case | Input class                      | Statement Coverage                                                 | Branch Coverage                                                                                          |
+| --------- | -------------------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| TC-CF-001 | Valid movie, all fields          | Layout rendering, description parsing, dynamic CSS variable styles | -                                                                                                        |
+| TC-CF-002 | Valid TV show, minimal fields    | TV label and route                                                 | `mediaType === 'tv'` = true                                                                              |
+| TC-CF-003 | Unknown media type, empty fields | Fallback rendering                                                 | `normalizedType === null`, empty title, empty overview, empty homepage, empty genres, empty release date |
 
 ### 9. Derived Test Cases
 
@@ -129,11 +129,11 @@ npx vitest run --config vitest.config.js vitest/component/cardfeatured
 
 ### 13. Traceability Matrix
 
-| Feature | Test Case |
-|---|---|
-| Title, overview, genres | TC-CF-001 |
-| Movie label and route | TC-CF-001 |
-| Official Website link | TC-CF-001 |
-| TV show label and route | TC-CF-002 |
-| Fallback `N/A` | TC-CF-003 |
+| Feature                                         | Test Case |
+| ----------------------------------------------- | --------- |
+| Title, overview, genres                         | TC-CF-001 |
+| Movie label and route                           | TC-CF-001 |
+| Official Website link                           | TC-CF-001 |
+| TV show label and route                         | TC-CF-002 |
+| Fallback `N/A`                                  | TC-CF-003 |
 | Omitted links for unknown type / empty homepage | TC-CF-003 |

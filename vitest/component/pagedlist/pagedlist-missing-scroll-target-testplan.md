@@ -41,7 +41,7 @@ This is an isolated browser-based component test with mocked dependencies. Vites
 ## Test Cases
 
 | ID           | Objective                                       | Preconditions                                                                                          | Action                                                     | Expected Result                                                                                                                           |
-|--------------|-------------------------------------------------|--------------------------------------------------------------------------------------------------------|------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------ | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | TC-PL-MST-01 | Handle a missing scroll target after pagination | Restore returns two cards; fetch returns a third card; `document.getElementById` always returns `null` | Render component, click **Load More**, wait for DOM update | Two cards appear first; then three cards are shown; `document.getElementById('missing-target-3')` is called; the component does not crash |
 
 ## Detailed Test Specification
@@ -49,12 +49,14 @@ This is an isolated browser-based component test with mocked dependencies. Vites
 ### TC-PL-MST-01: Clear pending scroll target when no DOM node exists
 
 **Preconditions**
+
 - `restorePagedList` returns `featured: null`, two cards, `page: 1`, and `hasMore: true`.
 - `fetch` returns `page: 2`, `hasMore: true`, and one new card.
 - `CardDefault` intentionally ignores `scrollId`, so no matching target element is rendered.
 - `document.getElementById` is stubbed to return `null`.
 
 **Steps**
+
 1. Render `PagedList` with `storageKey="missing-target-key"` and `cardIdPrefix="missing-target"`.
 2. Wait for the initial two cards.
 3. Click **Load More**.
@@ -62,6 +64,7 @@ This is an isolated browser-based component test with mocked dependencies. Vites
 5. Verify that `document.getElementById('missing-target-3')` was called.
 
 **Expected Result**
+
 - The third card is rendered successfully.
 - The component attempts to resolve the computed scroll target ID.
 - The missing target element does not trigger a runtime failure and does not block pagination rendering.

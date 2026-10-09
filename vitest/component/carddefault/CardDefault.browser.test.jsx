@@ -25,13 +25,12 @@ const movie = {
   voteAverage: rawMovie.vote_average,
   certification: 'PG-13',
   posterUrl: rawMovie.poster_path,
-  genreIds: rawMovie.genre_ids,
+  genreIds: rawMovie.genre_ids
 };
 
 const genres = rawFixtures.genresMovie.genres;
 
 describe('CardDefault (browser)', () => {
-
   // TC-CD-001
   // Statement Coverage: Covers normal variables, element rendering, custom styles.
   it('renders movie card with correct route, title, genres, date, rating and certification', () => {
@@ -49,10 +48,7 @@ describe('CardDefault (browser)', () => {
     );
 
     const link = screen.getByRole('link');
-    expect(link).toHaveAttribute(
-      'href',
-      `/${i18nMockDefault.locale}/movies/${movie.id}`
-    );
+    expect(link).toHaveAttribute('href', `/${i18nMockDefault.locale}/movies/${movie.id}`);
     expect(screen.getByText(movie.title)).toBeInTheDocument();
 
     const timeElement = document.querySelector(`time[datetime="${movie.releaseDate}"]`);
@@ -62,14 +58,7 @@ describe('CardDefault (browser)', () => {
   // TC-CD-002
   // Statement Coverage: Covers alternative URL variable evaluation.
   it('renders tv show card with correct route format', () => {
-    render(
-      <CardDefault
-        id={999}
-        mediaType="tv"
-        title="Sample TV Show"
-        date="2026-01-01"
-      />
-    );
+    render(<CardDefault id={999} mediaType="tv" title="Sample TV Show" date="2026-01-01" />);
 
     const link = screen.getByRole('link');
     expect(link).toHaveAttribute('href', '/en-US/tv-shows/999');
@@ -79,13 +68,7 @@ describe('CardDefault (browser)', () => {
   // Statement Coverage: Covers the inline early exit statement: return null.
   // Branch Coverage: hasValidCard -> false (triggers the early 'return null' branch)
   it('returns null and renders nothing when id or mediaType is invalid', () => {
-    const { container } = render(
-      <CardDefault
-        id=""
-        mediaType={undefined}
-        title="Ghost Card"
-      />
-    );
+    const { container } = render(<CardDefault id="" mediaType={undefined} title="Ghost Card" />);
     expect(container.firstChild).toBeNull();
   });
 
@@ -98,16 +81,7 @@ describe('CardDefault (browser)', () => {
   //   - certificationMeta -> false (triggers fallback grey certStyle border)
   //   - hasGenres -> false (triggers genre fallback placeholder view)
   it('renders fallback placeholder text when fields are missing', () => {
-    render(
-      <CardDefault
-        id={movie.id}
-        mediaType="movie"
-        title=""
-        rating={0}
-        genres={[]}
-        date=""
-      />
-    );
+    render(<CardDefault id={movie.id} mediaType="movie" title="" rating={0} genres={[]} date="" />);
 
     const placeholders = screen.getAllByText('N/A');
     expect(placeholders.length).toBeGreaterThan(0);
@@ -121,12 +95,7 @@ describe('CardDefault (browser)', () => {
   //   - img.complete && img.naturalWidth > 0 branch logic coverage
   it('triggers image load and image error states', () => {
     render(
-      <CardDefault
-        id={movie.id}
-        mediaType="movie"
-        title={movie.title}
-        imageUrl="/test-image.jpg"
-      />
+      <CardDefault id={movie.id} mediaType="movie" title={movie.title} imageUrl="/test-image.jpg" />
     );
 
     const img = screen.getByRole('img');

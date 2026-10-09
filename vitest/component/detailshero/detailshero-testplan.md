@@ -52,11 +52,11 @@ This plan describes the component tests for `DetailsHero`, the hero section of a
 
 ### 8. Coverage Matrix
 
-| Test Case | Input class | Statement Coverage | Branch Coverage |
-|---|---|---|---|
-| TC-DH-001 | All data present | Layout structure, background image assignment, list mapping | `productionCompanies.length > 0` = true |
-| TC-DH-002 | Backdrop and companies missing | Poster fallback, empty label rendering | backdrop missing = true (`fallbackImage = posterUrl`), `productionCompanies.length > 0` = false |
-| TC-DH-003 | All props empty | Default fallback chains | `resolvedTitle = notAvailableText`, `resolvedPosterUrl = '/not-available.png'`, `resolvedEmptyLabel = notAvailableText` |
+| Test Case | Input class                    | Statement Coverage                                          | Branch Coverage                                                                                                         |
+| --------- | ------------------------------ | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| TC-DH-001 | All data present               | Layout structure, background image assignment, list mapping | `productionCompanies.length > 0` = true                                                                                 |
+| TC-DH-002 | Backdrop and companies missing | Poster fallback, empty label rendering                      | backdrop missing = true (`fallbackImage = posterUrl`), `productionCompanies.length > 0` = false                         |
+| TC-DH-003 | All props empty                | Default fallback chains                                     | `resolvedTitle = notAvailableText`, `resolvedPosterUrl = '/not-available.png'`, `resolvedEmptyLabel = notAvailableText` |
 
 ### 9. Derived Test Cases
 
@@ -118,11 +118,11 @@ npx vitest run --config vitest.config.js vitest/component/detailshero
 
 ### 13. Traceability Matrix
 
-| Feature | Test Case |
-|---|---|
-| Title as heading level 1 | TC-DH-001 |
-| Production companies list | TC-DH-001 |
-| Custom empty label | TC-DH-002 |
-| Backdrop to poster fallback | TC-DH-002 (branch executed, not asserted) |
-| `N/A` fallback for title and label | TC-DH-003 |
-| Fallback poster URL | TC-DH-003 (branch executed, not asserted) |
+| Feature                            | Test Case                                 |
+| ---------------------------------- | ----------------------------------------- |
+| Title as heading level 1           | TC-DH-001                                 |
+| Production companies list          | TC-DH-001                                 |
+| Custom empty label                 | TC-DH-002                                 |
+| Backdrop to poster fallback        | TC-DH-002 (branch executed, not asserted) |
+| `N/A` fallback for title and label | TC-DH-003                                 |
+| Fallback poster URL                | TC-DH-003 (branch executed, not asserted) |

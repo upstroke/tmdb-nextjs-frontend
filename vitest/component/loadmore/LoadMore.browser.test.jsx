@@ -33,14 +33,12 @@ describe('LoadMore (browser)', () => {
   it('renders a disabled loading skeleton button and forces execution of its onClick statement block', () => {
     const handleLoad = vi.fn();
 
-    const { container } = render(
-      <LoadMore hasMore={true} loading={true} onLoad={handleLoad} />
-    );
+    const { container } = render(<LoadMore hasMore={true} loading={true} onLoad={handleLoad} />);
 
     const buttonElement = container.querySelector('button');
     expect(buttonElement).toBeDisabled();
 
-    const reactKey = Object.keys(buttonElement).find(key => key.startsWith('__reactProps'));
+    const reactKey = Object.keys(buttonElement).find((key) => key.startsWith('__reactProps'));
     if (reactKey && buttonElement[reactKey]?.onClick) {
       buttonElement[reactKey].onClick();
     } else {

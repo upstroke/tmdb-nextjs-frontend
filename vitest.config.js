@@ -36,8 +36,8 @@ const isCoverageRun = process.argv.includes('--coverage');
 const sharedResolve = {
   alias: {
     '@': resolve(__dirname, '.'),
-    $tests: resolve(__dirname, 'vitest'),
-  },
+    $tests: resolve(__dirname, 'vitest')
+  }
 };
 
 const preOptimizedDeps = [
@@ -53,9 +53,7 @@ const preOptimizedDeps = [
 ];
 
 function getProjectPlugins() {
-  const plugins = [
-    react({ jsxRuntime: 'automatic' }),
-  ];
+  const plugins = [react({ jsxRuntime: 'automatic' })];
 
   if (isCoverageRun) {
     plugins.push(
@@ -64,7 +62,7 @@ function getProjectPlugins() {
         exclude: ['node_modules/**', 'vitest/**', 'components/providers/**'],
         requireEnv: false,
         forceBuildInstrument: true,
-        quiet: true,
+        quiet: true
       })
     );
   }
@@ -83,7 +81,7 @@ export default defineConfig({
   },
 
   build: {
-    sourcemap: true,
+    sourcemap: true
   },
 
   test: {
@@ -99,7 +97,7 @@ export default defineConfig({
         'app/api/**/*.js',
         'app/api/**/*.jsx',
         'components/**/*.js',
-        'components/**/*.jsx',
+        'components/**/*.jsx'
       ],
       exclude: [
         'lib/stores/locale.jsx',
@@ -116,15 +114,15 @@ export default defineConfig({
         'postcss.config.js',
         'vite.config.js',
         'vitest.config.js',
-        'components/providers/**',
+        'components/providers/**'
       ],
       all: true,
       thresholds: {
         lines: 80,
         branches: 70,
         functions: 80,
-        statements: 80,
-      },
+        statements: 80
+      }
     },
 
     // Isolated workspaces for different testing strategies
@@ -140,8 +138,8 @@ export default defineConfig({
           name: 'unit',
           globals: true,
           environment: 'jsdom',
-          include: ['vitest/unit/**/*.test.{js,jsx}'],
-        },
+          include: ['vitest/unit/**/*.test.{js,jsx}']
+        }
       },
       {
         name: 'integration',
@@ -156,8 +154,8 @@ export default defineConfig({
           environment: 'jsdom',
           setupFiles: ['./vitest/setup/vitest.js'],
           include: ['vitest/integration/**/*.test.js', 'vitest/integration/**/*.test.jsx'],
-          exclude: ['vitest/integration/**/*.browser.test.{js,jsx}'],
-        },
+          exclude: ['vitest/integration/**/*.browser.test.{js,jsx}']
+        }
       },
       {
         name: 'browser',
@@ -171,7 +169,7 @@ export default defineConfig({
           globals: true,
           include: [
             'vitest/component/**/*.browser.test.{js,jsx}',
-            'vitest/integration/**/*.browser.test.{js,jsx}',
+            'vitest/integration/**/*.browser.test.{js,jsx}'
           ],
           exclude: ['vitest/unit/**', 'vitest/integration/**/*.test.{js,jsx}', 'node_modules/**'],
           setupFiles: ['./vitest/setup/browser.jsx'],
@@ -187,10 +185,10 @@ export default defineConfig({
           browser: {
             enabled: true,
             provider: 'playwright',
-            instances: [{ browser: 'chromium' }],
-          },
-        },
-      },
-    ],
-  },
+            instances: [{ browser: 'chromium' }]
+          }
+        }
+      }
+    ]
+  }
 });

@@ -19,8 +19,7 @@ vi.mock('@/lib/stores/locale', () => ({
 
 // Intentionally ignore scrollId so the target element never exists in the DOM.
 vi.mock('@/components/CardDefault', () => ({
-  default: ({ title }) =>
-    React.createElement('div', { 'data-testid': 'mock-card' }, title)
+  default: ({ title }) => React.createElement('div', { 'data-testid': 'mock-card' }, title)
 }));
 
 vi.mock('@/components/CardFeatured', () => ({
@@ -31,10 +30,10 @@ vi.mock('@/components/LoadMore', () => ({
   default: ({ hasMore, loading, onLoad }) =>
     hasMore
       ? React.createElement(
-        'button',
-        { onClick: onLoad, disabled: loading, 'data-testid': 'load-more-btn' },
-        loading ? 'Loading...' : 'Load More'
-      )
+          'button',
+          { onClick: onLoad, disabled: loading, 'data-testid': 'load-more-btn' },
+          loading ? 'Loading...' : 'Load More'
+        )
       : null
 }));
 

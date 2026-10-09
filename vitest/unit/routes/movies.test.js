@@ -9,20 +9,20 @@ const locale = i18nMockDefault.locale;
 const { messages } = i18nMockDefault;
 
 const mocks = vi.hoisted(() => ({
-  mockJson: vi.fn(),
+  mockJson: vi.fn()
 }));
 
 vi.mock('next/server', () => ({
   NextResponse: {
-    json: mocks.mockJson,
-  },
+    json: mocks.mockJson
+  }
 }));
 
 import { GET } from '@/app/api/[locale]/movies/route';
 import { createTmdbApi } from '@/lib/services/tmdb-api';
 
 vi.mock('@/lib/services/tmdb-api', () => ({
-  createTmdbApi: vi.fn(),
+  createTmdbApi: vi.fn()
 }));
 
 const originalEnv = process.env;

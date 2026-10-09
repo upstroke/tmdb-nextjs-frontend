@@ -8,12 +8,12 @@ Use this information to generate tests in the correct style and location:
 
 ### Test Levels and Paths
 
-| Level            | Tool    | Path                                   | File Extension |
-| ---------------- | ------- | -------------------------------------- | -------------- |
-| Unit             | Vitest  | `../vitest`                        | `.test.js`     |
-| Integration      | Vitest  | `../vitest`                        | `.test.js`     |
+| Level            | Tool    | Path        | File Extension |
+| ---------------- | ------- | ----------- | -------------- |
+| Unit             | Vitest  | `../vitest` | `.test.js`     |
+| Integration      | Vitest  | `../vitest` | `.test.js`     |
 | Component        | Cypress | `../vitest` | `.cy.js`       |
-| Acceptance (E2E) | Cypress | `../vitest`      | `.cy.js`       |
+| Acceptance (E2E) | Cypress | `../vitest` | `.cy.js`       |
 
 ### Important Rules
 

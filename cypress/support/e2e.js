@@ -12,11 +12,11 @@ Cypress.Commands.add('checkPageA11y', (options = {}) => {
     {
       runOnly: {
         type: 'tag',
-        values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'],
+        values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']
       },
-      ...options,
+      ...options
     },
     null,
-    true,
+    true
   );
 });

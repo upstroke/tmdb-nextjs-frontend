@@ -50,11 +50,11 @@ This plan describes the component tests for `DialogMessage`, a modal message dia
 
 ### 8. Coverage Matrix
 
-| Test Case | Input class | Statement Coverage | Branch Coverage |
-|---|---|---|---|
+| Test Case | Input class                             | Statement Coverage                                                                 | Branch Coverage                                                                                      |
+| --------- | --------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | TC-DM-001 | Message and custom title, `onClose` set | DOM mount, `showModal` side effect, custom title, close routine and `onClose` call | `!dialog \|\| !message` = false, `!dialog.open` = true, `title ?? messages.dialogErrorTitle` = false |
-| TC-DM-002 | Message, no title, `onClose` null | Global fallback resolution | `title ?? messages.dialogErrorTitle` = true |
-| TC-DM-003 | Empty message | Early exit (guard clause return) | `!dialog \|\| !message` = true |
+| TC-DM-002 | Message, no title, `onClose` null       | Global fallback resolution                                                         | `title ?? messages.dialogErrorTitle` = true                                                          |
+| TC-DM-003 | Empty message                           | Early exit (guard clause return)                                                   | `!dialog \|\| !message` = true                                                                       |
 
 ### 9. Derived Test Cases
 
@@ -123,10 +123,10 @@ npx vitest run --config vitest.config.js vitest/component/dialogmessage
 
 ### 13. Traceability Matrix
 
-| Feature | Test Case |
-|---|---|
-| Open as modal | TC-DM-001, TC-DM-002 |
-| Custom title and message | TC-DM-001 |
-| Confirm with OK and `onClose` | TC-DM-001 |
-| Fallback title from i18n | TC-DM-002 |
-| Guard clause for empty message | TC-DM-003 |
+| Feature                        | Test Case            |
+| ------------------------------ | -------------------- |
+| Open as modal                  | TC-DM-001, TC-DM-002 |
+| Custom title and message       | TC-DM-001            |
+| Confirm with OK and `onClose`  | TC-DM-001            |
+| Fallback title from i18n       | TC-DM-002            |
+| Guard clause for empty message | TC-DM-003            |

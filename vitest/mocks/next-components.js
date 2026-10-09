@@ -1,5 +1,9 @@
 export function MockLink({ children, href, ...props }) {
-  return <a href={href} {...props}>{children}</a>;
+  return (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  );
 }
 
 export function MockImage({ src, alt, ...props }) {

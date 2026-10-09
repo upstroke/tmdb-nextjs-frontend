@@ -20,15 +20,30 @@ const sampleTabs = [
     id: 'season-1',
     label: 'Season 1',
     episodes: [
-      { id: 101, name: 'Pilot', air_date: '2020-08-14', overview: 'The series premiere introduces Ted Lasso.' },
-      { id: 102, name: 'Biscuits', air_date: '2020-08-14', overview: 'Ted tries to win over Rebecca.' }
+      {
+        id: 101,
+        name: 'Pilot',
+        air_date: '2020-08-14',
+        overview: 'The series premiere introduces Ted Lasso.'
+      },
+      {
+        id: 102,
+        name: 'Biscuits',
+        air_date: '2020-08-14',
+        overview: 'Ted tries to win over Rebecca.'
+      }
     ]
   },
   {
     id: 'season-2',
     label: 'Season 2',
     episodes: [
-      { id: 201, name: 'Goodbye Earl', air_date: '2021-07-23', overview: 'AFC Richmond faces a new challenge.' }
+      {
+        id: 201,
+        name: 'Goodbye Earl',
+        air_date: '2021-07-23',
+        overview: 'AFC Richmond faces a new challenge.'
+      }
     ]
   },
   {
@@ -53,11 +68,7 @@ describe('TabGroupe (browser)', () => {
     const handleTabSelect = vi.fn();
 
     render(
-      <TabGroupe
-        tabs={sampleTabs}
-        ariaLabel="Season Selection"
-        onTabSelect={handleTabSelect}
-      />
+      <TabGroupe tabs={sampleTabs} ariaLabel="Season Selection" onTabSelect={handleTabSelect} />
     );
 
     // Verify main accessibility requirements (ARIA roles)

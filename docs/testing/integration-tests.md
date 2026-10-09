@@ -33,6 +33,7 @@ npx vitest run tests/unit/routes/
 ## Test Location
 
 Integration tests (route handler tests) are located in:
+
 ```
 tests/unit/routes/
 ```
@@ -87,6 +88,7 @@ describe('GET /api/[locale]/movies', () => {
 ## Test Coverage
 
 Integration tests cover:
+
 - Route handler logic (request/response)
 - Service integration (TMDB API calls)
 - i18n locale handling
@@ -95,13 +97,13 @@ Integration tests cover:
 
 ## Integration vs Unit vs E2E Tests
 
-| Aspect | Unit Test | Integration Test | E2E Test |
-|--------|-----------|-----------------|----------|
-| **Scope** | Single function | Multiple components | Complete user flow |
-| **Framework** | Vitest | Vitest | Cypress |
-| **Location** | `../../vitest`, `../../vitest` | `../../vitest` | `../../vitest`, `../../vitest` |
-| **Speed** | Fastest | Fast | Slowest |
-| **Example** | `formatDate()` utility | `GET /api/movies` handler | Homepage → Search → Movie Details |
+| Aspect        | Unit Test                      | Integration Test          | E2E Test                          |
+| ------------- | ------------------------------ | ------------------------- | --------------------------------- |
+| **Scope**     | Single function                | Multiple components       | Complete user flow                |
+| **Framework** | Vitest                         | Vitest                    | Cypress                           |
+| **Location**  | `../../vitest`, `../../vitest` | `../../vitest`            | `../../vitest`, `../../vitest`    |
+| **Speed**     | Fastest                        | Fast                      | Slowest                           |
+| **Example**   | `formatDate()` utility         | `GET /api/movies` handler | Homepage → Search → Movie Details |
 
 ## Best Practices
 
@@ -114,6 +116,7 @@ Integration tests cover:
 ## Coverage Reports
 
 Integration tests are **included** in Vitest coverage reports. The covered files are:
+
 - `app/api/**` - API route handlers
 - `lib/**` - Services, utilities, stores, i18n
 

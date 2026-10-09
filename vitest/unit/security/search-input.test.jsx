@@ -8,7 +8,7 @@ describe('Security: Search Input', () => {
       '<img src=x onerror=alert(1)>',
       '<svg onload=alert(1)>',
       'javascript:alert(1)',
-      '<iframe src="javascript:alert(1)"></iframe>',
+      '<iframe src="javascript:alert(1)"></iframe>'
     ];
 
     for (const input of maliciousInputs) {
@@ -26,7 +26,7 @@ describe('Security: Search Input', () => {
       'The Godfather & The Godfather Part II',
       'Batman: The Dark Knight',
       'Is 300 a movie?',
-      'Movies with "quotes"',
+      'Movies with "quotes"'
     ];
 
     for (const input of safeInputs) {

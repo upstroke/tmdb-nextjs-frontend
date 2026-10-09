@@ -9,9 +9,9 @@ vi.mock('@/lib/stores/locale', () => ({
   useI18n: () => ({
     labels: {
       movie: 'Movie',
-      tvShow: 'TV Show',
-    },
-  }),
+      tvShow: 'TV Show'
+    }
+  })
 }));
 
 describe('MediaTypeLabel (browser)', () => {

@@ -23,12 +23,12 @@ tests/cypress/acceptance/
 
 ### Examples
 
-| Component | User Story | Test Folder |
-|-----------|-----------|-------------|
+| Component       | User Story                                         | Test Folder               |
+| --------------- | -------------------------------------------------- | ------------------------- |
 | **CardDefault** | "Display movie/TV card with poster, title, rating" | `components/cardDefault/` |
-| **SearchInput** | "Search for movies and TV shows" | `components/searchInput/` |
-| **Navigation** | "Navigate to Home, Movies, TV Shows" | `components/navigation/` |
-| **TabGroupe** | "Select season of a TV show" | `components/tabGroupe/` |
+| **SearchInput** | "Search for movies and TV shows"                   | `components/searchInput/` |
+| **Navigation**  | "Navigate to Home, Movies, TV Shows"               | `components/navigation/`  |
+| **TabGroupe**   | "Select season of a TV show"                       | `components/tabGroupe/`   |
 
 ### Structure per Component
 
@@ -52,7 +52,7 @@ describe('CardDefault Component', () => {
       id: 123,
       mediaType: 'movie',
       title: 'Test Movie',
-      rating: 7.5,
+      rating: 7.5
     };
 
     card.mount(movieData);
@@ -70,10 +70,10 @@ describe('CardDefault Component', () => {
 
 ### Examples
 
-| Flow | User Journey | Test Folder |
-|------|-------------|-------------|
-| **MovieDetail** | "Open movie detail page from homepage" | `flows/movieDetail/` |
-| **TvShowDetail** | "Open TV show detail with season selection" | `flows/tvShowDetail/` |
+| Flow                  | User Journey                                       | Test Folder                |
+| --------------------- | -------------------------------------------------- | -------------------------- |
+| **MovieDetail**       | "Open movie detail page from homepage"             | `flows/movieDetail/`       |
+| **TvShowDetail**      | "Open TV show detail with season selection"        | `flows/tvShowDetail/`      |
 | **FindAndWatchMovie** | "Search movie → View detail → See watch providers" | `flows/findAndWatchMovie/` |
 
 ### Structure per Flow
@@ -108,10 +108,10 @@ describe('Movie Detail Flow', () => {
 
 ### Examples
 
-| Page | A11y Test Folder |
-|------|------------------|
-| **Homepage** | `accessibility/homepage/` |
-| **Movie Detail** | `accessibility/movieDetail/` |
+| Page               | A11y Test Folder              |
+| ------------------ | ----------------------------- |
+| **Homepage**       | `accessibility/homepage/`     |
+| **Movie Detail**   | `accessibility/movieDetail/`  |
 | **TV Show Detail** | `accessibility/tvShowDetail/` |
 
 ### Structure per A11y Test
@@ -138,25 +138,27 @@ describe('Homepage Accessibility', () => {
 
 ## Component vs. Flow vs. Accessibility
 
-| Dimension | Component | Flow | Accessibility |
-|-----------|-----------|------|---------------|
-| **Scope** | Single component | Multiple pages | Single page |
-| **Test-Type** | Component Testing (`cy.mount()`) | E2E Testing (`cy.visit()`) | E2E Testing (`cy.visit()`) |
-| **Speed** | Fast (< 5s) | Slower (> 10s) | Medium (~5s) |
-| **Focus** | Acceptance criteria | User journey | WCAG compliance |
-| **Example** | "Card renders title" | "Homepage → Search → Detail" | "All elements have accessible names" |
+| Dimension     | Component                        | Flow                         | Accessibility                        |
+| ------------- | -------------------------------- | ---------------------------- | ------------------------------------ |
+| **Scope**     | Single component                 | Multiple pages               | Single page                          |
+| **Test-Type** | Component Testing (`cy.mount()`) | E2E Testing (`cy.visit()`)   | E2E Testing (`cy.visit()`)           |
+| **Speed**     | Fast (< 5s)                      | Slower (> 10s)               | Medium (~5s)                         |
+| **Focus**     | Acceptance criteria              | User journey                 | WCAG compliance                      |
+| **Example**   | "Card renders title"             | "Homepage → Search → Detail" | "All elements have accessible names" |
 
 ---
 
 ## What to Test
 
 ### ✅ Test These:
+
 - **Components**: Acceptance criteria from stories
 - **Flows**: Complete user journeys
 - **Accessibility**: WCAG 2.1/2.2 AA compliance
 - **Critical paths**: Happy paths + important edge cases
 
 ### ❌ Don't Test:
+
 - Implementation details
 - Every possible user path (too slow)
 - Visual details (use visual regression tools)
@@ -202,13 +204,13 @@ npx cypress run --e2e --spec "tests/cypress/acceptance/accessibility/homepage/ho
 ```js
 export default defineConfig({
   e2e: {
-    specPattern: 'tests/cypress/acceptance/**/*.cy.{js,jsx}',
+    specPattern: 'tests/cypress/acceptance/**/*.cy.{js,jsx}'
     // ...
   },
   component: {
-    specPattern: 'tests/cypress/acceptance/**/*.cy.{js,jsx}',
+    specPattern: 'tests/cypress/acceptance/**/*.cy.{js,jsx}'
     // ...
-  },
+  }
 });
 ```
 

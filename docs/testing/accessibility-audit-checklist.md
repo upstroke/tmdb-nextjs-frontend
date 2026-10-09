@@ -43,7 +43,7 @@ describe('CardDefault Accessibility', () => {
     const movieData = {
       id: 123,
       mediaType: 'movie',
-      title: 'Test Movie',
+      title: 'Test Movie'
     };
 
     card.mount(movieData);

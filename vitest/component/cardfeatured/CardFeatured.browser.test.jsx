@@ -9,7 +9,14 @@ import { rawFixtures } from '../../fixtures/tmdb/tmdb.browser.fixtures.js';
 // Global mocks for i18n store and Next.js internal components inside the browser sandbox
 vi.mock('@/lib/stores/locale', () => ({
   useI18n: () => ({
-    labels: { genre: 'Genre', releaseDate: 'Release date', movie: 'Movie', tvShow: 'TV Show', moreInfo: 'More Info', officialWebsite: 'Official Website' },
+    labels: {
+      genre: 'Genre',
+      releaseDate: 'Release date',
+      movie: 'Movie',
+      tvShow: 'TV Show',
+      moreInfo: 'More Info',
+      officialWebsite: 'Official Website'
+    },
     fallbacks: { notAvailable: 'N/A' }
   }),
   useLocale: () => 'en-US'
@@ -41,7 +48,9 @@ describe('CardFeatured (browser)', () => {
     );
 
     // Verify correct movie routing and title
-    expect(screen.getByRole('heading', { name: new RegExp(rawMovie.title, 'i') })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: new RegExp(rawMovie.title, 'i') })
+    ).toBeInTheDocument();
 
     // Verify specific movie label matching (mediaType === 'movie' -> labels.movie)
     expect(screen.getByText('Movie')).toBeInTheDocument();

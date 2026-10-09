@@ -49,8 +49,8 @@ This plan describes the component test for `FooterMain`, the site-wide footer. T
 
 ### 8. Coverage Matrix
 
-| Test Case | Input class | Statement Coverage | Branch Coverage |
-|---|---|---|---|
+| Test Case | Input class              | Statement Coverage                                      | Branch Coverage             |
+| --------- | ------------------------ | ------------------------------------------------------- | --------------------------- |
 | TC-FM-001 | No props (static render) | Layout rendering, text nodes, external attribution URLs | Single baseline render path |
 
 ### 9. Derived Test Cases
@@ -90,8 +90,8 @@ npx vitest run --config vitest.config.js vitest/component/footermain
 
 ### 13. Traceability Matrix
 
-| Feature | Test Case |
-|---|---|
-| Legal texts | TC-FM-001 |
-| IMDb link and security attributes | TC-FM-001 |
+| Feature                                | Test Case |
+| -------------------------------------- | --------- |
+| Legal texts                            | TC-FM-001 |
+| IMDb link and security attributes      | TC-FM-001 |
 | JustWatch link and security attributes | TC-FM-001 |

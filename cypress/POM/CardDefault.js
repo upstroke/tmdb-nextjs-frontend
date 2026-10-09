@@ -45,6 +45,6 @@ export const CardDefault = () => {
     releaseDate,
     certification,
     mount,
-    click,
+    click
   };
 };

@@ -58,11 +58,11 @@ This plan describes the component tests for `LanguageSwitcher`, a select element
 
 ### 8. Coverage Matrix
 
-| Test Case | Input class | Statement Coverage | Branch Coverage |
-|---|---|---|---|
-| TC-LS-001 | Path `/en-US/movies`, switch to `de-DE` | Mount initialization, option mapping, store sync | `currentSegment` = true (segment is replaced) |
-| TC-LS-002 | Path `/unmapped-deep-route/details`, switch to `fr-FR` | Prepending the locale | `currentSegment` = false (locale is prepended) |
-| TC-LS-003 | Path `/en-US`, switch to `de-DE` | Exact match of the base locale | Exact text match condition |
+| Test Case | Input class                                            | Statement Coverage                               | Branch Coverage                                |
+| --------- | ------------------------------------------------------ | ------------------------------------------------ | ---------------------------------------------- |
+| TC-LS-001 | Path `/en-US/movies`, switch to `de-DE`                | Mount initialization, option mapping, store sync | `currentSegment` = true (segment is replaced)  |
+| TC-LS-002 | Path `/unmapped-deep-route/details`, switch to `fr-FR` | Prepending the locale                            | `currentSegment` = false (locale is prepended) |
+| TC-LS-003 | Path `/en-US`, switch to `de-DE`                       | Exact match of the base locale                   | Exact text match condition                     |
 
 ### 9. Derived Test Cases
 
@@ -140,11 +140,11 @@ npx vitest run --config vitest.config.js vitest/component/languageswitcher
 
 ### 13. Traceability Matrix
 
-| Feature | Test Case |
-|---|---|
-| Select element and option labels | TC-LS-001 |
-| Store update with `setLocale` | TC-LS-001, TC-LS-002 |
-| Replacing the locale segment | TC-LS-001 |
-| Prepending the locale | TC-LS-002 |
-| Path with locale only | TC-LS-003 |
+| Feature                                   | Test Case                       |
+| ----------------------------------------- | ------------------------------- |
+| Select element and option labels          | TC-LS-001                       |
+| Store update with `setLocale`             | TC-LS-001, TC-LS-002            |
+| Replacing the locale segment              | TC-LS-001                       |
+| Prepending the locale                     | TC-LS-002                       |
+| Path with locale only                     | TC-LS-003                       |
 | `router.replace` with `{ scroll: false }` | TC-LS-001, TC-LS-002, TC-LS-003 |

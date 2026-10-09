@@ -50,11 +50,11 @@ This plan describes the component tests for `MediaTypeLabel`, a small label that
 
 ### 8. Coverage Matrix
 
-| Test Case | `mediaType` | `className` | Statement Coverage |
-|---|---|---|---|
-| TC-MT-001 | `movie` | not set | Movie branch and default empty `className` |
-| TC-MT-002 | `tv` | `custom-class` | TV branch and appended custom class |
-| TC-MT-003 | `podcast` | not set | Guard clause that returns `null` |
+| Test Case | `mediaType` | `className`    | Statement Coverage                         |
+| --------- | ----------- | -------------- | ------------------------------------------ |
+| TC-MT-001 | `movie`     | not set        | Movie branch and default empty `className` |
+| TC-MT-002 | `tv`        | `custom-class` | TV branch and appended custom class        |
+| TC-MT-003 | `podcast`   | not set        | Guard clause that returns `null`           |
 
 ### 9. Derived Test Cases
 
@@ -117,9 +117,9 @@ npx vitest run --config vitest.config.js vitest/component/mediatypelabel
 
 ### 13. Traceability Matrix
 
-| Feature | Test Case |
-|---|---|
-| Movie label, text and colour | TC-MT-001 |
-| TV show label, text and colour | TC-MT-002 |
-| Custom class name | TC-MT-002 |
+| Feature                          | Test Case |
+| -------------------------------- | --------- |
+| Movie label, text and colour     | TC-MT-001 |
+| TV show label, text and colour   | TC-MT-002 |
+| Custom class name                | TC-MT-002 |
 | Guard for unsupported media type | TC-MT-003 |

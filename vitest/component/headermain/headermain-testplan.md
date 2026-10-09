@@ -57,11 +57,11 @@ This plan describes the component tests for `HeaderMain`, the main header with n
 
 ### 8. Coverage Matrix
 
-| Test Case | Input class | Statement Coverage | Branch Coverage |
-|---|---|---|---|
-| TC-HM-001 | Path `/en-US`, no stored page | List navigation loop, standard layout, pointer bindings | - |
-| TC-HM-002 | Path `/en-US/movies`, stored page `5` | `sessionStorage` extraction, dynamic target calculation | - |
-| TC-HM-003 | `sessionStorage.getItem` throws | `catch` block | try/catch exception path |
+| Test Case | Input class                           | Statement Coverage                                      | Branch Coverage          |
+| --------- | ------------------------------------- | ------------------------------------------------------- | ------------------------ |
+| TC-HM-001 | Path `/en-US`, no stored page         | List navigation loop, standard layout, pointer bindings | -                        |
+| TC-HM-002 | Path `/en-US/movies`, stored page `5` | `sessionStorage` extraction, dynamic target calculation | -                        |
+| TC-HM-003 | `sessionStorage.getItem` throws       | `catch` block                                           | try/catch exception path |
 
 ### 9. Derived Test Cases
 
@@ -141,10 +141,10 @@ npx vitest run --config vitest.config.js vitest/component/headermain
 
 ### 13. Traceability Matrix
 
-| Feature | Test Case |
-|---|---|
-| Main navigation and placeholders | TC-HM-001 |
-| Navigation titles and active link | TC-HM-001, TC-HM-002 |
-| Mobile menu toggle (`aria-expanded`) | TC-HM-001 |
-| Stored movies page in the link | TC-HM-002 |
-| Fallback on storage error | TC-HM-003 |
+| Feature                              | Test Case            |
+| ------------------------------------ | -------------------- |
+| Main navigation and placeholders     | TC-HM-001            |
+| Navigation titles and active link    | TC-HM-001, TC-HM-002 |
+| Mobile menu toggle (`aria-expanded`) | TC-HM-001            |
+| Stored movies page in the link       | TC-HM-002            |
+| Fallback on storage error            | TC-HM-003            |

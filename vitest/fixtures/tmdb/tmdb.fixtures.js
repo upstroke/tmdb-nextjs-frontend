@@ -25,7 +25,7 @@ export const mappedFixtures = {
     releaseDate: '2026-07-29',
     voteAverage: 7.864,
     genreIds: [878, 28, 12],
-    certification: 'PG',
+    certification: 'PG'
   },
   tvShowListItem: {
     id: 91759,
@@ -38,7 +38,7 @@ export const mappedFixtures = {
     firstAirDate: '2017-02-20',
     voteAverage: 5.4,
     genreIds: [10751, 35, 18],
-    certification: 'PG',
+    certification: 'PG'
   },
   moviesPopular: {
     page: 1,
@@ -56,7 +56,7 @@ export const mappedFixtures = {
         releaseDate: '2026-07-29',
         voteAverage: 7.864,
         genreIds: [878, 28, 12],
-        certification: 'PG',
+        certification: 'PG'
       },
       {
         id: 1423191,
@@ -69,7 +69,7 @@ export const mappedFixtures = {
         releaseDate: '2026-09-16',
         voteAverage: 7.3,
         genreIds: [27, 878, 12],
-        certification: 'PG',
+        certification: 'PG'
       },
       {
         id: 1368337,
@@ -82,7 +82,7 @@ export const mappedFixtures = {
         releaseDate: '2026-07-15',
         voteAverage: 8.012,
         genreIds: [12, 28, 14],
-        certification: 'PG',
+        certification: 'PG'
       },
       {
         id: 1101383,
@@ -95,7 +95,7 @@ export const mappedFixtures = {
         releaseDate: '2026-08-12',
         voteAverage: 7.1,
         genreIds: [878, 9648, 53],
-        certification: 'PG',
+        certification: 'PG'
       },
       {
         id: 1032863,
@@ -108,7 +108,7 @@ export const mappedFixtures = {
         releaseDate: '2026-09-23',
         voteAverage: 8.126,
         genreIds: [10749, 35],
-        certification: 'PG',
+        certification: 'PG'
       }
     ]
   },
@@ -128,7 +128,7 @@ export const mappedFixtures = {
         firstAirDate: '2017-02-20',
         voteAverage: 5.4,
         genreIds: [10751, 35, 18],
-        certification: 'PG',
+        certification: 'PG'
       },
       {
         id: 22980,
@@ -141,7 +141,7 @@ export const mappedFixtures = {
         firstAirDate: '2009-07-16',
         voteAverage: 4.969,
         genreIds: [10767, 35],
-        certification: 'PG',
+        certification: 'PG'
       },
       {
         id: 275102,
@@ -154,7 +154,7 @@ export const mappedFixtures = {
         firstAirDate: '2026-09-18',
         voteAverage: 6.6,
         genreIds: [18],
-        certification: 'PG',
+        certification: 'PG'
       },
       {
         id: 2734,
@@ -167,7 +167,7 @@ export const mappedFixtures = {
         firstAirDate: '1999-09-20',
         voteAverage: 7.956,
         genreIds: [80, 18, 9648],
-        certification: 'PG',
+        certification: 'PG'
       },
       {
         id: 2261,
@@ -180,7 +180,7 @@ export const mappedFixtures = {
         firstAirDate: '1962-10-01',
         voteAverage: 7.562,
         genreIds: [10767],
-        certification: 'PG',
+        certification: 'PG'
       }
     ]
   },

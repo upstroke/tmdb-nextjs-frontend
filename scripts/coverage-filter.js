@@ -55,9 +55,12 @@ function generateTextReport(coverage) {
     const branches = Object.values(data.b || {}).reduce((sum, arr) => sum + arr.length, 0);
     const functions = Object.values(data.f || {}).length;
 
-    const coveredStatements = Object.values(data.s || {}).filter(s => s > 0).length;
-    const coveredBranches = Object.values(data.b || {}).reduce((sum, arr) => sum + arr.filter(b => b > 0).length, 0);
-    const coveredFunctions = Object.values(data.f || {}).filter(f => f > 0).length;
+    const coveredStatements = Object.values(data.s || {}).filter((s) => s > 0).length;
+    const coveredBranches = Object.values(data.b || {}).reduce(
+      (sum, arr) => sum + arr.filter((b) => b > 0).length,
+      0
+    );
+    const coveredFunctions = Object.values(data.f || {}).filter((f) => f > 0).length;
 
     totalStatements += statements;
     totalCoveredStatements += coveredStatements;
@@ -70,11 +73,11 @@ function generateTextReport(coverage) {
       path: filePath,
       statements: statements > 0 ? ((coveredStatements / statements) * 100).toFixed(2) : '0.00',
       branches: branches > 0 ? ((coveredBranches / branches) * 100).toFixed(2) : '0.00',
-      functions: functions > 0 ? ((coveredFunctions / functions) * 100).toFixed(2) : '0.00',
+      functions: functions > 0 ? ((coveredFunctions / functions) * 100).toFixed(2) : '0.00'
     });
   }
 
-  const maxPathLength = Math.max(...files.map(f => f.split('/').pop().length), 'File'.length) + 3;
+  const maxPathLength = Math.max(...files.map((f) => f.split('/').pop().length), 'File'.length) + 3;
 
   let report = '';
   report += '-'.repeat(maxPathLength + 50) + '\n';
@@ -102,23 +105,57 @@ function generateTextReport(coverage) {
     const dirAvgBranches = (dirBranches / fileCount).toFixed(2);
     const dirAvgFunctions = (dirFunctions / fileCount).toFixed(2);
 
-    report += dir.padEnd(maxPathLength) + ' | ' + dirAvgStatements.padStart(7) + ' | ' + dirAvgBranches.padStart(8) + ' | ' + dirAvgFunctions.padStart(7) + ' | ' + dirAvgStatements.padStart(7) + ' |\n';
+    report +=
+      dir.padEnd(maxPathLength) +
+      ' | ' +
+      dirAvgStatements.padStart(7) +
+      ' | ' +
+      dirAvgBranches.padStart(8) +
+      ' | ' +
+      dirAvgFunctions.padStart(7) +
+      ' | ' +
+      dirAvgStatements.padStart(7) +
+      ' |\n';
 
     for (const metric of dirMetrics.sort((a, b) => a.path.localeCompare(b.path))) {
       const fileName = metric.path.split('/').pop();
-      report += '  ' + fileName.padEnd(maxPathLength - 2) + ' | ' + metric.statements.padStart(7) + ' | ' + metric.branches.padStart(8) + ' | ' + metric.functions.padStart(7) + ' | ' + metric.statements.padStart(7) + ' |\n';
+      report +=
+        '  ' +
+        fileName.padEnd(maxPathLength - 2) +
+        ' | ' +
+        metric.statements.padStart(7) +
+        ' | ' +
+        metric.branches.padStart(8) +
+        ' | ' +
+        metric.functions.padStart(7) +
+        ' | ' +
+        metric.statements.padStart(7) +
+        ' |\n';
     }
   }
 
   report += '-'.repeat(maxPathLength + 50) + '\n';
 
   const totalMetrics = {
-    statements: totalStatements > 0 ? ((totalCoveredStatements / totalStatements) * 100).toFixed(2) : '0.00',
-    branches: totalBranches > 0 ? ((totalCoveredBranches / totalBranches) * 100).toFixed(2) : '0.00',
-    functions: totalFunctions > 0 ? ((totalCoveredFunctions / totalFunctions) * 100).toFixed(2) : '0.00',
+    statements:
+      totalStatements > 0 ? ((totalCoveredStatements / totalStatements) * 100).toFixed(2) : '0.00',
+    branches:
+      totalBranches > 0 ? ((totalCoveredBranches / totalBranches) * 100).toFixed(2) : '0.00',
+    functions:
+      totalFunctions > 0 ? ((totalCoveredFunctions / totalFunctions) * 100).toFixed(2) : '0.00'
   };
 
-  report += 'All files'.padEnd(maxPathLength) + ' | ' + totalMetrics.statements.padStart(7) + ' | ' + totalMetrics.branches.padStart(8) + ' | ' + totalMetrics.functions.padStart(7) + ' | ' + totalMetrics.statements.padStart(7) + ' |\n';
+  report +=
+    'All files'.padEnd(maxPathLength) +
+    ' | ' +
+    totalMetrics.statements.padStart(7) +
+    ' | ' +
+    totalMetrics.branches.padStart(8) +
+    ' | ' +
+    totalMetrics.functions.padStart(7) +
+    ' | ' +
+    totalMetrics.statements.padStart(7) +
+    ' |\n';
   report += '-'.repeat(maxPathLength + 50) + '\n';
 
   return report;

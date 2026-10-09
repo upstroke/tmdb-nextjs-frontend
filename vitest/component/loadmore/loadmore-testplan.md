@@ -51,11 +51,11 @@ This plan describes the component tests for `LoadMore`, the button that loads fu
 
 ### 8. Coverage Matrix
 
-| Test Case | `hasMore` | `loading` | `onLoad` | Statement Coverage | Branch Coverage |
-|---|---|---|---|---|---|
-| TC-LM-001 | true | false | spy | Standard click handler path | - |
-| TC-LM-002 | true | true | spy | `onClick` statement of the loading button (forced) | `loading` = true |
-| TC-LM-003 | false | false | null | Button for the end of the list | `loading` = false, `!hasMore` = true |
+| Test Case | `hasMore` | `loading` | `onLoad` | Statement Coverage                                 | Branch Coverage                      |
+| --------- | --------- | --------- | -------- | -------------------------------------------------- | ------------------------------------ |
+| TC-LM-001 | true      | false     | spy      | Standard click handler path                        | -                                    |
+| TC-LM-002 | true      | true      | spy      | `onClick` statement of the loading button (forced) | `loading` = true                     |
+| TC-LM-003 | false     | false     | null     | Button for the end of the list                     | `loading` = false, `!hasMore` = true |
 
 ### 9. Derived Test Cases
 
@@ -116,9 +116,9 @@ npx vitest run --config vitest.config.js vitest/component/loadmore
 
 ### 13. Traceability Matrix
 
-| Feature | Test Case |
-|---|---|
-| Active button and `onLoad` call | TC-LM-001 |
-| Disabled button while loading | TC-LM-002 |
+| Feature                                   | Test Case          |
+| ----------------------------------------- | ------------------ |
+| Active button and `onLoad` call           | TC-LM-001          |
+| Disabled button while loading             | TC-LM-002          |
 | `onClick` statement of the loading button | TC-LM-002 (forced) |
-| Disabled button at the end of the list | TC-LM-003 |
+| Disabled button at the end of the list    | TC-LM-003          |

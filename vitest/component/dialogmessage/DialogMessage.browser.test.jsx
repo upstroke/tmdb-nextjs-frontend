@@ -56,11 +56,7 @@ describe('DialogMessage (browser)', () => {
   // Branch Coverage: title ?? messages.dialogErrorTitle -> true.
   it('resolves and falls back to global i18n text placeholders when explicit title properties are omitted', () => {
     const { container } = render(
-      <DialogMessage
-        message="Session expired."
-        title={undefined}
-        onClose={null}
-      />
+      <DialogMessage message="Session expired." title={undefined} onClose={null} />
     );
 
     const dialogElement = container.querySelector('dialog');
@@ -74,13 +70,7 @@ describe('DialogMessage (browser)', () => {
   // Statement Coverage: Covers the early exit guard clause return line.
   // Branch Coverage: !dialog || !message -> true.
   it('bypasses visual state updates and keeps the dialog hidden when message props are falsy', () => {
-    const { container } = render(
-      <DialogMessage
-        message=""
-        title="Hidden Dialog"
-        onClose={null}
-      />
-    );
+    const { container } = render(<DialogMessage message="" title="Hidden Dialog" onClose={null} />);
 
     const dialogElement = container.querySelector('dialog');
     expect(dialogElement).toBeInTheDocument();

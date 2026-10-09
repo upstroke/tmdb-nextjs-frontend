@@ -7,8 +7,8 @@ if (typeof globalThis.process === 'undefined') {
   globalThis.process = {
     env: {
       NODE_ENV: 'test',
-      TMDB_API_KEY: 'test-key',
-    },
+      TMDB_API_KEY: 'test-key'
+    }
   };
 }
 
@@ -25,22 +25,22 @@ const MockImage = ({ src, alt, ...props }) => {
 // Next.js Link mit doppeltem Interop-Schutz mocken
 vi.mock('next/link', () => ({
   default: MockLink,
-  __esModule: true,
+  __esModule: true
 }));
 
 // Next.js Image mocken
 vi.mock('next/image', () => ({
   default: MockImage,
-  __esModule: true,
+  __esModule: true
 }));
 
 // Next-Intl mocken
 vi.mock('next-intl', () => ({
   useTranslations: () => ({
     t: (key) => key,
-    rich: (key) => key,
+    rich: (key) => key
   }),
-  __esModule: true,
+  __esModule: true
 }));
 
 // Next/Router (Pages Router) mocken
@@ -50,9 +50,9 @@ vi.mock('next/router', () => ({
     query: {},
     asPath: '/',
     push: vi.fn(),
-    replace: vi.fn(),
+    replace: vi.fn()
   }),
-  __esModule: true,
+  __esModule: true
 }));
 
 // Next/Navigation (App Router) mocken
@@ -60,9 +60,9 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: vi.fn(),
     replace: vi.fn(),
-    prefetch: vi.fn(),
+    prefetch: vi.fn()
   }),
   usePathname: () => '/',
   useSearchParams: () => new URLSearchParams(),
-  __esModule: true,
+  __esModule: true
 }));

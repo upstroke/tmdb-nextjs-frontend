@@ -47,7 +47,7 @@ describe('CardDefault Component', () => {
       id: 123,
       mediaType: 'movie',
       title: 'Test Movie',
-      rating: 7.5,
+      rating: 7.5
     };
 
     card.mount(movieData);
@@ -116,9 +116,9 @@ export default defineConfig({
     supportFile: 'tests/cypress/support/component.js',
     devServer: {
       framework: 'react',
-      bundler: 'vite',
-    },
-  },
+      bundler: 'vite'
+    }
+  }
 });
 ```
 
