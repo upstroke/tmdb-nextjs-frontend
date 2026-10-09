@@ -20,7 +20,9 @@ This test plan documents the automated integration tests in `search-to-details.t
 
 ## Features to Be Tested
 
-- Mapping of one `search/multi` response to `movies`, `tvShows` and `results`
+- Mapping of one `search/multi` response to `movies`, `tvShows` and `results`; `include_adult=false` in the TMDB request
+- Results that are neither a movie nor a TV show (e.g. persons) are dropped
+- Search without any result: status 200 and empty lists
 - Short, empty and missing queries without a TMDB call
 - Error responses for a missing API key and for TMDB failures
 - Locale validation (400) and passing the locale to TMDB as `language`
@@ -45,7 +47,7 @@ All tests follow Arrange–Act–Assert. A fetch router answers TMDB endpoints f
 
 | ID       | Automated Test                                                                     | Covered Behavior                                                           |
 |----------|------------------------------------------------------------------------------------|----------------------------------------------------------------------------|
-| TC-SD-01 | `maps one search/multi response to movies, tvShows and results`                    | Status 200, `error` null, ids and `mediaType` mapped, `query` sent to TMDB |
+| TC-SD-01 | `maps one search/multi response to movies, tvShows and results`                    | Status 200, `error` null, ids and `mediaType` mapped, `query` and `include_adult=false` sent to TMDB |
 | TC-SD-02 | `returns empty lists without calling TMDB for the query "%s"`                      | Queries `ab` and empty return empty lists, no TMDB call                    |
 | TC-SD-03 | `returns empty lists without calling TMDB when the query is missing`               | Missing `q` returns empty lists, no TMDB call                              |
 | TC-SD-04 | `answers 500 with an error message when the API key is missing`                    | Status 500, `messages.apiKeyMissing`, no TMDB call                         |
@@ -66,6 +68,10 @@ All tests follow Arrange–Act–Assert. A fetch router answers TMDB endpoints f
 | TC-SD-19 | `renders movie and tv detail pages for %s`                                         | Both detail pages render for every supported locale                        |
 | TC-SD-20 | `lists movie and tv results with links to their detail pages`                      | Typeahead shows both results with correct `href`                           |
 | TC-SD-21 | `shows an error message when TMDB fails`                                           | Typeahead shows `messages.searchError`, no results                         |
+| TC-SD-22 | `drops search results that are neither a movie nor a tv show`                      | A `person` result is missing in `results`, `movies` and `tvShows`          |
+| TC-SD-23 | `answers 200 with empty lists when TMDB finds nothing`                             | Status 200, empty lists, `error` null, one TMDB call                       |
+
+TC-SD-22 and TC-SD-23 belong to the group `search route + TMDB service + schemas` in the test file; their IDs continue the numbering.
 
 ## Detailed Test Cases
 
@@ -74,7 +80,7 @@ All tests follow Arrange–Act–Assert. A fetch router answers TMDB endpoints f
 **Objective:** Verify that one TMDB `search/multi` response is split into movies, TV shows and results.
 **Preconditions:** `TMDB_API_KEY` is set; fetch mock returns the fixture search response.
 **Steps:** Call the route with `Dark Breaking` and the default locale.
-**Expected Result:** Status 200, `error` is `null`, `movies` and `tvShows` contain one id each, `results` has 2 entries, the TMDB call contains `query=Dark Breaking`.
+**Expected Result:** Status 200, `error` is `null`, `movies` and `tvShows` contain one id each, `results` has 2 entries, the TMDB call contains `query=Dark Breaking` and `include_adult=false`.
 
 ### TC-SD-02 / TC-SD-03: Short, empty or missing query
 
@@ -154,6 +160,20 @@ All tests follow Arrange–Act–Assert. A fetch router answers TMDB endpoints f
 **Steps:** Render `TypeHeadSearch`, enter `Dark Breaking`.
 **Expected Result:** `messages.searchError` is displayed (at least once), the movie title is not shown.
 
+### TC-SD-22: Results of another type
+
+**Objective:** Verify that `search/multi` results that are neither movie nor TV show do not reach the response.
+**Preconditions:** The TMDB response contains the fixture results plus an item with `media_type: 'person'`.
+**Steps:** Call the route with `Dark Breaking`.
+**Expected Result:** Status 200, `error` is `null`, the id of the person is not in `results`, `results` still has 2 entries, `movies` and `tvShows` contain one id each.
+
+### TC-SD-23: No search results
+
+**Objective:** Verify the response for a valid query without hits.
+**Preconditions:** The TMDB response has an empty `results` list.
+**Steps:** Call the route with `Dark Breaking`.
+**Expected Result:** Status 200, `movies`, `tvShows` and `results` are empty, `error` is `null`, exactly one `search/multi` call (in contrast to TC-SD-02, TMDB is asked).
+
 ## Pass/Fail Criteria
 
 A test case passes when every assertion within its `it(...)` block succeeds. It fails if a status code, response field, rendered text, link, TMDB request parameter or number of TMDB calls differs from the expectation.
@@ -165,10 +185,11 @@ A test case passes when every assertion within its `it(...)` block succeeds. It 
 - Provider tests (TC-SD-17/18) assume the fixture providers belong to the region of `DEFAULT_LOCALE`.
 - The fixture `href` values must match `DEFAULT_LOCALE` (currently `en-US`).
 - TC-SD-21 depends on `TypeHeadSearch` showing the text of `searchError`; a different mock text in `i18nMockDefault` would make it fail.
+- TC-SD-22 and TC-SD-23 build their TMDB body from `searchToDetailsFixture.searchResponse` and assume it has a `results` array like the TMDB response.
 - Navigation by clicking and real routing are only covered by Cypress.
 
 ## Execution
 
 ```bash
-npx vitest run vitest/integration/search-to-details.test.jsx
+npx vitest run vitest/integration/typeheadsearch-search-to-details/search-to-details.test.jsx
 ```
