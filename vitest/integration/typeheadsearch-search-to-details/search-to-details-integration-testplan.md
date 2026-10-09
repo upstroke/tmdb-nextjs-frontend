@@ -16,7 +16,7 @@ This test plan documents the automated integration tests in `search-to-details.t
 - `MovieDetailPage` and `TvShowDetailPage` (async server components, rendered via `render(await Page(...))`)
 - `../../../components/TypeHeadSearch.jsx` (together with the real search route)
 - `lib/i18n/config` (`DEFAULT_LOCALE`, `SUPPORTED_LOCALES`) and `lib/i18n/helpers` (`getLocaleText`)
-- Mocks: `next/navigation`, `next/link`, `next/image`, `@/lib/stores/locale`, `globalThis.fetch`, `TMDB_API_KEY` (`vi.stubEnv`)
+- Mocks: `next/navigation`, `next/link`, `next/image`, `@/lib/stores/locale`, `globalThis.fetch`, `TMDB_API_KEY` (`vi.stubEnv`), `HTMLDialogElement.prototype.showModal` (stub in `beforeEach`)
 
 ## Features to Be Tested
 
@@ -37,6 +37,7 @@ This test plan documents the automated integration tests in `search-to-details.t
 
 - Real TMDB API and real network
 - Real Next.js routing and clicking through pages (Cypress)
+- Opening and visibility of the error dialog (`DialogMessage`) on the TV page (Cypress); the integration tests only check the message text with `getByText` (TC-SD-24, TC-SD-25)
 - Switching between season tabs (`TabGroupe`, Cypress or component tests)
 - Missing `TMDB_API_KEY` on the detail pages (covered on the home page, because without a key the first page already fails)
 - Component details of `TypeHeadSearch` such as keyboard navigation (TP-THS-001)
@@ -45,6 +46,8 @@ This test plan documents the automated integration tests in `search-to-details.t
 ## Test Approach
 
 All tests follow Arrange–Act–Assert. A fetch router answers TMDB endpoints from the fixture and forwards internal `/api/{DEFAULT_LOCALE}/search` calls to the real route handler. Error cases are triggered per endpoint via `overrides` (`'fail'` or a custom body). Locales come from `lib/i18n/config`, expected UI texts from `getLocaleText`, so the tests contain no hard-coded locale or message text. Parameterized tests (`it.each`) cover queries, invalid locales and all supported locales.
+
+The TV page renders `DialogMessage` itself, which calls `HTMLDialogElement.showModal`. jsdom does not implement this method, so it is stubbed in `beforeEach`. The tests only assert the message text (`getByText`); whether the dialog is really opened and visible is verified in Cypress.
 
 ## Test Cases
 
@@ -73,8 +76,8 @@ All tests follow Arrange–Act–Assert. A fetch router answers TMDB endpoints f
 | TC-SD-21 | `shows an error message when TMDB fails`                                           | Typeahead shows `messages.searchError`, no results                         |
 | TC-SD-22 | `drops search results that are neither a movie nor a tv show`                      | A `person` result is missing in `results`, `movies` and `tvShows`          |
 | TC-SD-23 | `answers 200 with empty lists when TMDB finds nothing`                             | Status 200, empty lists, `error` null, one TMDB call                       |
-| TC-SD-24 | `shows the load error instead of the tv page when the details request fails`       | `messages.tvShowLoadError` shown, no title                                 |
-| TC-SD-25 | `shows a message for an invalid tv id without calling TMDB`                        | `Invalid URL parameters.` shown, no `/tv/` request                         |
+| TC-SD-24 | `shows the load error instead of the tv page when the details request fails`       | `messages.tvShowLoadError` shown (text only, dialog in Cypress), no title  |
+| TC-SD-25 | `shows a message for an invalid tv id without calling TMDB`                        | `Invalid URL parameters.` shown (text only, dialog in Cypress), no `/tv/` request |
 | TC-SD-26 | `renders the tv page with fallback texts when overview, genres and credits are empty` | Title shown, `fallbacks.notAvailable` shown, no cast                    |
 
 TC-SD-22 and TC-SD-23 are in the group `search route with unusual TMDB responses`, TC-SD-24 to TC-SD-26 in the group `detail pages with invalid or empty data`. Both groups are at the end of the test file.
@@ -183,15 +186,18 @@ TC-SD-22 and TC-SD-23 are in the group `search route with unusual TMDB responses
 ### TC-SD-24: TV details request fails
 
 **Objective:** Verify the error message when the main TV request fails.
-**Preconditions:** The `tv` endpoint answers with an error.
+**Preconditions:** The `tv` endpoint answers with an error; `HTMLDialogElement.prototype.showModal` is stubbed.
 **Steps:** Render the TV page with the fixture id.
-**Expected Result:** `messages.tvShowLoadError` is shown, the title is not.
+**Expected Result:** `messages.tvShowLoadError` is found with `getByText`, the title is not shown.
+**Note:** Whether the dialog is opened and visible is checked in Cypress.
 
 ### TC-SD-25: Invalid TV id
 
 **Objective:** Verify that an invalid `id` is rejected before any request.
+**Preconditions:** `HTMLDialogElement.prototype.showModal` is stubbed.
 **Steps:** Render the TV page with the id `abc`.
-**Expected Result:** `Invalid URL parameters.` is shown, no request to a `/tv/` endpoint.
+**Expected Result:** `Invalid URL parameters.` is found with `getByText`, no request to a `/tv/` endpoint.
+**Note:** Whether the dialog is opened and visible is checked in Cypress.
 
 ### TC-SD-26: Empty TV data
 
@@ -213,6 +219,7 @@ A test case passes when every assertion within its `it(...)` block succeeds. It 
 - TC-SD-21 depends on `TypeHeadSearch` showing the text of `searchError`; a different mock text in `i18nMockDefault` would make it fail.
 - TC-SD-22 and TC-SD-23 build their TMDB body from `searchToDetailsFixture.searchResponse` and assume it has a `results` array like the TMDB response.
 - TC-SD-25 assumes that `IdParamSchema` rejects non-numeric ids; TC-SD-26 assumes that the TV schema accepts an empty `overview` and missing `credits`.
+- TC-SD-24 and TC-SD-25 depend on the `showModal` stub; without it the TV page fails in jsdom. The real dialog behavior is not covered here.
 - Navigation by clicking and real routing are only covered by Cypress.
 
 ## Execution
