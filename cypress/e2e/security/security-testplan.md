@@ -2,7 +2,7 @@
 
 ## Scope
 
-The app is read-only and TMDB is responsible for its own API security. The tests focus on the search, because it is the only place where users enter free text that reaches the server, on the paginated list routes, on the response headers, and on keeping the API key on the server.
+The app is read-only and TMDB is responsible for its own API security. The tests focus on the search, because it is the only place where users enter free text that reaches the server, on the paginated list routes, on the locale middleware and detail routes, on the response headers, and on keeping the API key on the server.
 
 Goal: manipulated input must not execute code in the browser and must not crash the server. A `400`, an empty result, or a fallback to page 1 is an accepted answer. A `5xx` caused by input is not.
 
@@ -37,6 +37,9 @@ Goal: manipulated input must not execute code in the browser and must not crash 
 | SEC-17 | `list-api.cy.js`   | `page` above the TMDB limit of 500 (`501`, `10000`, `999999999`) never returns 5xx                |
 | SEC-18 | `list-api.cy.js`   | Extra query parameters are ignored; manipulated locales never return 5xx; locales over 10 characters return 400; other HTTP methods are rejected |
 | SEC-19 | `headers.cy.js`    | Homepage, 404 page, search API, and list API send `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, and a CSP with `default-src 'self'`, `frame-ancestors 'none'`, and no wildcard source |
+| SEC-20 | `routing.cy.js`    | Paths such as `//evil.com`, `/%2F%2Fevil.com`, and `/%5Cevil.com` never redirect to another host or return 5xx |
+| SEC-21 | `routing.cy.js`    | Manipulated `Accept-Language` values (unknown, `*`, script, `%00`, 4000 characters) redirect to a supported locale on the same host and never return 5xx |
+| SEC-22 | `routing.cy.js`    | Invalid ids on `movies` and `tv-shows` detail pages never return 5xx and show no stack trace      |
 
 Set the Cypress env `TMDB_API_KEY` to also search for the exact key value, for example `CYPRESS_TMDB_API_KEY=... npm run test:e2e:security`. Without it, the tests search for `api_key` in requests and responses, and for `api_key=` in HTML and bundles.
 

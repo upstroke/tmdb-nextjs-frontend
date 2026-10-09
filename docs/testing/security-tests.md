@@ -1,8 +1,8 @@
 # Security tests
 
-Security tests check that manipulated input does not run code in the browser, does not crash the server, and does not expose the TMDB API key. They also check the security response headers. They run with Cypress in `cypress/e2e/security/`.
+Security tests check that manipulated input does not run code in the browser, does not crash the server, and does not expose the TMDB API key. They also check the security response headers and the locale redirect. They run with Cypress in `cypress/e2e/security/`.
 
-The full list of test cases (SEC-01 to SEC-19) is in [`cypress/e2e/security/security-testplan.md`](../../cypress/e2e/security/security-testplan.md). Keep the plan and the specs in sync.
+The full list of test cases (SEC-01 to SEC-22) is in [`cypress/e2e/security/security-testplan.md`](../../cypress/e2e/security/security-testplan.md). Keep the plan and the specs in sync.
 
 ## Scope
 
@@ -10,7 +10,7 @@ The app is read-only, and TMDB secures its own API. The tests cover the parts wh
 
 - search box and search API (`/api/[locale]/search`)
 - paginated list routes (`/api/[locale]/movies`, `/trending`, `/tv-shows`)
-- invalid ids in detail routes
+- locale middleware (`middleware.js`) and detail pages with invalid ids
 - security headers from `next.config.js`
 - the TMDB API key, which must stay on the server
 
@@ -23,6 +23,7 @@ The app is read-only, and TMDB secures its own API. The tests cover the parts wh
 | `api-key.cy.js`    | Key in network traffic, HTML, JavaScript bundles, and API responses           |
 | `list-api.cy.js`   | `page`, `type`, locale, extra parameters, and HTTP methods on the list routes |
 | `headers.cy.js`    | `nosniff`, `X-Frame-Options`, and Content-Security-Policy on pages and APIs   |
+| `routing.cy.js`    | Open redirect, `Accept-Language`, and invalid ids on detail pages             |
 
 ## Run
 
@@ -63,6 +64,7 @@ After changing server code, restart the server. Without a rebuild, `next start` 
 - Server-side TMDB requests cannot be intercepted with `cy.intercept()`. Stub only requests made by the browser.
 - Validate every new query parameter with a Zod schema that has an upper limit, and add a test.
 - Header tests read lowercase header names from `cy.request()`.
+- Redirect tests use the full base URL and `followRedirect: false`. A request to a URL such as `//evil.com` would otherwise leave the app.
 
 ## Limits
 
