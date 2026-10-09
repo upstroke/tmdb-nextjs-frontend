@@ -1,126 +1,81 @@
-// vitest/fixtures/tmdb/search-to-details.browser.fixtures.js
-// Search results reference the existing detail IDs: movie 155, tv 1396.
+const IMG = 'https://image.tmdb.org/t/p';
 
-export const searchToDetailsFixture = {
-  searchResponse: {
-    page: 1,
-    total_pages: 1,
-    total_results: 2,
-    results: [
-      {
-        id: 155,
-        title: 'The Dark Knight',
-        poster_path: '/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
-        media_type: 'movie',
-        release_date: '2008-07-16',
-        vote_average: 8.536
-      },
-      {
-        id: 1396,
-        name: 'Breaking Bad',
-        poster_path: '/anFx9aTOOYqgS3v7x3R84Kz67ly.jpg',
-        media_type: 'tv',
-        first_air_date: '2008-01-20',
-        vote_average: 9.0
-      }
-    ]
-  },
+const mapPerson = (p) => ({
+  ...p,
+  creditId: `credit-${p.id}`,
+  profilePath: p.profile_path ?? '',
+  imageUrl: p.profile_path ? `${IMG}/w185${p.profile_path}` : '/not-available.png'
+});
 
-  apiResponse: {
-    movies: [
-      { id: 155, title: 'The Dark Knight', mediaType: 'movie', date: '2008-07-16', rating: 8.536, posterUrl: '/qJ2tW6WMUDux911r6m7haRef0WH.jpg' }
-    ],
-    tvShows: [
-      { id: 1396, title: 'Breaking Bad', mediaType: 'tv', date: '2008-01-20', rating: 9.0, posterUrl: '/anFx9aTOOYqgS3v7x3R84Kz67ly.jpg' }
-    ]
-  },
-
-  expectedLinks: {
-    movie: { id: 155, title: 'The Dark Knight', href: '/en-US/movies/155' },
-    tv: { id: 1396, title: 'Breaking Bad', href: '/en-US/tv-shows/1396' }
-  },
-
-  movieDetails: {
-    id: 155,
-    mediaType: 'movie',
-    title: 'The Dark Knight',
-    overview:
-      'Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets.',
-    posterPath: '/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
-    backdropPath: '/9FE5eD92WfVCiivM9Pq9GVSrlWk.jpg',
-    releaseDate: '2008-07-16',
-    runtime: 152,
-    voteAverage: 8.536,
-    voteCount: 36849,
-    genres: [
-      { id: 28, name: 'Action' },
-      { id: 53, name: 'Thriller' },
-      { id: 80, name: 'Crime' }
-    ],
-    status: 'Released',
-    tagline: 'Some men just want to watch the world burn.',
-    cast: [
-      { id: 3894, name: 'Christian Bale', character: 'Bruce Wayne', order: 0 },
-      { id: 1810, name: 'Heath Ledger', character: 'Joker', order: 1 },
-      { id: 6383, name: 'Aaron Eckhart', character: 'Harvey Dent', order: 2 },
-      { id: 3895, name: 'Michael Caine', character: 'Alfred', order: 3 },
-      { id: 192, name: 'Morgan Freeman', character: 'Lucius Fox', order: 6 }
-    ],
-    crew: [
-      { id: 3904, name: 'Lee Smith', job: 'Editor', department: 'Editing' },
-      { id: 3893, name: 'David S. Goyer', job: 'Story', department: 'Writing' },
-      { id: 10949, name: 'Michael Uslan', job: 'Executive Producer', department: 'Production' }
-    ],
-    // Not in source fixtures, added for the detail page:
-    productionCompanies: [
-      { id: 174, name: 'Warner Bros. Pictures' },
-      { id: 9993, name: 'DC Comics' }
-    ],
-    certification: 'PG-13',
-    homepage: '',
-    trailerUrls: []
-  },
-
-  tvShowDetails: {
-    id: 1396,
-    mediaType: 'tv',
-    title: 'Breaking Bad',
-    overview:
-      'Walter White, a New Mexico chemistry teacher, is diagnosed with Stage III cancer and given a prognosis of only two years left to live.',
-    posterPath: '/anFx9aTOOYqgS3v7x3R84Kz67ly.jpg',
-    backdropPath: '/tsRy63Mu5cu8etL1X7ZLyf7UP1M.jpg',
-    firstAirDate: '2008-01-20',
-    lastAirDate: '2013-09-29',
-    voteAverage: 9.0,
-    voteCount: 18726,
-    genres: [
-      { id: 18, name: 'Drama' },
-      { id: 80, name: 'Crime' }
-    ],
-    status: 'Ended',
-    numberOfSeasons: 5,
-    numberOfEpisodes: 62,
-    seasons: [
-      { id: 3572, season_number: 1, name: 'Season 1', air_date: '2008-01-20', episode_count: 7,
-        episodes: [
-          { id: 62085, episode_number: 1, name: 'Pilot', air_date: '2008-01-20', runtime: 59, vote_average: 8.504 },
-          { id: 62086, episode_number: 2, name: "Cat's in the Bag...", air_date: '2008-01-27', runtime: 49, vote_average: 8.249 },
-          { id: 62087, episode_number: 3, name: "...And the Bag's in the River", air_date: '2008-02-10', runtime: 49, vote_average: 8.422 }
-        ]
-      },
-      { id: 3573, season_number: 2, name: 'Season 2', air_date: '2009-03-08', episode_count: 13, episodes: [] }
-    ],
-    cast: [
-      { id: 17419, name: 'Bryan Cranston', character: 'Walter White', order: 0 },
-      { id: 84497, name: 'Aaron Paul', character: 'Jesse Pinkman', order: 1 },
-      { id: 134531, name: 'Anna Gunn', character: 'Skyler White', order: 2 }
-    ],
-    crew: [
-      { id: 24951, name: 'Peter Gould', job: 'Co-Executive Producer', department: 'Production' },
-      { id: 1223202, name: 'Diane Mercer', job: 'Producer', department: 'Production' }
-    ]
-  }
+export const movieDetailMapped = {
+  id: 155,
+  mediaType: 'movie',
+  title: 'The Dark Knight',
+  releaseDate: '2008-07-16',
+  overview: mappedFixtures.movieDetails.overview,
+  homepage: '',
+  trailerUrls: [],
+  genres: mappedFixtures.movieDetails.genres,
+  rating: 8.536,
+  runtime: 152,
+  episodeRunTime: [],
+  productionCompanies: [{ id: 174, name: 'Warner Bros. Pictures' }],
+  imageUrl: `${IMG}/w1280/9FE5eD92WfVCiivM9Pq9GVSrlWk.jpg`,
+  posterUrl: `${IMG}/w342/qJ2tW6WMUDux911r6m7haRef0WH.jpg`,
+  cast: mappedFixtures.movieDetails.cast.map((c) =>
+    mapPerson({ id: c.id, name: c.name, character: c.character, order: c.order, profile_path: c.profile_path })),
+  crew: mappedFixtures.movieDetails.crew.map((c) =>
+    mapPerson({ id: c.id, name: c.name, job: c.job, department: c.department, profile_path: c.profile_path })),
+  certification: 'PG-13',
+  providers: null
 };
 
-export const searchToDetailsApiResponse = searchToDetailsFixture.apiResponse;
-export const searchToDetailsExpectedLinks = searchToDetailsFixture.expectedLinks;
+const tv = mappedFixtures.tvShowDetailsWithSeasons;
+
+export const tvDetailMapped = {
+  id: 1396,
+  mediaType: 'tv',
+  title: 'Breaking Bad',
+  releaseDate: '2008-01-20',
+  overview: tv.overview,
+  homepage: '',
+  trailerUrls: [],
+  genres: tv.genres,
+  rating: 9.0,
+  runtime: null,
+  episodeRunTime: [47],
+  productionCompanies: [{ id: 11073, name: 'Sony Pictures Television Studios' }],
+  imageUrl: `${IMG}/w1280/tsRy63Mu5cu8etL1X7ZLyf7UP1M.jpg`,
+  posterUrl: `${IMG}/w342/anFx9aTOOYqgS3v7x3R84Kz67ly.jpg`,
+  cast: tv.cast.map((c) =>
+    mapPerson({ id: c.id, name: c.name, character: c.character, order: c.order, profile_path: c.profile_path })),
+  crew: tv.crew.map((c) =>
+    mapPerson({ id: c.id, name: c.name, job: c.job, department: c.department, profile_path: c.profile_path })),
+  certification: 'TV-MA',
+  providers: null,
+  numberOfSeasons: 5,
+  numberOfEpisodes: 62,
+  seasons: tv.seasons.map(({ episodes, ...s }) => s)
+};
+
+export const tvSeasonMapped = (seasonNumber) => {
+  const s = tv.seasons.find((x) => x.season_number === seasonNumber);
+  return {
+    id: s.id,
+    seasonNumber: s.season_number,
+    name: s.name,
+    overview: s.overview,
+    airDate: s.air_date,
+    posterUrl: `${IMG}/w342${s.poster_path}`,
+    episodes: s.episodes.map((e) => ({
+      id: e.id,
+      episodeNumber: e.episode_number,
+      name: e.name,
+      overview: e.overview,
+      airDate: e.air_date,
+      runtime: e.runtime,
+      rating: e.vote_average,
+      stillUrl: `${IMG}/w300${e.still_path}`
+    }))
+  };
+};
