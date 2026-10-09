@@ -106,7 +106,6 @@ export const apiResponses = {
       { id: 80, name: 'Crime' }
     ],
     status: 'Ended',
-    episode_run_time: [47],
     number_of_seasons: 5,
     number_of_episodes: 62,
     production_companies: [{ id: 11073, name: 'Sony Pictures Television Studios' }],
