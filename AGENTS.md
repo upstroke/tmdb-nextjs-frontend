@@ -67,32 +67,29 @@ Prefer these tools when they are available:
 
 Each test type has one tool and one purpose:
 
-| Level                       | Tool                           | Location  | Purpose                                                                                           |
-| --------------------------- | ------------------------------ | --------- | ------------------------------------------------------------------------------------------------- |
-| Unit                        | Vitest                         | `vitest`  | Pure logic: mappers, Zod schemas, utilities                                                       |
-| Integration                 | Vitest + Testing Library + msw | `vitest`  | Real integration only: a page or section renders with mocked data and values reach the components |
-| Component and accessibility | Cypress + `cypress-axe`        | `cypress` | Component behavior in a real browser: keyboard, focus, ARIA, visibility, contrast                 |
-| e2e                         | Cypress                        | `cypress` | User flows such as search, detail page, and navigation                                            |
+| Level                       | Tool                      | Location                                   | Purpose                                                                                           |
+| --------------------------- | ------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| Unit                        | Vitest                    | `vitest/unit/`                             | Pure logic: mappers, Zod schemas, utilities                                                       |
+| Integration                 | Vitest + Testing Library  | `vitest/integration/`                      | Real integration only: a page or section renders with mocked data and values reach the components |
+| Component and accessibility | Cypress + `cypress-axe`   | `cypress/e2e/`, `cypress/accessibility/`   | Component behavior in a real browser: keyboard, focus, ARIA, visibility, contrast                 |
+| e2e                         | Cypress                   | `cypress/e2e/`                             | User flows such as search, detail page, and navigation                                            |
 
 Rules:
 
 - Do not write component tests with Vitest. jsdom has no layout and cannot check color contrast or real focus behavior.
-- Keep `vitest` limited to true integration tests. Assert on the rendered DOM (roles, text), not on props.
+- Keep `vitest/integration/` limited to true integration tests. Assert on the rendered DOM (roles, text), not on props.
 - Test keyboard interaction, focus management, and ARIA states in Cypress, for example tabs, modals, and dropdowns.
 - Run `cy.checkA11y()` (`cypress-axe`) on pages and after relevant interactions.
 - Do not add Vitest tests for purely presentational components. Integration or Cypress tests cover them.
 
 # Validation
 
-- Use `npm test` for the Vitest single run (unit and integration).
-- Use `npm run test:vitest:watch` for Vitest watch mode.
+- Use `npm test` for the Vitest single run.
+- Use `npx vitest` for Vitest watch mode.
 - Use `npm run test:unit` or `npm run test:integration` for focused Vitest validation.
-- Use `npm run test:vitest:coverage` when coverage is required.
+- Use `npm run test:coverage` when coverage is required.
 - Run `npm run build` for production-build validation.
-- Treat Cypress as a separate validation step. Cypress has two modes:
-  - E2E (`cypress.config.js` `e2e`, specs in `vitest`): `npm run test:acceptance` runs headlessly (`cypress run --e2e`) and `npm run test:acceptance:ui` opens the interactive runner. The app must run on `http://localhost:3000`.
-  - Component (`cypress.config.js` `component`, specs in `vitest`): `npm run test:component` runs headlessly (`cypress run --component`) and `npm run test:component:ui` opens the interactive runner.
-  - `npm run test:cypress` runs `cypress run` for both modes.
+- Treat Cypress as a separate validation step. `npm run test:e2e` runs the specs headlessly (`cypress run --e2e --browser chrome`) and `npm run test:e2e:open` opens the interactive runner. The app must run on `http://localhost:3000`.
 
 Do not edit files, run destructive commands, change dependencies, push commits,
 or create pull requests without the user’s explicit approval.
