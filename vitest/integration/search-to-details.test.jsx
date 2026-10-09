@@ -16,6 +16,7 @@ import { GET as searchRoute } from '../../app/api/[locale]/search/route.js';
 import MovieDetailPage from '../../app/[locale]/movies/[id]/page.js';
 import TvShowDetailPage from '../../app/[locale]/tv-shows/[id]/page.js';
 import { searchToDetailsFixture } from '../fixtures/tmdb/search-to-details.browser.fixtures.js';
+import { rawFixtures } from '../fixtures/tmdb/tmdb.browser.fixtures.js';
 import { i18nMockDefault } from '../mocks/i18n.mocks.js';
 
 const { movie, tv } = searchToDetailsFixture.flows;
@@ -55,6 +56,10 @@ function routeFetch(url) {
       params: Promise.resolve({ locale: 'en-US' })
     });
   }
+
+  // searchMedia loads both genre lists before mapping the results.
+  if (u.includes('/genre/movie/list')) return json(rawFixtures.genresMovie);
+  if (u.includes('/genre/tv/list')) return json(rawFixtures.genresTv);
 
   if (u.includes('/search/multi')) return json(searchToDetailsFixture.searchResponse);
 
