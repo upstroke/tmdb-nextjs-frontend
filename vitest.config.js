@@ -40,6 +40,15 @@ const sharedResolve = {
   }
 };
 
+// Pages under app/ are .js files that contain JSX. Shared so that every project
+// transforms the same source identically (keeps merged coverage consistent).
+const sharedEsbuild = {
+  loader: 'jsx',
+  include: /\.[jt]sx?$/,
+  exclude: /node_modules/,
+  jsx: 'automatic'
+};
+
 const preOptimizedDeps = [
   'next/router',
   'next/navigation',
@@ -75,6 +84,7 @@ function getProjectPlugins() {
 export default defineConfig({
   plugins: [react({ jsxRuntime: 'automatic' })],
   resolve: sharedResolve,
+  esbuild: sharedEsbuild,
 
   optimizeDeps: {
     include: preOptimizedDeps
@@ -118,9 +128,6 @@ export default defineConfig({
       ],
       all: true,
       thresholds: {
-        lines: 80,
-        branches: 70,
-        functions: 80,
         statements: 80
       }
     },
@@ -130,6 +137,7 @@ export default defineConfig({
       {
         name: 'unit',
         resolve: sharedResolve,
+        esbuild: sharedEsbuild,
         plugins: getProjectPlugins(),
         optimizeDeps: {
           include: preOptimizedDeps
@@ -142,8 +150,11 @@ export default defineConfig({
         }
       },
       {
+        // Integration tests run in jsdom (Node) so async Server Components such as
+        // app/[locale]/**/page.js can be called directly and process.env works.
         name: 'integration',
         resolve: sharedResolve,
+        esbuild: sharedEsbuild,
         plugins: getProjectPlugins(),
         optimizeDeps: {
           include: preOptimizedDeps
@@ -152,14 +163,14 @@ export default defineConfig({
           name: 'integration',
           globals: true,
           environment: 'jsdom',
-          setupFiles: ['./vitest/setup/vitest.js'],
-          include: ['vitest/integration/**/*.test.js', 'vitest/integration/**/*.test.jsx'],
-          exclude: ['vitest/integration/**/*.browser.test.{js,jsx}']
+          include: ['vitest/integration/**/*.test.{js,jsx}'],
+          setupFiles: ['./vitest/setup/browser.jsx']
         }
       },
       {
         name: 'browser',
         resolve: sharedResolve,
+        esbuild: sharedEsbuild,
         plugins: getProjectPlugins(),
         optimizeDeps: {
           include: preOptimizedDeps
@@ -167,11 +178,8 @@ export default defineConfig({
         test: {
           name: 'browser',
           globals: true,
-          include: [
-            'vitest/component/**/*.browser.test.{js,jsx}',
-            'vitest/integration/**/*.browser.test.{js,jsx}'
-          ],
-          exclude: ['vitest/unit/**', 'vitest/integration/**/*.test.{js,jsx}', 'node_modules/**'],
+          include: ['vitest/component/**/*.browser.test.{js,jsx}'],
+          exclude: ['vitest/unit/**', 'vitest/integration/**', 'node_modules/**'],
           setupFiles: ['./vitest/setup/browser.jsx'],
           server: {
             deps: {

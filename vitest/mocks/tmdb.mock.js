@@ -1,50 +1,59 @@
 /**
- * Vitest MSW / vi.mock helper for TMDB API
+ * Vitest helper for mocking the TMDB API via global fetch.
  * Usage: import { setupTmdbMocks } from '../mocks/tmdb.mock.js'
  */
 
 import { vi } from 'vitest';
 import { rawFixtures } from '../fixtures/tmdb/tmdb.fixtures.js';
+import { apiResponses } from '../fixtures/tmdb/tmdb.api.fixtures.js';
 
 /**
  * Mocks global fetch to return TMDB fixture data based on URL pattern.
- * Call in beforeEach / describe block.
+ * Specific sub-paths MUST be matched before the generic /movie/{id} and /tv/{id} routes.
  */
 export function setupTmdbMocks() {
   const fetchMock = vi.fn((url) => {
     const u = url.toString();
 
-    // Search
-    if (u.includes('/search/multi')) {
-      return Promise.resolve(okResponse(rawFixtures.searchMulti));
+    // Search and genres
+    if (u.includes('/search/multi')) return Promise.resolve(okResponse(rawFixtures.searchMulti));
+    if (u.includes('/genre/movie/list')) return Promise.resolve(okResponse(rawFixtures.genresMovie));
+    if (u.includes('/genre/tv/list')) return Promise.resolve(okResponse(rawFixtures.genresTv));
+
+    // Specific sub-paths first
+    if (/\/movie\/\d+\/release_dates/.test(u)) {
+      return Promise.resolve(okResponse(apiResponses.movieCertification));
     }
-    // Genres
-    if (u.includes('/genre/movie/list')) {
-      return Promise.resolve(okResponse(rawFixtures.genresMovie));
+    if (/\/movie\/\d+\/watch\/providers/.test(u)) {
+      return Promise.resolve(okResponse(apiResponses.movieWatchProviders));
     }
-    if (u.includes('/genre/tv/list')) {
-      return Promise.resolve(okResponse(rawFixtures.genresTv));
+    if (/\/tv\/\d+\/content_ratings/.test(u)) {
+      return Promise.resolve(okResponse(apiResponses.tvCertification));
     }
-    // Movie popular
-    if (u.includes('/movie/popular')) {
-      return Promise.resolve(okResponse(rawFixtures.moviesPopular));
+    if (/\/tv\/\d+\/watch\/providers/.test(u)) {
+      return Promise.resolve(okResponse(apiResponses.tvWatchProviders));
     }
-    // Movie detail (any id)
-    if (/\/movie\/\d+/.test(u) && !u.includes('/popular') && !u.includes('/search')) {
-      return Promise.resolve(okResponse(rawFixtures.movieDetail));
+    const seasonMatch = u.match(/\/tv\/\d+\/season\/(\d+)/);
+    if (seasonMatch) {
+      const seasonNumber = Number(seasonMatch[1]);
+      const season = apiResponses.tvDetailFull.seasons.find((s) => s.season_number === seasonNumber);
+      return Promise.resolve(
+        okResponse({
+          ...rawFixtures.tvSeason1,
+          ...(season ?? {}),
+          episodes: seasonNumber === 1 ? rawFixtures.tvSeason1.episodes : []
+        })
+      );
     }
-    // TV popular
-    if (u.includes('/tv/popular')) {
-      return Promise.resolve(okResponse(rawFixtures.tvPopular));
-    }
-    // TV Season
-    if (/\/tv\/\d+\/season\/\d+/.test(u)) {
-      return Promise.resolve(okResponse(rawFixtures.tvSeason1));
-    }
-    // TV detail (any id)
-    if (/\/tv\/\d+/.test(u) && !u.includes('/popular') && !u.includes('/season')) {
-      return Promise.resolve(okResponse(rawFixtures.tvDetail));
-    }
+
+    // Lists
+    if (u.includes('/movie/popular')) return Promise.resolve(okResponse(rawFixtures.moviesPopular));
+    if (u.includes('/tv/popular')) return Promise.resolve(okResponse(rawFixtures.tvPopular));
+
+    // Generic detail routes last (any id)
+    if (/\/movie\/\d+/.test(u)) return Promise.resolve(okResponse(apiResponses.movieDetailFull));
+    if (/\/tv\/\d+/.test(u)) return Promise.resolve(okResponse(apiResponses.tvDetailFull));
+
     // Fallback: 404
     return Promise.resolve(errorResponse(rawFixtures.error404, 404));
   });

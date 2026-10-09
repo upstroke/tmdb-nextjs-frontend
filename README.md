@@ -40,8 +40,8 @@ Translation catalogs for UI text and rating formats are stored in:
 
 Locale logic is located in:
 
-- `lib/i18n/helpers.js` for supported locales and fallbacks
-- `lib/i18n/config.js` for locale configuration
+- `lib/i18n/config.js` for locale configuration (default and supported locales)
+- `lib/i18n/helpers.js` for text lookup and fallbacks
 - `lib/i18n/resolver.js` for resolving the active locale per request
 
 The current route is preserved when the language changes.
@@ -52,13 +52,13 @@ The displayed streaming providers and watch links are supplied through the TMDB 
 
 ## Tech Stack
 
-- Next.js 15 (App Router)
+- Next.js 16 (App Router)
 - React 19
 - JavaScript (no TypeScript)
 - Fomantic UI CSS
 - Sass
 - Zod for runtime validation
-- Vitest for unit and integration testing
+- Vitest for unit, component, and integration testing
 - Cypress for browser-based acceptance (end-to-end) testing
 - Prettier and ESLint for formatting and code quality
 
@@ -93,7 +93,8 @@ lib/
   schemas/        # Zod validation schemas + JSDoc typedefs
 styles/           # Sass styles (Fomantic UI)
 docs/             # Project documentation
-tests/            # Vitest unit/integration and Cypress acceptance tests
+vitest/           # Vitest tests (unit, component, integration), fixtures, mocks, setup
+cypress/          # Cypress acceptance tests, page objects, fixtures, support
 ```
 
 ## Environment Variables
@@ -132,17 +133,21 @@ npm run dev
 
 Tests are separated by runner and purpose:
 
-- [Vitest](https://vitest.dev/) unit tests: `vitest`.
-- Vitest integration tests: `vitest`.
-- Cypress browser-based acceptance tests: `vitest`. Route tests (`routes/`), shared UI behavior (`components/`), and accessibility checks (`accessibility/`) are peer categories.
+- [Vitest](https://vitest.dev/) unit tests: `vitest/unit/`
+- Vitest component tests (browser mode): `vitest/component/`
+- Vitest integration tests: `vitest/integration/`
+- Cypress browser-based acceptance tests: `cypress/e2e/` for route tests and shared UI behavior, `cypress/accessibility/` for accessibility checks
 
-Cypress Page Objects live in `vitest`; Cypress-specific fixtures and support files live in `vitest` and `vitest`. Shared domain fixtures remain in `vitest`.
+Cypress Page Objects live in `cypress/POM/`; Cypress-specific fixtures and support files live in `cypress/fixtures/` and `cypress/support/`. Shared domain fixtures for Vitest live in `vitest/fixtures/`.
 
 ```bash
 npm test                    # Vitest single run
-npm run test:vitest:watch   # Vitest watch mode
-npm run test:acceptance     # Cypress headless (app must run on http://localhost:3000)
-npm run test:acceptance:ui  # Cypress interactive runner
+npm run test:unit           # Vitest unit tests only
+npm run test:component      # Vitest component tests (browser mode)
+npm run test:integration    # Vitest integration tests only
+npm run test:coverage       # Vitest with coverage
+npm run test:e2e            # Cypress headless (app must run on http://localhost:3000)
+npm run test:e2e:open       # Cypress interactive runner
 ```
 
 See [docs/testing.md](docs/testing.md) for the testing strategy, commands, and conventions.
