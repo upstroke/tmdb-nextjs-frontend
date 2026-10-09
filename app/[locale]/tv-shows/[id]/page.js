@@ -341,22 +341,6 @@ export default async function TvShowDetailPage({ params }) {
           )}
         </section>
 
-        <section aria-labelledby="runtime-heading">
-          <h3
-            id="runtime-heading"
-            className={`ui medium dividing header${labels.runtime ? '' : ' u-not-available'}`}
-          >
-            {labels.runtime}
-          </h3>
-          <p>
-            {tvShow.runtime != null ? (
-              <span>{tvShow.runtime} min</span>
-            ) : (
-              <span className="u-not-available">{fallbacks.notAvailable}</span>
-            )}
-          </p>
-        </section>
-
         <section aria-labelledby="cast-heading">
           <h3
             id="cast-heading"
