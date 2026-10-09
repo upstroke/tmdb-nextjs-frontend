@@ -6,159 +6,128 @@ This skill enables the AI agent to assist with general development tasks for the
 
 ## Scope
 
-- Next.js 15 + App Router
+- Next.js 16 + App Router
 - React 19
-- TypeScript
-- Tailwind CSS
-- Testing (Vitest + Cypress)
+- JavaScript (no TypeScript), JSDoc for contracts
+- Fomantic UI CSS + Sass
+- Zod for runtime validation
+- Internationalization (`lib/i18n/`)
+- Testing (Vitest + Cypress), see the `tmdb-testing` skill
 - Code quality (ESLint, Prettier)
+
+## Rules
+
+- Preserve the separation between `app/`, `components/`, and `lib/`.
+- Reuse the TMDB service layer `lib/services/tmdb-api.js`; do not call TMDB directly from routes or components.
+- Validate external data with the Zod schemas from `lib/schemas/`.
+- Keep the locale in internal links and in TMDB requests.
+- Take UI texts from `lib/i18n/ui.json` through `getLocaleText`; do not hard-code them.
+- Keep fallbacks for missing data and remove duplicates when loading more paginated data.
+- Show API and loading errors with the shared error dialog.
+- Keep the `TMDB_API_KEY` on the server.
 
 ## Capabilities
 
-### 1. Write Components
+### 1. Write API Routes
 
-```tsx
-// app/components/MovieCard.tsx
-import Image from 'next/image';
-import { formatRating } from '@/utils/format';
+Example from `app/api/[locale]/search/route.js`: validate the locale and query with Zod, read the key from the environment, call the service layer, and return localized error messages.
 
-interface MovieCardProps {
-  movie: Movie;
-}
+```js
+export async function GET(request, { params }) {
+  const localeParsed = LocaleParamSchema.safeParse(await params);
+  if (!localeParsed.success) {
+    return NextResponse.json(
+      { movies: [], tvShows: [], results: [], error: 'Invalid locale.' },
+      { status: 400 }
+    );
+  }
+  const { locale } = localeParsed.data;
+  const { messages } = getLocaleText(locale);
 
-export function MovieCard({ movie }: MovieCardProps) {
-  return (
-    <article data-testid="movie-card">
-      <Image src={movie.posterPath} alt={movie.title} width={200} height={300} />
-      <h2>{movie.title}</h2>
-      <p>Rating: {formatRating(movie.rating)}</p>
-    </article>
-  );
-}
-```
+  // ... validate the query, check TMDB_API_KEY
 
-### 2. Write Utility Functions
-
-```ts
-// utils/format.ts
-export function formatRating(rating: number | null): string {
-  if (rating === null) return 'N/A';
-  return rating.toFixed(1);
-}
-
-export function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+  try {
+    const api = createTmdbApi(fetch, apiKey, locale);
+    const searchResult = await api.searchMedia(query);
+    // ... map and return the result
+  } catch (e) {
+    console.error('Search failed:', e);
+    return NextResponse.json(
+      { movies: [], tvShows: [], results: [], error: messages.searchError },
+      { status: 500 }
+    );
+  }
 }
 ```
 
-### 3. Write API Routes
+### 2. Write Components
 
-```ts
-// app/api/movies/route.ts
-import { NextResponse } from 'next/server';
+Components live in `components/`, are written in JavaScript (`.jsx`), and use JSDoc for props. Styling uses Fomantic UI classes and Sass from `styles/`. Look at an existing component first and follow its pattern.
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const query = searchParams.get('q');
-
-  const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${query}`, {
-    headers: {
-      Authorization: `Bearer ${process.env.TMDB_API_KEY}`
-    }
-  });
-
-  const data = await response.json();
-  return NextResponse.json(data);
+```jsx
+/**
+ * @param {object} props
+ * @param {string} props.title
+ * @param {string} [props.imageUrl]
+ */
+export default function Example({ title, imageUrl }) {
+  return <article>{/* ... */}</article>;
 }
 ```
+
+### 3. Write Utility Functions
+
+Utility functions live in `lib/utils/`. Document parameters and return types with JSDoc (`@param`, `@returns`, `@typedef`).
 
 ### 4. Write Tests
 
-```ts
-// tests/vitest/utils/format.test.ts
-import { formatRating } from '@/utils/format';
-
-describe('formatRating', () => {
-  it('formats rating to one decimal', () => {
-    expect(formatRating(8.5)).toBe('8.5');
-  });
-
-  it('handles null rating', () => {
-    expect(formatRating(null)).toBe('N/A');
-  });
-});
-```
+See the `tmdb-testing` skill and [`docs/testing.md`](../../../docs/testing.md).
 
 ## Project Structure
 
 ```
 tmdb-nextjs-frontend/
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   ├── movies/
-│   │   └── [id]/
-│   ├── components/        # Shared components
-│   ├── layout.tsx
-│   └── page.tsx
-├── tests/
-│   ├── vitest/            # Unit tests
-│   └── cypress/           # E2E + Component tests
-├── utils/                 # Utility functions
-├── types/                 # TypeScript types
-└── docs/                  # Documentation
+├── app/                    # Next.js App Router (routes, app/api, app/[locale])
+├── components/             # React components
+├── lib/
+│   ├── services/           # TMDB API client (tmdb-api.js)
+│   ├── i18n/               # Translations and locale helpers
+│   ├── stores/             # React Context stores
+│   ├── utils/              # Utility functions
+│   └── schemas/            # Zod schemas + JSDoc typedefs
+├── styles/                 # Sass styles (Fomantic UI)
+├── vitest/                 # Vitest tests, fixtures, mocks, setup
+├── cypress/                # Cypress tests, page objects, fixtures, support
+└── docs/                   # Documentation
 ```
 
 ## Scripts
 
 ```bash
-# Development
-npm run dev
-
-# Build
-npm run build
-
-# Lint
-npm run lint
-
-# Format
-npm run format
-
-# Test all
-npm run test
-
-# Test unit
+npm run dev            # Development
+npm run build          # Build
+npm run start          # Start the production build
+npm run lint           # Lint
+npm run format         # Format
+npm test               # All Vitest tests
 npm run test:unit
-
-# Test component
+npm run test:integration
 npm run test:component
-
-# Test acceptance
-npm run test:acceptance
-
-# Test accessibility
-npm run test:a11y
-
-# Test security
-npm run test:security
+npm run test:e2e       # Cypress (app must run on http://localhost:3000)
 ```
 
 ## Code Style
 
-- **TypeScript**: Strict mode enabled
+- **JavaScript** with JSDoc for contracts
 - **Components**: Functional components with hooks
-- **Styling**: Tailwind CSS utility classes
+- **Styling**: Fomantic UI and Sass
 - **Testing**: Testing Library queries
 - **Naming**: PascalCase for components, camelCase for functions
 
 ## Documentation
 
-- **Testing Strategy**: [`docs/testing.md`](../../docs/testing.md)
-- **AI Prompts**: [`docs/ai-prompts.md`](../../docs/ai-prompts.md)
-- **README**: [`README.md`](../../README.md)
+- **Testing Strategy**: [`docs/testing.md`](../../../docs/testing.md)
+- **README**: [`README.md`](../../../README.md)
 
 ## When to Use
 
@@ -169,4 +138,4 @@ Use this skill when:
 - Writing utility functions
 - Fixing bugs
 - Refactoring code
-- Adding TypeScript types
+- Adding JSDoc typedefs or Zod schemas
