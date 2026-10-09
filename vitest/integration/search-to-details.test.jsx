@@ -80,9 +80,14 @@ function routeFetch(url) {
   return notFound();
 }
 
-async function searchAndFindOption(flow) {
-  render(<TypeHeadSearch />);
+// Renders the search once and types the query; call findOption() for each result.
+function search() {
+  const view = render(<TypeHeadSearch />);
   fireEvent.change(screen.getByRole('combobox'), { target: { value: MULTI_QUERY } });
+  return view;
+}
+
+async function findOption(flow) {
   const title = await screen.findByText(new RegExp(`^${flow.result.title}$`, 'i'));
   return title.closest('a[role="option"]');
 }
@@ -108,8 +113,9 @@ describe('Search -> results -> detail pages (integration)', () => {
   });
 
   it('lists movie and tv results from a single search/multi response with correct links', async () => {
-    const movieOption = await searchAndFindOption(movie);
-    const tvOption = await searchAndFindOption(tv);
+    search();
+    const movieOption = await findOption(movie);
+    const tvOption = await findOption(tv);
 
     expect(movieOption).toHaveAttribute('href', movie.result.href);
     expect(tvOption).toHaveAttribute('href', tv.result.href);
@@ -121,13 +127,14 @@ describe('Search -> results -> detail pages (integration)', () => {
   });
 
   it('follows the movie result to the movie detail page', async () => {
-    const option = await searchAndFindOption(movie);
+    const { unmount } = search();
+    const option = await findOption(movie);
     expect(option).toHaveAttribute('href', movie.result.href);
 
     fireEvent.click(option);
     await waitFor(() => expect(mockPush).toHaveBeenCalledWith(movie.result.href));
+    unmount();
 
-    document.body.innerHTML = '';
     const ui = await MovieDetailPage(pageParamsFrom(mockPush.mock.calls[0][0]));
     render(ui);
 
@@ -139,13 +146,14 @@ describe('Search -> results -> detail pages (integration)', () => {
   });
 
   it('follows the tv result to the tv show detail page', async () => {
-    const option = await searchAndFindOption(tv);
+    const { unmount } = search();
+    const option = await findOption(tv);
     expect(option).toHaveAttribute('href', tv.result.href);
 
     fireEvent.click(option);
     await waitFor(() => expect(mockPush).toHaveBeenCalledWith(tv.result.href));
+    unmount();
 
-    document.body.innerHTML = '';
     const ui = await TvShowDetailPage(pageParamsFrom(mockPush.mock.calls[0][0]));
     render(ui);
 
