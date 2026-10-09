@@ -10,6 +10,7 @@ import TypeHeadSearch from '../../components/TypeHeadSearch.jsx';
 import MovieDetailPage from '../../app/[locale]/movies/[id]/page.js';
 import { searchToDetailsFixture } from '../fixtures/tmdb/search-to-details.browser.fixtures.js';
 import { apiResponses } from '../fixtures/tmdb/tmdb.api.fixtures.js';
+import { i18nMockDefault } from '../mocks/i18n.mocks.js';
 
 const { mockPush } = vi.hoisted(() => ({ mockPush: vi.fn() }));
 
@@ -23,25 +24,8 @@ vi.mock('next/image', () => ({
 }));
 
 vi.mock('@/lib/stores/locale', () => ({
-  useLocale: () => 'en-US',
-  useI18n: () => ({
-    labels: {
-      searchHint: '',
-      searchInputLabel: 'Search movies and TV shows',
-      searchClear: 'Clear',
-      movieSection: 'Movies',
-      tvSection: 'TV Shows',
-      ratingLabel: 'Rating:'
-    },
-    messages: {
-      searchLoading: '',
-      searchNoResults: 'No results found',
-      searchError: 'Search failed.'
-    },
-    formats: { outOfTen: 'out of 10' },
-    titles: {},
-    fallbacks: { notAvailable: 'N/A' }
-  })
+  useI18n: () => i18nMockDefault,
+  useLocale: () => 'en-US'
 }));
 
 // Routes every fetch: internal search API and the TMDB endpoints used by the detail page.
