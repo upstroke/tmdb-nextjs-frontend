@@ -2,82 +2,70 @@
 
 ## Purpose
 
-This skill enables the AI agent to write and maintain accessibility tests for the TMDB Next.js frontend. It ensures the application is usable by people with disabilities and complies with WCAG 2.1 AA standards.
+This skill enables the AI agent to write and maintain accessibility tests for the TMDB Next.js frontend. It ensures the application is usable by people with disabilities and complies with WCAG 2.2 AA.
 
 ## Scope
 
-- Automated accessibility testing (axe-core)
-- Keyboard navigation testing
-- Screen reader compatibility
+- Automated accessibility testing (`cypress-axe`, axe-core)
+- Keyboard navigation and focus management
+- ARIA attributes and semantics
 - Color contrast checks
-- Focus management
-- ARIA attributes validation
+- Dialogs (`showModal`, focus, closing)
 
 ## Capabilities
 
 ### 1. Write Accessibility Tests (axe-core)
 
+Accessibility specs live in `cypress/accessibility/`. The test plan is `cypress/accessibility/accessibility-testplan.md`. Use the custom commands from `cypress/support/`:
+
+- `cy.visitLocale(locale, path)` navigates to a locale-prefixed route.
+- `cy.checkPageA11y()` injects axe and checks the tags `wcag2a`, `wcag2aa`, `wcag21aa`, and `wcag22aa`.
+
 ```js
-// tests/cypress/acceptance/accessibility/homepage.cy.js
-describe('Homepage Accessibility', () => {
-  it('has no accessibility violations', () => {
-    cy.visit('/');
-    cy.injectAxe();
-    cy.checkA11y();
+// cypress/accessibility/accessibility.cy.js
+describe('Accessibility — Homepage', () => {
+  const locale = Cypress.env('DEFAULT_LOCALE') ?? 'en-US';
+
+  it('has no axe violations on the homepage', () => {
+    cy.visitLocale(locale);
+    cy.checkPageA11y();
   });
 });
 ```
 
-### 2. Test Keyboard Navigation
+Document intentional exceptions explicitly. Do not disable rules broadly.
+
+### 2. Test Keyboard Navigation and Focus
+
+Keyboard, focus, and ARIA behavior is tested in Cypress, not in jsdom. Use `cy.realPress` or `cy.tab` only after the matching plugin is added to `package.json`; today neither `cypress-real-events` nor a tab plugin is installed. Without them, use `cy.get(...).focus()`, `.type('{enter}')`, `.type('{esc}')`, and `cy.focused()`.
 
 ```js
-// tests/cypress/acceptance/accessibility/keyboard.cy.js
-describe('Keyboard Navigation', () => {
-  it('navigates with Tab key', () => {
-    cy.visit('/');
-    cy.tab().tab().tab();
-    cy.focused().should('have.attr', 'data-testid', 'search-input');
-  });
-
-  it('activates buttons with Enter', () => {
-    cy.visit('/');
-    cy.findByRole('button', { name: /search/i }).focus();
-    cy.realPress('Enter');
-    cy.findByTestId('search-results').should('exist');
-  });
+it('opens a result with Enter', () => {
+  cy.visitLocale(locale);
+  cy.findByRole('searchbox').type('Inception');
+  cy.findAllByRole('option').first().focus().type('{enter}');
 });
 ```
 
-### 3. Test Screen Reader Support
+Check dialogs in Cypress: the dialog must be open and visible, focus must move into it, and it must close as expected. Vitest tests cannot check this, because jsdom has no `showModal`.
+
+### 3. Test Semantics and Labels
 
 ```js
-// tests/cypress/acceptance/accessibility/screen-reader.cy.js
-describe('Screen Reader Support', () => {
-  it('has accessible labels', () => {
-    cy.visit('/');
-    cy.findByLabelText(/search movies/i).should('exist');
-  });
-
-  it('announces dynamic content', () => {
-    cy.visit('/');
-    cy.findByRole('searchbox').type('Inception{enter}');
-    cy.findByRole('status').should('contain', 'Loading');
-  });
+it('has accessible labels', () => {
+  cy.visitLocale(locale);
+  cy.findByRole('searchbox').should('exist');
 });
 ```
+
+Use expected texts from `cy.i18n(locale)`, which reads `lib/i18n/ui.json`, instead of hard-coded strings.
 
 ### 4. Test Color Contrast
 
 ```js
-// tests/cypress/acceptance/accessibility/contrast.cy.js
-describe('Color Contrast', () => {
-  it('meets WCAG AA contrast requirements', () => {
-    cy.visit('/');
-    cy.injectAxe();
-    cy.checkA11y(null, {
-      runOnly: ['color-contrast']
-    });
-  });
+it('meets WCAG AA contrast requirements', () => {
+  cy.visitLocale(locale);
+  cy.checkPageA11y({ runOnly: { type: 'rule', values: ['color-contrast'] } });
 });
 ```
 
@@ -98,7 +86,7 @@ describe('Color Contrast', () => {
 
 ### Testing
 
-- [ ] Run axe-core on every page
+- [ ] Run `cy.checkPageA11y()` on every page and after relevant interactions
 - [ ] Test with keyboard only (no mouse)
 - [ ] Test with screen reader (NVDA/VoiceOver)
 - [ ] Test zoom up to 200%
@@ -107,23 +95,25 @@ describe('Color Contrast', () => {
 ## Scripts
 
 ```bash
-# Accessibility audit
-npm run test:a11y
+# Cypress specs, including cypress/accessibility (headless, app must run on http://localhost:3000)
+npm run test:e2e
 
-# Accessibility tests in watch mode
-npm run test:a11y:watch
+# Cypress interactive runner
+npm run test:e2e:open
 ```
+
+There is no separate accessibility script yet.
 
 ## Tools
 
-- **axe-core**: Automated accessibility testing
-- **@testing-library/cypress**: Semantic queries
-- **cypress-real-events**: Real keyboard/mouse events
+- **cypress-axe / axe-core**: Automated accessibility testing
+- **@testing-library/cypress**: Semantic queries (`findByRole`, `findByLabelText`)
 
 ## Documentation
 
-- **Accessibility Checklist**: [`docs/testing/accessibility-audit-checklist.md`](../../docs/testing/accessibility-audit-checklist.md)
-- **Testing Strategy**: [`docs/testing.md`](../../docs/testing.md)
+- **Accessibility Checklist**: [`docs/testing/accessibility-audit-checklist.md`](../../../docs/testing/accessibility-audit-checklist.md)
+- **Accessibility Test Plan**: [`cypress/accessibility/accessibility-testplan.md`](../../../cypress/accessibility/accessibility-testplan.md)
+- **Testing Strategy**: [`docs/testing.md`](../../../docs/testing.md)
 
 ## When to Use
 
