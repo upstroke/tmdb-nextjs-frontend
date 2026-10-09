@@ -226,51 +226,6 @@ describe('Search to details (integration)', () => {
       expect(body.error).toBe(messages.searchError);
       expect(body.movies).toEqual([]);
     });
-
-    // TC-SD-22
-    it('drops search results that are neither a movie nor a tv show', async () => {
-      const person = {
-        id: 999001,
-        name: 'Fixture Person',
-        media_type: 'person',
-        profile_path: '/fixture-person.jpg'
-      };
-      mockFetch({
-        search: {
-          ...searchToDetailsFixture.searchResponse,
-          results: [...searchToDetailsFixture.searchResponse.results, person]
-        }
-      });
-
-      const response = await callSearchRoute(QUERY);
-      const body = await response.json();
-
-      expect(response.status).toBe(200);
-      expect(body.error).toBeNull();
-      expect(body.results.map((item) => item.id)).not.toContain(person.id);
-      expect(body.results).toHaveLength(2);
-      expect(body.movies.map((item) => item.id)).toEqual([movie.result.id]);
-      expect(body.tvShows.map((item) => item.id)).toEqual([tv.result.id]);
-    });
-
-    // TC-SD-23
-    it('answers 200 with empty lists when TMDB finds nothing', async () => {
-      mockFetch({
-        search: {
-          ...searchToDetailsFixture.searchResponse,
-          total_pages: 1,
-          total_results: 0,
-          results: []
-        }
-      });
-
-      const response = await callSearchRoute(QUERY);
-      const body = await response.json();
-
-      expect(response.status).toBe(200);
-      expect(body).toMatchObject({ movies: [], tvShows: [], results: [], error: null });
-      expect(tmdbCalls('/search/multi')).toHaveLength(1);
-    });
   });
 
   describe('locale handling', () => {
@@ -462,6 +417,53 @@ describe('Search to details (integration)', () => {
 
       expect((await screen.findAllByText(messages.searchError)).length).toBeGreaterThan(0);
       expect(screen.queryByText(new RegExp(`^${movie.result.title}$`, 'i'))).not.toBeInTheDocument();
+    });
+  });
+
+  describe('search route with unusual TMDB responses', () => {
+    // TC-SD-22
+    it('drops search results that are neither a movie nor a tv show', async () => {
+      const person = {
+        id: 999001,
+        name: 'Fixture Person',
+        media_type: 'person',
+        profile_path: '/fixture-person.jpg'
+      };
+      mockFetch({
+        search: {
+          ...searchToDetailsFixture.searchResponse,
+          results: [...searchToDetailsFixture.searchResponse.results, person]
+        }
+      });
+
+      const response = await callSearchRoute(QUERY);
+      const body = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(body.error).toBeNull();
+      expect(body.results.map((item) => item.id)).not.toContain(person.id);
+      expect(body.results).toHaveLength(2);
+      expect(body.movies.map((item) => item.id)).toEqual([movie.result.id]);
+      expect(body.tvShows.map((item) => item.id)).toEqual([tv.result.id]);
+    });
+
+    // TC-SD-23
+    it('answers 200 with empty lists when TMDB finds nothing', async () => {
+      mockFetch({
+        search: {
+          ...searchToDetailsFixture.searchResponse,
+          total_pages: 1,
+          total_results: 0,
+          results: []
+        }
+      });
+
+      const response = await callSearchRoute(QUERY);
+      const body = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(body).toMatchObject({ movies: [], tvShows: [], results: [], error: null });
+      expect(tmdbCalls('/search/multi')).toHaveLength(1);
     });
   });
 });

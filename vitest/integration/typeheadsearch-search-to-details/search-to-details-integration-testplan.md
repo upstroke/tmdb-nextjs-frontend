@@ -71,7 +71,7 @@ All tests follow Arrange–Act–Assert. A fetch router answers TMDB endpoints f
 | TC-SD-22 | `drops search results that are neither a movie nor a tv show`                      | A `person` result is missing in `results`, `movies` and `tvShows`          |
 | TC-SD-23 | `answers 200 with empty lists when TMDB finds nothing`                             | Status 200, empty lists, `error` null, one TMDB call                       |
 
-TC-SD-22 and TC-SD-23 belong to the group `search route + TMDB service + schemas` in the test file; their IDs continue the numbering.
+TC-SD-22 and TC-SD-23 are at the end of the test file, in the group `search route with unusual TMDB responses`.
 
 ## Detailed Test Cases
 
