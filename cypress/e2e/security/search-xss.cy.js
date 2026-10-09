@@ -9,7 +9,7 @@
  * @tags @security
  */
 describe('Security: search UI', () => {
-  const locale = Cypress.env('DEFAULT_LOCALE') ?? 'en-US';
+  const locale = 'en-US';
   const input = '#typeahead-search-input';
 
   const xssPayloads = [

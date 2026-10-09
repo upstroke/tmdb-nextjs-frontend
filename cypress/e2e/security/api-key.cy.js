@@ -5,19 +5,19 @@
  * route and in server components. These tests check what the browser sees:
  * its network traffic, the page HTML, and the loaded JavaScript bundles.
  *
- * Optional: set Cypress env TMDB_API_KEY to also search for the exact key value.
+ * Optional: set CYPRESS_TMDB_API_KEY to also search for the exact key value.
+ * The value is read with cy.env() because allowCypressEnv is false.
  *
  * See security-testplan.md for the full test plan.
  *
  * @tags @security
  */
 describe('Security: API key exposure', () => {
-  const locale = Cypress.env('DEFAULT_LOCALE') ?? 'en-US';
+  const locale = 'en-US';
   const keyPattern = /api_key|TMDB_API_KEY/i;
-  const keyValue = Cypress.env('TMDB_API_KEY');
 
   /** Fails if the text contains the key name or, when known, the key value. */
-  function expectNoKey(text, where) {
+  function expectNoKey(text, where, keyValue) {
     expect(text, `${where}: key name`).to.not.match(keyPattern);
     if (keyValue) {
       expect(text.includes(keyValue), `${where}: key value`).to.equal(false);
@@ -34,7 +34,7 @@ describe('Security: API key exposure', () => {
     cy.get('#typeahead-search-input').type('inception', { delay: 0 });
     cy.get('#typeahead-search-results', { timeout: 15000 }).should('exist');
 
-    cy.then(() => {
+    cy.env(['TMDB_API_KEY']).then(({ TMDB_API_KEY: keyValue }) => {
       expect(urls.length, 'recorded requests').to.be.greaterThan(0);
       urls.forEach((url) => {
         expect(url, url).to.not.match(keyPattern);
@@ -46,7 +46,9 @@ describe('Security: API key exposure', () => {
 
   it('does not contain the key in the homepage HTML', () => {
     cy.request(`/${locale}`).then((res) => {
-      expectNoKey(res.body, 'homepage HTML');
+      cy.env(['TMDB_API_KEY']).then(({ TMDB_API_KEY: keyValue }) => {
+        expectNoKey(res.body, 'homepage HTML', keyValue);
+      });
     });
   });
 
@@ -57,9 +59,11 @@ describe('Security: API key exposure', () => {
       ];
       expect(scripts.length, 'script files found').to.be.greaterThan(0);
 
-      cy.wrap(scripts).each((path) => {
-        cy.request(path).then((script) => {
-          expectNoKey(String(script.body), path);
+      cy.env(['TMDB_API_KEY']).then(({ TMDB_API_KEY: keyValue }) => {
+        cy.wrap(scripts).each((path) => {
+          cy.request(path).then((script) => {
+            expectNoKey(String(script.body), path, keyValue);
+          });
         });
       });
     });
@@ -71,8 +75,10 @@ describe('Security: API key exposure', () => {
       qs: { q: 'inception' },
       failOnStatusCode: false
     }).then((res) => {
-      expectNoKey(JSON.stringify(res.body), 'search body');
-      expectNoKey(JSON.stringify(res.headers), 'search headers');
+      cy.env(['TMDB_API_KEY']).then(({ TMDB_API_KEY: keyValue }) => {
+        expectNoKey(JSON.stringify(res.body), 'search body', keyValue);
+        expectNoKey(JSON.stringify(res.headers), 'search headers', keyValue);
+      });
     });
   });
 });

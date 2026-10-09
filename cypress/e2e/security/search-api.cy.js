@@ -12,7 +12,7 @@
  * @tags @security
  */
 describe('Security: search API', () => {
-  const locale = Cypress.env('DEFAULT_LOCALE') ?? 'en-US';
+  const locale = 'en-US';
   const search = (loc, qs, options = {}) =>
     cy.request({ url: `/api/${loc}/search`, qs, failOnStatusCode: false, ...options });
 

@@ -18,7 +18,7 @@
  * @tags @security
  */
 describe('Security: list API routes', () => {
-  const locale = Cypress.env('DEFAULT_LOCALE') ?? 'en-US';
+  const locale = 'en-US';
   const routes = ['movies', 'trending', 'tv-shows'];
 
   const get = (route, qs = {}, loc = locale, options = {}) =>
