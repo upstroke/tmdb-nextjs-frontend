@@ -5,7 +5,7 @@ This repository contains task-focused Agent Skills in `.agent/skills/`.
 Select and read the applicable `SKILL.md` before acting:
 
 - `tmdb-development` — features, fixes, refactors, components, routes, and styling
-- `tmdb-testing` — unit, integration, and Cypress acceptance tests
+- `tmdb-testing` — unit, integration, component, and Cypress acceptance tests
 - `tmdb-accessibility` — keyboard, focus, semantics, ARIA, and accessibility audits
 - `tmdb-ai-collaboration` — planning, review, validation, and collaboration boundaries
 
@@ -67,26 +67,28 @@ Prefer these tools when they are available:
 
 Each test type has one tool and one purpose:
 
-| Level                       | Tool                      | Location                                   | Purpose                                                                                           |
-| --------------------------- | ------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------- |
-| Unit                        | Vitest                    | `vitest/unit/`                             | Pure logic: mappers, Zod schemas, utilities                                                       |
-| Integration                 | Vitest + Testing Library  | `vitest/integration/`                      | Real integration only: a page or section renders with mocked data and values reach the components |
-| Component and accessibility | Cypress + `cypress-axe`   | `cypress/e2e/`, `cypress/accessibility/`   | Component behavior in a real browser: keyboard, focus, ARIA, visibility, contrast                 |
-| e2e                         | Cypress                   | `cypress/e2e/`                             | User flows such as search, detail page, and navigation                                            |
+| Level       | Tool                                       | Location                                 | Purpose                                                                                           |
+| ----------- | ------------------------------------------ | ---------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Unit        | Vitest (jsdom)                             | `vitest/unit/`                           | Pure logic: mappers, Zod schemas, utilities                                                       |
+| Integration | Vitest (jsdom) + Testing Library           | `vitest/integration/`                    | Real integration only: a page or section renders with mocked data and values reach the components |
+| Component   | Vitest browser mode (Playwright, Chromium) | `vitest/component/`                      | Component behavior in a real browser: rendering, props, interaction                               |
+| e2e         | Cypress                                    | `cypress/e2e/`                           | User flows such as search, detail page, and navigation                                            |
+| Accessibility | Cypress + `cypress-axe`                  | `cypress/accessibility/`, `cypress/e2e/` | Keyboard, focus, ARIA, visibility, contrast                                                       |
 
 Rules:
 
-- Do not write component tests with Vitest. jsdom has no layout and cannot check color contrast or real focus behavior.
+- Do not write component tests in jsdom. jsdom has no layout and cannot check color contrast or real focus behavior. Use Vitest browser mode in `vitest/component/` instead.
 - Keep `vitest/integration/` limited to true integration tests. Assert on the rendered DOM (roles, text), not on props.
 - Test keyboard interaction, focus management, and ARIA states in Cypress, for example tabs, modals, and dropdowns.
 - Run `cy.checkA11y()` (`cypress-axe`) on pages and after relevant interactions.
-- Do not add Vitest tests for purely presentational components. Integration or Cypress tests cover them.
+- Do not add tests for purely presentational components. Integration or Cypress tests cover them.
+- Check whether a dialog is really open and visible in Cypress. jsdom has no `showModal`, so Vitest tests stub it and only assert the message text.
 
 # Validation
 
 - Use `npm test` for the Vitest single run.
 - Use `npx vitest` for Vitest watch mode.
-- Use `npm run test:unit` or `npm run test:integration` for focused Vitest validation.
+- Use `npm run test:unit`, `npm run test:integration`, or `npm run test:component` for focused Vitest validation.
 - Use `npm run test:coverage` when coverage is required.
 - Run `npm run build` for production-build validation.
 - Treat Cypress as a separate validation step. `npm run test:e2e` runs the specs headlessly (`cypress run --e2e --browser chrome`) and `npm run test:e2e:open` opens the interactive runner. The app must run on `http://localhost:3000`.
