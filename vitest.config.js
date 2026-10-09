@@ -142,22 +142,6 @@ export default defineConfig({
         }
       },
       {
-        name: 'integration',
-        resolve: sharedResolve,
-        plugins: getProjectPlugins(),
-        optimizeDeps: {
-          include: preOptimizedDeps
-        },
-        test: {
-          name: 'integration',
-          globals: true,
-          environment: 'jsdom',
-          setupFiles: ['./vitest/setup/vitest.js'],
-          include: ['vitest/integration/**/*.test.js', 'vitest/integration/**/*.test.jsx'],
-          exclude: ['vitest/integration/**/*.browser.test.{js,jsx}']
-        }
-      },
-      {
         name: 'browser',
         resolve: sharedResolve,
         plugins: getProjectPlugins(),
