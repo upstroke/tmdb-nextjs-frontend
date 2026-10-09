@@ -143,6 +143,13 @@ describe('Search to details (integration)', () => {
     vi.clearAllMocks();
     sessionStorage.clear();
     Element.prototype.scrollIntoView = function () {};
+    // jsdom does not implement the native <dialog> API that DialogMessage uses.
+    HTMLDialogElement.prototype.showModal = function () {
+      this.setAttribute('open', '');
+    };
+    HTMLDialogElement.prototype.close = function () {
+      this.removeAttribute('open');
+    };
     vi.stubEnv('TMDB_API_KEY', 'test-key');
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.spyOn(console, 'error').mockImplementation(() => {});
