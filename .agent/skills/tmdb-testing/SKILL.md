@@ -11,7 +11,7 @@ This skill enables the AI agent to write and maintain tests for the TMDB Next.js
 - Component tests (Vitest browser mode, Playwright)
 - Acceptance tests (Cypress)
 - Accessibility tests (Cypress + `cypress-axe`)
-- Security tests (planned, see [Security Tests](../../../docs/testing/security-tests.md))
+- Security tests (Cypress, see [Security Tests](../../../docs/testing/security-tests.md) and the `tmdb-security` skill)
 
 ## Capabilities
 
@@ -115,6 +115,25 @@ describe('Accessibility: Homepage', () => {
 
 Test keyboard interaction, focus management, and ARIA states in Cypress, for example tabs, modals, and dropdowns.
 
+### 6. Write Security Tests (Cypress)
+
+Security specs live in `cypress/e2e/security/`. Manipulated input must give a `400`, an empty result, or a fallback to defaults, never a `5xx`. Read the `tmdb-security` skill and the test plan before adding a test.
+
+```js
+// cypress/e2e/security/list-api.cy.js
+describe('Security: list API routes', () => {
+  it('does not return a server error for a page above the TMDB limit', () => {
+    cy.request({ url: '/api/en-US/movies', qs: { page: 501 }, failOnStatusCode: false }).then(
+      (res) => {
+        expect(res.status).to.be.lessThan(500);
+      }
+    );
+  });
+});
+```
+
+Do not use `Cypress.env()` in specs. `allowCypressEnv` is `false`, so read env values with `cy.env()`.
+
 ## Test Structure
 
 ```
@@ -129,6 +148,7 @@ vitest/
 cypress/
 ├── accessibility/
 ├── e2e/
+│   └── security/
 ├── fixtures/
 ├── POM/
 └── support/
@@ -154,6 +174,9 @@ npm run test:coverage
 
 # Cypress e2e and accessibility specs (headless, app must run on http://localhost:3000)
 npm run test:e2e
+
+# Cypress security specs only
+npx cypress run --e2e --browser chrome --spec "cypress/e2e/security/**/*.cy.js"
 
 # Cypress interactive runner
 npm run test:e2e:open
