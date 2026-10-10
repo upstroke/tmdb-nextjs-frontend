@@ -95,7 +95,8 @@ function formatYear(value) {
  *
  * Each result announces the meaning of its year to screen readers through a
  * visually hidden label: `labels.releaseDate` for movies and
- * `labels.firstAirDate` for TV shows.
+ * `labels.firstAirDate` for TV shows. The label is always rendered. When the
+ * year is missing, `fallbacks.notAvailable` is shown as the value.
  *
  * Persists the last query and result set in sessionStorage so the
  * dropdown can be restored after navigating back to the page.
@@ -576,7 +577,7 @@ export default function TypeHeadSearch() {
                         <p className="description">
                           <span className="u-sr-only">{labels.releaseDate}</span>
                           <time className={item.date ? '' : 'u-not-available'} dateTime={item.date}>
-                            {formatYear(item.date)}
+                            {formatYear(item.date) || fallbacks.notAvailable}
                           </time>
                           <span aria-hidden="true"> · </span>
                           <span className="rating">
@@ -639,7 +640,7 @@ export default function TypeHeadSearch() {
                         <p className="description">
                           <span className="u-sr-only">{labels.firstAirDate}</span>
                           <time className={item.date ? '' : 'u-not-available'} dateTime={item.date}>
-                            {formatYear(item.date)}
+                            {formatYear(item.date) || fallbacks.notAvailable}
                           </time>
                           <span aria-hidden="true"> · </span>
                           <span className="rating">
