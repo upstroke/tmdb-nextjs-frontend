@@ -27,8 +27,12 @@ export default function LanguageSwitcher() {
   }));
 
   /**
+   * Switches the app to the selected locale: stores it, swaps the locale
+   * segment in the current pathname (or prepends it when missing), and replaces
+   * the route without scrolling.
    *
-   * @param event
+   * @param {import('react').ChangeEvent<HTMLSelectElement>} event - Change event of the language select.
+   * @returns {void}
    */
   function handleChange(event) {
     const nextLocale = resolveLocale(event.currentTarget.value);
