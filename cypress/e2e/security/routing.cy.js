@@ -1,7 +1,7 @@
 /**
- * Security tests — locale middleware and detail page routes.
+ * Security tests — locale proxy and detail page routes.
  *
- * middleware.js redirects paths without a locale prefix to /<locale>/<path>
+ * proxy.js redirects paths without a locale prefix to /<locale>/<path>
  * and picks the locale from the Accept-Language header. Manipulated paths
  * and headers must never redirect to another host or cause a server error.
  *
