@@ -14,9 +14,19 @@ import DialogMessage from '@/components/DialogMessage';
 /** @typedef {import('@/lib/schemas/tmdb').WatchProviderResult} WatchProviderResult */
 
 /**
+ * Movie detail page (`/[locale]/movies/[id]`). Server component that loads a
+ * movie and its watch providers from TMDB in parallel and renders the details.
  *
- * @param root0
- * @param root0.params
+ * The page shows hero, certification, rating, genres, overview, homepage,
+ * trailers, release date, streaming providers, production companies, runtime,
+ * cast, and crew. Missing values fall back to `fallbacks.notAvailable`. Lists
+ * are deduplicated by id. The certification is resolved for the region of the
+ * locale (default `US`). Invalid route params, a missing `TMDB_API_KEY`, and
+ * load errors render a `DialogMessage` instead of the page.
+ *
+ * @param {object} props
+ * @param {Promise<{ locale: string, id: string }>} props.params - Route params (async in Next.js 15+).
+ * @returns {Promise<JSX.Element>}
  */
 export default async function MovieDetailPage({ params }) {
   const paramsParsed = IdParamSchema.safeParse(await params);
