@@ -166,14 +166,20 @@ export default function TypeHeadSearch() {
     !resultsClosed && (showLoading || !!error || (hasSearchTerm && !hasResults));
 
   /**
+   * Collects the DOM ids of all visible results in display order: movies first,
+   * then TV shows.
    *
+   * @returns {string[]} Result ids such as `movie-123` and `tv-456`.
    */
   function getAllResultIds() {
     return [...movies.map((m) => `movie-${m.id}`), ...tvShows.map((t) => `tv-${t.id}`)];
   }
   /**
+   * Marks a result as focused (`aria-selected`) and scrolls it into view on the
+   * next animation frame.
    *
-   * @param resultId
+   * @param {string} resultId - DOM id of the result, e.g. `movie-123`.
+   * @returns {void}
    */
   function focusResult(resultId) {
     setFocusedResultId(resultId);
@@ -184,7 +190,10 @@ export default function TypeHeadSearch() {
     });
   }
   /**
+   * Moves the focus to the next result. Starts at the first result when none is
+   * focused and stops at the last one.
    *
+   * @returns {void}
    */
   function focusNextResult() {
     const ids = getAllResultIds();
@@ -193,7 +202,10 @@ export default function TypeHeadSearch() {
     focusResult(ids[idx === -1 ? 0 : Math.min(idx + 1, ids.length - 1)]);
   }
   /**
+   * Moves the focus to the previous result. Starts at the first result when
+   * none is focused and stops at the first one.
    *
+   * @returns {void}
    */
   function focusPreviousResult() {
     const ids = getAllResultIds();
@@ -202,29 +214,39 @@ export default function TypeHeadSearch() {
     focusResult(ids[idx === -1 ? 0 : Math.max(idx - 1, 0)]);
   }
   /**
+   * Moves the focus to the first result, if there is one.
    *
+   * @returns {void}
    */
   function focusFirstResult() {
     const ids = getAllResultIds();
     if (ids.length) focusResult(ids[0]);
   }
   /**
+   * Moves the focus to the last result, if there is one.
    *
+   * @returns {void}
    */
   function focusLastResult() {
     const ids = getAllResultIds();
     if (ids.length) focusResult(ids[ids.length - 1]);
   }
   /**
+   * Cancels a pending live-region announcement and empties the live region.
    *
+   * @returns {void}
    */
   function clearAnnouncementFn() {
     if (announcementTimer.current) clearTimeout(announcementTimer.current);
     setAnnouncement('');
   }
   /**
+   * Schedules a screen-reader announcement. The live region is cleared first
+   * and filled after 500 ms so that assistive technology reads the new text
+   * reliably. An empty message only clears the region.
    *
-   * @param msg
+   * @param {string} msg - Text to announce.
+   * @returns {void}
    */
   function scheduleAnnouncement(msg) {
     if (announcementTimer.current) clearTimeout(announcementTimer.current);
@@ -385,8 +407,14 @@ export default function TypeHeadSearch() {
   }, [locale, query, search]);
 
   /**
+   * Handles typing in the search input.
    *
-   * @param e
+   * Updates the query, cancels the previous debounce timer, and resets the
+   * results when the trimmed term is shorter than 4 characters. Otherwise the
+   * dropdown is opened and a search is scheduled after 300 ms.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The input change event.
+   * @returns {void}
    */
   function handleInput(e) {
     const val = e.currentTarget.value;
@@ -455,8 +483,10 @@ export default function TypeHeadSearch() {
 
   useEffect(() => {
     /**
+     * Closes the results dropdown on any click outside of the search widget.
      *
-     * @param e
+     * @param {MouseEvent} e - The window click event.
+     * @returns {void}
      */
     function handleClick(e) {
       if (!e.target.closest('#typeahead-search')) closeResults();
