@@ -93,6 +93,10 @@ function formatYear(value) {
  * Results are split into movies and TV shows and displayed in an
  * accessible combobox / listbox dropdown.
  *
+ * Each result announces the meaning of its year to screen readers through a
+ * visually hidden label: `labels.releaseDate` for movies and
+ * `labels.firstAirDate` for TV shows.
+ *
  * Persists the last query and result set in sessionStorage so the
  * dropdown can be restored after navigating back to the page.
  *
@@ -570,6 +574,7 @@ export default function TypeHeadSearch() {
                           </h3>
                         </header>
                         <p className="description">
+                          <span className="u-sr-only">{labels.releaseDate}</span>
                           <time className={item.date ? '' : 'u-not-available'} dateTime={item.date}>
                             {formatYear(item.date)}
                           </time>
@@ -632,6 +637,7 @@ export default function TypeHeadSearch() {
                           </h3>
                         </header>
                         <p className="description">
+                          <span className="u-sr-only">{labels.firstAirDate}</span>
                           <time className={item.date ? '' : 'u-not-available'} dateTime={item.date}>
                             {formatYear(item.date)}
                           </time>
