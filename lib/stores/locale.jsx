@@ -9,7 +9,10 @@ const STORAGE_KEY = 'app-locale';
 
 /* v8 ignore start */
 /**
+ * Reads the stored locale from sessionStorage.
  *
+ * @returns {string} The stored locale, or `DEFAULT_LOCALE` on the server, when
+ *   nothing is stored, or when storage is unavailable.
  */
 function readStoredLocale() {
   if (typeof window === 'undefined') return DEFAULT_LOCALE;
@@ -21,8 +24,10 @@ function readStoredLocale() {
 }
 
 /**
+ * Writes the locale to sessionStorage. Logs a warning when storage fails.
  *
- * @param locale
+ * @param {string} locale - Locale to store, e.g. `"de-DE"`.
+ * @returns {void}
  */
 function writeStoredLocale(locale) {
   if (typeof window === 'undefined') return;
@@ -41,10 +46,15 @@ const LocaleContext = createContext({
 
 /* v8 ignore start */
 /**
+ * Provides the active locale and its setter through React context.
  *
- * @param root0
- * @param root0.initialLocale
- * @param root0.children
+ * Starts with `initialLocale` when given (the URL is the source of truth),
+ * otherwise with the locale stored in sessionStorage.
+ *
+ * @param {object} props - Component props.
+ * @param {string} [props.initialLocale] - Locale resolved from the URL.
+ * @param {import('react').ReactNode} props.children - Content rendered inside the provider.
+ * @returns {JSX.Element} The context provider.
  */
 export function LocaleProvider({ initialLocale, children }) {
   const [locale, setLocaleState] = useState(() => {
@@ -70,21 +80,28 @@ export function LocaleProvider({ initialLocale, children }) {
 }
 
 /**
+ * Returns the active locale.
  *
+ * @returns {string} The active locale, e.g. `"de-DE"`.
  */
 export function useLocale() {
   return useContext(LocaleContext).locale;
 }
 
 /**
+ * Returns the function that changes the active locale.
  *
+ * @returns {(next: string) => void} Setter that resolves, stores and applies a locale.
  */
 export function useSetLocale() {
   return useContext(LocaleContext).setLocale;
 }
 
 /**
+ * Returns the translated texts (labels, messages, titles, formats, fallbacks)
+ * for the active locale.
  *
+ * @returns {object} Locale text bundle from `getLocaleText`.
  */
 export function useI18n() {
   const locale = useLocale();
@@ -95,16 +112,22 @@ export function useI18n() {
 let _externalSetter = null;
 
 /**
+ * Registers the function that applies a locale change to the React state.
+ * Used by `AppLocaleProvider` so that non-React code can call `setLocale`.
  *
- * @param fn
+ * @param {(next: string) => void} fn - Setter to call on locale changes.
+ * @returns {void}
  */
 export function _registerExternalSetter(fn) {
   _externalSetter = fn;
 }
 
 /**
+ * Changes the locale from outside of React: resolves it, stores it in
+ * sessionStorage and forwards it to the registered setter.
  *
- * @param next
+ * @param {string} next - Requested locale.
+ * @returns {void}
  */
 export function setLocale(next) {
   const resolved = resolveLocale(next);
