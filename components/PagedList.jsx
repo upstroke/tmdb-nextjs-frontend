@@ -102,7 +102,15 @@ export default function PagedList({
   }, [scrollTargetId]);
 
   /**
+   * Loads the next page and appends it to the list.
    *
+   * Does nothing while a request is running or when there are no more pages.
+   * The request is aborted after 15 seconds. Cards already in the list are
+   * filtered out. When no new cards remain, `hasMore` is set to false. After a
+   * successful load the page number is stored and the first new card becomes
+   * the scroll target.
+   *
+   * @returns {Promise<void>}
    */
   async function loadMore() {
     if (loading || !hasMore) return;
