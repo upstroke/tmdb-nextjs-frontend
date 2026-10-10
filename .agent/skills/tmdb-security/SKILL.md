@@ -1,7 +1,8 @@
 ---
 name: tmdb-security
-description: Review, test, and harden the TMDB Next.js frontend against manipulated input and API key exposure, including Zod validation, API routes, the locale proxy, and Cypress security specs.
-version: 0.1.1
+description: Review, test, and harden the TMDB Next.js frontend against manipulated input and API key exposure, including Zod validation, API routes, the locale proxy, and Cypress security specs. Use when touching API routes, input validation, the proxy, environment variables, or security tests.
+metadata:
+  version: '0.1.1'
 ---
 
 # TMDB Security Skill

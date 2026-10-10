@@ -1,7 +1,8 @@
 ---
 name: tmdb-testing
-description: Write and maintain unit, integration, component, Cypress acceptance, accessibility, and security tests for the TMDB Next.js frontend using the project test strategy.
-version: 0.2.0
+description: Write and maintain unit, integration, component, Cypress acceptance, accessibility, and security tests for the TMDB Next.js frontend using the project test strategy. Use when adding, changing, or fixing any test, or when a test plan needs updating.
+metadata:
+  version: '0.2.0'
 ---
 
 # TMDB Testing Skill

@@ -1,7 +1,8 @@
 ---
 name: tmdb-accessibility
-description: Write and maintain accessibility tests (axe, keyboard, focus, ARIA, contrast, dialogs) for the TMDB Next.js frontend to meet WCAG 2.2 AA.
-version: 0.1.2
+description: Write and maintain accessibility tests (axe, keyboard, focus, ARIA, contrast, dialogs) for the TMDB Next.js frontend to meet WCAG 2.2 AA. Use when adding or changing UI, keyboard navigation, focus handling, ARIA, or accessibility tests.
+metadata:
+  version: '0.1.2'
 ---
 
 # TMDB Accessibility Skill

@@ -1,7 +1,8 @@
 ---
 name: tmdb-development
-description: Implement features, fixes, refactors, components, routes, and styling in the TMDB Next.js frontend following the project structure, i18n, validation, and code style rules.
-version: 0.1.0
+description: Implement features, fixes, refactors, components, routes, and styling in the TMDB Next.js frontend following the project structure, i18n, validation, and code style rules. Use when implementing or changing features, components, routes, styles, or translations.
+metadata:
+  version: '0.1.0'
 ---
 
 # TMDB Development Skill
