@@ -48,15 +48,14 @@ export default function PagedList({
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [initialized, setInitialized] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [scrollTargetId, setScrollTargetId] = useState(null);
+  const initializedRef = useRef(false);
   const observerRef = useRef(null);
 
   useEffect(() => {
-    if (initialized) return;
-    setInitialized(true);
-    setLoading(true);
+    if (initializedRef.current) return;
+    initializedRef.current = true;
     restorePagedList({
       storageKey,
       initialData,
@@ -86,10 +85,7 @@ export default function PagedList({
     if (!scrollTargetId) return;
     observerRef.current?.disconnect();
     const target = document.getElementById(scrollTargetId);
-    if (!target) {
-      setScrollTargetId(null);
-      return;
-    }
+    if (!target) return;
     const obs = new IntersectionObserver(
       (entries, o) => {
         if (entries.some((e) => e.isIntersecting)) {
