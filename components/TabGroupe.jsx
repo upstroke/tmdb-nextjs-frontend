@@ -53,8 +53,11 @@ export default function TabGroupe({ tabs = [], initialTab, ariaLabel = '', onTab
   }, [ariaLabel]);
 
   /**
+   * Activates a tab, resets the focused episode of that tab to the first one,
+   * and notifies the parent through `onTabSelect`.
    *
-   * @param id
+   * @param {number|string} id - Id of the tab to activate.
+   * @returns {void}
    */
   function selectTab(id) {
     const strId = String(id);
@@ -70,17 +73,23 @@ export default function TabGroupe({ tabs = [], initialTab, ariaLabel = '', onTab
   }
 
   /**
+   * Checks whether a tab is the active one.
    *
-   * @param id
+   * @param {number|string} id - Tab id to check.
+   * @returns {boolean} `true` when the tab is active.
    */
   function isSelected(id) {
     return String(activeTab) === String(id);
   }
 
   /**
+   * Handles keyboard navigation on the tab list: Arrow Left/Right wrap around,
+   * Home and End jump to the first or last tab. The target tab is selected and
+   * focused.
    *
-   * @param event
-   * @param index
+   * @param {import('react').KeyboardEvent} event - Keydown event on a tab button.
+   * @param {number} index - Index of the tab that received the event.
+   * @returns {void}
    */
   function handleTabKeydown(event, index) {
     const map = {
@@ -97,11 +106,15 @@ export default function TabGroupe({ tabs = [], initialTab, ariaLabel = '', onTab
   }
 
   /**
+   * Handles keyboard navigation inside an episode list: Arrow Up/Down wrap
+   * around, Home and End jump to the first or last episode. The target episode
+   * becomes the focusable one and receives focus.
    *
-   * @param event
-   * @param tabIndex
-   * @param episodeIndex
-   * @param total
+   * @param {import('react').KeyboardEvent} event - Keydown event on an episode item.
+   * @param {number} tabIndex - Index of the tab that owns the list.
+   * @param {number} episodeIndex - Index of the episode that received the event.
+   * @param {number} total - Number of episodes in the list.
+   * @returns {void}
    */
   function handleEpisodeKeydown(event, tabIndex, episodeIndex, total) {
     const moves = {
