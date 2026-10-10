@@ -7,12 +7,20 @@ import PagedList from '@/components/PagedList';
 /** @typedef {import('@/lib/schemas/tmdb').CardItem} CardItem */
 
 /**
+ * Home page (`/[locale]`). Server component that loads today's trending media
+ * from TMDB and renders it as a paged list.
  *
- * @param root0
- * @param root0.params
- * @param root0.searchParams
+ * The first trending item is loaded in detail and shown as the featured item.
+ * When its details fail to load, the page still renders without it. Errors
+ * while loading the trending list are passed to `PagedList` through
+ * `initialData.error`. Invalid route params and a missing `TMDB_API_KEY` render
+ * a short message instead of the list.
+ *
+ * @param {object} props
+ * @param {Promise<{ locale: string }>} props.params - Route params (async in Next.js 15+).
+ * @returns {Promise<JSX.Element>}
  */
-export default async function HomePage({ params, searchParams }) {
+export default async function HomePage({ params }) {
   const paramsParsed = LocaleParamSchema.safeParse(await params);
   if (!paramsParsed.success) {
     return (
