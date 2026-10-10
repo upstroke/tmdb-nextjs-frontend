@@ -100,9 +100,10 @@ function formatYear(value) {
  * silently re-fetched in the new language and the dropdown is closed
  * so the user consciously re-opens it.
  *
- * Keyboard navigation:
+ * Keyboard navigation (handled on the search form, not on the window):
  * - Arrow Down / Up — move focus through results
- * - Home / End — jump to first or last result
+ * - Home / End — jump to first or last result once a result is focused;
+ *   otherwise they move the text cursor in the input as usual
  * - Enter — navigate to the focused result
  * - Escape — close the dropdown and return focus to the input
  *
@@ -417,51 +418,64 @@ export default function TypeHeadSearch() {
     return () => window.removeEventListener('click', handleClick);
   });
 
-  useEffect(() => {
-    function handleKeydown(event) {
-      if (!resultsVisible || !hasResults) {
-        if (event.key === 'Escape') {
-          event.preventDefault();
-          closeResults({ restoreFocus: true });
-        }
-        return;
+  /**
+   * Handles keyboard navigation for keys pressed inside the search form.
+   *
+   * Home and End only jump to the first or last result when a result is
+   * already focused. Otherwise the keys keep their default behaviour and move
+   * the text cursor in the input.
+   *
+   * @param {React.KeyboardEvent<HTMLFormElement>} event - The keydown event.
+   * @returns {void}
+   */
+  function handleKeyDown(event) {
+    if (!resultsVisible || !hasResults) {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeResults({ restoreFocus: true });
       }
-      switch (event.key) {
-        case 'ArrowDown':
-          event.preventDefault();
-          focusNextResult();
-          break;
-        case 'ArrowUp':
-          event.preventDefault();
-          focusPreviousResult();
-          break;
-        case 'Enter':
-          event.preventDefault();
-          if (focusedResultId) {
-            document.querySelector('a.result[aria-selected="true"]')?.click();
-          }
-          break;
-        case 'Escape':
-          event.preventDefault();
-          closeResults({ restoreFocus: true });
-          break;
-        case 'Home':
-          event.preventDefault();
-          focusFirstResult();
-          break;
-        case 'End':
-          event.preventDefault();
-          focusLastResult();
-          break;
-      }
+      return;
     }
-    window.addEventListener('keydown', handleKeydown);
-    return () => window.removeEventListener('keydown', handleKeydown);
-  });
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        focusNextResult();
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        focusPreviousResult();
+        break;
+      case 'Enter':
+        event.preventDefault();
+        if (focusedResultId) {
+          document.querySelector('a.result[aria-selected="true"]')?.click();
+        }
+        break;
+      case 'Escape':
+        event.preventDefault();
+        closeResults({ restoreFocus: true });
+        break;
+      case 'Home':
+        if (!focusedResultId) break;
+        event.preventDefault();
+        focusFirstResult();
+        break;
+      case 'End':
+        if (!focusedResultId) break;
+        event.preventDefault();
+        focusLastResult();
+        break;
+    }
+  }
 
   return (
     <search id="typeahead-search" className="typeahead-search">
-      <form id="typeahead-search-form" onSubmit={(e) => e.preventDefault()} role="search">
+      <form
+        id="typeahead-search-form"
+        onSubmit={(e) => e.preventDefault()}
+        onKeyDown={handleKeyDown}
+        role="search"
+      >
         <label className="u-sr-only" htmlFor="typeahead-search-input">
           {labels.searchInput}
         </label>
