@@ -43,9 +43,6 @@ export function LocaleProvider({ initialLocale, children }) {
     if (initialLocale) {
       // URL is the source of truth — sync sessionStorage to prevent stale value flash
       writeStoredLocale(resolveLocale(initialLocale));
-    } else {
-      const stored = readStoredLocale();
-      if (stored !== locale) setLocaleState(stored);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
