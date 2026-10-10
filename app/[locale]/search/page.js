@@ -3,10 +3,17 @@ import { getLocaleText } from '@/lib/i18n/helpers';
 import CardDefault from '@/components/CardDefault';
 
 /**
+ * Search page (`/[locale]/search?q=...`). Server component that searches TMDB
+ * for the query and lists movies and TV shows in separate sections.
  *
- * @param root0
- * @param root0.params
- * @param root0.searchParams
+ * Queries shorter than 4 characters show only a hint. A missing `TMDB_API_KEY`
+ * renders a short message. Search errors and empty results show a message below
+ * the heading.
+ *
+ * @param {object} props
+ * @param {Promise<{ locale: string }>} props.params - Route params (async in Next.js 15+).
+ * @param {Promise<{ q?: string }>} props.searchParams - Query string params (async in Next.js 15+).
+ * @returns {Promise<JSX.Element>}
  */
 export default async function SearchPage({ params, searchParams }) {
   const { locale } = await params;
