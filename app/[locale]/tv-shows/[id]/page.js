@@ -16,9 +16,22 @@ import TabGroupe from '@/components/TabGroupe';
 /** @typedef {import('@/lib/schemas/tmdb').Season} Season */
 
 /**
+ * TV show detail page (`/[locale]/tv-shows/[id]`). Server component that loads
+ * a TV show, its watch providers, and the episodes of every season from TMDB
+ * and renders the details.
  *
- * @param root0
- * @param root0.params
+ * Show and providers load in parallel; seasons are then fetched one by one. A
+ * season that fails to load is shown with an empty episode list. The page shows
+ * hero, certification, rating, genres, overview, homepage, trailers, first air
+ * date, season tabs, streaming providers, production companies, cast, and crew.
+ * Missing values fall back to `fallbacks.notAvailable`. Lists are deduplicated
+ * by id. The certification is resolved for the region of the locale (default
+ * `US`). Invalid route params, a missing `TMDB_API_KEY`, and load errors render
+ * a `DialogMessage` instead of the page.
+ *
+ * @param {object} props
+ * @param {Promise<{ locale: string, id: string }>} props.params - Route params (async in Next.js 15+).
+ * @returns {Promise<JSX.Element>}
  */
 export default async function TvShowDetailPage({ params }) {
   const paramsParsed = IdParamSchema.safeParse(await params);
