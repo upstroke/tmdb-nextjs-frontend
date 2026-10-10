@@ -10,7 +10,7 @@ The app is read-only, and TMDB secures its own API. The tests cover the parts wh
 
 - search box and search API (`/api/[locale]/search`)
 - paginated list routes (`/api/[locale]/movies`, `/trending`, `/tv-shows`)
-- locale middleware (`middleware.js`) and detail pages with invalid ids
+- locale proxy (`proxy.js`) and detail pages with invalid ids
 - security headers from `next.config.js`
 - the TMDB API key, which must stay on the server
 
