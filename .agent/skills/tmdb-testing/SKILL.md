@@ -1,7 +1,7 @@
 ---
 name: tmdb-testing
 description: Write and maintain unit, integration, component, Cypress acceptance, accessibility, and security tests for the TMDB Next.js frontend using the project test strategy.
-version: 0.1.0
+version: 0.2.0
 ---
 
 # TMDB Testing Skill
@@ -145,6 +145,18 @@ Do not use `Cypress.env()` in specs. `allowCypressEnv` is `false`, so read env v
 
 The folder structure and the npm scripts are described only in [`docs/testing.md`](../../../docs/testing.md) and [`README.md`](../../../README.md). Do not copy them into this skill.
 
+## Keep Tests, Test Plans and Docs in Sync
+
+Whenever you fix, change, add, or delete a test, update the matching documentation in the same change. Do this when a test fails because the component behavior changed, and also when you only repair a test.
+
+1. **Test plan**: Open the test plan next to the test file (for example `vitest/component/typeheadsearch/typeheadsearch-testplan.md`). Update the test case table, the detailed test case, the features to be tested, and the risks and limitations.
+2. **Paths and commands**: The test file path and the execution command in the plan must match the real file location.
+3. **IDs**: Keep existing test case IDs stable. A new test gets the next free number. A removed test is deleted from the plan.
+4. **Names**: The test name, the code comment, and the plan entry must describe the same behavior. If the assertion and the name disagree, fix the test or the name.
+5. **Behavior changes**: If the behavior itself changed, also check `README.md`, `AGENTS.md`, `docs/testing.md`, `docs/testing/*.md`, and the accessibility checklist.
+6. **Related tests**: Search for other tests that rely on the same behavior (selectors, text, key events) and adapt them before the next test run.
+7. **Summary**: Name the updated test plan and docs in the commit message or pull request description.
+
 ## Best Practices
 
 1. **Use Testing Library queries by priority**: `findByRole` first, then `findByLabelText` and `findByText`; use `findByTestId` only when no accessible query fits.
@@ -152,7 +164,7 @@ The folder structure and the npm scripts are described only in [`docs/testing.md
 3. **Wait for content**: Use `findBy*` queries instead of `cy.wait()`
 4. **Page objects**: For complex flows, use the page object pattern
 5. **Accessibility first**: Run `cy.checkA11y()` on every page and after relevant interactions
-6. **Test plans**: Keep the test plan of an integration test in sync with its test file
+6. **Test plans**: Keep the test plan of every test file (unit, integration, component, acceptance) in sync with its test file, see [Keep Tests, Test Plans and Docs in Sync](#keep-tests-test-plans-and-docs-in-sync)
 
 ## Documentation
 
@@ -173,5 +185,6 @@ Use this skill when:
 - Adding new components
 - Implementing new features
 - Fixing bugs
+- Fixing or changing failing tests
 - Refactoring code
 - Adding new pages or routes
