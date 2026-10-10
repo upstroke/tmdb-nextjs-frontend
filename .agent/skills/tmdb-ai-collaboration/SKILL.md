@@ -1,7 +1,7 @@
 ---
 name: tmdb-ai-collaboration
 description: Plan, scope, validate, and review AI-assisted work in the TMDB Next.js frontend while keeping the user in control of edits, commands, commits, and pull requests.
-version: 0.2.0
+version: 0.2.1
 ---
 
 # TMDB AI collaboration
@@ -13,8 +13,7 @@ for implementation planning; and before commits, pushes, pull requests,
 deletions, dependency changes, or configuration changes.
 
 Read `README.md` and `package.json`. Read the relevant specialist skill before
-proposing technical changes. Do not read `docs/ai-prompts.md`; its agent rules
-are contained in the skills.
+proposing technical changes.
 
 ## Rule priority
 

@@ -167,4 +167,3 @@ npm run start
 
 - `docs/testing.md` — testing strategy, commands, and test-level guidance
 - `docs/testing/security-tests.md` — security tests, test plan, and run instructions
-- `docs/ai-prompts.md` — AI-assisted development rules
