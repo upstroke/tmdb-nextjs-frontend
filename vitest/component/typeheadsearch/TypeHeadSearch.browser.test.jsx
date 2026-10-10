@@ -31,7 +31,9 @@ vi.mock('@/lib/stores/locale', () => ({
       searchClear: 'Clear search query',
       movieSection: 'Movies',
       tvSection: 'TV Shows',
-      ratingLabel: 'Rating:'
+      ratingLabel: 'Rating:',
+      releaseDate: 'Release date',
+      firstAirDate: 'First air date'
     },
     messages: {
       searchLoading: 'Searching for suggestions...',
@@ -263,8 +265,8 @@ describe('TypeHeadSearch (browser)', () => {
 
   // TC-THS-07
   // Statement Coverage: Covers Home/End keyboard navigation handlers and result selection updates.
-  // Branch Coverage: Home -> selects first result; End -> selects last result while results remain open
-  it('navigates to first and last search results using Home/End keys', async () => {
+  // Branch Coverage: Home -> selects first result; End -> selects last result once a result is focused
+  it('navigates to first and last search results using Home/End keys once a result is focused', async () => {
     const user = userEvent.setup();
 
     render(<TypeHeadSearch />);
@@ -286,20 +288,26 @@ describe('TypeHeadSearch (browser)', () => {
     expect(firstOption).toBeInTheDocument();
     expect(lastOption).toBeInTheDocument();
 
-    await user.keyboard('{Home}');
+    await user.keyboard('{ArrowDown}');
 
     await waitFor(() => {
       expect(firstOption).toHaveAttribute('aria-selected', 'true');
-      expect(lastOption).toHaveAttribute('aria-selected', 'false');
     });
-
-    expect(input).toHaveFocus();
 
     await user.keyboard('{End}');
 
     await waitFor(() => {
       expect(firstOption).toHaveAttribute('aria-selected', 'false');
       expect(lastOption).toHaveAttribute('aria-selected', 'true');
+    });
+
+    expect(input).toHaveFocus();
+
+    await user.keyboard('{Home}');
+
+    await waitFor(() => {
+      expect(firstOption).toHaveAttribute('aria-selected', 'true');
+      expect(lastOption).toHaveAttribute('aria-selected', 'false');
     });
 
     expect(input).toHaveFocus();
@@ -341,7 +349,10 @@ describe('TypeHeadSearch (browser)', () => {
   it('closes the results panel on Escape by hiding the rendered listbox', async () => {
     render(<TypeHeadSearch />);
 
-    let input = screen.getByRole('combobox');
+    const input = screen.getByRole('combobox');
+    // The input must already own focus: Escape restores focus to it, and a
+    // real focus change would re-open the panel through the onFocus handler.
+    input.focus();
 
     fireEvent.change(input, { target: { value: 'Spider' } });
 
@@ -353,12 +364,12 @@ describe('TypeHeadSearch (browser)', () => {
     expect(listboxBeforeClose).not.toHaveAttribute('hidden');
     expect(input).toHaveAttribute('aria-expanded', 'true');
 
-    fireEvent.keyDown(window, { key: 'Escape' });
+    fireEvent.keyDown(input, { key: 'Escape' });
 
     const listboxAfterClose = document.getElementById('typeahead-search-results');
 
     await waitFor(() => {
-      expect(listboxAfterClose).not.toHaveAttribute('hidden');
+      expect(listboxAfterClose).toHaveAttribute('hidden');
     });
   });
 
@@ -403,12 +414,13 @@ describe('TypeHeadSearch (browser)', () => {
     expect(image).toHaveAttribute('src', '/not-available.png');
     expect(title).toHaveClass('u-not-available');
     expect(time).toHaveClass('u-not-available');
-    expect(screen.getByText('N/A')).toBeInTheDocument();
+    expect(time).toHaveTextContent('N/A');
+    expect(screen.getAllByText('N/A')).toHaveLength(2);
   });
 
   // TC-THS-11
   // Statement Coverage: Covers invalid date formatting and the rating=0 render path.
-  it('renders an empty year for invalid dates and marks a zero rating as not available styled', async () => {
+  it('renders N/A for invalid dates and marks a zero rating as not available styled', async () => {
     sessionStorage.clear();
     fetchSpy.mockReset();
 
@@ -445,7 +457,7 @@ describe('TypeHeadSearch (browser)', () => {
     const image = option.querySelector('img');
 
     expect(time).toBeInTheDocument();
-    expect(time).toHaveTextContent('');
+    expect(time).toHaveTextContent('N/A');
     expect(time).toHaveAttribute('datetime', 'invalid-date');
 
     expect(ratingValue).toBeInTheDocument();
@@ -474,7 +486,7 @@ describe('TypeHeadSearch (browser)', () => {
 
     await screen.findByText(/^Spider-Man$/i);
 
-    fireEvent.keyDown(window, {
+    fireEvent.keyDown(input, {
       key: 'ArrowDown',
       code: 'ArrowDown'
     });
@@ -485,7 +497,7 @@ describe('TypeHeadSearch (browser)', () => {
       expect(firstOption).toHaveAttribute('aria-selected', 'true');
     });
 
-    fireEvent.keyDown(window, {
+    fireEvent.keyDown(input, {
       key: 'Enter',
       code: 'Enter',
       keyCode: 13
@@ -565,10 +577,94 @@ describe('TypeHeadSearch (browser)', () => {
     const input = screen.getByRole('combobox');
     input.focus();
 
-    fireEvent.keyDown(window, { key: 'Escape' });
+    fireEvent.keyDown(input, { key: 'Escape' });
 
     await waitFor(() => {
       expect(input).toHaveFocus();
     });
+  });
+
+  // TC-THS-16
+  // Statement Coverage: Covers the visually hidden date labels for movies and TV shows.
+  it('announces the date type with a visually hidden label for movies and TV shows', async () => {
+    sessionStorage.clear();
+
+    render(<TypeHeadSearch />);
+
+    const input = screen.getByRole('combobox');
+    fireEvent.change(input, { target: { value: 'Spider' } });
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    const movieOption = document.getElementById('movie-101');
+    const tvOption = await waitFor(() => {
+      const el = document.getElementById('tv-72705');
+      expect(el).toBeInTheDocument();
+      return el;
+    });
+
+    const movieLabel = movieOption.querySelector('.description > .u-sr-only');
+    const tvLabel = tvOption.querySelector('.description > .u-sr-only');
+
+    expect(movieLabel).toHaveTextContent('Release date');
+    expect(tvLabel).toHaveTextContent('First air date');
+    expect(movieLabel.nextElementSibling.tagName).toBe('TIME');
+    expect(tvLabel.nextElementSibling.tagName).toBe('TIME');
+  });
+
+  // TC-THS-17
+  // Branch Coverage: Home/End without a focused result keep their default text-cursor behaviour.
+  it('does not select a result with Home/End while no result is focused', async () => {
+    sessionStorage.clear();
+
+    render(<TypeHeadSearch />);
+
+    const input = screen.getByRole('combobox');
+    fireEvent.change(input, { target: { value: 'Spider' } });
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    const movieOption = document.getElementById('movie-101');
+    const tvOption = await waitFor(() => {
+      const el = document.getElementById('tv-72705');
+      expect(el).toBeInTheDocument();
+      return el;
+    });
+
+    const homeAllowed = fireEvent.keyDown(input, { key: 'Home' });
+    const endAllowed = fireEvent.keyDown(input, { key: 'End' });
+
+    expect(homeAllowed).toBe(true);
+    expect(endAllowed).toBe(true);
+    expect(movieOption).toHaveAttribute('aria-selected', 'false');
+    expect(tvOption).toHaveAttribute('aria-selected', 'false');
+  });
+
+  // TC-THS-18
+  // Branch Coverage: Key events outside the search form no longer control the typeahead.
+  it('ignores keyboard events that are dispatched on the window', async () => {
+    sessionStorage.clear();
+
+    render(<TypeHeadSearch />);
+
+    const input = screen.getByRole('combobox');
+    fireEvent.change(input, { target: { value: 'Spider' } });
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    const listbox = await screen.findByRole('listbox');
+    const movieOption = document.getElementById('movie-101');
+
+    fireEvent.keyDown(window, { key: 'ArrowDown' });
+    fireEvent.keyDown(window, { key: 'Escape' });
+
+    expect(listbox).not.toHaveAttribute('hidden');
+    expect(movieOption).toHaveAttribute('aria-selected', 'false');
   });
 });
