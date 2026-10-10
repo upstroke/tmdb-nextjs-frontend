@@ -350,6 +350,9 @@ describe('TypeHeadSearch (browser)', () => {
     render(<TypeHeadSearch />);
 
     const input = screen.getByRole('combobox');
+    // The input must already own focus: Escape restores focus to it, and a
+    // real focus change would re-open the panel through the onFocus handler.
+    input.focus();
 
     fireEvent.change(input, { target: { value: 'Spider' } });
 
