@@ -634,6 +634,8 @@ export default function TypeHeadSearch() {
                     tabIndex={focusedResultId === `movie-${item.id}` ? 0 : -1}
                   >
                     <figure className="image" aria-hidden="true">
+                      {/* Small dynamic TMDB thumbnails; next/image would need fixed sizing here. */}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={item.posterUrl || item.imageUrl || '/not-available.png'} alt="" />
                     </figure>
                     <div className="content">
@@ -697,6 +699,7 @@ export default function TypeHeadSearch() {
                     tabIndex={focusedResultId === `tv-${item.id}` ? 0 : -1}
                   >
                     <figure className="image" aria-hidden="true">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={item.posterUrl || item.imageUrl || '/not-available.png'} alt="" />
                     </figure>
                     <div className="content">
