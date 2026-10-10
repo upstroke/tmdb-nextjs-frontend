@@ -1,20 +1,10 @@
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { FlatCompat } from '@eslint/eslintrc';
+import { defineConfig, globalIgnores } from 'eslint/config';
+import nextVitals from 'eslint-config-next/core-web-vitals';
 import jsdoc from 'eslint-plugin-jsdoc';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname
-});
-
-const eslintConfig = [
-  ...compat.extends('next/core-web-vitals'),
-  {
-    ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts']
-  },
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  globalIgnores(['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts']),
   {
     files: ['**/*.js', '**/*.jsx', '**/*.mjs'],
     plugins: { jsdoc },
@@ -45,6 +35,6 @@ const eslintConfig = [
       'jsdoc/valid-types': 'warn'
     }
   }
-];
+]);
 
 export default eslintConfig;
