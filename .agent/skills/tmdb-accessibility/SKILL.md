@@ -1,3 +1,9 @@
+---
+name: tmdb-accessibility
+description: Write and maintain accessibility tests (axe, keyboard, focus, ARIA, contrast, dialogs) for the TMDB Next.js frontend to meet WCAG 2.2 AA.
+version: 0.1.1
+---
+
 # TMDB Accessibility Skill
 
 ## Purpose
@@ -21,10 +27,12 @@ Accessibility specs live in `cypress/accessibility/`. The test plan is `cypress/
 - `cy.visitLocale(locale, path)` navigates to a locale-prefixed route.
 - `cy.checkPageA11y()` injects axe and checks the tags `wcag2a`, `wcag2aa`, `wcag21aa`, and `wcag22aa`.
 
+Use the constant `en-US` as locale, the same as `DEFAULT_LOCALE` in `lib/i18n/config.js`. Do not use `Cypress.env()`: `allowCypressEnv` is `false`.
+
 ```js
 // cypress/accessibility/accessibility.cy.js
 describe('Accessibility — Homepage', () => {
-  const locale = Cypress.env('DEFAULT_LOCALE') ?? 'en-US';
+  const locale = 'en-US';
 
   it('has no axe violations on the homepage', () => {
     cy.visitLocale(locale);
@@ -94,15 +102,7 @@ it('meets WCAG AA contrast requirements', () => {
 
 ## Scripts
 
-```bash
-# Cypress specs, including cypress/accessibility (headless, app must run on http://localhost:3000)
-npm run test:e2e
-
-# Cypress interactive runner
-npm run test:e2e:open
-```
-
-There is no separate accessibility script yet.
+Use `npm run test:e2e` (headless) or `npm run test:e2e:open` (interactive). The app must run on `http://localhost:3000`. There is no separate accessibility script yet.
 
 ## Tools
 

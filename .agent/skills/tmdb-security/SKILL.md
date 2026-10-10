@@ -1,3 +1,9 @@
+---
+name: tmdb-security
+description: Review, test, and harden the TMDB Next.js frontend against manipulated input and API key exposure, including Zod validation, API routes, the locale proxy, and Cypress security specs.
+version: 0.1.1
+---
+
 # TMDB Security Skill
 
 ## Purpose
@@ -8,6 +14,7 @@ This skill enables the AI agent to review, test, and harden the TMDB Next.js fro
 
 - Search box and search API route
 - Paginated list routes: `movies`, `trending`, `tv-shows`
+- Locale redirect (`proxy.js`) and detail pages with invalid ids
 - Zod validation at the API boundary (`lib/schemas/tmdb.js`)
 - Keeping `TMDB_API_KEY` on the server
 - Cypress security specs in `cypress/e2e/security/`

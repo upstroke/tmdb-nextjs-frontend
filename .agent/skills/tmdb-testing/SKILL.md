@@ -1,3 +1,9 @@
+---
+name: tmdb-testing
+description: Write and maintain unit, integration, component, Cypress acceptance, accessibility, and security tests for the TMDB Next.js frontend using the project test strategy.
+version: 0.1.0
+---
+
 # TMDB Testing Skill
 
 ## Purpose
@@ -102,13 +108,14 @@ describe('Navigation', () => {
 
 ### 5. Write Accessibility Tests (Cypress)
 
+See the `tmdb-accessibility` skill for keyboard, focus, ARIA, and contrast tests.
+
 ```js
-// cypress/accessibility/home.cy.js
+// cypress/accessibility/accessibility.cy.js
 describe('Accessibility: Homepage', () => {
   it('has no detectable accessibility violations', () => {
-    cy.visit('/en-US');
-    cy.injectAxe();
-    cy.checkA11y();
+    cy.visitLocale('en-US');
+    cy.checkPageA11y();
   });
 });
 ```
@@ -134,57 +141,13 @@ describe('Security: list API routes', () => {
 
 Do not use `Cypress.env()` in specs. `allowCypressEnv` is `false`, so read env values with `cy.env()`.
 
-## Test Structure
+## Test Structure and Scripts
 
-```
-vitest/
-├── unit/
-├── integration/
-├── component/
-├── fixtures/
-├── mocks/
-├── reporters/
-└── setup/
-cypress/
-├── accessibility/
-├── e2e/
-│   └── security/
-├── fixtures/
-├── POM/
-└── support/
-```
-
-## Scripts
-
-```bash
-# All Vitest tests
-npm test
-
-# Unit tests only
-npm run test:unit
-
-# Integration tests only
-npm run test:integration
-
-# Component tests only (browser mode)
-npm run test:component
-
-# Vitest with coverage
-npm run test:coverage
-
-# Cypress e2e and accessibility specs (headless, app must run on http://localhost:3000)
-npm run test:e2e
-
-# Cypress security specs only
-npm run test:e2e:security
-
-# Cypress interactive runner
-npm run test:e2e:open
-```
+The folder structure and the npm scripts are described only in [`docs/testing.md`](../../../docs/testing.md) and [`README.md`](../../../README.md). Do not copy them into this skill.
 
 ## Best Practices
 
-1. **Use Testing Library queries**: `findByRole`, `findByLabelText`, `findByTestId`
+1. **Use Testing Library queries by priority**: `findByRole` first, then `findByLabelText` and `findByText`; use `findByTestId` only when no accessible query fits.
 2. **Test user interactions**: Real clicks, typing, navigation
 3. **Wait for content**: Use `findBy*` queries instead of `cy.wait()`
 4. **Page objects**: For complex flows, use the page object pattern
