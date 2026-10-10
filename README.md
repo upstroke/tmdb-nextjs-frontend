@@ -156,6 +156,21 @@ npm run test:e2e:open       # Cypress interactive runner
 
 See [docs/testing.md](docs/testing.md) for the testing strategy, commands, and conventions.
 
+## Code Quality
+
+Linting and formatting run separately from the tests:
+
+```bash
+npm run lint            # ESLint, fails on any warning (--max-warnings=0)
+npm run format          # Prettier, rewrites files
+npm run format:check    # Prettier, check only
+npm run check           # lint + format:check + Vitest, run before committing
+```
+
+`npm run check` does not include the Cypress tests, because they need a running app.
+
+If a lint rule has to be suppressed, use a targeted `eslint-disable-next-line` comment with a short reason, for example for the plain `<img>` in the typeahead thumbnails and in the `next/image` test mock.
+
 ## Production Build
 
 ```bash
