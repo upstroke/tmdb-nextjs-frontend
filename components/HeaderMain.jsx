@@ -61,8 +61,11 @@ export default function HeaderMain() {
   }));
 
   /**
+   * Reads the last visited page number of a paginated list from sessionStorage.
    *
-   * @param key
+   * @param {string} key - sessionStorage key of the list.
+   * @returns {number} The stored page number, or `1` when the key is empty,
+   *   missing, invalid, or storage is unavailable.
    */
   function getStoredPage(key) {
     if (typeof window === 'undefined' || !key) return 1;
@@ -74,9 +77,12 @@ export default function HeaderMain() {
   }
 
   /**
+   * Builds the navigation href and appends `?page=` when a page greater than
+   * one was stored for the list.
    *
-   * @param path
-   * @param storageKey
+   * @param {string} path - Locale-prefixed base path.
+   * @param {string} storageKey - sessionStorage key holding the last page number.
+   * @returns {string} The base path, optionally with a page query.
    */
   function getNavHref(path, storageKey) {
     const storedPage = getStoredPage(storageKey);
@@ -84,8 +90,11 @@ export default function HeaderMain() {
   }
 
   /**
+   * Resolves the visible text of a navigation item: title first, then label,
+   * then the key itself.
    *
-   * @param label
+   * @param {string} label - i18n key of the navigation item.
+   * @returns {string} The translated text.
    */
   function resolveLabel(label) {
     return titles[label] ?? labels[label] ?? label;
