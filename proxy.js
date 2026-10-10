@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/lib/i18n/config';
 
-export function middleware(request) {
+export function proxy(request) {
   const { pathname } = request.nextUrl;
 
   // Skip non-page requests

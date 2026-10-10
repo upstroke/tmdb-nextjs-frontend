@@ -119,7 +119,7 @@ export default defineConfig({
         'app/*.js',
         'app/layout.js',
         'app/page.js',
-        'middleware.js',
+        'proxy.js',
         'next.config.js',
         'postcss.config.js',
         'vite.config.js',

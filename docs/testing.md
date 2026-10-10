@@ -40,7 +40,7 @@ This project uses multiple test runners for different purposes:
 
 - **Framework:** Cypress
 - **Location:** `../cypress/e2e/security/`
-- **Purpose:** Manipulated input on the search, list routes, locale middleware, and detail pages; XSS; security headers; the TMDB API key must not reach the browser
+- **Purpose:** Manipulated input on the search, list routes, locale proxy, and detail pages; XSS; security headers; the TMDB API key must not reach the browser
 - **Coverage:** NOT included in Vitest coverage reports
 - **Documentation:** [Security Tests](testing/security-tests.md) and the [test plan](../cypress/e2e/security/security-testplan.md)
 
@@ -85,7 +85,7 @@ Coverage reports **exclude**:
 - `app/[locale]/**` - Pages (tested via Cypress and integration tests, but not counted)
 - `app/layout.js`, `app/page.js`, `app/*.js` - Root layout and page
 - `lib/stores/locale.jsx`, `components/providers/**` - Providers
-- `middleware.js` and config files
+- `proxy.js` and config files
 - `node_modules/**`, `vitest/**` - Dependencies and test helpers
 
 The global threshold is 80% statements.
