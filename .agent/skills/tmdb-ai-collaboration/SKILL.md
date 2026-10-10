@@ -2,7 +2,7 @@
 name: tmdb-ai-collaboration
 description: Plan, scope, validate, and review AI-assisted work in the TMDB Next.js frontend while keeping the user in control of edits, commands, commits, and pull requests. Use for broad, ambiguous, multi-step, or risky tasks, for implementation plans, and before commits, pushes, pull requests, deletions, dependency changes, or configuration changes.
 metadata:
-  version: '0.3.1'
+  version: '0.3.2'
 ---
 
 # TMDB AI collaboration
@@ -105,11 +105,16 @@ task needs something different.
 
 ```bash
 npm run lint
+npm run format:check
 npm run test:unit
 npm run test:component
 npm run test:integration
 npm run build
 ```
+
+`npm run lint` fails on any warning (`--max-warnings=0`). For a quicker check
+without the production build, use `npm run check` (lint, format check, and the
+Vitest single run).
 
 Run Cypress acceptance tests separately when the change affects a user journey,
 navigation flow, browser behavior, or an existing acceptance test.
