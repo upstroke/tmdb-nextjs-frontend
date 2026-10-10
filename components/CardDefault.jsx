@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import MediaTypeLabel from './MediaTypeLabel';
 import { getCertificationMeta } from '@/lib/utils/certificationMeta';
 import { formatDate } from '@/lib/utils/formatDate';
@@ -46,11 +46,14 @@ export default function CardDefault({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageErrored, setImageErrored] = useState(false);
   const cardImageUrl = imageUrl || '/not-available.png';
+  const [trackedImageUrl, setTrackedImageUrl] = useState(cardImageUrl);
 
-  useEffect(() => {
+  // Reset the image state when the image URL changes (adjusting state during render).
+  if (trackedImageUrl !== cardImageUrl) {
+    setTrackedImageUrl(cardImageUrl);
     setImageLoaded(false);
     setImageErrored(false);
-  }, [cardImageUrl]);
+  }
 
   const normalizedType = mediaType === 'movie' ? 'movie' : mediaType === 'tv' ? 'tv' : null;
   const hasValidCard = Boolean(id) && Boolean(normalizedType);
