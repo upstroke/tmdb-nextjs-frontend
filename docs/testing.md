@@ -112,13 +112,13 @@ cypress/
 
 ## When to Use Which
 
-| Test Type              | Use For                                                  |
-| ---------------------- | -------------------------------------------------------- |
-| **Vitest Unit**        | Pure functions, utilities, services, stores              |
-| **Vitest Integration** | API route handlers and pages with service integration    |
-| **Vitest Component**   | Individual React components in isolation                 |
-| **Cypress Acceptance** | User flows (E2E tests), keyboard, focus, accessibility   |
-| **Cypress Security**   | Manipulated input, headers, redirects, API key exposure  |
+| Test Type              | Use For                                                 |
+| ---------------------- | ------------------------------------------------------- |
+| **Vitest Unit**        | Pure functions, utilities, services, stores             |
+| **Vitest Integration** | API route handlers and pages with service integration   |
+| **Vitest Component**   | Individual React components in isolation                |
+| **Cypress Acceptance** | User flows (E2E tests), keyboard, focus, accessibility  |
+| **Cypress Security**   | Manipulated input, headers, redirects, API key exposure |
 
 ## Documentation
 

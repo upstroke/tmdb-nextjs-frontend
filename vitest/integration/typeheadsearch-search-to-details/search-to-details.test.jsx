@@ -75,12 +75,14 @@ function tmdbFetch(overrides = {}) {
   return (url) => {
     const u = String(url);
 
-    if (u.includes('/genre/movie/list')) return Promise.resolve(okResponse(rawFixtures.genresMovie));
+    if (u.includes('/genre/movie/list'))
+      return Promise.resolve(okResponse(rawFixtures.genresMovie));
     if (u.includes('/genre/tv/list')) return Promise.resolve(okResponse(rawFixtures.genresTv));
     if (u.includes('/search/multi')) return answer('search', searchToDetailsFixture.searchResponse);
 
     if (u.includes(`/movie/${movie.result.id}`)) {
-      if (u.includes('/release_dates')) return answer('movieCertification', movie.tmdb.certification);
+      if (u.includes('/release_dates'))
+        return answer('movieCertification', movie.tmdb.certification);
       if (u.includes('/watch/providers')) return answer('movieProviders', movie.tmdb.providers);
       return answer('movie', movie.tmdb.details);
     }
@@ -182,20 +184,23 @@ describe('Search to details (integration)', () => {
     });
 
     // TC-SD-02
-    it.each(['ab', ''])('returns empty lists without calling TMDB for the query "%s"', async (q) => {
-      mockFetch();
+    it.each(['ab', ''])(
+      'returns empty lists without calling TMDB for the query "%s"',
+      async (q) => {
+        mockFetch();
 
-      const response = await callSearchRoute(q);
+        const response = await callSearchRoute(q);
 
-      expect(response.status).toBe(200);
-      expect(await response.json()).toMatchObject({
-        movies: [],
-        tvShows: [],
-        results: [],
-        error: null
-      });
-      expect(tmdbCalls('/search/multi')).toHaveLength(0);
-    });
+        expect(response.status).toBe(200);
+        expect(await response.json()).toMatchObject({
+          movies: [],
+          tvShows: [],
+          results: [],
+          error: null
+        });
+        expect(tmdbCalls('/search/multi')).toHaveLength(0);
+      }
+    );
 
     // TC-SD-03
     it('returns empty lists without calling TMDB when the query is missing', async () => {
@@ -250,14 +255,17 @@ describe('Search to details (integration)', () => {
     });
 
     // TC-SD-07
-    it.each(SUPPORTED_LOCALES)('passes the supported locale %s to TMDB as language', async (locale) => {
-      mockFetch();
+    it.each(SUPPORTED_LOCALES)(
+      'passes the supported locale %s to TMDB as language',
+      async (locale) => {
+        mockFetch();
 
-      const response = await callSearchRoute(QUERY, locale);
+        const response = await callSearchRoute(QUERY, locale);
 
-      expect(response.status).toBe(200);
-      expect(languageOfLastSearchCall()).toBe(locale);
-    });
+        expect(response.status).toBe(200);
+        expect(languageOfLastSearchCall()).toBe(locale);
+      }
+    );
 
     // TC-SD-08
     it('uses the default UI texts but keeps the requested language for an unknown locale', async () => {
@@ -423,7 +431,9 @@ describe('Search to details (integration)', () => {
       fireEvent.change(screen.getByRole('combobox'), { target: { value: QUERY } });
 
       expect((await screen.findAllByText(messages.searchError)).length).toBeGreaterThan(0);
-      expect(screen.queryByText(new RegExp(`^${movie.result.title}$`, 'i'))).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(new RegExp(`^${movie.result.title}$`, 'i'))
+      ).not.toBeInTheDocument();
     });
   });
 

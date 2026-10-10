@@ -17,7 +17,8 @@ export function setupTmdbMocks() {
 
     // Search and genres
     if (u.includes('/search/multi')) return Promise.resolve(okResponse(rawFixtures.searchMulti));
-    if (u.includes('/genre/movie/list')) return Promise.resolve(okResponse(rawFixtures.genresMovie));
+    if (u.includes('/genre/movie/list'))
+      return Promise.resolve(okResponse(rawFixtures.genresMovie));
     if (u.includes('/genre/tv/list')) return Promise.resolve(okResponse(rawFixtures.genresTv));
 
     // Specific sub-paths first
@@ -36,7 +37,9 @@ export function setupTmdbMocks() {
     const seasonMatch = u.match(/\/tv\/\d+\/season\/(\d+)/);
     if (seasonMatch) {
       const seasonNumber = Number(seasonMatch[1]);
-      const season = apiResponses.tvDetailFull.seasons.find((s) => s.season_number === seasonNumber);
+      const season = apiResponses.tvDetailFull.seasons.find(
+        (s) => s.season_number === seasonNumber
+      );
       return Promise.resolve(
         okResponse({
           ...rawFixtures.tvSeason1,

@@ -22,7 +22,12 @@ export const apiResponses = {
       US: {
         link: 'https://example.com/watch/movie',
         flatrate: [
-          { provider_id: 8, provider_name: 'Netflix', logo_path: '/netflix.png', display_priority: 1 }
+          {
+            provider_id: 8,
+            provider_name: 'Netflix',
+            logo_path: '/netflix.png',
+            display_priority: 1
+          }
         ]
       }
     }
@@ -110,12 +115,61 @@ export const apiResponses = {
     number_of_episodes: 62,
     production_companies: [{ id: 11073, name: 'Sony Pictures Television Studios' }],
     seasons: [
-      { id: 3577, season_number: 0, name: 'Specials', overview: '', poster_path: '/4RaIvSQgHHHPfaI1jFqaMR8UJWM.jpg', air_date: '2009-02-17', episode_count: 9 },
-      { id: 3572, season_number: 1, name: 'Season 1', overview: 'High school chemistry teacher Walter White\'s life is suddenly transformed by a dire medical diagnosis.', poster_path: '/1BP4xYv9ZG4ZVHkL7ocOziBbSYH.jpg', air_date: '2008-01-20', episode_count: 7 },
-      { id: 3573, season_number: 2, name: 'Season 2', overview: 'Walt must deal with the chain reaction of his choice.', poster_path: '/e3oGYpoTUhOFK0BJfloru5ZmGV.jpg', air_date: '2009-03-08', episode_count: 13 },
-      { id: 3575, season_number: 3, name: 'Season 3', overview: 'Walt continues to battle dueling identities.', poster_path: '/ffP8Q8ew048YofHRnFVM18B2fPG.jpg', air_date: '2010-03-21', episode_count: 13 },
-      { id: 3576, season_number: 4, name: 'Season 4', overview: 'Walt and Jesse must cope with the fallout of their previous actions.', poster_path: '/5ewrnKp4TboU4hTLT5cWO350mHj.jpg', air_date: '2011-07-17', episode_count: 13 },
-      { id: 3578, season_number: 5, name: 'Season 5', overview: 'Walt is faced with the prospect of moving on in a world without his enemy.', poster_path: '/r3z70vunihrAkjILQKWHX0G2xzO.jpg', air_date: '2012-07-15', episode_count: 16 }
+      {
+        id: 3577,
+        season_number: 0,
+        name: 'Specials',
+        overview: '',
+        poster_path: '/4RaIvSQgHHHPfaI1jFqaMR8UJWM.jpg',
+        air_date: '2009-02-17',
+        episode_count: 9
+      },
+      {
+        id: 3572,
+        season_number: 1,
+        name: 'Season 1',
+        overview:
+          "High school chemistry teacher Walter White's life is suddenly transformed by a dire medical diagnosis.",
+        poster_path: '/1BP4xYv9ZG4ZVHkL7ocOziBbSYH.jpg',
+        air_date: '2008-01-20',
+        episode_count: 7
+      },
+      {
+        id: 3573,
+        season_number: 2,
+        name: 'Season 2',
+        overview: 'Walt must deal with the chain reaction of his choice.',
+        poster_path: '/e3oGYpoTUhOFK0BJfloru5ZmGV.jpg',
+        air_date: '2009-03-08',
+        episode_count: 13
+      },
+      {
+        id: 3575,
+        season_number: 3,
+        name: 'Season 3',
+        overview: 'Walt continues to battle dueling identities.',
+        poster_path: '/ffP8Q8ew048YofHRnFVM18B2fPG.jpg',
+        air_date: '2010-03-21',
+        episode_count: 13
+      },
+      {
+        id: 3576,
+        season_number: 4,
+        name: 'Season 4',
+        overview: 'Walt and Jesse must cope with the fallout of their previous actions.',
+        poster_path: '/5ewrnKp4TboU4hTLT5cWO350mHj.jpg',
+        air_date: '2011-07-17',
+        episode_count: 13
+      },
+      {
+        id: 3578,
+        season_number: 5,
+        name: 'Season 5',
+        overview: 'Walt is faced with the prospect of moving on in a world without his enemy.',
+        poster_path: '/r3z70vunihrAkjILQKWHX0G2xzO.jpg',
+        air_date: '2012-07-15',
+        episode_count: 16
+      }
     ],
     videos: {
       results: [{ site: 'YouTube', type: 'Trailer', official: true, key: 'HhesaQXLuRY' }]
@@ -130,8 +184,14 @@ export const apiResponses = {
       ],
       crew: [
         person(24951, 'Peter Gould', { job: 'Co-Executive Producer', department: 'Production' }),
-        person(103009, 'Thomas Schnauz', { job: 'Co-Executive Producer', department: 'Production' }),
-        person(1537674, 'Jennifer Bryan', { job: 'Costume Design', department: 'Costume & Make-Up' })
+        person(103009, 'Thomas Schnauz', {
+          job: 'Co-Executive Producer',
+          department: 'Production'
+        }),
+        person(1537674, 'Jennifer Bryan', {
+          job: 'Costume Design',
+          department: 'Costume & Make-Up'
+        })
       ]
     }
   }

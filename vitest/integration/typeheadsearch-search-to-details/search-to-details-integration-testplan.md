@@ -51,34 +51,34 @@ The TV page renders `DialogMessage` itself, which calls `HTMLDialogElement.showM
 
 ## Test Cases
 
-| ID       | Automated Test                                                                     | Covered Behavior                                                           |
-|----------|------------------------------------------------------------------------------------|----------------------------------------------------------------------------|
-| TC-SD-01 | `maps one search/multi response to movies, tvShows and results`                    | Status 200, `error` null, ids and `mediaType` mapped, `query` and `include_adult=false` sent to TMDB |
-| TC-SD-02 | `returns empty lists without calling TMDB for the query "%s"`                      | Queries `ab` and empty return empty lists, no TMDB call                    |
-| TC-SD-03 | `returns empty lists without calling TMDB when the query is missing`               | Missing `q` returns empty lists, no TMDB call                              |
-| TC-SD-04 | `answers 500 with an error message when the API key is missing`                    | Status 500, `messages.apiKeyMissing`, no TMDB call                         |
-| TC-SD-05 | `answers 500 with an error message when TMDB fails`                                | Status 500, `messages.searchError`, empty lists                            |
-| TC-SD-06 | `answers 400 for the locale "%s"`                                                  | Locales `x` and `this-is-too-long` return 400 `Invalid locale.`            |
-| TC-SD-07 | `passes the supported locale %s to TMDB as language`                               | Each locale of `SUPPORTED_LOCALES` is sent as `language`                   |
-| TC-SD-08 | `uses the default UI texts but keeps the requested language for an unknown locale` | `xx-XX` gets default texts, TMDB still receives `language=xx-XX`           |
-| TC-SD-09 | `uses the UI texts of another supported locale`                                    | Another locale returns its own `apiKeyMissing` text                        |
-| TC-SD-10 | `uses the id of a movie search result to render the movie detail page`             | Title, runtime, cast and provider on the movie page                        |
-| TC-SD-11 | `uses the id of a tv search result to render the tv show detail page`              | Title, cast, provider and season label on the TV page                      |
-| TC-SD-12 | `renders the movie page when watch providers fail`                                 | Page renders, provider missing                                             |
-| TC-SD-13 | `renders the movie page when the certification fails`                              | Page renders without certification                                         |
-| TC-SD-14 | `renders the movie page without credits`                                           | Page renders, no cast                                                      |
-| TC-SD-15 | `renders the movie page without a runtime`                                         | Page renders, no runtime                                                   |
-| TC-SD-16 | `renders the tv page when the season request fails`                                | Page renders without season data                                           |
-| TC-SD-17 | `shows the watch providers for the region of the default locale`                   | Provider visible for the default locale                                    |
-| TC-SD-18 | `hides the default-region watch providers for %s`                                  | Provider hidden for every other supported locale                           |
-| TC-SD-19 | `renders movie and tv detail pages for %s`                                         | Both detail pages render for every supported locale                        |
-| TC-SD-20 | `lists movie and tv results with links to their detail pages`                      | Typeahead shows both results with correct `href`                           |
-| TC-SD-21 | `shows an error message when TMDB fails`                                           | Typeahead shows `messages.searchError`, no results                         |
-| TC-SD-22 | `drops search results that are neither a movie nor a tv show`                      | A `person` result is missing in `results`, `movies` and `tvShows`          |
-| TC-SD-23 | `answers 200 with empty lists when TMDB finds nothing`                             | Status 200, empty lists, `error` null, one TMDB call                       |
-| TC-SD-24 | `shows the load error instead of the tv page when the details request fails`       | `messages.tvShowLoadError` shown (text only, dialog in Cypress), no title  |
-| TC-SD-25 | `shows a message for an invalid tv id without calling TMDB`                        | `Invalid URL parameters.` shown (text only, dialog in Cypress), no `/tv/` request |
-| TC-SD-26 | `renders the tv page with fallback texts when overview, genres and credits are empty` | Title shown, `fallbacks.notAvailable` shown, no cast                    |
+| ID       | Automated Test                                                                        | Covered Behavior                                                                                     |
+| -------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| TC-SD-01 | `maps one search/multi response to movies, tvShows and results`                       | Status 200, `error` null, ids and `mediaType` mapped, `query` and `include_adult=false` sent to TMDB |
+| TC-SD-02 | `returns empty lists without calling TMDB for the query "%s"`                         | Queries `ab` and empty return empty lists, no TMDB call                                              |
+| TC-SD-03 | `returns empty lists without calling TMDB when the query is missing`                  | Missing `q` returns empty lists, no TMDB call                                                        |
+| TC-SD-04 | `answers 500 with an error message when the API key is missing`                       | Status 500, `messages.apiKeyMissing`, no TMDB call                                                   |
+| TC-SD-05 | `answers 500 with an error message when TMDB fails`                                   | Status 500, `messages.searchError`, empty lists                                                      |
+| TC-SD-06 | `answers 400 for the locale "%s"`                                                     | Locales `x` and `this-is-too-long` return 400 `Invalid locale.`                                      |
+| TC-SD-07 | `passes the supported locale %s to TMDB as language`                                  | Each locale of `SUPPORTED_LOCALES` is sent as `language`                                             |
+| TC-SD-08 | `uses the default UI texts but keeps the requested language for an unknown locale`    | `xx-XX` gets default texts, TMDB still receives `language=xx-XX`                                     |
+| TC-SD-09 | `uses the UI texts of another supported locale`                                       | Another locale returns its own `apiKeyMissing` text                                                  |
+| TC-SD-10 | `uses the id of a movie search result to render the movie detail page`                | Title, runtime, cast and provider on the movie page                                                  |
+| TC-SD-11 | `uses the id of a tv search result to render the tv show detail page`                 | Title, cast, provider and season label on the TV page                                                |
+| TC-SD-12 | `renders the movie page when watch providers fail`                                    | Page renders, provider missing                                                                       |
+| TC-SD-13 | `renders the movie page when the certification fails`                                 | Page renders without certification                                                                   |
+| TC-SD-14 | `renders the movie page without credits`                                              | Page renders, no cast                                                                                |
+| TC-SD-15 | `renders the movie page without a runtime`                                            | Page renders, no runtime                                                                             |
+| TC-SD-16 | `renders the tv page when the season request fails`                                   | Page renders without season data                                                                     |
+| TC-SD-17 | `shows the watch providers for the region of the default locale`                      | Provider visible for the default locale                                                              |
+| TC-SD-18 | `hides the default-region watch providers for %s`                                     | Provider hidden for every other supported locale                                                     |
+| TC-SD-19 | `renders movie and tv detail pages for %s`                                            | Both detail pages render for every supported locale                                                  |
+| TC-SD-20 | `lists movie and tv results with links to their detail pages`                         | Typeahead shows both results with correct `href`                                                     |
+| TC-SD-21 | `shows an error message when TMDB fails`                                              | Typeahead shows `messages.searchError`, no results                                                   |
+| TC-SD-22 | `drops search results that are neither a movie nor a tv show`                         | A `person` result is missing in `results`, `movies` and `tvShows`                                    |
+| TC-SD-23 | `answers 200 with empty lists when TMDB finds nothing`                                | Status 200, empty lists, `error` null, one TMDB call                                                 |
+| TC-SD-24 | `shows the load error instead of the tv page when the details request fails`          | `messages.tvShowLoadError` shown (text only, dialog in Cypress), no title                            |
+| TC-SD-25 | `shows a message for an invalid tv id without calling TMDB`                           | `Invalid URL parameters.` shown (text only, dialog in Cypress), no `/tv/` request                    |
+| TC-SD-26 | `renders the tv page with fallback texts when overview, genres and credits are empty` | Title shown, `fallbacks.notAvailable` shown, no cast                                                 |
 
 TC-SD-22 and TC-SD-23 are in the group `search route with unusual TMDB responses`, TC-SD-24 to TC-SD-26 in the group `detail pages with invalid or empty data`. Both groups are at the end of the test file.
 

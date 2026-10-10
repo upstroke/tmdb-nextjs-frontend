@@ -16,30 +16,30 @@ Goal: manipulated input must not execute code in the browser and must not crash 
 
 ## Test cases
 
-| ID     | Spec               | Test                                                                                              |
-| ------ | ------------------ | ------------------------------------------------------------------------------------------------- |
-| SEC-01 | `search-xss.cy.js` | XSS payloads typed into the search box are URL-encoded and not executed                           |
-| SEC-02 | `search-xss.cy.js` | Malicious result titles and image URLs from the API are rendered as text                          |
-| SEC-03 | `search-xss.cy.js` | An API error (500) and an unexpected response shape do not break the header                       |
-| SEC-04 | `search-xss.cy.js` | Manipulated `sessionStorage` values do not crash the header                                       |
-| SEC-05 | `search-api.cy.js` | Missing, too short, and too long queries return an empty result                                   |
-| SEC-06 | `search-api.cy.js` | Very long and special queries never return 5xx                                                    |
-| SEC-07 | `search-api.cy.js` | Manipulated locales never return 5xx; locales over 10 characters return 400                       |
-| SEC-08 | `search-api.cy.js` | Other HTTP methods are rejected                                                                   |
-| SEC-09 | `search-api.cy.js` | A burst of 50 requests does not cause 5xx                                                         |
-| SEC-10 | `search-api.cy.js` | Invalid ids in detail routes never return 5xx                                                     |
-| SEC-11 | `search-api.cy.js` | The key does not appear in the search response or in the homepage HTML                            |
-| SEC-12 | `api-key.cy.js`    | No browser request contains the key or goes directly to `themoviedb.org`                          |
-| SEC-13 | `api-key.cy.js`    | The homepage HTML and all loaded `_next/static` JavaScript files contain no `api_key=` and no key value |
-| SEC-14 | `api-key.cy.js`    | The search response body and headers do not contain the key                                       |
-| SEC-15 | `list-api.cy.js`   | `movies`, `trending`, and `tv-shows` return cards for a valid request                             |
-| SEC-16 | `list-api.cy.js`   | Invalid `page` (`abc`, `0`, `-1`, `1.5`, empty, `<script>`) and unknown `type` fall back to page 1 |
-| SEC-17 | `list-api.cy.js`   | `page` above the TMDB limit of 500 (`501`, `10000`, `999999999`) never returns 5xx                |
-| SEC-18 | `list-api.cy.js`   | Extra query parameters are ignored; manipulated locales never return 5xx; locales over 10 characters return 400; other HTTP methods are rejected |
+| ID     | Spec               | Test                                                                                                                                                                                                |
+| ------ | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SEC-01 | `search-xss.cy.js` | XSS payloads typed into the search box are URL-encoded and not executed                                                                                                                             |
+| SEC-02 | `search-xss.cy.js` | Malicious result titles and image URLs from the API are rendered as text                                                                                                                            |
+| SEC-03 | `search-xss.cy.js` | An API error (500) and an unexpected response shape do not break the header                                                                                                                         |
+| SEC-04 | `search-xss.cy.js` | Manipulated `sessionStorage` values do not crash the header                                                                                                                                         |
+| SEC-05 | `search-api.cy.js` | Missing, too short, and too long queries return an empty result                                                                                                                                     |
+| SEC-06 | `search-api.cy.js` | Very long and special queries never return 5xx                                                                                                                                                      |
+| SEC-07 | `search-api.cy.js` | Manipulated locales never return 5xx; locales over 10 characters return 400                                                                                                                         |
+| SEC-08 | `search-api.cy.js` | Other HTTP methods are rejected                                                                                                                                                                     |
+| SEC-09 | `search-api.cy.js` | A burst of 50 requests does not cause 5xx                                                                                                                                                           |
+| SEC-10 | `search-api.cy.js` | Invalid ids in detail routes never return 5xx                                                                                                                                                       |
+| SEC-11 | `search-api.cy.js` | The key does not appear in the search response or in the homepage HTML                                                                                                                              |
+| SEC-12 | `api-key.cy.js`    | No browser request contains the key or goes directly to `themoviedb.org`                                                                                                                            |
+| SEC-13 | `api-key.cy.js`    | The homepage HTML and all loaded `_next/static` JavaScript files contain no `api_key=` and no key value                                                                                             |
+| SEC-14 | `api-key.cy.js`    | The search response body and headers do not contain the key                                                                                                                                         |
+| SEC-15 | `list-api.cy.js`   | `movies`, `trending`, and `tv-shows` return cards for a valid request                                                                                                                               |
+| SEC-16 | `list-api.cy.js`   | Invalid `page` (`abc`, `0`, `-1`, `1.5`, empty, `<script>`) and unknown `type` fall back to page 1                                                                                                  |
+| SEC-17 | `list-api.cy.js`   | `page` above the TMDB limit of 500 (`501`, `10000`, `999999999`) never returns 5xx                                                                                                                  |
+| SEC-18 | `list-api.cy.js`   | Extra query parameters are ignored; manipulated locales never return 5xx; locales over 10 characters return 400; other HTTP methods are rejected                                                    |
 | SEC-19 | `headers.cy.js`    | Homepage, 404 page, search API, and list API send `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, and a CSP with `default-src 'self'`, `frame-ancestors 'none'`, and no wildcard source |
-| SEC-20 | `routing.cy.js`    | Paths such as `//evil.com`, `/%2F%2Fevil.com`, and `/%5Cevil.com` never redirect to another host or return 5xx |
-| SEC-21 | `routing.cy.js`    | Manipulated `Accept-Language` values (unknown, `*`, script, `%00`, 4000 characters) redirect to a supported locale on the same host and never return 5xx |
-| SEC-22 | `routing.cy.js`    | Invalid ids on `movies` and `tv-shows` detail pages never return 5xx and show no stack trace      |
+| SEC-20 | `routing.cy.js`    | Paths such as `//evil.com`, `/%2F%2Fevil.com`, and `/%5Cevil.com` never redirect to another host or return 5xx                                                                                      |
+| SEC-21 | `routing.cy.js`    | Manipulated `Accept-Language` values (unknown, `*`, script, `%00`, 4000 characters) redirect to a supported locale on the same host and never return 5xx                                            |
+| SEC-22 | `routing.cy.js`    | Invalid ids on `movies` and `tv-shows` detail pages never return 5xx and show no stack trace                                                                                                        |
 
 Set the Cypress env `TMDB_API_KEY` to also search for the exact key value, for example `CYPRESS_TMDB_API_KEY=... npm run test:e2e:security`. Without it, the tests search for `api_key` in requests and responses, and for `api_key=` in HTML and bundles.
 

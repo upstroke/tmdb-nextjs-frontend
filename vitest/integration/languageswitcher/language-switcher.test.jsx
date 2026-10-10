@@ -105,14 +105,17 @@ describe('LanguageSwitcher (integration)', () => {
 
   describe('switching the locale', () => {
     // TC-LS-02
-    it.each(OTHER_LOCALES)('replaces the locale segment in the path when switching to %s', (next) => {
-      renderSwitcher(`/${DEFAULT_LOCALE}/movies/1`);
+    it.each(OTHER_LOCALES)(
+      'replaces the locale segment in the path when switching to %s',
+      (next) => {
+        renderSwitcher(`/${DEFAULT_LOCALE}/movies/1`);
 
-      selectLocale(next);
+        selectLocale(next);
 
-      expect(nav.replace).toHaveBeenCalledTimes(1);
-      expect(nav.replace).toHaveBeenCalledWith(`/${next}/movies/1`, { scroll: false });
-    });
+        expect(nav.replace).toHaveBeenCalledTimes(1);
+        expect(nav.replace).toHaveBeenCalledWith(`/${next}/movies/1`, { scroll: false });
+      }
+    );
 
     // TC-LS-03
     it('prepends the locale when the path has no locale segment', () => {

@@ -75,14 +75,14 @@ Prefer these tools when they are available:
 
 Each test type has one tool and one purpose:
 
-| Level       | Tool                                       | Location                                 | Purpose                                                                                           |
-| ----------- | ------------------------------------------ | ---------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| Unit        | Vitest (jsdom)                             | `vitest/unit/`                           | Pure logic: mappers, Zod schemas, utilities                                                       |
-| Integration | Vitest (jsdom) + Testing Library           | `vitest/integration/`                    | Real integration only: a page or section renders with mocked data and values reach the components |
-| Component   | Vitest browser mode (Playwright, Chromium) | `vitest/component/`                      | Component behavior in a real browser: rendering, props, interaction                               |
-| e2e         | Cypress                                    | `cypress/e2e/`                           | User flows such as search, detail page, and navigation                                            |
-| Accessibility | Cypress + `cypress-axe`                  | `cypress/accessibility/`, `cypress/e2e/` | Keyboard, focus, ARIA, visibility, contrast                                                       |
-| Security    | Cypress                                    | `cypress/e2e/security/`                  | Manipulated input, XSS, API key exposure, list and search API routes                              |
+| Level         | Tool                                       | Location                                 | Purpose                                                                                           |
+| ------------- | ------------------------------------------ | ---------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Unit          | Vitest (jsdom)                             | `vitest/unit/`                           | Pure logic: mappers, Zod schemas, utilities                                                       |
+| Integration   | Vitest (jsdom) + Testing Library           | `vitest/integration/`                    | Real integration only: a page or section renders with mocked data and values reach the components |
+| Component     | Vitest browser mode (Playwright, Chromium) | `vitest/component/`                      | Component behavior in a real browser: rendering, props, interaction                               |
+| e2e           | Cypress                                    | `cypress/e2e/`                           | User flows such as search, detail page, and navigation                                            |
+| Accessibility | Cypress + `cypress-axe`                    | `cypress/accessibility/`, `cypress/e2e/` | Keyboard, focus, ARIA, visibility, contrast                                                       |
+| Security      | Cypress                                    | `cypress/e2e/security/`                  | Manipulated input, XSS, API key exposure, list and search API routes                              |
 
 Rules:
 

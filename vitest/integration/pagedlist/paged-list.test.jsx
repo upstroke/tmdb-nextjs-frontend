@@ -122,7 +122,8 @@ function mockFetch(list, overrides = {}) {
       return list.route(new Request(u), { params: Promise.resolve({ locale: DEFAULT_LOCALE }) });
     }
 
-    if (s.includes('/genre/movie/list')) return Promise.resolve(okResponse(rawFixtures.genresMovie));
+    if (s.includes('/genre/movie/list'))
+      return Promise.resolve(okResponse(rawFixtures.genresMovie));
     if (s.includes('/genre/tv/list')) return Promise.resolve(okResponse(rawFixtures.genresTv));
     if (s.includes('/release_dates') || s.includes('/content_ratings')) {
       return Promise.resolve(okResponse({ results: [] }));

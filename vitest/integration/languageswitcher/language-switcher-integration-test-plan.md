@@ -42,17 +42,17 @@ Each test renders `LanguageSwitcher` and a `Probe` component inside the real `Ap
 
 ## Test Cases
 
-| ID | Automated Test | Covered Behavior |
-| --- | --- | --- |
+| ID       | Automated Test                                                       | Covered Behavior                                                                                              |
+| -------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | TC-LS-01 | `lists one option per supported locale with the short code as label` | Options equal `SUPPORTED_LOCALES` and `getSupportedLocales()`, labels like `DE`, start value and `aria-label` |
-| TC-LS-02 | `replaces the locale segment in the path when switching to %s` | `/en-US/movies/1` becomes `/{locale}/movies/1`, called with `{ scroll: false }` |
-| TC-LS-03 | `prepends the locale when the path has no locale segment` | `/movies/1` becomes `/{locale}/movies/1` |
-| TC-LS-04 | `replaces the locale on a path that consists of the locale only` | `/en-US` becomes `/{locale}` |
-| TC-LS-05 | `saves the selected locale in sessionStorage` | `app-locale` contains the new locale |
-| TC-LS-06 | `updates the locale state and the UI texts` | `useLocale()`, label text, select value and `aria-label` change |
-| TC-LS-07 | `falls back to the default locale for an unsupported value` | `setLocale('xx-XX')` results in the default locale in state and storage |
-| TC-LS-08 | `syncs store and html lang when LocaleSyncer receives a new locale` | Store, `sessionStorage` and `document.documentElement.lang` follow the URL locale |
-| TC-LS-09 | `starts with the locale stored in sessionStorage` | Stored locale is the start value of select and state |
+| TC-LS-02 | `replaces the locale segment in the path when switching to %s`       | `/en-US/movies/1` becomes `/{locale}/movies/1`, called with `{ scroll: false }`                               |
+| TC-LS-03 | `prepends the locale when the path has no locale segment`            | `/movies/1` becomes `/{locale}/movies/1`                                                                      |
+| TC-LS-04 | `replaces the locale on a path that consists of the locale only`     | `/en-US` becomes `/{locale}`                                                                                  |
+| TC-LS-05 | `saves the selected locale in sessionStorage`                        | `app-locale` contains the new locale                                                                          |
+| TC-LS-06 | `updates the locale state and the UI texts`                          | `useLocale()`, label text, select value and `aria-label` change                                               |
+| TC-LS-07 | `falls back to the default locale for an unsupported value`          | `setLocale('xx-XX')` results in the default locale in state and storage                                       |
+| TC-LS-08 | `syncs store and html lang when LocaleSyncer receives a new locale`  | Store, `sessionStorage` and `document.documentElement.lang` follow the URL locale                             |
+| TC-LS-09 | `starts with the locale stored in sessionStorage`                    | Stored locale is the start value of select and state                                                          |
 
 ## Detailed Test Cases
 

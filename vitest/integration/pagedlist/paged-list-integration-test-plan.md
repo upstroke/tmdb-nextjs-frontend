@@ -47,21 +47,21 @@ A fetch router answers TMDB endpoints from `paged-list.browser.fixtures.js` and 
 
 TC-PL-01 to TC-PL-11 are executed for `home`, `movies` and `tv-shows`; TC-PL-12 and TC-PL-13 only for `home`.
 
-| ID | Automated Test | Covered Behavior |
-| --- | --- | --- |
-| TC-PL-01 | `renders heading, featured item and the cards of the first trending page` | Heading, details request for the featured item, three cards, load more enabled, no internal API call |
-| TC-PL-02 | `loads the next page through the real API route and appends the cards` | One call `/api/{locale}/{apiPath}?page=2`, four cards, button enabled, stored page `2` |
-| TC-PL-03 | `does not show a card twice when the next page repeats it` | No duplicate titles after page 2 |
-| TC-PL-04 | `disables load more and keeps the stored page when the next page has no new cards` | Cards unchanged, button disabled, stored page stays `1` |
-| TC-PL-05 | `restores all pages up to the stored page` | Stored page `3` loads pages 2 and 3, five cards, button disabled |
-| TC-PL-06 | `shows the error dialog and keeps the cards when the next page fails` | `loadMoreError` visible, cards kept, button enabled again |
-| TC-PL-07 | `shows the timeout message when the next page does not answer within 15 seconds` | `loadTimeout` visible after 15 s, cards kept |
-| TC-PL-08 | `shows the missing API key message without any request` | `apiKeyMissing`, no cards, no fetch |
-| TC-PL-09 | `shows the empty message when the first page has no results` | Message of `noMoviesFound` / `noTvShows` / `noContent`, no cards |
-| TC-PL-10 | `scrolls to the first new card after loading the next page` | Observed element id `{cardIdPrefix}-4`, `scrollIntoView` with `smooth` / `start` |
-| TC-PL-11 | `shows the load error of the server page instead of the empty message` | `contentLoadError` / `moviesLoadError` / `tvShowsLoadError` visible, no empty message, no cards |
-| TC-PL-12 | `shows the invalid URL message for missing locale parameter without any request` | Home page only: `Invalid URL parameters.`, no cards, no fetch |
-| TC-PL-13 | `loads the details of a movie when the first trending item is a movie` | Home page only: request `/movie/{id}`, no details request `/tv/{id}` for the tv show in the list |
+| ID       | Automated Test                                                                     | Covered Behavior                                                                                     |
+| -------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| TC-PL-01 | `renders heading, featured item and the cards of the first trending page`          | Heading, details request for the featured item, three cards, load more enabled, no internal API call |
+| TC-PL-02 | `loads the next page through the real API route and appends the cards`             | One call `/api/{locale}/{apiPath}?page=2`, four cards, button enabled, stored page `2`               |
+| TC-PL-03 | `does not show a card twice when the next page repeats it`                         | No duplicate titles after page 2                                                                     |
+| TC-PL-04 | `disables load more and keeps the stored page when the next page has no new cards` | Cards unchanged, button disabled, stored page stays `1`                                              |
+| TC-PL-05 | `restores all pages up to the stored page`                                         | Stored page `3` loads pages 2 and 3, five cards, button disabled                                     |
+| TC-PL-06 | `shows the error dialog and keeps the cards when the next page fails`              | `loadMoreError` visible, cards kept, button enabled again                                            |
+| TC-PL-07 | `shows the timeout message when the next page does not answer within 15 seconds`   | `loadTimeout` visible after 15 s, cards kept                                                         |
+| TC-PL-08 | `shows the missing API key message without any request`                            | `apiKeyMissing`, no cards, no fetch                                                                  |
+| TC-PL-09 | `shows the empty message when the first page has no results`                       | Message of `noMoviesFound` / `noTvShows` / `noContent`, no cards                                     |
+| TC-PL-10 | `scrolls to the first new card after loading the next page`                        | Observed element id `{cardIdPrefix}-4`, `scrollIntoView` with `smooth` / `start`                     |
+| TC-PL-11 | `shows the load error of the server page instead of the empty message`             | `contentLoadError` / `moviesLoadError` / `tvShowsLoadError` visible, no empty message, no cards      |
+| TC-PL-12 | `shows the invalid URL message for missing locale parameter without any request`   | Home page only: `Invalid URL parameters.`, no cards, no fetch                                        |
+| TC-PL-13 | `loads the details of a movie when the first trending item is a movie`             | Home page only: request `/movie/{id}`, no details request `/tv/{id}` for the tv show in the list     |
 
 ## Detailed Test Cases
 

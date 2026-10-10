@@ -59,9 +59,7 @@ describe('Security: API key exposure', () => {
 
   it('does not contain the key in the loaded JavaScript bundles', () => {
     cy.request(`/${locale}`).then((res) => {
-      const scripts = [
-        ...new Set(res.body.match(/\/_next\/static\/[^"'\s\\]+\.js/g) ?? [])
-      ];
+      const scripts = [...new Set(res.body.match(/\/_next\/static\/[^"'\s\\]+\.js/g) ?? [])];
       expect(scripts.length, 'script files found').to.be.greaterThan(0);
 
       cy.env(['TMDB_API_KEY']).then(({ TMDB_API_KEY: keyValue }) => {

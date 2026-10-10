@@ -75,7 +75,7 @@ The keyboard scenarios are aligned with the ARIA combobox pattern: the input rem
 | TC-THS-15 | `restores focus to the input when Escape is pressed without visible results`                           | Keeps or restores focus to the combobox when Escape is pressed without visible results                                |
 | TC-THS-16 | `announces the date type with a visually hidden label for movies and TV shows`                         | Renders `Release date` or `First air date` in `.u-sr-only` directly before the `<time>` element                       |
 | TC-THS-17 | `does not select a result with Home/End while no result is focused`                                    | `Home` and `End` are not prevented and select no option while no result is focused                                    |
-| TC-THS-18 | `ignores keyboard events that are dispatched on the window`                                            | `ArrowDown` and `Escape` on `window` neither select an option nor hide the listbox                                   |
+| TC-THS-18 | `ignores keyboard events that are dispatched on the window`                                            | `ArrowDown` and `Escape` on `window` neither select an option nor hide the listbox                                    |
 
 ## Detailed Test Cases
 

@@ -38,10 +38,24 @@ const searchResponse = {
 // Response of the internal /api/<locale>/search route (already mapped for the UI).
 const apiResponse = {
   movies: [
-    { id: 155, title: 'The Dark Knight', mediaType: 'movie', date: '2008-07-16', rating: 8.536, posterUrl: '/qJ2tW6WMUDux911r6m7haRef0WH.jpg' }
+    {
+      id: 155,
+      title: 'The Dark Knight',
+      mediaType: 'movie',
+      date: '2008-07-16',
+      rating: 8.536,
+      posterUrl: '/qJ2tW6WMUDux911r6m7haRef0WH.jpg'
+    }
   ],
   tvShows: [
-    { id: 1396, title: 'Breaking Bad', mediaType: 'tv', date: '2008-01-20', rating: 9.0, posterUrl: '/anFx9aTOOYqgS3v7x3R84Kz67ly.jpg' }
+    {
+      id: 1396,
+      title: 'Breaking Bad',
+      mediaType: 'tv',
+      date: '2008-01-20',
+      rating: 9.0,
+      posterUrl: '/anFx9aTOOYqgS3v7x3R84Kz67ly.jpg'
+    }
   ]
 };
 
@@ -154,14 +168,47 @@ export const searchToDetailsFixture = {
     numberOfSeasons: 5,
     numberOfEpisodes: 62,
     seasons: [
-      { id: 3572, season_number: 1, name: 'Season 1', air_date: '2008-01-20', episode_count: 7,
+      {
+        id: 3572,
+        season_number: 1,
+        name: 'Season 1',
+        air_date: '2008-01-20',
+        episode_count: 7,
         episodes: [
-          { id: 62085, episode_number: 1, name: 'Pilot', air_date: '2008-01-20', runtime: 59, vote_average: 8.504 },
-          { id: 62086, episode_number: 2, name: "Cat's in the Bag...", air_date: '2008-01-27', runtime: 49, vote_average: 8.249 },
-          { id: 62087, episode_number: 3, name: "...And the Bag's in the River", air_date: '2008-02-10', runtime: 49, vote_average: 8.422 }
+          {
+            id: 62085,
+            episode_number: 1,
+            name: 'Pilot',
+            air_date: '2008-01-20',
+            runtime: 59,
+            vote_average: 8.504
+          },
+          {
+            id: 62086,
+            episode_number: 2,
+            name: "Cat's in the Bag...",
+            air_date: '2008-01-27',
+            runtime: 49,
+            vote_average: 8.249
+          },
+          {
+            id: 62087,
+            episode_number: 3,
+            name: "...And the Bag's in the River",
+            air_date: '2008-02-10',
+            runtime: 49,
+            vote_average: 8.422
+          }
         ]
       },
-      { id: 3573, season_number: 2, name: 'Season 2', air_date: '2009-03-08', episode_count: 13, episodes: [] }
+      {
+        id: 3573,
+        season_number: 2,
+        name: 'Season 2',
+        air_date: '2009-03-08',
+        episode_count: 13,
+        episodes: []
+      }
     ],
     cast: [
       { id: 17419, name: 'Bryan Cranston', character: 'Walter White', order: 0 },
