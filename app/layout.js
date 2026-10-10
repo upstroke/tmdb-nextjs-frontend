@@ -22,10 +22,16 @@ export const metadata = {
 };
 
 /**
+ * Root layout of the app. Renders the `<html>` and `<body>` elements and wraps
+ * the page in the locale provider.
  *
- * @param root0
- * @param root0.children
- * @param root0.params
+ * The `lang` attribute comes from the `locale` route param and falls back to
+ * `DEFAULT_LOCALE` when the param is missing.
+ *
+ * @param {object} props
+ * @param {import('react').ReactNode} props.children - Page content to render inside the layout.
+ * @param {Promise<{ locale?: string }>} [props.params] - Route params (async in Next.js 15+).
+ * @returns {Promise<JSX.Element>}
  */
 export default async function RootLayout({ children, params }) {
   const { locale } = (await params) ?? {};
