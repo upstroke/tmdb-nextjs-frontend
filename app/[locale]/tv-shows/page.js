@@ -3,9 +3,18 @@ import { getLocaleText } from '@/lib/i18n/helpers';
 import PagedList from '@/components/PagedList';
 
 /**
+ * TV shows page (`/[locale]/tv-shows`). Server component that loads trending TV
+ * shows from TMDB and renders them as a paged list.
  *
- * @param root0
- * @param root0.params
+ * The featured show is the second trending entry, with the third and then the
+ * first as fallbacks. When its details fail to load, the page still renders
+ * without it. Duplicate cards are removed by id and media type. Errors while
+ * loading the list are passed to `PagedList` through `initialData.error`. A
+ * missing `TMDB_API_KEY` renders a short message instead of the list.
+ *
+ * @param {object} props
+ * @param {Promise<{ locale: string }>} props.params - Route params (async in Next.js 15+).
+ * @returns {Promise<JSX.Element>}
  */
 export default async function TvShowsPage({ params }) {
   const { locale } = await params;
