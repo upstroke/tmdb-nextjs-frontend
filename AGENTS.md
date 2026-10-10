@@ -88,11 +88,12 @@ Rules:
 
 - Do not write component tests in jsdom. jsdom has no layout and cannot check color contrast or real focus behavior. Use Vitest browser mode in `vitest/component/` instead.
 - Keep `vitest/integration/` limited to true integration tests. Assert on the rendered DOM (roles, text), not on props.
-- Test keyboard interaction, focus management, and ARIA states in Cypress, for example tabs, modals, and dropdowns.
+- Test keyboard interaction, focus management, and ARIA states of a single component in Vitest browser mode (`vitest/component/`). Test them in Cypress when they span pages or need the full app, for example tabs, modals, and dropdowns.
 - Run `cy.checkA11y()` (`cypress-axe`) on pages and after relevant interactions.
 - Do not add tests for purely presentational components. Integration or Cypress tests cover them.
 - Check whether a dialog is really open and visible in Cypress. jsdom has no `showModal`, so Vitest tests stub it and only assert the message text.
 - In Cypress specs, do not use `Cypress.env()`. `allowCypressEnv` is `false`, so use `cy.env()`.
+- When you fix, change, add, or delete a test, update its test plan and the affected docs in the same change. See `.agent/skills/tmdb-testing/SKILL.md`.
 
 # Validation
 
