@@ -143,6 +143,10 @@ export default function TypeHeadSearch() {
   const resultsId = 'typeahead-search-results';
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect --
+       sessionStorage is only available in the browser. Reading it during the
+       initial render would cause a hydration mismatch, so the stored state is
+       restored once after mount. */
     const storedQuery = readStorage(STORAGE_KEY_QUERY, '');
     const storedMovies = readStorage(STORAGE_KEY_MOVIES, []);
     const storedTv = readStorage(STORAGE_KEY_TV, []);
@@ -152,6 +156,7 @@ export default function TypeHeadSearch() {
     if (storedTv.length) setTvShows(storedTv);
     resultsClosedRef.current = storedClosed;
     setResultsClosed(storedClosed);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   const hasResults = movies.length > 0 || tvShows.length > 0;
@@ -347,6 +352,9 @@ export default function TypeHeadSearch() {
     if (locale === prevLocale.current) return;
     prevLocale.current = locale;
     const term = query.trim();
+    // Re-syncing the results with the new locale is a genuine side effect;
+    // search() sets loading state before it awaits the network request.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (term.length >= 4) void search(term, { silent: true });
   }, [locale, query, search]);
 
