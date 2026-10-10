@@ -22,7 +22,8 @@ const eslintConfig = defineConfig([
       ],
       // Params + returns declared in JSDoc must match actual signature
       'jsdoc/check-param-names': 'warn',
-      'jsdoc/check-tag-names': 'warn',
+      // '@tags' is used by Cypress test annotations
+      'jsdoc/check-tag-names': ['warn', { definedTags: ['tags'] }],
       'jsdoc/check-types': 'warn',
       // Descriptions must not be empty
       'jsdoc/require-param-description': 'off',
@@ -33,6 +34,15 @@ const eslintConfig = defineConfig([
       // No duplicate tags
       'jsdoc/no-multi-asterisks': 'warn',
       'jsdoc/valid-types': 'warn'
+    }
+  },
+  {
+    // Tests, mocks, Cypress, scripts and tool configs do not need full JSDoc
+    files: ['vitest/**', 'cypress/**', 'scripts/**', '*.config.js', '*.config.mjs'],
+    rules: {
+      'jsdoc/require-jsdoc': 'off',
+      'jsdoc/require-param': 'off',
+      'jsdoc/require-returns': 'off'
     }
   }
 ]);
