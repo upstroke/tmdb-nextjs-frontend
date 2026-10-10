@@ -13,7 +13,7 @@ export const CardDefault = () => {
 
   /**
    * Mount CardDefault component with data
-   * @param {Object} props - Component props
+   * @param {object} props - Component props
    * @param {number|string} props.id - TMDB item id
    * @param {'movie'|'tv'} props.mediaType - Media type
    * @param {string} props.title - Display title

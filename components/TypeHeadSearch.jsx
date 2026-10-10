@@ -165,9 +165,16 @@ export default function TypeHeadSearch() {
   const hasStatusMessage =
     !resultsClosed && (showLoading || !!error || (hasSearchTerm && !hasResults));
 
+  /**
+   *
+   */
   function getAllResultIds() {
     return [...movies.map((m) => `movie-${m.id}`), ...tvShows.map((t) => `tv-${t.id}`)];
   }
+  /**
+   *
+   * @param resultId
+   */
   function focusResult(resultId) {
     setFocusedResultId(resultId);
     requestAnimationFrame(() => {
@@ -176,30 +183,49 @@ export default function TypeHeadSearch() {
         ?.scrollIntoView({ behavior: 'auto', block: 'nearest' });
     });
   }
+  /**
+   *
+   */
   function focusNextResult() {
     const ids = getAllResultIds();
     if (!ids.length) return;
     const idx = ids.indexOf(focusedResultId ?? '');
     focusResult(ids[idx === -1 ? 0 : Math.min(idx + 1, ids.length - 1)]);
   }
+  /**
+   *
+   */
   function focusPreviousResult() {
     const ids = getAllResultIds();
     if (!ids.length) return;
     const idx = ids.indexOf(focusedResultId ?? '');
     focusResult(ids[idx === -1 ? 0 : Math.max(idx - 1, 0)]);
   }
+  /**
+   *
+   */
   function focusFirstResult() {
     const ids = getAllResultIds();
     if (ids.length) focusResult(ids[0]);
   }
+  /**
+   *
+   */
   function focusLastResult() {
     const ids = getAllResultIds();
     if (ids.length) focusResult(ids[ids.length - 1]);
   }
+  /**
+   *
+   */
   function clearAnnouncementFn() {
     if (announcementTimer.current) clearTimeout(announcementTimer.current);
     setAnnouncement('');
   }
+  /**
+   *
+   * @param msg
+   */
   function scheduleAnnouncement(msg) {
     if (announcementTimer.current) clearTimeout(announcementTimer.current);
     setAnnouncement('');
@@ -358,6 +384,10 @@ export default function TypeHeadSearch() {
     if (term.length >= 4) void search(term, { silent: true });
   }, [locale, query, search]);
 
+  /**
+   *
+   * @param e
+   */
   function handleInput(e) {
     const val = e.currentTarget.value;
     setQuery(val);
@@ -424,6 +454,10 @@ export default function TypeHeadSearch() {
   }
 
   useEffect(() => {
+    /**
+     *
+     * @param e
+     */
     function handleClick(e) {
       if (!e.target.closest('#typeahead-search')) closeResults();
     }

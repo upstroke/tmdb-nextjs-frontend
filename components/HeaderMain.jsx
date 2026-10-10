@@ -60,6 +60,10 @@ export default function HeaderMain() {
     active: (p) => item.active(p, locale)
   }));
 
+  /**
+   *
+   * @param key
+   */
   function getStoredPage(key) {
     if (typeof window === 'undefined' || !key) return 1;
     try {
@@ -69,11 +73,20 @@ export default function HeaderMain() {
     }
   }
 
+  /**
+   *
+   * @param path
+   * @param storageKey
+   */
   function getNavHref(path, storageKey) {
     const storedPage = getStoredPage(storageKey);
     return storedPage > 1 ? `${path}?page=${storedPage}` : path;
   }
 
+  /**
+   *
+   * @param label
+   */
   function resolveLabel(label) {
     return titles[label] ?? labels[label] ?? label;
   }

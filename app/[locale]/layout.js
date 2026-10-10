@@ -4,10 +4,19 @@ import HeaderMain from '@/components/HeaderMain';
 import FooterMain from '@/components/FooterMain';
 import { notFound } from 'next/navigation';
 
+/**
+ *
+ */
 export function generateStaticParams() {
   return SUPPORTED_LOCALES.map((locale) => ({ locale }));
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.children
+ * @param root0.params
+ */
 export default async function LocaleLayout({ children, params }) {
   const { locale = DEFAULT_LOCALE } = await params;
 

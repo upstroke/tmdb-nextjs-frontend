@@ -21,6 +21,12 @@ export const metadata = {
   description: 'Movies and TV Shows powered by TMDB'
 };
 
+/**
+ *
+ * @param root0
+ * @param root0.children
+ * @param root0.params
+ */
 export default async function RootLayout({ children, params }) {
   const { locale } = (await params) ?? {};
   const lang = locale ?? DEFAULT_LOCALE;

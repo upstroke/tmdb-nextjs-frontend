@@ -52,6 +52,10 @@ export default function TabGroupe({ tabs = [], initialTab, ariaLabel = '', onTab
     }
   }, [ariaLabel]);
 
+  /**
+   *
+   * @param id
+   */
   function selectTab(id) {
     const strId = String(id);
     setActiveTab(strId);
@@ -65,10 +69,19 @@ export default function TabGroupe({ tabs = [], initialTab, ariaLabel = '', onTab
     onTabSelect?.(strId);
   }
 
+  /**
+   *
+   * @param id
+   */
   function isSelected(id) {
     return String(activeTab) === String(id);
   }
 
+  /**
+   *
+   * @param event
+   * @param index
+   */
   function handleTabKeydown(event, index) {
     const map = {
       ArrowRight: (index + 1) % tabs.length,
@@ -83,6 +96,13 @@ export default function TabGroupe({ tabs = [], initialTab, ariaLabel = '', onTab
     document.getElementById(`tab-${nextId}`)?.focus();
   }
 
+  /**
+   *
+   * @param event
+   * @param tabIndex
+   * @param episodeIndex
+   * @param total
+   */
   function handleEpisodeKeydown(event, tabIndex, episodeIndex, total) {
     const moves = {
       ArrowDown: (episodeIndex + 1) % total,

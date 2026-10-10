@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/lib/i18n/config';
 
+/**
+ *
+ * @param request
+ */
 export function proxy(request) {
   const { pathname } = request.nextUrl;
 

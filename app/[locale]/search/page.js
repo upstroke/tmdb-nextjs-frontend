@@ -2,6 +2,12 @@ import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/helpers';
 import CardDefault from '@/components/CardDefault';
 
+/**
+ *
+ * @param root0
+ * @param root0.params
+ * @param root0.searchParams
+ */
 export default async function SearchPage({ params, searchParams }) {
   const { locale } = await params;
   const { messages } = getLocaleText(locale);

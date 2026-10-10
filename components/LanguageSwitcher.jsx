@@ -26,6 +26,10 @@ export default function LanguageSwitcher() {
     label: code.split('-')[0].toUpperCase()
   }));
 
+  /**
+   *
+   * @param event
+   */
   function handleChange(event) {
     const nextLocale = resolveLocale(event.currentTarget.value);
     setLocale(nextLocale);

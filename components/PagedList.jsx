@@ -101,6 +101,9 @@ export default function PagedList({
     return () => obs.disconnect();
   }, [scrollTargetId]);
 
+  /**
+   *
+   */
   async function loadMore() {
     if (loading || !hasMore) return;
     setLoading(true);

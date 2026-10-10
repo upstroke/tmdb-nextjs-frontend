@@ -13,6 +13,11 @@ import DialogMessage from '@/components/DialogMessage';
 /** @typedef {import('@/lib/schemas/tmdb').MediaDetail} MediaDetail */
 /** @typedef {import('@/lib/schemas/tmdb').WatchProviderResult} WatchProviderResult */
 
+/**
+ *
+ * @param root0
+ * @param root0.params
+ */
 export default async function MovieDetailPage({ params }) {
   const paramsParsed = IdParamSchema.safeParse(await params);
   if (!paramsParsed.success) {

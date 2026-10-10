@@ -8,6 +8,9 @@ import { getLocaleText } from '@/lib/i18n/helpers';
 const STORAGE_KEY = 'app-locale';
 
 /* v8 ignore start */
+/**
+ *
+ */
 function readStoredLocale() {
   if (typeof window === 'undefined') return DEFAULT_LOCALE;
   try {
@@ -17,6 +20,10 @@ function readStoredLocale() {
   }
 }
 
+/**
+ *
+ * @param locale
+ */
 function writeStoredLocale(locale) {
   if (typeof window === 'undefined') return;
   try {
@@ -33,6 +40,12 @@ const LocaleContext = createContext({
 });
 
 /* v8 ignore start */
+/**
+ *
+ * @param root0
+ * @param root0.initialLocale
+ * @param root0.children
+ */
 export function LocaleProvider({ initialLocale, children }) {
   const [locale, setLocaleState] = useState(() => {
     if (initialLocale) return resolveLocale(initialLocale);
@@ -56,14 +69,23 @@ export function LocaleProvider({ initialLocale, children }) {
   return <LocaleContext.Provider value={{ locale, setLocale }}>{children}</LocaleContext.Provider>;
 }
 
+/**
+ *
+ */
 export function useLocale() {
   return useContext(LocaleContext).locale;
 }
 
+/**
+ *
+ */
 export function useSetLocale() {
   return useContext(LocaleContext).setLocale;
 }
 
+/**
+ *
+ */
 export function useI18n() {
   const locale = useLocale();
   return getLocaleText(locale);
@@ -72,10 +94,18 @@ export function useI18n() {
 
 let _externalSetter = null;
 
+/**
+ *
+ * @param fn
+ */
 export function _registerExternalSetter(fn) {
   _externalSetter = fn;
 }
 
+/**
+ *
+ * @param next
+ */
 export function setLocale(next) {
   const resolved = resolveLocale(next);
   writeStoredLocale(resolved);

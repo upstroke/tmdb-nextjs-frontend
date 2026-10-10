@@ -15,6 +15,11 @@ import TabGroupe from '@/components/TabGroupe';
 /** @typedef {import('@/lib/schemas/tmdb').WatchProviderResult} WatchProviderResult */
 /** @typedef {import('@/lib/schemas/tmdb').Season} Season */
 
+/**
+ *
+ * @param root0
+ * @param root0.params
+ */
 export default async function TvShowDetailPage({ params }) {
   const paramsParsed = IdParamSchema.safeParse(await params);
   if (!paramsParsed.success) {

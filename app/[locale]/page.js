@@ -6,6 +6,12 @@ import PagedList from '@/components/PagedList';
 /** @typedef {import('@/lib/schemas/tmdb').FeaturedItem} FeaturedItem */
 /** @typedef {import('@/lib/schemas/tmdb').CardItem} CardItem */
 
+/**
+ *
+ * @param root0
+ * @param root0.params
+ * @param root0.searchParams
+ */
 export default async function HomePage({ params, searchParams }) {
   const paramsParsed = LocaleParamSchema.safeParse(await params);
   if (!paramsParsed.success) {
