@@ -1,7 +1,7 @@
 ---
 name: tmdb-accessibility
 description: Write and maintain accessibility tests (axe, keyboard, focus, ARIA, contrast, dialogs) for the TMDB Next.js frontend to meet WCAG 2.2 AA.
-version: 0.1.1
+version: 0.1.2
 ---
 
 # TMDB Accessibility Skill
@@ -45,7 +45,12 @@ Document intentional exceptions explicitly. Do not disable rules broadly.
 
 ### 2. Test Keyboard Navigation and Focus
 
-Keyboard, focus, and ARIA behavior is tested in Cypress, not in jsdom. Use `cy.realPress` or `cy.tab` only after the matching plugin is added to `package.json`; today neither `cypress-real-events` nor a tab plugin is installed. Without them, use `cy.get(...).focus()`, `.type('{enter}')`, `.type('{esc}')`, and `cy.focused()`.
+Keyboard, focus, and ARIA behavior is not tested in jsdom. Choose the test level by scope:
+
+- **Vitest browser mode** (`vitest/component/`): keyboard, focus, and ARIA states of a single component, for example arrow-key navigation in the typeahead search. Use `@testing-library/user-event` for real key presses, and dispatch key events on the element that owns the handler.
+- **Cypress** (`cypress/accessibility/`, `cypress/e2e/`): behavior that spans pages or needs the full app, such as tabs, dropdowns, and dialogs in a real page.
+
+In Cypress, use `cy.realPress` or `cy.tab` only after the matching plugin is added to `package.json`; today neither `cypress-real-events` nor a tab plugin is installed. Without them, use `cy.get(...).focus()`, `.type('{enter}')`, `.type('{esc}')`, and `cy.focused()`.
 
 ```js
 it('opens a result with Enter', () => {
@@ -56,6 +61,8 @@ it('opens a result with Enter', () => {
 ```
 
 Check dialogs in Cypress: the dialog must be open and visible, focus must move into it, and it must close as expected. Vitest tests cannot check this, because jsdom has no `showModal`.
+
+When you change an accessibility test, also update its test plan (`cypress/accessibility/accessibility-testplan.md` or the `*-testplan.md` next to the Vitest component test). See the `tmdb-testing` skill, section "Keep Tests, Test Plans and Docs in Sync".
 
 ### 3. Test Semantics and Labels
 
@@ -102,12 +109,13 @@ it('meets WCAG AA contrast requirements', () => {
 
 ## Scripts
 
-Use `npm run test:e2e` (headless) or `npm run test:e2e:open` (interactive). The app must run on `http://localhost:3000`. There is no separate accessibility script yet.
+Use `npm run test:e2e` (headless) or `npm run test:e2e:open` (interactive) for Cypress. Use `npm run test:component` for Vitest browser mode component tests. The app must run on `http://localhost:3000` for Cypress. There is no separate accessibility script yet.
 
 ## Tools
 
 - **cypress-axe / axe-core**: Automated accessibility testing
 - **@testing-library/cypress**: Semantic queries (`findByRole`, `findByLabelText`)
+- **@testing-library/user-event**: Real key presses in Vitest browser mode component tests
 
 ## Documentation
 
