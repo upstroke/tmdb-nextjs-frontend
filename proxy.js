@@ -2,8 +2,16 @@ import { NextResponse } from 'next/server';
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/lib/i18n/config';
 
 /**
+ * Next.js proxy that redirects requests without a locale prefix.
  *
- * @param request
+ * Static assets, `/_next` and `/api` paths pass through untouched. Paths that
+ * already start with a supported locale also pass through. All other paths are
+ * redirected to the same path prefixed with a locale. The locale is picked by
+ * matching the first two letters of each supported locale against the
+ * `Accept-Language` header, falling back to `DEFAULT_LOCALE`.
+ *
+ * @param {import('next/server').NextRequest} request - Incoming request.
+ * @returns {import('next/server').NextResponse} A pass-through or redirect response.
  */
 export function proxy(request) {
   const { pathname } = request.nextUrl;
