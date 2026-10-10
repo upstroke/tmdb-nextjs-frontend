@@ -29,6 +29,7 @@ These rules apply to all automated tests in this project.
 - Do not modify production code, test configuration, dependencies, environment files, or unrelated tests unless they are explicitly included in the task.
 - Do not install tools or packages without prior approval.
 - Run the narrowest relevant test command first, then run broader checks only when justified by the scope.
+- Run `npm run check` (lint with `--max-warnings=0`, format check, and Vitest) before considering a task complete. Fix lint warnings in new or changed test files instead of leaving them.
 - Review the complete diff before considering a task complete.
 - Report changed files, implemented or changed test cases, executed checks, skipped checks, results, and remaining risks.
 
