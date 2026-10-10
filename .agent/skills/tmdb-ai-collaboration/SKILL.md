@@ -1,8 +1,9 @@
 ---
 name: tmdb-ai-collaboration
-description: Plan, scope, validate, and review AI-assisted work in the TMDB Next.js frontend while keeping the user in control of edits, commands, commits, and pull requests.
-
-version: 0.3.0
+description: Plan, scope, validate, and review AI-assisted work in the TMDB Next.js frontend while keeping the user in control of edits, commands, commits, and pull requests. Use for broad, ambiguous, multi-step, or risky tasks, for implementation plans, and before commits, pushes, pull requests, deletions, dependency changes, or configuration changes.
+metadata:
+  version: '0.3.1'
+---
 
 # TMDB AI collaboration
 
