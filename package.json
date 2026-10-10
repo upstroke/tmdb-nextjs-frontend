@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^6.0.4",
+    "@eslint/eslintrc": "^3.3.7",
     "@testing-library/cypress": "^10.0.3",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
@@ -42,7 +43,8 @@
     "cypress": "^15.21.1",
     "cypress-axe": "^1.7.0",
     "eslint": "^9.28.0",
-    "eslint-config-next": "15.3.3",
+    "eslint-config-next": "^16.4.0",
+    "eslint-plugin-jsdoc": "^65.2.4",
     "jsdom": "^30.1.2",
     "next": "^16.3.8",
     "playwright": "^1.63.0",
