@@ -29,4 +29,5 @@ Do not disable rules broadly.
 
 ## Locale Considerations
 
-Tests run against `DEFAULT_LOCALE` from `cypress.env.json`. Default fallback: `en-US`.
+Tests use the constant `en-US`, the same as `DEFAULT_LOCALE` in `lib/i18n/config.js`.
+Do not read the locale with `Cypress.env()`: `allowCypressEnv` is `false`.
