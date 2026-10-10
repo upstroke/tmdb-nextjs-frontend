@@ -1,3 +1,9 @@
+---
+name: tmdb-development
+description: Implement features, fixes, refactors, components, routes, and styling in the TMDB Next.js frontend following the project structure, i18n, validation, and code style rules.
+version: 0.1.0
+---
+
 # TMDB Development Skill
 
 ## Purpose
@@ -12,8 +18,9 @@ This skill enables the AI agent to assist with general development tasks for the
 - Fomantic UI CSS + Sass
 - Zod for runtime validation
 - Internationalization (`lib/i18n/`)
-- Testing (Vitest + Cypress), see the `tmdb-testing` skill
 - Code quality (ESLint, Prettier)
+
+For tests, see the `tmdb-testing` skill.
 
 ## Rules
 
@@ -25,6 +32,7 @@ This skill enables the AI agent to assist with general development tasks for the
 - Keep fallbacks for missing data and remove duplicates when loading more paginated data.
 - Show API and loading errors with the shared error dialog.
 - Keep the `TMDB_API_KEY` on the server.
+- Do not log raw error objects from TMDB requests without checking that they contain no key or URL with `api_key=`.
 
 ## Capabilities
 
@@ -83,48 +91,16 @@ Utility functions live in `lib/utils/`. Document parameters and return types wit
 
 See the `tmdb-testing` skill and [`docs/testing.md`](../../../docs/testing.md).
 
-## Project Structure
-
-```
-tmdb-nextjs-frontend/
-├── app/                    # Next.js App Router (routes, app/api, app/[locale])
-├── components/             # React components
-├── lib/
-│   ├── services/           # TMDB API client (tmdb-api.js)
-│   ├── i18n/               # Translations and locale helpers
-│   ├── stores/             # React Context stores
-│   ├── utils/              # Utility functions
-│   └── schemas/            # Zod schemas + JSDoc typedefs
-├── styles/                 # Sass styles (Fomantic UI)
-├── vitest/                 # Vitest tests, fixtures, mocks, setup
-├── cypress/                # Cypress tests, page objects, fixtures, support
-└── docs/                   # Documentation
-```
-
-## Scripts
-
-```bash
-npm run dev            # Development
-npm run build          # Build
-npm run start          # Start the production build
-npm run lint           # Lint
-npm run format         # Format
-npm test               # All Vitest tests
-npm run test:unit
-npm run test:integration
-npm run test:component
-npm run test:e2e       # Cypress (app must run on http://localhost:3000)
-```
-
 ## Code Style
 
 - **JavaScript** with JSDoc for contracts
 - **Components**: Functional components with hooks
 - **Styling**: Fomantic UI and Sass
-- **Testing**: Testing Library queries
 - **Naming**: PascalCase for components, camelCase for functions
 
 ## Documentation
+
+The project structure and the npm scripts are described only in [`README.md`](../../../README.md). Do not copy them into this skill.
 
 - **Testing Strategy**: [`docs/testing.md`](../../../docs/testing.md)
 - **README**: [`README.md`](../../../README.md)

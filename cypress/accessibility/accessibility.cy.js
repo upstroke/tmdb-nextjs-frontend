@@ -9,7 +9,7 @@
  * @tags @accessibility @a11y
  */
 describe('Accessibility — Homepage', () => {
-  const locale = Cypress.env('DEFAULT_LOCALE') ?? 'en-US';
+  const locale = 'en-US';
 
   it('has no axe violations on the homepage', () => {
     cy.visitLocale(locale);

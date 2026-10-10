@@ -1,8 +1,8 @@
 ---
 name: tmdb-ai-collaboration
 description: Plan, scope, validate, and review AI-assisted work in the TMDB Next.js frontend while keeping the user in control of edits, commands, commits, and pull requests.
-version: 0.2.1
----
+
+version: 0.3.0
 
 # TMDB AI collaboration
 
@@ -48,6 +48,37 @@ lower one.
    standard validation pass is appropriate.
 9. Report facts only: files changed, commands run, outcomes, skipped checks,
    unresolved risks, and follow-up decisions. Keep responses brief.
+
+## Renames and removals
+
+When a file, function, script, or term is renamed or removed, search the whole
+repository for the old name before finishing, for example
+`rg -i "<old-name>" --glob '!node_modules' --glob '!package-lock.json'`.
+Update code, tests, test plans, docs, skills, and `README.md` in the same
+change, or list the places left open.
+
+## Definition of done
+
+A task is done when all of the following apply, or the open points are named:
+
+- The change matches the approved scope and acceptance criteria.
+- Tests exist or were updated at the right level (see `AGENTS.md`).
+- Test plans and docs that describe the changed behavior are in sync.
+- The old names are gone (see "Renames and removals").
+- Validation was run and its output was observed, or skipped checks are listed.
+- Open risks and follow-up decisions are reported.
+
+## Git conventions
+
+These reflect current practice in this repository. Confirm with the user if a
+task needs something different.
+
+- Branch from `main`; name branches `<type>/<short-topic>`, for example
+  `chore/middleware-to-proxy` or `tests/security-with-cypress`.
+- Write commit messages as `<type>: <summary>` with types such as `chore`,
+  `docs`, `test`, `feat`, and `fix`.
+- Open one pull request per topic with a summary and a test plan checklist.
+- Create branches, commits, and pull requests only after explicit approval.
 
 ## Errors and retries
 
