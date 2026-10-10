@@ -97,12 +97,16 @@ Rules:
 
 # Validation
 
+- Use `npm run check` before finishing a change. It runs `npm run lint`, `npm run format:check`, and `npm test` in that order.
+- Use `npm run lint` for ESLint. It fails on any warning (`--max-warnings=0`), so fix warnings instead of leaving them.
+- Use `npm run format:check` to check Prettier formatting. `npm run format` rewrites files, so run it only with the user’s approval.
+- Suppress a lint rule only with a targeted `eslint-disable-next-line` comment and a short reason. Do not disable rules for a whole file.
 - Use `npm test` for the Vitest single run.
 - Use `npx vitest` for Vitest watch mode.
 - Use `npm run test:unit`, `npm run test:integration`, or `npm run test:component` for focused Vitest validation.
 - Use `npm run test:coverage` when coverage is required.
 - Run `npm run build` for production-build validation.
-- Treat Cypress as a separate validation step. `npm run test:e2e` runs the specs headlessly (`cypress run --e2e --browser chrome`) and `npm run test:e2e:open` opens the interactive runner. The app must run on `http://localhost:3000`.
+- Treat Cypress as a separate validation step. `npm run check` does not include it. `npm run test:e2e` runs the specs headlessly (`cypress run --e2e --browser chrome`) and `npm run test:e2e:open` opens the interactive runner. The app must run on `http://localhost:3000`.
 - Use `npm run test:e2e:security` to run only the security specs. Restart or rebuild the server first if server code changed.
 
 Do not edit files, run destructive commands, change dependencies, push commits,
