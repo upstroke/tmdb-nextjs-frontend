@@ -68,6 +68,21 @@ npm run test:e2e:security
 npm run test:e2e:open
 ```
 
+## Lint and Format Before Tests
+
+```bash
+# ESLint, fails on any warning (--max-warnings=0)
+npm run lint
+
+# Prettier, check only
+npm run format:check
+
+# Lint + format check + all Vitest tests, run before committing
+npm run check
+```
+
+The individual test scripts do not run the linter, so a focused run such as `npm run test:unit` stays fast. `npm run check` does not include Cypress, because it needs a running app.
+
 ## Coverage
 
 Unit, integration, and component tests contribute to the coverage report (`npm run test:coverage` runs all Vitest projects). Cypress tests do not.
