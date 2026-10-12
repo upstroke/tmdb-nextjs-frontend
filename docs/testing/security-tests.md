@@ -2,7 +2,7 @@
 
 Security tests check that manipulated input does not run code in the browser, does not crash the server, and does not expose the TMDB API key. They also check the security response headers and the locale redirect. They run with Cypress in `cypress/e2e/security/`.
 
-The full list of test cases (SEC-01 to SEC-22) is in [`cypress/e2e/security/security-testplan.md`](../../cypress/e2e/security/security-testplan.md). Keep the plan and the specs in sync.
+The full list of test cases (SEC-01 to SEC-23) is in [`cypress/e2e/security/security-testplan.md`](../../cypress/e2e/security/security-testplan.md). Keep the plan and the specs in sync.
 
 ## Scope
 
@@ -22,7 +22,7 @@ The app is read-only, and TMDB secures its own API. The tests cover the parts wh
 | `search-api.cy.js` | Query limits, special queries, locales, HTTP methods, burst, invalid ids      |
 | `api-key.cy.js`    | Key in network traffic, HTML, JavaScript bundles, and API responses           |
 | `list-api.cy.js`   | `page`, `type`, locale, extra parameters, and HTTP methods on the list routes |
-| `headers.cy.js`    | `nosniff`, `X-Frame-Options`, and Content-Security-Policy on pages and APIs   |
+| `headers.cy.js`    | `nosniff`, `X-Frame-Options`, CSP, Referrer-Policy, and Permissions-Policy    |
 | `routing.cy.js`    | Open redirect, `Accept-Language`, and invalid ids on detail pages             |
 
 ## Run
