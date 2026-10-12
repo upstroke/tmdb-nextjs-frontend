@@ -84,6 +84,11 @@ spec directly above the check. Rules are not disabled broadly.
 - Locale `en-US` (same as `DEFAULT_LOCALE`). Messages are read with `cy.i18n()`.
 - Viewports: desktop 1280 x 800, mobile 375 x 667.
 - The menu needs no stubbed data. Only the header is under test, the page content is not.
+- **Focus start:** The app runs in an iframe of the Cypress runner. After `cy.visit()` the browser
+  focus is still in the runner, so a real Tab press reaches the runner controls first and
+  `cy.focused()` finds nothing in the app. A test that presses Tab without focusing an element
+  first calls `focusDocument()` (a click on the top left corner of the page) before the first
+  Tab. A real user starts in the page, so this is the same start state. See risk R-05.
 
 ## 9. Test Cases
 
@@ -109,7 +114,9 @@ TC-MENU-04 and TC-MENU-06 run once per link (Home, Movies, TV shows).
 - **TC-MENU-01:** `header#menuHeader` contains `nav#navmenu` with `aria-label` equal to
   `labels.mainNavigation`.
 - **TC-MENU-04:** The link of the open page has `aria-current="page"`; no other element in the nav has it.
-- **TC-MENU-05:** Tab order is skip link, Home, Movies, TV shows, search, language select.
+- **TC-MENU-05:** After `focusDocument()`, the tab order is skip link, Home, Movies, TV shows,
+  search, language select. The burger button is hidden on desktop (`display: none`), so it is not
+  a tab stop.
 - **TC-MENU-10:** `aria-expanded` changes `false`, `true`, `false`; the nav is visible when open.
 
 ## 10. Traceability
@@ -150,6 +157,7 @@ TC-MENU-04 and TC-MENU-06 run once per link (Home, Movies, TV shows).
 | R-02 | Breakpoint of the burger menu differs from the viewports used | Low        | Medium | Check the breakpoint in `styles/app.scss`    |
 | R-03 | No Escape and no focus return in the burger menu              | High       | Medium | Out of scope; add tests after implementation |
 | R-04 | `cypress-real-events` works in Chromium only                  | Low        | Low    | Run in Chrome                                |
+| R-05 | Focus is in the Cypress runner after `cy.visit()`             | High       | High   | Click into the page first (`focusDocument`)  |
 
 ## 15. Known Defects
 
