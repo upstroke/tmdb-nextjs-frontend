@@ -11,11 +11,11 @@ This test plan documents the automated integration tests in `language-switcher.t
 ## Test Items
 
 - `components/LanguageSwitcher.jsx`
-- `components/providers/LocaleProvider.jsx` (`AppLocaleProvider` with `initialLocale`, `ExternalSetterRegistrar`, `LocaleSyncer`)
+- `components/providers/LocaleProvider.jsx` (`AppLocaleProvider` with `initialLocale`, `ExternalSetterRegistrar`)
 - `lib/stores/locale.jsx` (`LocaleProvider` with `initialLocale`, `useLocale`, `useI18n`, `setLocale`, `_registerExternalSetter`)
 - `lib/i18n/resolver.js` (`resolveLocale`), `lib/i18n/helpers.js` (`getSupportedLocales`, `getLocaleText`), `lib/i18n/ui.json`
 - `lib/i18n/config` (`DEFAULT_LOCALE`, `SUPPORTED_LOCALES`)
-- `window.sessionStorage` (key `app-locale`), `document.documentElement.lang`
+- `window.sessionStorage` (key `app-locale`)
 - Mock: `next/navigation` (`useRouter().replace`, `usePathname`)
 
 ## Features to Be Tested
@@ -29,12 +29,11 @@ This test plan documents the automated integration tests in `language-switcher.t
 - Persisting the selected locale in `sessionStorage`
 - Updating `useLocale()`, UI texts and `aria-label` after the switch
 - Fallback to the default locale for an unsupported value
-- Syncing store and `html lang` from the URL locale via `LocaleSyncer`
 
 ## Features Not to Be Tested
 
 - Real Next.js routing and loading of translated page data (Cypress)
-- `html lang` rendered by the server in `app/[locale]/layout.js` (Cypress, accessibility tests)
+- `html lang` rendered by the server in `app/[locale]/layout.js` (Cypress, accessibility tests A11Y-15 and A11Y-23)
 - Visual styling of the dropdown
 - Browser or screen-reader behavior of the native `<select>`
 - Translation quality of `ui.json`
@@ -54,11 +53,10 @@ Each test renders `LanguageSwitcher` and a `Probe` component inside the real `Ap
 | TC-LS-05 | `saves the selected locale in sessionStorage`                                  | `app-locale` contains the new locale                                                                          |
 | TC-LS-06 | `updates the locale state and the UI texts`                                    | `useLocale()`, label text, select value and `aria-label` change                                               |
 | TC-LS-07 | `falls back to the default locale for an unsupported value`                    | `setLocale('xx-XX')` results in the default locale in state and storage                                       |
-| TC-LS-08 | `syncs store and html lang when LocaleSyncer receives a new locale`            | Store, `sessionStorage` and `document.documentElement.lang` follow the URL locale                             |
-| TC-LS-09 | `starts with the default locale and ignores a locale stored in sessionStorage` | A stored locale does not change the start value of select and state                                           |
-| TC-LS-10 | `starts with initialLocale from the URL`                                       | `AppLocaleProvider initialLocale` is the start value of the state                                             |
-| TC-LS-11 | `follows initialLocale when the locale in the URL changes`                     | A new `initialLocale` replaces the state                                                                      |
-| TC-LS-12 | `shows the selected locale at once, before the new route has loaded`           | The state changes on selection although `initialLocale` is unchanged                                          |
+| TC-LS-08 | `starts with the default locale and ignores a locale stored in sessionStorage` | A stored locale does not change the start value of select and state                                           |
+| TC-LS-09 | `starts with initialLocale from the URL`                                       | `AppLocaleProvider initialLocale` is the start value of the state                                             |
+| TC-LS-10 | `follows initialLocale when the locale in the URL changes`                     | A new `initialLocale` replaces the state                                                                      |
+| TC-LS-11 | `shows the selected locale at once, before the new route has loaded`           | The state changes on selection although `initialLocale` is unchanged                                          |
 
 ## Detailed Test Cases
 
@@ -110,33 +108,26 @@ Each test renders `LanguageSwitcher` and a `Probe` component inside the real `Ap
 **Expected Result:** State and `sessionStorage` contain `DEFAULT_LOCALE`.
 **Note:** The value is set directly, because the `<select>` has no option for `xx-XX`.
 
-### TC-LS-08: URL as source of truth
-
-**Objective:** Verify that `LocaleSyncer` aligns store and document language with the URL locale.
-**Steps:** Render `LocaleSyncer` with another locale; re-render it with `DEFAULT_LOCALE`.
-**Expected Result:** After each step the probe, `sessionStorage` (first step) and `document.documentElement.lang` show the passed locale.
-**Note:** The app itself no longer uses `LocaleSyncer`; the locale layout renders the URL locale on the server. The component stays for tests that simulate a route change.
-
-### TC-LS-09: Stored locale is ignored at start
+### TC-LS-08: Stored locale is ignored at start
 
 **Objective:** Verify that the start value does not depend on the browser, so server output and first client render match.
 **Preconditions:** `sessionStorage` contains another locale under `app-locale`; no `initialLocale` is passed.
 **Steps:** Render the switcher.
 **Expected Result:** The select value and the probe show `DEFAULT_LOCALE`.
 
-### TC-LS-10: Start with initialLocale
+### TC-LS-09: Start with initialLocale
 
 **Objective:** Verify that the provider starts with the locale of the URL.
 **Steps:** Render `AppLocaleProvider` with `initialLocale` set to another locale and a probe.
 **Expected Result:** The probe shows that locale at the first render.
 
-### TC-LS-11: Follow the URL locale
+### TC-LS-10: Follow the URL locale
 
 **Objective:** Verify that the provider follows `initialLocale` when the URL changes.
 **Steps:** Render with `DEFAULT_LOCALE`; re-render with another locale.
 **Expected Result:** The probe shows the new locale after the re-render.
 
-### TC-LS-12: Immediate switch
+### TC-LS-11: Immediate switch
 
 **Objective:** Verify that the language switches at once, without flicker, before the new route has loaded.
 **Preconditions:** `initialLocale` is `DEFAULT_LOCALE` and stays unchanged.
@@ -145,7 +136,7 @@ Each test renders `LanguageSwitcher` and a `Probe` component inside the real `Ap
 
 ## Pass/Fail Criteria
 
-A test case passes when every assertion within its `it(...)` block succeeds. It fails if an option, router call, path, stored value, locale state, label text or `html lang` differs from the expectation.
+A test case passes when every assertion within its `it(...)` block succeeds. It fails if an option, router call, path, stored value, locale state or label text differs from the expectation.
 
 ## Risks and Limitations
 
@@ -154,7 +145,7 @@ A test case passes when every assertion within its `it(...)` block succeeds. It 
 - TC-LS-07 does not use the `<select>`, because jsdom clears the value of a non-existing option.
 - The file `ui.json` defines the supported locales via `languageCode`; a locale missing there is missing in the dropdown (TC-LS-01 checks the match with `SUPPORTED_LOCALES`).
 - The path rewrite replaces the first occurrence of the current locale segment; unusual paths are not covered.
-- The server output of `app/[locale]/layout.js` (`html lang`, no hydration warning) is not covered here, only by Cypress and the accessibility tests.
+- The server output of `app/[locale]/layout.js` (`html lang`, no hydration warning) is not covered here, only by Cypress (A11Y-15, A11Y-23).
 
 ## Execution
 

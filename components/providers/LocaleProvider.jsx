@@ -1,12 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import {
-  LocaleProvider,
-  useSetLocale,
-  _registerExternalSetter,
-  setLocale as setLocaleExternal
-} from '@/lib/stores/locale';
+import { LocaleProvider, useSetLocale, _registerExternalSetter } from '@/lib/stores/locale';
 
 /**
  * Registers the context setter, so that `setLocale` can be called from outside
@@ -20,25 +15,6 @@ function ExternalSetterRegistrar() {
     _registerExternalSetter(setLocale);
     return () => _registerExternalSetter(() => {});
   }, [setLocale]);
-  return null;
-}
-
-/**
- * Applies a locale to the store and to `document.documentElement.lang`.
- *
- * The locale layout already renders the locale of the URL on the server, so
- * the app itself does not need this component any more. It stays for code and
- * tests that simulate a route change without the layout.
- *
- * @param {object} props - Component props.
- * @param {string} props.locale - Locale to apply, e.g. `"de-DE"`.
- * @returns {null} Nothing.
- */
-export function LocaleSyncer({ locale }) {
-  useEffect(() => {
-    setLocaleExternal(locale);
-    document.documentElement.lang = locale;
-  }, [locale]);
   return null;
 }
 
