@@ -9,21 +9,6 @@ const STORAGE_KEY = 'app-locale';
 
 /* v8 ignore start */
 /**
- * Reads the stored locale from sessionStorage.
- *
- * @returns {string} The stored locale, or `DEFAULT_LOCALE` on the server, when
- *   nothing is stored, or when storage is unavailable.
- */
-function readStoredLocale() {
-  if (typeof window === 'undefined') return DEFAULT_LOCALE;
-  try {
-    return sessionStorage.getItem(STORAGE_KEY) ?? DEFAULT_LOCALE;
-  } catch {
-    return DEFAULT_LOCALE;
-  }
-}
-
-/**
  * Writes the locale to sessionStorage. Logs a warning when storage fails.
  *
  * @param {string} locale - Locale to store, e.g. `"de-DE"`.
@@ -49,7 +34,10 @@ const LocaleContext = createContext({
  * Provides the active locale and its setter through React context.
  *
  * Starts with `initialLocale` when given (the URL is the source of truth),
- * otherwise with the locale stored in sessionStorage.
+ * otherwise with `DEFAULT_LOCALE`. The start value must not depend on the
+ * browser (for example sessionStorage), because the server renders the same
+ * start value and a difference causes a hydration mismatch. `LocaleSyncer`
+ * applies the locale from the URL after hydration.
  *
  * @param {object} props - Component props.
  * @param {string} [props.initialLocale] - Locale resolved from the URL.
@@ -57,10 +45,9 @@ const LocaleContext = createContext({
  * @returns {JSX.Element} The context provider.
  */
 export function LocaleProvider({ initialLocale, children }) {
-  const [locale, setLocaleState] = useState(() => {
-    if (initialLocale) return resolveLocale(initialLocale);
-    return readStoredLocale();
-  });
+  const [locale, setLocaleState] = useState(() =>
+    initialLocale ? resolveLocale(initialLocale) : DEFAULT_LOCALE
+  );
 
   useEffect(() => {
     if (initialLocale) {

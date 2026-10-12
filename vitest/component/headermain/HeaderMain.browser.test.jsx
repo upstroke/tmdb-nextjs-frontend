@@ -35,16 +35,18 @@ vi.mock('@/lib/stores/locale', () => ({
 
 // ignore LanguageSwitcher for now - test with integration test
 vi.mock('@/components/LanguageSwitcher', () => ({
-  default: () => React.createElement('div', { 'data-testid': 'mock-language-switcher' }, 'Language')
+  default: () => <div data-testid="mock-language-switcher">Language</div>
 }));
 
 // ignore TypeHeadSearch for now - test with integration test
 vi.mock('@/components/TypeHeadSearch', () => ({
-  default: () => React.createElement('div', { 'data-testid': 'mock-typeahead-search' }, 'Search')
+  default: () => <div data-testid="mock-typeahead-search">Search</div>
 }));
 
 describe('HeaderMain (browser)', () => {
   beforeEach(() => {
+    // Restore spies first: the getItem spy of TC-HM-003 must not leak into later tests.
+    vi.restoreAllMocks();
     vi.clearAllMocks();
     sessionStorage.clear();
     mockUsePathname.mockReturnValue('/en-US');
@@ -122,5 +124,63 @@ describe('HeaderMain (browser)', () => {
     expect(skipLink.compareDocumentPosition(navigation) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING
     );
+  });
+
+  // TC-HM-005
+  // Statement Coverage: Covers the onClick handler of the navigation links that closes the mobile menu.
+  // A click on the link of the current page does not change the path, so the link has to reset the menu itself.
+  it('closes the open mobile menu when a navigation link is clicked', () => {
+    render(<HeaderMain />);
+
+    const toggleButton = screen.getByRole('button', { name: 'Toggle menu' });
+    fireEvent.click(toggleButton);
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
+
+    const moviesLink = screen.getByRole('link', { name: /Movies Title/i });
+    // Block the browser default: a real navigation would unload the test iframe and hang the run.
+    moviesLink.addEventListener('click', (event) => event.preventDefault());
+    fireEvent.click(moviesLink);
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  // TC-HM-006
+  // Equivalence Partitioning: Home link (no storage key), TV shows link without and with a stored page.
+  // The i18n mock has no title for tvShows, so the link text is the raw key.
+  it('points the Home and TV shows links to their routes and restores the stored TV page', () => {
+    const { rerender } = render(<HeaderMain />);
+
+    expect(screen.getByRole('link', { name: /Home Title/i })).toHaveAttribute('href', '/en-US');
+    expect(screen.getByRole('link', { name: /tvShows/i })).toHaveAttribute(
+      'href',
+      '/en-US/tv-shows'
+    );
+
+    sessionStorage.setItem('tv-shows-page', '3');
+    rerender(<HeaderMain />);
+
+    expect(screen.getByRole('link', { name: /tvShows/i })).toHaveAttribute(
+      'href',
+      '/en-US/tv-shows?page=3'
+    );
+    expect(screen.getByRole('link', { name: /Home Title/i })).toHaveAttribute('href', '/en-US');
+  });
+
+  // TC-HM-007
+  // Statement Coverage: Covers the render-time reset of the menu state when the pathname changes.
+  // A search result opens a page through the router, not through a navigation link.
+  it('closes the open mobile menu when the path changes and keeps it closed on the way back', () => {
+    const { rerender } = render(<HeaderMain />);
+
+    const toggleButton = screen.getByRole('button', { name: 'Toggle menu' });
+    fireEvent.click(toggleButton);
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
+
+    mockUsePathname.mockReturnValue('/en-US/movies/603');
+    rerender(<HeaderMain />);
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
+
+    mockUsePathname.mockReturnValue('/en-US');
+    rerender(<HeaderMain />);
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
   });
 });
