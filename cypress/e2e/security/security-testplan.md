@@ -40,6 +40,7 @@ Goal: manipulated input must not execute code in the browser and must not crash 
 | SEC-20 | `routing.cy.js`    | Paths such as `//evil.com`, `/%2F%2Fevil.com`, and `/%5Cevil.com` never redirect to another host or return 5xx                                                                                      |
 | SEC-21 | `routing.cy.js`    | Manipulated `Accept-Language` values (unknown, `*`, script, `%00`, 4000 characters) redirect to a supported locale on the same host and never return 5xx                                            |
 | SEC-22 | `routing.cy.js`    | Invalid ids on `movies` and `tv-shows` detail pages never return 5xx and show no stack trace                                                                                                        |
+| SEC-23 | `headers.cy.js`    | The same four paths send a `Referrer-Policy` and a `Permissions-Policy` header                                                                                                                      |
 
 Set the Cypress env `TMDB_API_KEY` to also search for the exact key value, for example `CYPRESS_TMDB_API_KEY=... npm run test:e2e:security`. Without it, the tests search for `api_key` in requests and responses, and for `api_key=` in HTML and bundles.
 
@@ -49,10 +50,11 @@ The name `TMDB_API_KEY` appears in the client bundle on purpose: it is part of t
 
 - `page` above 500 returned 500, because TMDB rejects those pages. `ListQuerySchema` now limits `page` to 1 to 500, and the routes fall back to page 1.
 - `next.config.js` inlined `TMDB_API_KEY` into the build with the `env` option. The entry is removed. Server code reads `process.env.TMDB_API_KEY` at runtime. Run the security specs with `CYPRESS_TMDB_API_KEY` set after every change to `next.config.js` to confirm that the value is not in the bundles.
+- `Referrer-Policy` (`strict-origin-when-cross-origin`) and `Permissions-Policy` (camera, microphone, and geolocation off) were not set. They are now sent for every path (SEC-23).
 
 ## Known open points
 
-- `Referrer-Policy` and `Permissions-Policy` are not set. `X-XSS-Protection` is obsolete, and the CSP allows `'unsafe-inline'` for scripts.
+- `X-XSS-Protection` is obsolete, and the CSP allows `'unsafe-inline'` for scripts.
 - `LocaleParamSchema` only checks the length (2 to 10), not a list of supported locales. This is accepted and not tested.
 - `homepage` and watch provider links are not checked for `http(s)`. This is accepted and not tested.
 - The search route has no rate limit.

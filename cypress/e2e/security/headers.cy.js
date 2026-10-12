@@ -43,6 +43,18 @@ describe('Security: response headers', () => {
         expect(csp).to.contain("frame-ancestors 'none'");
         expect(csp, 'no wildcard source').to.not.match(/(^|[\s;])\*([\s;]|$)/);
       });
+
+      it('limits the Referer header sent to other origins', () => {
+        expect(headers['referrer-policy']).to.equal('strict-origin-when-cross-origin');
+      });
+
+      it('turns off camera, microphone, and geolocation', () => {
+        const policy = headers['permissions-policy'];
+        expect(policy, 'Permissions-Policy header').to.be.a('string');
+        expect(policy).to.contain('camera=()');
+        expect(policy).to.contain('microphone=()');
+        expect(policy).to.contain('geolocation=()');
+      });
     });
   });
 });
