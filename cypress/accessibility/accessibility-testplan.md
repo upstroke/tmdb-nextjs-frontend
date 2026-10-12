@@ -3,8 +3,8 @@
 ## Feature Goal
 
 Verify WCAG 2.2 AA compliance on central pages using automated axe-core checks and targeted
-checks for keyboard focus, live regions, search states, reflow, hover contrast, and localized
-alternative text.
+checks for keyboard focus, skip link, live regions, search states, reflow, hover contrast, and
+localized alternative text.
 
 ## User Story
 
@@ -24,7 +24,7 @@ application without encountering accessibility violations.
 | A11Y-07 | Search         | Typeahead with stubbed search results        |
 | A11Y-08 | Pages (de-DE)  | Switch to de-DE with the language switcher   |
 | A11Y-09 | All pages      | Landmarks and heading order (axe rules)      |
-| A11Y-10 | Header         | Focus indicator on navigation links          |
+| A11Y-10 | Header         | Focus indicator on the skip link             |
 | A11Y-11 | Search         | Result count in the live region              |
 | A11Y-12 | Search         | No results message                           |
 | A11Y-13 | Search         | Error message when the request fails         |
@@ -32,13 +32,15 @@ application without encountering accessibility violations.
 | A11Y-15 | Homepage       | html lang after load on direct de-DE visit   |
 | A11Y-16 | Header         | Hover contrast of navigation links           |
 | A11Y-17 | Search         | Hover contrast of a search result            |
-| A11Y-18 | Header         | Contrast of the focused element              |
+| A11Y-18 | Header         | Contrast of the focused skip link            |
 | A11Y-19 | Lists          | Hover contrast of a card                     |
 | A11Y-20 | Movie list     | Hover contrast of the load more button       |
 | A11Y-21 | Movie list     | Localized poster alternative text            |
+| A11Y-22 | All pages      | Skip link moves focus to the main content    |
 
-A11Y-08, A11Y-09, and A11Y-14 run once per page, with the page name in the test title. A11Y-16 runs
-once per navigation link, A11Y-19 once per list, and A11Y-21 once per tested locale (en-US, de-DE).
+A11Y-08, A11Y-09, A11Y-14, and A11Y-22 run once per page, with the page name in the test title.
+A11Y-16 runs once per navigation link, A11Y-19 once per list, and A11Y-21 once per tested locale
+(en-US, de-DE).
 
 ## States to Include
 
@@ -48,6 +50,7 @@ once per navigation link, A11Y-19 once per list, and A11Y-21 once per tested loc
 - Second locale (`de-DE`), reached through the language switcher and through a direct URL
 - Small viewport (320 px, equals 200% zoom on a 1280 px wide screen)
 - Hover and focus state of navigation links, search results, cards, and the load more button
+- Keyboard focus on the skip link, and focus moved to `#main-content` after activation
 - Not yet covered: hover contrast of the season tabs
 
 ## Dialogs
@@ -60,14 +63,15 @@ with the error message for an invalid id.
 - **Typeahead keyboard handling:** Arrow keys, Enter, Escape, Home, and End.
 - **Loading state of the search:** The delayed loading message.
 - **Status message for missing results:** The message shown when the search finds nothing.
+- **Skip link markup:** TC-HM-004 checks the link target and that the link comes before the burger
+  button and the navigation.
 
-All three are tested in `vitest/component/typeheadsearch/TypeHeadSearch.browser.test.jsx`.
+The first three are tested in `vitest/component/typeheadsearch/TypeHeadSearch.browser.test.jsx`,
+TC-HM-004 in `vitest/component/headermain/HeaderMain.browser.test.jsx`.
 A11Y-12 only adds the axe check of the no-results state in the full page.
 
 ## Not Covered Here
 
-- **Skip link:** The layout has no skip link, so there is nothing to test yet. Add the test with
-  the feature.
 - **Screen reader output:** Automated checks cannot replace a manual pass with NVDA or VoiceOver.
   See the manual checklist in `docs/testing/accessibility-audit-checklist.md`.
 
@@ -81,6 +85,15 @@ A11Y-12 only adds the axe check of the no-results state in the full page.
   confirms the behavior. The test was removed on purpose. Until hydration, screen readers and
   crawlers can see the wrong language (WCAG 3.1.1). The behavior is accepted; a fix would move
   the `<html>` element into `app/[locale]/layout.js`.
+
+## Skip Link
+
+`HeaderMain` renders a link with `href="#main-content"` as the first element of the header. Its
+text comes from `labels.skipToContent` in `lib/i18n/ui.json`. The link is off-screen until it
+receives keyboard focus; the styles in `styles/app.scss` use `:focus-visible` only. A11Y-10 checks
+that the first Tab stop is the skip link and shows a visible focus indicator. A11Y-18 checks the
+color contrast of the focused link. A11Y-22 presses Tab and Enter on each page and checks that the
+hash is `#main-content` and that the focus is on the `main` element (WCAG 2.4.1).
 
 ## Poster Alternative Text
 
