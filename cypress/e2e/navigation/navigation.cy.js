@@ -24,4 +24,17 @@ describe('Navigation', () => {
     base.visit('en-US');
     header.languageSelect().should('exist');
   });
+
+  it('[NAV-09] opens the mobile menu, follows a link, and closes the menu', () => {
+    cy.viewport(375, 667);
+    base.visit('en-US');
+
+    header.burgerButton().click();
+    header.burgerButton().should('have.attr', 'aria-expanded', 'true');
+
+    header.navLink('#nav-movies').click();
+
+    cy.location('pathname').should('match', /^\/en-US\/movies\/?$/);
+    header.burgerButton().should('have.attr', 'aria-expanded', 'false');
+  });
 });
