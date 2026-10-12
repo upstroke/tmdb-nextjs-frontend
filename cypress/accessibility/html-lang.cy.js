@@ -10,9 +10,7 @@ describe('Accessibility: html lang in the server response', () => {
     it(`[A11Y-23] renders lang="${locale}" on the server for /${locale}`, () => {
       cy.request(`/${locale}`).then((response) => {
         expect(response.status).to.eq(200);
-        expect(response.body).to.match(
-          new RegExp(`<html[^>]*\\slang="${locale}"`, 'i')
-        );
+        expect(response.body).to.match(new RegExp(`<html[^>]*\\slang="${locale}"`, 'i'));
       });
     });
   });

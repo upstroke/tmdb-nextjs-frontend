@@ -25,9 +25,10 @@ const MATRIX_SEARCH_RESPONSE = {
  * The detail page loads on the server and is not stubbed (see R-01 in the test plan).
  */
 const stubSearch = () => {
-  cy.intercept({ method: 'GET', pathname: '/api/en-US/search' }, { body: MATRIX_SEARCH_RESPONSE }).as(
-    'search'
-  );
+  cy.intercept(
+    { method: 'GET', pathname: '/api/en-US/search' },
+    { body: MATRIX_SEARCH_RESPONSE }
+  ).as('search');
 };
 
 describe('Navigation', () => {
@@ -156,19 +157,22 @@ describe('Navigation', () => {
     cy.viewport(1280, 800);
     list.visit('/en-US/movies');
 
-    list.cards().its('length').then((initialCount) => {
-      list.loadMoreButton().click();
-      cy.wait('@page2');
-      list.cards().should('have.length', initialCount + 2);
+    list
+      .cards()
+      .its('length')
+      .then((initialCount) => {
+        list.loadMoreButton().click();
+        cy.wait('@page2');
+        list.cards().should('have.length', initialCount + 2);
 
-      list.cardLink('/en-US/movies/900001').click();
-      cy.location('pathname').should('match', /^\/en-US\/movies\/900001\/?$/);
+        list.cardLink('/en-US/movies/900001').click();
+        cy.location('pathname').should('match', /^\/en-US\/movies\/900001\/?$/);
 
-      cy.go('back');
-      cy.location('pathname').should('match', /^\/en-US\/movies\/?$/);
-      list.cards().should('have.length', initialCount + 2);
-      list.cardLink('/en-US/movies/900001').should('exist');
-    });
+        cy.go('back');
+        cy.location('pathname').should('match', /^\/en-US\/movies\/?$/);
+        list.cards().should('have.length', initialCount + 2);
+        list.cardLink('/en-US/movies/900001').should('exist');
+      });
   });
 
   it('[NAV-14] mobile: searches from the open menu, opens a result, and closes the menu', () => {
