@@ -51,8 +51,9 @@ describe('HeaderMain (browser)', () => {
   });
 
   // TC-HM-001
-  // Statement Coverage: Covers list navigation loops, standard layouts, and pointer interactive bindings.
-  it('mounts, processes navigation item configurations, and toggles mobile responsive overlays on pointer interaction', () => {
+  // Statement Coverage: Covers list navigation loops, standard layouts, and click interactive bindings.
+  // The burger button toggles on click (not pointerdown), so Enter and Space work too (WCAG 2.1.1).
+  it('mounts, processes navigation item configurations, and toggles mobile responsive overlays on click', () => {
     render(<HeaderMain />);
 
     expect(screen.getByRole('navigation', { name: 'Main navigation' })).toBeInTheDocument();
@@ -69,10 +70,10 @@ describe('HeaderMain (browser)', () => {
     const toggleButton = screen.getByRole('button', { name: 'Toggle menu' });
     expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
 
-    fireEvent.pointerDown(toggleButton);
+    fireEvent.click(toggleButton);
     expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
 
-    fireEvent.pointerDown(toggleButton);
+    fireEvent.click(toggleButton);
     expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
   });
 
