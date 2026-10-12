@@ -137,7 +137,8 @@ describe('Accessibility', () => {
     it(`[A11Y-08] has no axe violations on the ${name} after switching to de-DE`, () => {
       cy.visitLocale(locale, path);
 
-      // html[lang] is set by the language switcher, so the test has to use it.
+      // The switcher navigates to the same page in de-DE; LocaleSyncer then sets
+      // html[lang] in an effect after hydration.
       header.languageSelect().select('de-DE');
 
       cy.location('pathname').should('include', '/de-DE');
@@ -225,9 +226,16 @@ describe('Accessibility', () => {
     });
   });
 
-  it('[A11Y-15] sets html lang when /de-DE is opened directly', () => {
-    // Open question: the language switcher sets html[lang]. This test shows
-    // whether a manually entered locale in the URL does the same (WCAG 3.1.1).
+  it('[A11Y-15] delivers html lang in the server response for /de-DE', () => {
+    // The raw HTML is what screen readers and crawlers see before hydration.
+    // app/layout.js sits above [locale], so it may fall back to the default
+    // locale. LocaleSyncer corrects html[lang] only after hydration (A11Y-16).
+    cy.request('/de-DE')
+      .its('body')
+      .should('match', /<html[^>]*\blang="de-DE"/i);
+  });
+
+  it('[A11Y-16] sets html lang after loading /de-DE directly', () => {
     cy.visitLocale('de-DE');
     cy.get('html').should('have.attr', 'lang').and('match', /^de/i);
   });

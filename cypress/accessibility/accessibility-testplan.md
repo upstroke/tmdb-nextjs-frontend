@@ -28,7 +28,8 @@ application without encountering accessibility violations.
 | A11Y-12 | Search         | No results message                           |
 | A11Y-13 | Search         | Error message when the request fails         |
 | A11Y-14 | Small viewport | 320 px width, no horizontal scrolling        |
-| A11Y-15 | Homepage       | html lang set on a direct de-DE visit        |
+| A11Y-15 | Homepage       | html lang in the server response (de-DE)     |
+| A11Y-16 | Homepage       | html lang after load on direct de-DE visit   |
 
 A11Y-08, A11Y-09, and A11Y-14 run once per page, with the page name in the test title.
 
@@ -37,7 +38,7 @@ A11Y-08, A11Y-09, and A11Y-14 run once per page, with the page name in the test 
 - Page loaded (success state)
 - Error state (invalid id, failed search request)
 - Search results open, empty, and failed
-- Second locale (`de-DE`), reached through the language switcher
+- Second locale (`de-DE`), reached through the language switcher and through a direct URL
 - Small viewport (320 px, equals 200% zoom on a 1280 px wide screen)
 - Not yet covered: other open dialogs, loading state of the search, hover contrast
 
@@ -82,9 +83,11 @@ Do not disable rules broadly.
 
 Tests use the constant `en-US`, the same as `DEFAULT_LOCALE` in `lib/i18n/config.js`.
 
-The language switcher (`#language-select`) updates the locale store and `html[lang]`, so A11Y-08
-opens each page in `en-US` and switches to `de-DE` through the switcher. A11Y-15 checks whether
-`html[lang]` is also set when `/de-DE` is opened directly. If it fails, `html[lang]` is only
-correct after a switch, which violates WCAG 3.1.1 for direct links.
+`html[lang]` is set in two places: `app/layout.js` renders it on the server from the `locale`
+route param, and `LocaleSyncer` sets `document.documentElement.lang` in an effect after
+hydration. A11Y-08 and A11Y-16 check the value after hydration. A11Y-15 checks the raw server
+HTML, which screen readers and crawlers see first. `app/layout.js` sits above `[locale]`, so it
+may receive no `locale` param and fall back to `DEFAULT_LOCALE`. If A11Y-15 fails while A11Y-16
+passes, `html[lang]` is wrong until hydration, which affects WCAG 3.1.1.
 
 Do not read the locale with `Cypress.env()`: `allowCypressEnv` is `false`.
