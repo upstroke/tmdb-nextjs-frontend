@@ -293,4 +293,12 @@ describe('Accessibility', () => {
     cy.get('.load-more button').should('be.visible').and('not.be.disabled').realHover();
     cy.checkPageA11y(CONTRAST_ONLY);
   });
+
+  it('[A11Y-21] uses a localized poster alt text on the en-US movie list', () => {
+    cy.visitLocale(locale, '/movies');
+    cy.get('a.default-card img')
+      .first()
+      .should('have.attr', 'alt')
+      .and('not.match', /^Poster von\b/);
+  });
 });
