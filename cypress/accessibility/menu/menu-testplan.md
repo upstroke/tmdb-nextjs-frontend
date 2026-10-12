@@ -4,13 +4,13 @@ Structure follows ISTQB (test plan according to ISO/IEC/IEEE 29119-3).
 
 ## 1. Test Plan Identifier
 
-| Field   | Value                                                  |
-| ------- | ------------------------------------------------------ |
-| ID      | TP-A11Y-MENU                                           |
-| Version | 0.1 (draft)                                            |
-| Level   | System test (acceptance), automated end-to-end         |
-| Type    | Non-functional test: accessibility                     |
-| Spec    | `cypress/accessibility/menu/menu.accessibility.cy.js`  |
+| Field   | Value                                                 |
+| ------- | ----------------------------------------------------- |
+| ID      | TP-A11Y-MENU                                          |
+| Version | 0.1 (draft)                                           |
+| Level   | System test (acceptance), automated end-to-end        |
+| Type    | Non-functional test: accessibility                    |
+| Spec    | `cypress/accessibility/menu/menu.accessibility.cy.js` |
 
 ## 2. Introduction
 
@@ -30,13 +30,13 @@ adds the menu-specific checks that plan does not cover.
 
 ## 4. Test Items
 
-| Item                  | Selector / Element                                          |
-| --------------------- | ----------------------------------------------------------- |
-| Header                | `header#menuHeader`                                         |
-| Navigation            | `nav#navmenu` with `ul.nav-list`                            |
-| Links                 | `#nav-home a`, `#nav-movies a`, `#nav-tv a`                 |
-| Burger button         | `button.burger-icon` (`aria-expanded`, `aria-controls`)     |
-| Search and language   | `#typeahead-search-input`, `#language-select` (tab order)   |
+| Item                | Selector / Element                                        |
+| ------------------- | --------------------------------------------------------- |
+| Header              | `header#menuHeader`                                       |
+| Navigation          | `nav#navmenu` with `ul.nav-list`                          |
+| Links               | `#nav-home a`, `#nav-movies a`, `#nav-tv a`               |
+| Burger button       | `button.burger-icon` (`aria-expanded`, `aria-controls`)   |
+| Search and language | `#typeahead-search-input`, `#language-select` (tab order) |
 
 ## 5. Features to Be Tested
 
@@ -61,12 +61,12 @@ adds the menu-specific checks that plan does not cover.
 
 ### Test Conditions and Techniques
 
-| Technique                         | Use                                                             |
-| --------------------------------- | --------------------------------------------------------------- |
-| Automated rule check (axe-core)   | TC-MENU-02, TC-MENU-06, TC-MENU-11                              |
-| Equivalence partitioning          | One link per route; viewport classes desktop and mobile         |
-| State transition testing          | Burger button: closed, open, closed (TC-MENU-10)                |
-| Experience-based (WCAG checklist) | Landmark, names, focus order, target size                       |
+| Technique                         | Use                                                     |
+| --------------------------------- | ------------------------------------------------------- |
+| Automated rule check (axe-core)   | TC-MENU-02, TC-MENU-06, TC-MENU-11                      |
+| Equivalence partitioning          | One link per route; viewport classes desktop and mobile |
+| State transition testing          | Burger button: closed, open, closed (TC-MENU-10)        |
+| Experience-based (WCAG checklist) | Landmark, names, focus order, target size               |
 
 ### Tools
 
@@ -87,19 +87,19 @@ spec directly above the check. Rules are not disabled broadly.
 
 ## 9. Test Cases
 
-| ID          | Test case                                           | Viewport | WCAG        | Priority |
-| ----------- | --------------------------------------------------- | -------- | ----------- | -------- |
-| TC-MENU-01  | Header and `nav` landmark with label                | Desktop  | 1.3.1       | High     |
-| TC-MENU-02  | No axe violations in the menu                       | Desktop  | WCAG 2.2 AA | High     |
-| TC-MENU-03  | All links have an accessible name; icons are hidden | Desktop  | 4.1.2       | High     |
-| TC-MENU-04  | Only the current link has `aria-current="page"`     | Desktop  | 1.3.1       | High     |
-| TC-MENU-05  | Tab order and visible focus                         | Desktop  | 2.4.3, 2.4.7 | High    |
-| TC-MENU-06  | Contrast of the focused link                        | Desktop  | 1.4.3       | Medium   |
-| TC-MENU-07  | Link activation with Enter                          | Desktop  | 2.1.1       | High     |
-| TC-MENU-08  | Target size of at least 24 x 24 px                  | Desktop  | 2.5.8       | Medium   |
-| TC-MENU-09  | Burger button name, `aria-controls`, `aria-expanded` | Mobile  | 4.1.2       | High     |
-| TC-MENU-10  | Burger button toggles with Enter and Space          | Mobile   | 2.1.1       | High     |
-| TC-MENU-11  | No axe violations with the open menu                | Mobile   | WCAG 2.2 AA | High     |
+| ID         | Test case                                            | Viewport | WCAG         | Priority |
+| ---------- | ---------------------------------------------------- | -------- | ------------ | -------- |
+| TC-MENU-01 | Header and `nav` landmark with label                 | Desktop  | 1.3.1        | High     |
+| TC-MENU-02 | No axe violations in the menu                        | Desktop  | WCAG 2.2 AA  | High     |
+| TC-MENU-03 | All links have an accessible name; icons are hidden  | Desktop  | 4.1.2        | High     |
+| TC-MENU-04 | Only the current link has `aria-current="page"`      | Desktop  | 1.3.1        | High     |
+| TC-MENU-05 | Tab order and visible focus                          | Desktop  | 2.4.3, 2.4.7 | High     |
+| TC-MENU-06 | Contrast of the focused link                         | Desktop  | 1.4.3        | Medium   |
+| TC-MENU-07 | Link activation with Enter                           | Desktop  | 2.1.1        | High     |
+| TC-MENU-08 | Target size of at least 24 x 24 px                   | Desktop  | 2.5.8        | Medium   |
+| TC-MENU-09 | Burger button name, `aria-controls`, `aria-expanded` | Mobile   | 4.1.2        | High     |
+| TC-MENU-10 | Burger button toggles with Enter and Space           | Mobile   | 2.1.1        | High     |
+| TC-MENU-11 | No axe violations with the open menu                 | Mobile   | WCAG 2.2 AA  | High     |
 
 The spec uses the IDs `A11Y-MENU-01` to `A11Y-MENU-11`; they map one to one to TC-MENU-01 to 11.
 TC-MENU-04 and TC-MENU-06 run once per link (Home, Movies, TV shows).
@@ -114,15 +114,15 @@ TC-MENU-04 and TC-MENU-06 run once per link (Home, Movies, TV shows).
 
 ## 10. Traceability
 
-| Requirement (WCAG 2.2)         | Test cases                  |
-| ------------------------------ | --------------------------- |
-| 1.3.1 Info and Relationships   | TC-MENU-01, 04              |
-| 1.4.3 Contrast (Minimum)       | TC-MENU-02, 06, 11          |
-| 2.1.1 Keyboard                 | TC-MENU-07, 10              |
-| 2.4.3 Focus Order              | TC-MENU-05                  |
-| 2.4.7 Focus Visible            | TC-MENU-05                  |
-| 2.5.8 Target Size (Minimum)    | TC-MENU-08                  |
-| 4.1.2 Name, Role, Value        | TC-MENU-03, 09              |
+| Requirement (WCAG 2.2)       | Test cases         |
+| ---------------------------- | ------------------ |
+| 1.3.1 Info and Relationships | TC-MENU-01, 04     |
+| 1.4.3 Contrast (Minimum)     | TC-MENU-02, 06, 11 |
+| 2.1.1 Keyboard               | TC-MENU-07, 10     |
+| 2.4.3 Focus Order            | TC-MENU-05         |
+| 2.4.7 Focus Visible          | TC-MENU-05         |
+| 2.5.8 Target Size (Minimum)  | TC-MENU-08         |
+| 4.1.2 Name, Role, Value      | TC-MENU-03, 09     |
 
 ## 11. Entry Criteria
 
@@ -144,17 +144,17 @@ TC-MENU-04 and TC-MENU-06 run once per link (Home, Movies, TV shows).
 
 ## 14. Risks
 
-| ID   | Risk                                                                 | Likelihood | Impact | Mitigation                                    |
-| ---- | -------------------------------------------------------------------- | ---------- | ------ | --------------------------------------------- |
-| R-01 | Selectors change with refactoring of `HeaderMain`                    | Medium     | Medium | Selectors are in the POM `HeaderPage.js`      |
-| R-02 | Breakpoint of the burger menu differs from the viewports used        | Low        | Medium | Check the breakpoint in `styles/app.scss`     |
-| R-03 | No Escape and no focus return in the burger menu                     | High       | Medium | Out of scope; add tests after implementation  |
-| R-04 | `cypress-real-events` works in Chromium only                         | Low        | Low    | Run in Chrome                                 |
+| ID   | Risk                                                          | Likelihood | Impact | Mitigation                                   |
+| ---- | ------------------------------------------------------------- | ---------- | ------ | -------------------------------------------- |
+| R-01 | Selectors change with refactoring of `HeaderMain`             | Medium     | Medium | Selectors are in the POM `HeaderPage.js`     |
+| R-02 | Breakpoint of the burger menu differs from the viewports used | Low        | Medium | Check the breakpoint in `styles/app.scss`    |
+| R-03 | No Escape and no focus return in the burger menu              | High       | Medium | Out of scope; add tests after implementation |
+| R-04 | `cypress-real-events` works in Chromium only                  | Low        | Low    | Run in Chrome                                |
 
 ## 15. Known Defects
 
-| ID     | Description                                                                                                                | Affected   | Status |
-| ------ | -------------------------------------------------------------------------------------------------------------------------- | ---------- | ------ |
+| ID     | Description                                                                                                                                                                      | Affected   | Status |
+| ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------ |
 | DEF-01 | `HeaderMain` toggles the burger button with `onPointerDown`. Enter and Space fire `click` only, so the menu cannot be opened with the keyboard (WCAG 2.1.1). Fix: use `onClick`. | TC-MENU-10 | Open   |
 
 TC-MENU-10 is expected to fail until DEF-01 is fixed.
