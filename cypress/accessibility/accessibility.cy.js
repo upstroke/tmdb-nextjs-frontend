@@ -23,6 +23,8 @@
  */
 import 'cypress-real-events';
 import { HeaderPage } from '../POM/HeaderPage.js';
+// Relative path: Cypress does not resolve the "@/" alias from jsconfig.json.
+import { formatMessage } from '../../lib/i18n/format.js';
 
 const header = HeaderPage();
 
@@ -203,7 +205,7 @@ describe('Accessibility', () => {
     });
 
     cy.i18n(locale).then(({ messages }) => {
-      const text = messages.searchResultsCount.replace('{count}', '2');
+      const text = formatMessage(messages.searchResultsCount, { count: 2 });
       cy.get('.u-sr-only[aria-live="polite"]').should('contain', text);
     });
   });
@@ -299,7 +301,7 @@ describe('Accessibility', () => {
       cy.visitLocale(testLocale, '/movies');
 
       cy.i18n(testLocale).then(({ messages }) => {
-        const prefix = messages.posterAlt.replace('{title}', '').trim();
+        const prefix = formatMessage(messages.posterAlt, { title: '' }).trim();
         cy.get('a.default-card img').first().should('have.attr', 'alt').and('include', prefix);
       });
     });
