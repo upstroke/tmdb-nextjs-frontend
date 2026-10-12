@@ -35,8 +35,11 @@ const NAV_ITEMS = [
 ];
 
 /**
- * Site-wide header with primary navigation, typeahead search, and language
- * switcher.
+ * Site-wide header with skip link, primary navigation, typeahead search, and
+ * language switcher.
+ *
+ * The skip link is the first focusable element and jumps to the `main-content`
+ * element of the page.
  *
  * Navigation links restore the last visited page in paginated lists by reading
  * the page number from sessionStorage before constructing the href.
@@ -102,6 +105,9 @@ export default function HeaderMain() {
 
   return (
     <header className="header" id="menuHeader">
+      <a className="skip-link" href="#main-content">
+        {labels.skipToContent}
+      </a>
       <button
         className="burger-icon"
         type="button"
