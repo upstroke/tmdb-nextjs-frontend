@@ -6,14 +6,14 @@
 
 - **Project:** TMDB Next.js Frontend
 - **Module:** HeaderMain
-- **Version:** 1.0
+- **Version:** 1.1
 - **Date:** 2026-10-08
 - **Test level:** Component test
 - **Test file:** `HeaderMain.browser.test.jsx`
 
 ### 2. Introduction
 
-This plan describes the component tests for `HeaderMain`, the main header with navigation, search and language switcher. The tests verify the rendering of the navigation, the skip link, the active link, the mobile menu toggle, the restoration of the movies page from `sessionStorage` and the handling of storage errors. The child components `TypeHeadSearch` and `LanguageSwitcher` are replaced by mocks and are tested separately.
+This plan describes the component tests for `HeaderMain`, the main header with navigation, search and language switcher. The tests verify the rendering of the navigation, the skip link, the active link, the mobile menu toggle, the closing of the mobile menu when a link is clicked, the restoration of the movies page from `sessionStorage` and the handling of storage errors. The child components `TypeHeadSearch` and `LanguageSwitcher` are replaced by mocks and are tested separately.
 
 ### 3. Test Items
 
@@ -31,6 +31,7 @@ This plan describes the component tests for `HeaderMain`, the main header with n
 - Navigation item titles from i18n
 - Active link state (`link-active`, `aria-current="page"`)
 - Mobile menu toggle button (`aria-expanded` false to true to false) with click events
+- Mobile menu closes (`aria-expanded` true to false) when a navigation link is clicked
 - Skip link to `#main-content`, placed before the burger button and the navigation in the DOM
 - Movies link with the page number from `sessionStorage` (`/en-US/movies?page=5`)
 - Fallback to `/en-US/movies` when `sessionStorage` throws an error
@@ -47,7 +48,7 @@ This plan describes the component tests for `HeaderMain`, the main header with n
 
 - **Tool:** Vitest Browser Mode with React Testing Library
 - **Browser:** Chromium
-- **Test design techniques:** State Transition Testing (menu closed to open to closed), Equivalence Partitioning (no stored page / stored page / storage error), Error Guessing (`sessionStorage.getItem` throws)
+- **Test design techniques:** State Transition Testing (menu closed to open to closed, also through a link click), Equivalence Partitioning (no stored page / stored page / storage error), Error Guessing (`sessionStorage.getItem` throws)
 - **Structural coverage:** Statement Coverage and Branch Coverage (documented in the test comments)
 - **Isolation:** Router, locale store and both child components are mocked; `sessionStorage` is cleared and the pathname is reset to `/en-US` before each test
 
@@ -64,6 +65,7 @@ This plan describes the component tests for `HeaderMain`, the main header with n
 | TC-HM-002 | Path `/en-US/movies`, stored page `5` | `sessionStorage` extraction, dynamic target calculation | -                        |
 | TC-HM-003 | `sessionStorage.getItem` throws       | `catch` block                                           | try/catch exception path |
 | TC-HM-004 | Path `/en-US`, default render         | Skip link rendered before burger button and navigation  | -                        |
+| TC-HM-005 | Path `/en-US`, menu open              | `onClick` handler of the links closes the menu          | -                        |
 
 ### 9. Derived Test Cases
 
@@ -105,6 +107,17 @@ This plan describes the component tests for `HeaderMain`, the main header with n
   - The link `Skip to main content` has `href="#main-content"`.
   - The skip link precedes the button `Toggle menu` and the navigation `Main navigation` in the DOM, so it is the first tab stop.
 
+#### TC-HM-005: Mobile menu closes when a navigation link is clicked
+
+- **Precondition:** Pathname is `/en-US`.
+- **Steps:**
+  1. Render `HeaderMain`.
+  2. Fire `click` on the button `Toggle menu`.
+  3. Fire `click` on the link `Movies Title`.
+- **Expected result:**
+  - The toggle button has `aria-expanded="true"` after the first click.
+  - The toggle button has `aria-expanded="false"` after the click on the link.
+
 ### 10. Gherkin User Stories
 
 ```gherkin
@@ -142,6 +155,14 @@ Feature: HeaderMain component
     When the header is rendered
     Then the link "Skip to main content" points to "#main-content"
     And it comes before the toggle button and the navigation
+
+  Scenario: Menu closes when a link is clicked
+    Given the current path is "/en-US"
+    And the header is rendered
+    When the user presses the toggle button
+    Then the toggle button has aria-expanded "true"
+    When the user clicks the link "Movies Title"
+    Then the toggle button has aria-expanded "false"
 ```
 
 ### 11. Run Tests
@@ -157,6 +178,7 @@ npx vitest run --config vitest.config.js vitest/component/headermain
 - TC-HM-003 uses `vi.spyOn(Storage.prototype, 'getItem')`. `vi.clearAllMocks()` in `beforeEach` does not restore the original implementation. A restore (`vi.restoreAllMocks()` or `mockRestore()`) would make later tests safer.
 - The tests use `click`, not `pointerDown`, for the toggle button. `HeaderMain` toggles on `onClick`, so Enter and Space work too (DEF-01 in `cypress/accessibility/menu/menu-testplan.md`). `fireEvent.click` runs the same handler as the keyboard. Real keyboard operation is tested in Cypress (A11Y-MENU-10).
 - TC-HM-004 checks the DOM order only. The real tab order with a keyboard is tested in Cypress (A11Y-MENU-05).
+- TC-HM-005 checks only the state of the menu. The real page change after the click and the closing on a mobile viewport are tested in Cypress (NAV-09 in `cypress/e2e/navigation/navigation-testplan.md`).
 
 ### 13. Traceability Matrix
 
@@ -165,6 +187,7 @@ npx vitest run --config vitest.config.js vitest/component/headermain
 | Main navigation and placeholders     | TC-HM-001            |
 | Navigation titles and active link    | TC-HM-001, TC-HM-002 |
 | Mobile menu toggle (`aria-expanded`) | TC-HM-001            |
+| Mobile menu closes on link click     | TC-HM-005            |
 | Skip link before navigation          | TC-HM-004            |
 | Stored movies page in the link       | TC-HM-002            |
 | Fallback on storage error            | TC-HM-003            |
