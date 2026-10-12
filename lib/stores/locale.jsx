@@ -33,11 +33,11 @@ const LocaleContext = createContext({
 /**
  * Provides the active locale and its setter through React context.
  *
- * Starts with `initialLocale` when given (the URL is the source of truth),
- * otherwise with `DEFAULT_LOCALE`. The start value must not depend on the
- * browser (for example sessionStorage), because the server renders the same
- * start value and a difference causes a hydration mismatch. `LocaleSyncer`
- * applies the locale from the URL after hydration.
+ * The locale comes from `initialLocale` (the URL segment, rendered on the
+ * server) or `DEFAULT_LOCALE`. The start value never depends on the browser,
+ * so the server output and the first client render match. When `initialLocale`
+ * changes, for example after a language switch, the provider follows it.
+ * `setLocale` changes the locale at once, before the new route has loaded.
  *
  * @param {object} props - Component props.
  * @param {string} [props.initialLocale] - Locale resolved from the URL.
@@ -45,22 +45,25 @@ const LocaleContext = createContext({
  * @returns {JSX.Element} The context provider.
  */
 export function LocaleProvider({ initialLocale, children }) {
-  const [locale, setLocaleState] = useState(() =>
-    initialLocale ? resolveLocale(initialLocale) : DEFAULT_LOCALE
-  );
+  const [state, setState] = useState(() => ({
+    source: initialLocale,
+    locale: initialLocale ? resolveLocale(initialLocale) : DEFAULT_LOCALE
+  }));
+
+  let locale = state.locale;
+  if (initialLocale !== state.source) {
+    locale = initialLocale ? resolveLocale(initialLocale) : DEFAULT_LOCALE;
+    setState({ source: initialLocale, locale });
+  }
 
   useEffect(() => {
-    if (initialLocale) {
-      // URL is the source of truth — sync sessionStorage to prevent stale value flash
-      writeStoredLocale(resolveLocale(initialLocale));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    writeStoredLocale(locale);
+  }, [locale]);
 
   const setLocale = useCallback((next) => {
     const resolved = resolveLocale(next);
     writeStoredLocale(resolved);
-    setLocaleState(resolved);
+    setState((current) => ({ ...current, locale: resolved }));
   }, []);
 
   return <LocaleContext.Provider value={{ locale, setLocale }}>{children}</LocaleContext.Provider>;

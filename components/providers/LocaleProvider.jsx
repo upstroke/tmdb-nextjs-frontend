@@ -9,11 +9,10 @@ import {
 } from '@/lib/stores/locale';
 
 /**
- * Registers the locale setter of the provider as the external setter, so that
- * non-React code can change the locale through `setLocale` from the store.
- * Unregisters it again on unmount.
+ * Registers the context setter, so that `setLocale` can be called from outside
+ * of React. Renders nothing.
  *
- * @returns {null} Renders nothing.
+ * @returns {null} Nothing.
  */
 function ExternalSetterRegistrar() {
   const setLocale = useSetLocale();
@@ -25,12 +24,15 @@ function ExternalSetterRegistrar() {
 }
 
 /**
- * Receives the server-side locale from `[locale]/layout` and syncs the store
- * and the `lang` attribute of the document without remounting the provider.
+ * Applies a locale to the store and to `document.documentElement.lang`.
+ *
+ * The locale layout already renders the locale of the URL on the server, so
+ * the app itself does not need this component any more. It stays for code and
+ * tests that simulate a route change without the layout.
  *
  * @param {object} props - Component props.
- * @param {string} props.locale - Locale resolved on the server, e.g. `"de-DE"`.
- * @returns {null} Renders nothing.
+ * @param {string} props.locale - Locale to apply, e.g. `"de-DE"`.
+ * @returns {null} Nothing.
  */
 export function LocaleSyncer({ locale }) {
   useEffect(() => {
@@ -41,15 +43,16 @@ export function LocaleSyncer({ locale }) {
 }
 
 /**
- * Wraps the app in the locale context and registers the external setter.
+ * Provides the locale context and the external setter.
  *
  * @param {object} props - Component props.
+ * @param {string} [props.initialLocale] - Locale of the URL. The provider follows it when it changes.
  * @param {import('react').ReactNode} props.children - Content rendered inside the provider.
- * @returns {JSX.Element} The locale provider with its children.
+ * @returns {JSX.Element} The locale provider.
  */
-export function AppLocaleProvider({ children }) {
+export function AppLocaleProvider({ initialLocale, children }) {
   return (
-    <LocaleProvider>
+    <LocaleProvider initialLocale={initialLocale}>
       <ExternalSetterRegistrar />
       {children}
     </LocaleProvider>
