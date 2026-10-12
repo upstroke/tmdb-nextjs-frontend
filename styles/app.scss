@@ -228,6 +228,33 @@ dd {
   border: 0;
 }
 
+/* Skip link: off-screen until it receives keyboard focus. */
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1100;
+  padding: 0.75rem 1rem;
+  background: #1b1c1d;
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+  transform: translateY(-200%);
+
+  &:focus,
+  &:focus-visible {
+    transform: none;
+    outline: 3px solid #2185d0;
+    outline-offset: 2px;
+    color: #fff;
+  }
+}
+
+/* The skip link target is focused by script or link only, so no outline. */
+main[tabindex='-1']:focus {
+  outline: none;
+}
+
 .u-spacer {
   padding: 1em 0;
 }
