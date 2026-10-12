@@ -25,6 +25,22 @@ describe('Navigation', () => {
     header.languageSelect().should('exist');
   });
 
+  it('[NAV-05] opens Movies, TV shows and Home through the menu links', () => {
+    base.visit('en-US');
+
+    header.navLink('#nav-movies').click();
+    cy.location('pathname').should('match', /^\/en-US\/movies\/?$/);
+    header.navLink('#nav-movies').should('have.attr', 'aria-current', 'page');
+
+    header.navLink('#nav-tv').click();
+    cy.location('pathname').should('match', /^\/en-US\/tv-shows\/?$/);
+    header.navLink('#nav-tv').should('have.attr', 'aria-current', 'page');
+
+    header.navLink('#nav-home').click();
+    cy.location('pathname').should('match', /^\/en-US\/?$/);
+    header.navLink('#nav-home').should('have.attr', 'aria-current', 'page');
+  });
+
   it('[NAV-09] opens the mobile menu, follows a link, and closes the menu', () => {
     cy.viewport(375, 667);
     base.visit('en-US');

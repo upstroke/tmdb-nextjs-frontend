@@ -7,7 +7,7 @@ Structure follows ISTQB (test plan according to ISO/IEC/IEEE 29119-3).
 | Field   | Value                                          |
 | ------- | ---------------------------------------------- |
 | ID      | TP-NAV                                         |
-| Version | 0.3 (draft)                                    |
+| Version | 0.4 (draft)                                    |
 | Level   | System test (acceptance), automated end-to-end |
 | Type    | Functional test: navigation and locale routing |
 | Spec    | `cypress/e2e/navigation/navigation.cy.js`      |
@@ -29,17 +29,19 @@ language switcher, and move between pages while the locale stays in the URL.
 - `components/LanguageSwitcher` (locale change)
 - `components/TypeHeadSearch` (search to detail page)
 - Page objects: `cypress/POM/BasePage.js`, `cypress/POM/HeaderPage.js`
-- Selectors: `#navmenu` (navigation), `.burger-icon` (burger button), `#language-select` (language switcher), `#typeahead-search-input` (search)
+- Selectors: `#navmenu` (navigation), `.burger-icon` (burger button), `#nav-home`, `#nav-movies`, `#nav-tv` (menu items), `#language-select` (language switcher), `#typeahead-search-input` (search)
 
 ## 5. Features to Be Tested
 
 - Homepage load and locale in the URL (implemented).
 - Visible navigation and language switcher in the header (implemented).
+- Real page changes through the desktop menu links Movies, TV shows and Home (implemented).
 - Mobile menu: a selected link changes the page and closes the menu (implemented).
-- Real page changes through the desktop menu links, the language switcher and the search results (planned).
+- Real page changes through the language switcher and the search results (planned).
 
 ## 6. Features Not to Be Tested
 
+- **Link targets and stored page numbers of the menu links:** covered in Vitest (`vitest/component/headermain/`, TC-HM-002, TC-HM-003, TC-HM-006).
 - **Typeahead keyboard handling, debounce, fallbacks:** covered in Vitest (`vitest/component/typeheadsearch/`).
 - **Search route, detail pages with partial data, locale validation:** covered in Vitest integration tests (`vitest/integration/typeheadsearch-search-to-details/`, `languageswitcher/`, `pagedlist/`).
 - **Loading more cards, duplicates, timeout, error dialog of the list:** covered in `vitest/integration/pagedlist/`.
@@ -49,6 +51,7 @@ language switcher, and move between pages while the locale stays in the URL.
 ## 7. Approach
 
 - One scenario checks one thing the Vitest tests cannot: a real page change in the browser (URL, loaded page, history).
+- Related page changes of the same menu are combined in one flow (NAV-05) instead of one test per link, because every test reloads the app.
 - Page objects `BasePage` and `HeaderPage` hold the selectors. New page objects are added for list and detail pages when the first flow needs them.
 - Locale `en-US` is passed to `BasePage.visit('en-US')` in the spec. `cypress.env.json` does not exist and is not used (`allowCypressEnv` is `false`).
 - Tool: Cypress in Chrome. Flows use `cy.location()` and `cy.url()` for assertions instead of `cy.wait()`.
@@ -69,19 +72,19 @@ language switcher, and move between pages while the locale stays in the URL.
 | NAV-02 | Active locale is reflected in the URL                           | implemented |
 | NAV-03 | Global navigation (`#navmenu`) is visible                       | implemented |
 | NAV-04 | Language switcher (`#language-select`) is present in the header | implemented |
+| NAV-05 | Menu links open Movies, TV shows and Home (real page changes)   | implemented |
 | NAV-09 | Mobile: burger menu opens, link changes the page, menu closes   | implemented |
 
 ### Planned
 
 | ID     | Scenario                                                                            | Why Cypress                                           | State   |
 | ------ | ----------------------------------------------------------------------------------- | ----------------------------------------------------- | ------- |
-| NAV-05 | Menu link Movies opens `/en-US/movies`                                              | Vitest only checks the `href`                         | planned |
-| NAV-06 | Menu link TV shows opens `/en-US/tv-shows`                                          | Vitest only checks the `href`                         | planned |
-| NAV-07 | Menu link Home returns from a list page to `/en-US`                                 | Vitest mocks the router                               | planned |
 | NAV-08 | Language switch on `/en-US/movies` opens `/de-DE/movies`; a reload keeps the locale | Vitest checks the path calculation, not the real page | planned |
 | NAV-10 | Search: click on a movie result opens `/en-US/movies/<id>` and shows the title      | Vitest mocks `router.push`                            | planned |
 | NAV-11 | Search: ArrowDown and Enter open the detail page                                    | Vitest mocks `router.push`                            | planned |
 | NAV-12 | List, open a card, browser back keeps the loaded cards and the page number          | Vitest mocks fetch and router                         | planned |
+
+NAV-06 (TV shows link) and NAV-07 (Home link) are part of NAV-05 and have no separate test. The IDs stay unused.
 
 ## 10. Traceability
 
@@ -89,7 +92,7 @@ language switcher, and move between pages while the locale stays in the URL.
 | ------------------------------------ | -------------- |
 | Homepage load and locale in the URL  | NAV-01, NAV-02 |
 | Header with navigation and switcher  | NAV-03, NAV-04 |
-| Menu links change the page           | NAV-05 to 07   |
+| Menu links change the page           | NAV-05         |
 | Language switch keeps the route      | NAV-08         |
 | Mobile menu flow                     | NAV-09         |
 | Search result opens the detail page  | NAV-10, NAV-11 |
