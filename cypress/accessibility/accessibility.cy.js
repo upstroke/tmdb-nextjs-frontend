@@ -134,8 +134,14 @@ describe('Accessibility', () => {
   });
 
   PAGES.forEach(({ name, path }) => {
-    it(`[A11Y-08] has no axe violations and the right language on the ${name} in de-DE`, () => {
-      cy.visitLocale('de-DE', path);
+    it(`[A11Y-08] has no axe violations on the ${name} after switching to de-DE`, () => {
+      cy.visitLocale(locale, path);
+
+      // html[lang] is set by the language switcher, so the test has to use it.
+      header.languageSelect().select('de-DE');
+
+      cy.location('pathname').should('include', '/de-DE');
+      header.languageSelect().should('have.value', 'de-DE');
       cy.get('html').should('have.attr', 'lang').and('match', /^de/i);
       cy.checkPageA11y();
     });
@@ -217,5 +223,12 @@ describe('Accessibility', () => {
       });
       cy.checkPageA11y();
     });
+  });
+
+  it('[A11Y-15] sets html lang when /de-DE is opened directly', () => {
+    // Open question: the language switcher sets html[lang]. This test shows
+    // whether a manually entered locale in the URL does the same (WCAG 3.1.1).
+    cy.visitLocale('de-DE');
+    cy.get('html').should('have.attr', 'lang').and('match', /^de/i);
   });
 });

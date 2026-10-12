@@ -21,13 +21,14 @@ application without encountering accessibility violations.
 | A11Y-05 | TV show detail | Series 1396 with season tabs, live TMDB data |
 | A11Y-06 | Error message  | Invalid id shows the error message           |
 | A11Y-07 | Search         | Typeahead with stubbed search results        |
-| A11Y-08 | Pages (de-DE)  | Home, lists, details with locale de-DE       |
+| A11Y-08 | Pages (de-DE)  | Switch to de-DE with the language switcher   |
 | A11Y-09 | All pages      | Landmarks and heading order (axe rules)      |
 | A11Y-10 | Header         | Focus indicator on navigation links          |
 | A11Y-11 | Search         | Result count in the live region              |
 | A11Y-12 | Search         | No results message                           |
 | A11Y-13 | Search         | Error message when the request fails         |
 | A11Y-14 | Small viewport | 320 px width, no horizontal scrolling        |
+| A11Y-15 | Homepage       | html lang set on a direct de-DE visit        |
 
 A11Y-08, A11Y-09, and A11Y-14 run once per page, with the page name in the test title.
 
@@ -36,7 +37,7 @@ A11Y-08, A11Y-09, and A11Y-14 run once per page, with the page name in the test 
 - Page loaded (success state)
 - Error state (invalid id, failed search request)
 - Search results open, empty, and failed
-- Second locale (`de-DE`)
+- Second locale (`de-DE`), reached through the language switcher
 - Small viewport (320 px, equals 200% zoom on a 1280 px wide screen)
 - Not yet covered: other open dialogs, loading state of the search, hover contrast
 
@@ -80,5 +81,10 @@ Do not disable rules broadly.
 ## Locale Considerations
 
 Tests use the constant `en-US`, the same as `DEFAULT_LOCALE` in `lib/i18n/config.js`.
-A11Y-08 uses `de-DE` and checks that `html[lang]` starts with `de`.
+
+The language switcher (`#language-select`) updates the locale store and `html[lang]`, so A11Y-08
+opens each page in `en-US` and switches to `de-DE` through the switcher. A11Y-15 checks whether
+`html[lang]` is also set when `/de-DE` is opened directly. If it fails, `html[lang]` is only
+correct after a switch, which violates WCAG 3.1.1 for direct links.
+
 Do not read the locale with `Cypress.env()`: `allowCypressEnv` is `false`.
