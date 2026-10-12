@@ -193,6 +193,7 @@ describe('Accessibility', () => {
     cy.visitLocale(locale);
     cy.press(Cypress.Keyboard.Keys.TAB);
     cy.focused().closest('#menuHeader').should('exist');
+    cy.focused().should('have.attr', 'href', '#main-content');
     cy.focused().then(expectVisibleFocus);
   });
 
@@ -303,6 +304,21 @@ describe('Accessibility', () => {
       cy.i18n(testLocale).then(({ messages }) => {
         const prefix = formatMessage(messages.posterAlt, { title: '' }).trim();
         cy.get('a.default-card img').first().should('have.attr', 'alt').and('include', prefix);
+      });
+    });
+  });
+
+  PAGES.forEach(({ name, path }) => {
+    it(`[A11Y-22] skips the header and moves focus to the main content on the ${name}`, () => {
+      cy.visitLocale(locale, path);
+
+      cy.i18n(locale).then(({ labels }) => {
+        cy.realPress('Tab');
+        cy.focused().should('have.text', labels.skipToContent);
+        cy.realPress('Enter');
+
+        cy.location('hash').should('eq', '#main-content');
+        cy.focused().should('have.id', 'main-content');
       });
     });
   });
