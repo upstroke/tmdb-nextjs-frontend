@@ -123,4 +123,18 @@ describe('HeaderMain (browser)', () => {
       Node.DOCUMENT_POSITION_FOLLOWING
     );
   });
+
+  // TC-HM-005
+  // Statement Coverage: Covers the onClick handler of the navigation links that closes the mobile menu.
+  // HeaderMain stays mounted when the route changes, so the link has to reset the menu state itself.
+  it('closes the open mobile menu when a navigation link is clicked', () => {
+    render(<HeaderMain />);
+
+    const toggleButton = screen.getByRole('button', { name: 'Toggle menu' });
+    fireEvent.click(toggleButton);
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.click(screen.getByRole('link', { name: /Movies Title/i }));
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
+  });
 });
