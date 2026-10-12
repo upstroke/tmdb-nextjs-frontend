@@ -17,7 +17,7 @@ const header = HeaderPage();
 
 const NAV_ITEMS = [
   { name: 'Home', id: '#nav-home', path: '' },
-  { name: 'Movies', id: '#nav-movies', path: '/tv-shows' === '' ? '' : '/movies' },
+  { name: 'Movies', id: '#nav-movies', path: '/movies' },
   { name: 'TV shows', id: '#nav-tv', path: '/tv-shows' }
 ];
 
