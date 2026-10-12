@@ -144,8 +144,9 @@ describe('HeaderMain (browser)', () => {
   // TC-HM-006
   // Equivalence Partitioning: Home link (no storage key), TV shows link without and with a stored page.
   // The i18n mock has no title for tvShows, so the link text is the raw key.
+  // The second part mounts a fresh component: rerender did not pick up the changed sessionStorage value.
   it('points the Home and TV shows links to their routes and restores the stored TV page', () => {
-    const { rerender } = render(<HeaderMain />);
+    const first = render(<HeaderMain />);
 
     expect(screen.getByRole('link', { name: /Home Title/i })).toHaveAttribute('href', '/en-US');
     expect(screen.getByRole('link', { name: /tvShows/i })).toHaveAttribute(
@@ -153,8 +154,9 @@ describe('HeaderMain (browser)', () => {
       '/en-US/tv-shows'
     );
 
+    first.unmount();
     sessionStorage.setItem('tv-shows-page', '3');
-    rerender(<HeaderMain />);
+    render(<HeaderMain />);
 
     expect(screen.getByRole('link', { name: /tvShows/i })).toHaveAttribute(
       'href',
