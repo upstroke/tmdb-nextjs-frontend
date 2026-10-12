@@ -9,6 +9,7 @@ import { IdParamSchema } from '@/lib/schemas/tmdb';
 import DetailsHero from '@/components/DetailsHero';
 import MediaTypeLabel from '@/components/MediaTypeLabel';
 import DialogMessage from '@/components/DialogMessage';
+import { formatMessage } from '@/lib/i18n/format';
 
 /** @typedef {import('@/lib/schemas/tmdb').MediaDetail} MediaDetail */
 /** @typedef {import('@/lib/schemas/tmdb').WatchProviderResult} WatchProviderResult */
@@ -207,7 +208,7 @@ export default async function MovieDetailPage({ params }) {
                 <li key={`movie-trailer-${index}`}>
                   <a className="ui red button" href={url} target="_blank" rel="noopener noreferrer">
                     <i className="youtube icon" aria-hidden="true" />
-                    {(buttons.watchTrailer ?? '').replace('{index}', String(index + 1))}
+                    {formatMessage(buttons.watchTrailer, { index: index + 1 })}
                   </a>
                 </li>
               ))}
