@@ -70,6 +70,12 @@ The first three are tested in `vitest/component/typeheadsearch/TypeHeadSearch.br
 TC-HM-004 in `vitest/component/headermain/HeaderMain.browser.test.jsx`.
 A11Y-12 only adds the axe check of the no-results state in the full page.
 
+## Covered in a Separate Plan
+
+- **Main menu:** Navigation landmark, current page, tab order, keyboard activation, focus contrast,
+  target size, and the burger button. See `cypress/accessibility/menu/menu-testplan.md`
+  (A11Y-MENU-01 to A11Y-MENU-11).
+
 ## Not Covered Here
 
 - **Screen reader output:** Automated checks cannot replace a manual pass with NVDA or VoiceOver.
