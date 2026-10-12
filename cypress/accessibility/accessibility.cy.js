@@ -76,6 +76,13 @@ describe('Accessibility', () => {
     cy.visitLocale(locale);
     header.searchInput().type('Inception');
     cy.wait('@search');
+
+    // The listbox is rendered after the response and hidden while closed.
+    cy.get('#typeahead-search-results').should('be.visible');
+    cy.get('#movie-27205').should('be.visible');
+    cy.get('#tv-1396').should('be.visible');
+    header.searchInput().should('have.attr', 'aria-expanded', 'true');
+
     cy.checkPageA11y();
   });
 });
