@@ -54,6 +54,5 @@ The name `TMDB_API_KEY` appears in the client bundle on purpose: it is part of t
 
 - `Referrer-Policy` and `Permissions-Policy` are not set. `X-XSS-Protection` is obsolete, and the CSP allows `'unsafe-inline'` for scripts.
 - `LocaleParamSchema` only checks the length (2 to 10), not a list of supported locales. This is accepted and not tested.
-- `SeasonQuerySchema` has no upper limit for `season`, but the TV show detail page does not use it. The season numbers come from the TMDB response, not from the URL, so there is no input to manipulate and no Cypress test.
 - `homepage` and watch provider links are not checked for `http(s)`. This is accepted and not tested.
 - The search route has no rate limit.
