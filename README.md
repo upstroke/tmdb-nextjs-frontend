@@ -149,10 +149,13 @@ npm run test:unit           # Vitest unit tests only
 npm run test:component      # Vitest component tests (browser mode)
 npm run test:integration    # Vitest integration tests only
 npm run test:coverage       # Vitest with coverage
-npm run test:e2e            # Cypress headless (app must run on http://localhost:3000)
+npm run test:e2e            # Cypress headless, incl. accessibility (app must run on http://localhost:3000)
 npm run test:e2e:security   # Cypress security tests only (app must run on http://localhost:3000)
+npm run test:e2e:a11y       # Cypress accessibility tests only (app must run on http://localhost:3000)
 npm run test:e2e:open       # Cypress interactive runner
 ```
+
+The accessibility tests for lists and detail pages load real TMDB data on the server, so the app needs a valid `TMDB_API_KEY`.
 
 See [docs/testing.md](docs/testing.md) for the testing strategy, commands, and conventions.
 
@@ -182,3 +185,4 @@ npm run start
 
 - `docs/testing.md` — testing strategy, commands, and test-level guidance
 - `docs/testing/security-tests.md` — security tests, test plan, and run instructions
+- `cypress/accessibility/accessibility-testplan.md` — accessibility test plan, data notes, and run instructions
