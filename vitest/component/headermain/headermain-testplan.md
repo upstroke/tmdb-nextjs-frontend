@@ -6,14 +6,14 @@
 
 - **Project:** TMDB Next.js Frontend
 - **Module:** HeaderMain
-- **Version:** 1.1
+- **Version:** 1.2
 - **Date:** 2026-10-08
 - **Test level:** Component test
 - **Test file:** `HeaderMain.browser.test.jsx`
 
 ### 2. Introduction
 
-This plan describes the component tests for `HeaderMain`, the main header with navigation, search and language switcher. The tests verify the rendering of the navigation, the skip link, the active link, the mobile menu toggle, the closing of the mobile menu when a link is clicked, the restoration of the movies page from `sessionStorage` and the handling of storage errors. The child components `TypeHeadSearch` and `LanguageSwitcher` are replaced by mocks and are tested separately.
+This plan describes the component tests for `HeaderMain`, the main header with navigation, search and language switcher. The tests verify the rendering of the navigation, the skip link, the active link, the mobile menu toggle, the closing of the mobile menu when a link is clicked, the link targets of all navigation items, the restoration of the stored page from `sessionStorage` and the handling of storage errors. The child components `TypeHeadSearch` and `LanguageSwitcher` are replaced by mocks and are tested separately.
 
 ### 3. Test Items
 
@@ -35,11 +35,12 @@ This plan describes the component tests for `HeaderMain`, the main header with n
 - Skip link to `#main-content`, placed before the burger button and the navigation in the DOM
 - Movies link with the page number from `sessionStorage` (`/en-US/movies?page=5`)
 - Fallback to `/en-US/movies` when `sessionStorage` throws an error
+- Link targets of Home (`/en-US`) and TV shows (`/en-US/tv-shows`, with a stored page `/en-US/tv-shows?page=3`)
 
 ### 5. Features not to be Tested
 
 - Behaviour of `TypeHeadSearch` and `LanguageSwitcher` (separate component tests)
-- Real routing with `next/navigation`
+- Real routing with `next/navigation`; the real page change after a click is tested in Cypress (NAV-05)
 - Real tab order and focus visibility in the browser (separate Cypress a11y tests)
 - Closing the burger menu by clicking outside (Cypress acceptance tests)
 - Visual layout and responsive breakpoints
@@ -48,7 +49,7 @@ This plan describes the component tests for `HeaderMain`, the main header with n
 
 - **Tool:** Vitest Browser Mode with React Testing Library
 - **Browser:** Chromium
-- **Test design techniques:** State Transition Testing (menu closed to open to closed, also through a link click), Equivalence Partitioning (no stored page / stored page / storage error), Error Guessing (`sessionStorage.getItem` throws)
+- **Test design techniques:** State Transition Testing (menu closed to open to closed, also through a link click), Equivalence Partitioning (no stored page / stored page / storage error, link with and without storage key), Error Guessing (`sessionStorage.getItem` throws)
 - **Structural coverage:** Statement Coverage and Branch Coverage (documented in the test comments)
 - **Isolation:** Router, locale store and both child components are mocked; `sessionStorage` is cleared and the pathname is reset to `/en-US` before each test
 
@@ -66,6 +67,7 @@ This plan describes the component tests for `HeaderMain`, the main header with n
 | TC-HM-003 | `sessionStorage.getItem` throws       | `catch` block                                           | try/catch exception path |
 | TC-HM-004 | Path `/en-US`, default render         | Skip link rendered before burger button and navigation  | -                        |
 | TC-HM-005 | Path `/en-US`, menu open              | `onClick` handler of the links closes the menu          | -                        |
+| TC-HM-006 | Path `/en-US`, stored TV page `3`     | Home and TV shows link targets, TV page restoration     | -                        |
 
 ### 9. Derived Test Cases
 
@@ -113,10 +115,20 @@ This plan describes the component tests for `HeaderMain`, the main header with n
 - **Steps:**
   1. Render `HeaderMain`.
   2. Fire `click` on the button `Toggle menu`.
-  3. Fire `click` on the link `Movies Title`.
+  3. Fire `click` on the link `Movies Title`; the browser default of the click is prevented.
 - **Expected result:**
   - The toggle button has `aria-expanded="true"` after the first click.
   - The toggle button has `aria-expanded="false"` after the click on the link.
+
+#### TC-HM-006: Home and TV shows links point to their routes
+
+- **Precondition:** Pathname is `/en-US`; `sessionStorage` is empty.
+- **Steps:**
+  1. Render `HeaderMain`.
+  2. Set `tv-shows-page` = `3` in `sessionStorage` and render again.
+- **Expected result:**
+  - After step 1 the link `Home Title` has `href="/en-US"` and the link `tvShows` has `href="/en-US/tv-shows"`.
+  - After step 2 the link `tvShows` has `href="/en-US/tv-shows?page=3"` and the link `Home Title` still has `href="/en-US"`.
 
 ### 10. Gherkin User Stories
 
@@ -163,6 +175,15 @@ Feature: HeaderMain component
     Then the toggle button has aria-expanded "true"
     When the user clicks the link "Movies Title"
     Then the toggle button has aria-expanded "false"
+
+  Scenario: Home and TV shows links point to their routes
+    Given the current path is "/en-US"
+    When the header is rendered
+    Then the link "Home Title" points to "/en-US"
+    And the link "tvShows" points to "/en-US/tv-shows"
+    When sessionStorage contains "tv-shows-page" with the value "3"
+    And the header is rendered again
+    Then the link "tvShows" points to "/en-US/tv-shows?page=3"
 ```
 
 ### 11. Run Tests
@@ -173,12 +194,12 @@ npx vitest run --config vitest.config.js vitest/component/headermain
 
 ### 12. Notes
 
-- TC-HM-002 expects the text `tvShows`. This is a raw key, because the i18n mock has no title for `tvShows`. The test therefore documents a missing mock entry and not a real label.
+- TC-HM-002 and TC-HM-006 look for the text `tvShows`. This is a raw key, because the i18n mock has no title for `tvShows`. The tests therefore document a missing mock entry and not a real label.
 - The mock path of `LanguageSwitcher` is `../../components/LanguageSwitcher`, which is relative to the test file. It should be checked that this path points to the real component.
 - TC-HM-003 uses `vi.spyOn(Storage.prototype, 'getItem')`. `vi.clearAllMocks()` in `beforeEach` does not restore the original implementation. A restore (`vi.restoreAllMocks()` or `mockRestore()`) would make later tests safer.
 - The tests use `click`, not `pointerDown`, for the toggle button. `HeaderMain` toggles on `onClick`, so Enter and Space work too (DEF-01 in `cypress/accessibility/menu/menu-testplan.md`). `fireEvent.click` runs the same handler as the keyboard. Real keyboard operation is tested in Cypress (A11Y-MENU-10).
 - TC-HM-004 checks the DOM order only. The real tab order with a keyboard is tested in Cypress (A11Y-MENU-05).
-- TC-HM-005 checks only the state of the menu. The real page change after the click and the closing on a mobile viewport are tested in Cypress (NAV-09 in `cypress/e2e/navigation/navigation-testplan.md`).
+- TC-HM-005 checks only the state of the menu. The real page change after the click and the closing on a mobile viewport are tested in Cypress (NAV-05 and NAV-09 in `cypress/e2e/navigation/navigation-testplan.md`). TC-HM-005 prevents the browser default of the click, because a real navigation would unload the test iframe and hang the run.
 
 ### 13. Traceability Matrix
 
@@ -190,4 +211,6 @@ npx vitest run --config vitest.config.js vitest/component/headermain
 | Mobile menu closes on link click     | TC-HM-005            |
 | Skip link before navigation          | TC-HM-004            |
 | Stored movies page in the link       | TC-HM-002            |
+| Home and TV shows link targets       | TC-HM-006            |
+| Stored TV page in the link           | TC-HM-006            |
 | Fallback on storage error            | TC-HM-003            |

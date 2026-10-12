@@ -140,4 +140,26 @@ describe('HeaderMain (browser)', () => {
     fireEvent.click(moviesLink);
     expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
   });
+
+  // TC-HM-006
+  // Equivalence Partitioning: Home link (no storage key), TV shows link without and with a stored page.
+  // The i18n mock has no title for tvShows, so the link text is the raw key.
+  it('points the Home and TV shows links to their routes and restores the stored TV page', () => {
+    const { rerender } = render(<HeaderMain />);
+
+    expect(screen.getByRole('link', { name: /Home Title/i })).toHaveAttribute('href', '/en-US');
+    expect(screen.getByRole('link', { name: /tvShows/i })).toHaveAttribute(
+      'href',
+      '/en-US/tv-shows'
+    );
+
+    sessionStorage.setItem('tv-shows-page', '3');
+    rerender(<HeaderMain />);
+
+    expect(screen.getByRole('link', { name: /tvShows/i })).toHaveAttribute(
+      'href',
+      '/en-US/tv-shows?page=3'
+    );
+    expect(screen.getByRole('link', { name: /Home Title/i })).toHaveAttribute('href', '/en-US');
+  });
 });
