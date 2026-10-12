@@ -37,10 +37,12 @@ application without encountering accessibility violations.
 | A11Y-20 | Movie list     | Hover contrast of the load more button       |
 | A11Y-21 | Movie list     | Localized poster alternative text            |
 | A11Y-22 | All pages      | Skip link moves focus to the main content    |
+| A11Y-23 | Homepage       | html lang in the raw server response         |
 
 A11Y-08, A11Y-09, A11Y-14, and A11Y-22 run once per page, with the page name in the test title.
 A11Y-16 runs once per navigation link, A11Y-19 once per list, and A11Y-21 once per tested locale
-(en-US, de-DE).
+(en-US, de-DE). A11Y-23 runs once per tested locale and lives in
+`cypress/accessibility/html-lang.cy.js`.
 
 ## States to Include
 
@@ -85,8 +87,9 @@ A11Y-12 only adds the axe check of the no-results state in the full page.
 
 - **`html[lang]` in the server response:** `app/[locale]/layout.js` renders the `<html>` element
   with the locale of the route, so the server response carries the correct language. Screen
-  readers and crawlers see it before hydration (WCAG 3.1.1). A11Y-08 and A11Y-15 check the value
-  in the loaded page. No test reads the raw server response of `/de-DE`.
+  readers and crawlers see it before hydration (WCAG 3.1.1). A11Y-23 reads the raw response of
+  `/en-US` and `/de-DE` with `cy.request`, which runs no JavaScript, and checks the `lang`
+  attribute of the `<html>` tag. A11Y-08 and A11Y-15 check the value in the loaded page.
 
 ## Skip Link
 
@@ -156,7 +159,7 @@ Tests use the constant `en-US`, the same as `DEFAULT_LOCALE` in `lib/i18n/config
 
 `html[lang]` is rendered by the server in `app/[locale]/layout.js`. A11Y-08 opens each page in
 `en-US` and switches to `de-DE` through the language switcher (`#language-select`). A11Y-15 opens
-`/de-DE` directly. Both check the value in the loaded page; see Server Response for the server
-output.
+`/de-DE` directly. Both check the value in the loaded page; A11Y-23 checks the raw server
+response, see Server Response.
 
 Do not read the locale with `Cypress.env()`: `allowCypressEnv` is `false`.
