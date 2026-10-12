@@ -32,9 +32,11 @@ application without encountering accessibility violations.
 | A11Y-16 | Header         | Hover contrast of navigation links           |
 | A11Y-17 | Search         | Hover contrast of a search result            |
 | A11Y-18 | Header         | Contrast of the focused element              |
+| A11Y-19 | Lists          | Hover contrast of a card                     |
+| A11Y-20 | Movie list     | Hover contrast of the load more button       |
 
 A11Y-08, A11Y-09, and A11Y-14 run once per page, with the page name in the test title. A11Y-16 runs
-once per navigation link.
+once per navigation link, A11Y-19 once per list.
 
 ## States to Include
 
@@ -43,8 +45,8 @@ once per navigation link.
 - Search results open, empty, and failed
 - Second locale (`de-DE`), reached through the language switcher and through a direct URL
 - Small viewport (320 px, equals 200% zoom on a 1280 px wide screen)
-- Hover and focus state of navigation links and search results
-- Not yet covered: hover contrast of cards and buttons
+- Hover and focus state of navigation links, search results, cards, and the load more button
+- Not yet covered: hover contrast of the season tabs
 
 ## Dialogs
 
@@ -88,6 +90,9 @@ because of the data and not because of an accessibility violation.
 Only the search request comes from the browser. A11Y-07 and A11Y-11 to A11Y-13 stub it with the
 response shape of `/api/[locale]/search`.
 
+A11Y-20 needs a list with further pages, because the load more button is disabled on the last
+page and axe skips disabled elements.
+
 ## Run
 
 Start the app on `http://localhost:3000` with `TMDB_API_KEY`, then run:
@@ -98,10 +103,10 @@ npm run test:e2e:a11y
 
 ## Hover and Focus Contrast
 
-`cy.trigger('mouseover')` does not apply the CSS `:hover` state, so A11Y-16 and A11Y-17 use
-[cypress-real-events](https://github.com/dmtrKovalenko/cypress-real-events). It sends real mouse
-and keyboard events through the Chrome DevTools Protocol and works in Chromium-based browsers
-only. The npm scripts run Chrome. The spec imports the package directly with
+`cy.trigger('mouseover')` does not apply the CSS `:hover` state, so A11Y-16, A11Y-17, A11Y-19, and
+A11Y-20 use [cypress-real-events](https://github.com/dmtrKovalenko/cypress-real-events). It sends
+real mouse and keyboard events through the Chrome DevTools Protocol and works in Chromium-based
+browsers only. The npm scripts run Chrome. The spec imports the package directly with
 `import 'cypress-real-events'`.
 
 The tests run only the axe rule `color-contrast` while the pointer stays on the element
@@ -115,7 +120,7 @@ Tags checked: `wcag2a`, `wcag2aa`, `wcag21aa`, `wcag22aa`.
 A11Y-09 additionally runs the best-practice rules `landmark-one-main`, `landmark-unique`,
 `page-has-heading-one`, `heading-order`, and `region`.
 
-A11Y-16 to A11Y-18 run the rule `color-contrast` only.
+A11Y-16 to A11Y-20 run the rule `color-contrast` only.
 
 Document intentional exceptions in the spec file directly above `cy.checkPageA11y()`.
 Do not disable rules broadly.

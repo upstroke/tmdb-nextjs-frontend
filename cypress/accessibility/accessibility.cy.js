@@ -38,6 +38,11 @@ const PAGES = [
   { name: 'TV show detail', path: `/tv-shows/${TV_SHOW_ID}` }
 ];
 
+const LISTS = [
+  { name: 'movie list', path: '/movies' },
+  { name: 'TV show list', path: '/tv-shows' }
+];
+
 const NAV_ITEMS = [
   { name: 'Home', id: '#nav-home' },
   { name: 'Movies', id: '#nav-movies' },
@@ -272,6 +277,20 @@ describe('Accessibility', () => {
     cy.visitLocale(locale);
     cy.realPress('Tab');
     cy.focused().closest('#menuHeader').should('exist');
+    cy.checkPageA11y(CONTRAST_ONLY);
+  });
+
+  LISTS.forEach(({ name, path }) => {
+    it(`[A11Y-19] keeps text contrast while hovering a card on the ${name}`, () => {
+      cy.visitLocale(locale, path);
+      cy.get('a.default-card').first().should('be.visible').realHover();
+      cy.checkPageA11y(CONTRAST_ONLY);
+    });
+  });
+
+  it('[A11Y-20] keeps text contrast while hovering the load more button', () => {
+    cy.visitLocale(locale, '/movies');
+    cy.get('.load-more button').should('be.visible').and('not.be.disabled').realHover();
     cy.checkPageA11y(CONTRAST_ONLY);
   });
 });
