@@ -3,7 +3,7 @@
 ## Feature Goal
 
 Verify WCAG 2.2 AA compliance on central pages using automated axe-core checks and targeted
-checks for keyboard focus, live regions, search states, and reflow.
+checks for keyboard focus, live regions, search states, reflow, and hover contrast.
 
 ## User Story
 
@@ -29,8 +29,12 @@ application without encountering accessibility violations.
 | A11Y-13 | Search         | Error message when the request fails         |
 | A11Y-14 | Small viewport | 320 px width, no horizontal scrolling        |
 | A11Y-15 | Homepage       | html lang after load on direct de-DE visit   |
+| A11Y-16 | Header         | Hover contrast of navigation links           |
+| A11Y-17 | Search         | Hover contrast of a search result            |
+| A11Y-18 | Header         | Contrast of the focused element              |
 
-A11Y-08, A11Y-09, and A11Y-14 run once per page, with the page name in the test title.
+A11Y-08, A11Y-09, and A11Y-14 run once per page, with the page name in the test title. A11Y-16 runs
+once per navigation link.
 
 ## States to Include
 
@@ -39,12 +43,25 @@ A11Y-08, A11Y-09, and A11Y-14 run once per page, with the page name in the test 
 - Search results open, empty, and failed
 - Second locale (`de-DE`), reached through the language switcher and through a direct URL
 - Small viewport (320 px, equals 200% zoom on a 1280 px wide screen)
-- Not yet covered: other open dialogs, loading state of the search, hover contrast
+- Hover and focus state of navigation links and search results
+- Not yet covered: hover contrast of cards and buttons
+
+## Dialogs
+
+`components/DialogMessage.jsx` is the only dialog component in `components/`. A11Y-06 covers it
+with the error message for an invalid id.
+
+## Covered in Vitest
+
+- **Typeahead keyboard handling:** Arrow keys, Enter, Escape, Home, and End.
+- **Loading state of the search:** The delayed loading message.
+- **Status message for missing results:** The message shown when the search finds nothing.
+
+All three are tested in `vitest/component/typeheadsearch/TypeHeadSearch.browser.test.jsx`.
+A11Y-12 only adds the axe check of the no-results state in the full page.
 
 ## Not Covered Here
 
-- **Typeahead keyboard handling:** Arrow keys, Enter, Escape, Home, and End are tested in
-  `vitest/component/typeheadsearch/TypeHeadSearch.browser.test.jsx`.
 - **Skip link:** The layout has no skip link, so there is nothing to test yet. Add the test with
   the feature.
 - **Screen reader output:** Automated checks cannot replace a manual pass with NVDA or VoiceOver.
@@ -79,12 +96,26 @@ Start the app on `http://localhost:3000` with `TMDB_API_KEY`, then run:
 npm run test:e2e:a11y
 ```
 
+## Hover and Focus Contrast
+
+`cy.trigger('mouseover')` does not apply the CSS `:hover` state, so A11Y-16 and A11Y-17 use
+[cypress-real-events](https://github.com/dmtrKovalenko/cypress-real-events). It sends real mouse
+and keyboard events through the Chrome DevTools Protocol and works in Chromium-based browsers
+only. The npm scripts run Chrome. The spec imports the package directly with
+`import 'cypress-real-events'`.
+
+The tests run only the axe rule `color-contrast` while the pointer stays on the element
+(`realHover()`) or the focus is on it (`realPress('Tab')`). The default checks in A11Y-01 to
+A11Y-07 see the resting state only.
+
 ## Rules
 
 Tags checked: `wcag2a`, `wcag2aa`, `wcag21aa`, `wcag22aa`.
 
 A11Y-09 additionally runs the best-practice rules `landmark-one-main`, `landmark-unique`,
 `page-has-heading-one`, `heading-order`, and `region`.
+
+A11Y-16 to A11Y-18 run the rule `color-contrast` only.
 
 Document intentional exceptions in the spec file directly above `cy.checkPageA11y()`.
 Do not disable rules broadly.

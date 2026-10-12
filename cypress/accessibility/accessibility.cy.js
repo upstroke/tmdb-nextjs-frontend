@@ -9,13 +9,19 @@
  * TMDB_API_KEY on the server. Only the search request comes from the browser
  * and is stubbed.
  *
- * Keyboard handling of the typeahead (arrow keys, Enter, Escape, Home, End) is
- * covered by vitest/component/typeheadsearch/TypeHeadSearch.browser.test.jsx.
+ * Keyboard handling of the typeahead (arrow keys, Enter, Escape, Home, End),
+ * its loading state, and the status message for missing results are covered by
+ * vitest/component/typeheadsearch/TypeHeadSearch.browser.test.jsx. A11Y-12 only
+ * adds the axe check of the no-results state.
+ *
+ * Hover and focus contrast use cypress-real-events (real browser events through
+ * the Chrome DevTools Protocol), because cy.trigger() cannot apply :hover.
  *
  * See accessibility-testplan.md for the full test plan.
  *
  * @tags @accessibility @a11y
  */
+import 'cypress-real-events';
 import { HeaderPage } from '../POM/HeaderPage.js';
 
 const header = HeaderPage();
@@ -31,6 +37,15 @@ const PAGES = [
   { name: 'movie detail', path: `/movies/${MOVIE_ID}` },
   { name: 'TV show detail', path: `/tv-shows/${TV_SHOW_ID}` }
 ];
+
+const NAV_ITEMS = [
+  { name: 'Home', id: '#nav-home' },
+  { name: 'Movies', id: '#nav-movies' },
+  { name: 'TV shows', id: '#nav-tv' }
+];
+
+// Runs only the contrast rule so the current hover or focus state is checked.
+const CONTRAST_ONLY = { runOnly: { type: 'rule', values: ['color-contrast'] } };
 
 /**
  * Builds a search result card in the shape of the search API response.
@@ -232,5 +247,31 @@ describe('Accessibility', () => {
     // the test plan).
     cy.visitLocale('de-DE');
     cy.get('html').should('have.attr', 'lang').and('match', /^de/i);
+  });
+
+  NAV_ITEMS.forEach(({ name, id }) => {
+    it(`[A11Y-16] keeps text contrast while hovering the ${name} link`, () => {
+      cy.visitLocale(locale);
+      cy.get(`${id} a`).realHover();
+      cy.checkPageA11y(CONTRAST_ONLY);
+    });
+  });
+
+  it('[A11Y-17] keeps text contrast while hovering a search result', () => {
+    const movies = [card(27205, 'movie', 'Inception')];
+
+    searchWithStub(locale, {
+      body: { movies, tvShows: [], results: movies, error: null }
+    });
+
+    cy.get('#movie-27205').should('be.visible').realHover();
+    cy.checkPageA11y(CONTRAST_ONLY);
+  });
+
+  it('[A11Y-18] keeps text contrast on the focused element', () => {
+    cy.visitLocale(locale);
+    cy.realPress('Tab');
+    cy.focused().closest('#menuHeader').should('exist');
+    cy.checkPageA11y(CONTRAST_ONLY);
   });
 });
