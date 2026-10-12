@@ -44,7 +44,9 @@ const NAV_ITEMS = [
  * Navigation links restore the last visited page in paginated lists by reading
  * the page number from sessionStorage before constructing the href.
  *
- * The burger button toggles the nav drawer on small viewports.
+ * The burger button toggles the nav drawer on small viewports. Selecting a
+ * navigation link closes the drawer, because the header stays mounted when the
+ * route changes.
  *
  * @returns {JSX.Element}
  */
@@ -129,6 +131,7 @@ export default function HeaderMain() {
                   className={item.active(pathname) ? 'link-active' : undefined}
                   href={getNavHref(item.path, item.storageKey)}
                   aria-current={item.active(pathname) ? 'page' : undefined}
+                  onClick={() => setMenuOpen(false)}
                 >
                   <i className={`${item.icon} icon`} aria-hidden="true" />
                   <span className="text-node">{resolveLabel(item.label)}</span>
