@@ -35,12 +35,12 @@ vi.mock('@/lib/stores/locale', () => ({
 
 // ignore LanguageSwitcher for now - test with integration test
 vi.mock('@/components/LanguageSwitcher', () => ({
-  default: () => React.createElement('div', { 'data-testid': 'mock-language-switcher' }, 'Language')
+  default: () => <div data-testid="mock-language-switcher">Language</div>
 }));
 
 // ignore TypeHeadSearch for now - test with integration test
 vi.mock('@/components/TypeHeadSearch', () => ({
-  default: () => React.createElement('div', { 'data-testid': 'mock-typeahead-search' }, 'Search')
+  default: () => <div data-testid="mock-typeahead-search">Search</div>
 }));
 
 describe('HeaderMain (browser)', () => {
