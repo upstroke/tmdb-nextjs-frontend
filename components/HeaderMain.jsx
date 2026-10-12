@@ -114,7 +114,7 @@ export default function HeaderMain() {
         aria-label={labels.navigationToggle}
         aria-expanded={menuOpen ? 'true' : 'false'}
         aria-controls="navmenu"
-        onPointerDown={() => setMenuOpen((v) => !v)}
+        onClick={() => setMenuOpen((v) => !v)}
       >
         <span />
         <span />
