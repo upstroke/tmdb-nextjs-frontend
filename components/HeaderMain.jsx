@@ -44,9 +44,10 @@ const NAV_ITEMS = [
  * Navigation links restore the last visited page in paginated lists by reading
  * the page number from sessionStorage before constructing the href.
  *
- * The burger button toggles the nav drawer on small viewports. Selecting a
- * navigation link closes the drawer, because the header stays mounted when the
- * route changes.
+ * The burger button toggles the nav drawer on small viewports. The drawer
+ * closes on every path change, whether it comes from a navigation link, a
+ * search result, or the browser history, because the header stays mounted when
+ * the route changes. Clicking into the search keeps the drawer open.
  *
  * @returns {JSX.Element}
  */
@@ -54,7 +55,14 @@ export default function HeaderMain() {
   const locale = useLocale();
   const { labels, titles } = useI18n();
   const pathname = usePathname();
-  const [menuOpen, setMenuOpen] = useState(false);
+  // Path at which the drawer was opened, or null while it is closed.
+  const [openAt, setOpenAt] = useState(null);
+
+  // Close the drawer when the path changes. Resetting state during render avoids an effect.
+  if (openAt !== null && openAt !== pathname) {
+    setOpenAt(null);
+  }
+  const menuOpen = openAt !== null;
 
   const navItems = NAV_ITEMS.map((item) => ({
     id: item.id,
@@ -116,7 +124,7 @@ export default function HeaderMain() {
         aria-label={labels.navigationToggle}
         aria-expanded={menuOpen ? 'true' : 'false'}
         aria-controls="navmenu"
-        onClick={() => setMenuOpen((v) => !v)}
+        onClick={() => setOpenAt(menuOpen ? null : pathname)}
       >
         <span />
         <span />
@@ -131,7 +139,7 @@ export default function HeaderMain() {
                   className={item.active(pathname) ? 'link-active' : undefined}
                   href={getNavHref(item.path, item.storageKey)}
                   aria-current={item.active(pathname) ? 'page' : undefined}
-                  onClick={() => setMenuOpen(false)}
+                  onClick={() => setOpenAt(null)}
                 >
                   <i className={`${item.icon} icon`} aria-hidden="true" />
                   <span className="text-node">{resolveLabel(item.label)}</span>

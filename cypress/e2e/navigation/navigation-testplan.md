@@ -7,7 +7,7 @@ Structure follows ISTQB (test plan according to ISO/IEC/IEEE 29119-3).
 | Field   | Value                                          |
 | ------- | ---------------------------------------------- |
 | ID      | TP-NAV                                         |
-| Version | 0.5 (draft)                                    |
+| Version | 0.6 (draft)                                    |
 | Level   | System test (acceptance), automated end-to-end |
 | Type    | Functional test: navigation and locale routing |
 | Spec    | `cypress/e2e/navigation/navigation.cy.js`      |
@@ -43,6 +43,7 @@ language switcher, and move between pages while the locale stays in the URL.
 ## 6. Features Not to Be Tested
 
 - **Link targets and stored page numbers of the menu links:** covered in Vitest (`vitest/component/headermain/`, TC-HM-002, TC-HM-003, TC-HM-006).
+- **Menu state on path change:** covered in Vitest (TC-HM-005, TC-HM-007).
 - **Typeahead keyboard handling, debounce, fallbacks:** covered in Vitest (`vitest/component/typeheadsearch/`).
 - **Search route, detail pages with partial data, locale validation:** covered in Vitest integration tests (`vitest/integration/typeheadsearch-search-to-details/`, `languageswitcher/`, `pagedlist/`).
 - **Loading more cards, duplicates, timeout, error dialog of the list:** covered in `vitest/integration/pagedlist/`.
@@ -110,7 +111,7 @@ NAV-06 (TV shows link) and NAV-07 (Home link) are part of NAV-05 and have no sep
 ## 12. Known Defects
 
 - **DEF-NAV-01 (fixed):** `HeaderMain` kept the mobile menu open after a link was selected, because only the burger button changed `menuOpen`. The link now closes the menu. NAV-09 guards against a regression.
-- **DEF-NAV-02 (suspected, not confirmed):** The search result click calls `router.push` in `TypeHeadSearch` and does not touch `menuOpen` in `HeaderMain`. The mobile menu may stay open after a result is opened. NAV-14 asserts that the menu closes and fails until this is fixed or the expectation is changed.
+- **DEF-NAV-02 (fixed):** The mobile menu stayed open after a search result opened a page, because the search calls `router.push` and only the menu links reset the menu. `HeaderMain` now closes the menu on every path change (Vitest TC-HM-007). Clicking or tapping into the search keeps the menu open on purpose. NAV-14 guards against a regression.
 
 ## 13. Run
 

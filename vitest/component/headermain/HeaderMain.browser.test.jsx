@@ -128,7 +128,7 @@ describe('HeaderMain (browser)', () => {
 
   // TC-HM-005
   // Statement Coverage: Covers the onClick handler of the navigation links that closes the mobile menu.
-  // HeaderMain stays mounted when the route changes, so the link has to reset the menu state itself.
+  // A click on the link of the current page does not change the path, so the link has to reset the menu itself.
   it('closes the open mobile menu when a navigation link is clicked', () => {
     render(<HeaderMain />);
 
@@ -163,5 +163,24 @@ describe('HeaderMain (browser)', () => {
       '/en-US/tv-shows?page=3'
     );
     expect(screen.getByRole('link', { name: /Home Title/i })).toHaveAttribute('href', '/en-US');
+  });
+
+  // TC-HM-007
+  // Statement Coverage: Covers the render-time reset of the menu state when the pathname changes.
+  // A search result opens a page through the router, not through a navigation link.
+  it('closes the open mobile menu when the path changes and keeps it closed on the way back', () => {
+    const { rerender } = render(<HeaderMain />);
+
+    const toggleButton = screen.getByRole('button', { name: 'Toggle menu' });
+    fireEvent.click(toggleButton);
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
+
+    mockUsePathname.mockReturnValue('/en-US/movies/603');
+    rerender(<HeaderMain />);
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
+
+    mockUsePathname.mockReturnValue('/en-US');
+    rerender(<HeaderMain />);
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
   });
 });
