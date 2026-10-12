@@ -6,7 +6,7 @@
 
 - **Project:** TMDB Next.js Frontend
 - **Module:** HeaderMain
-- **Version:** 1.2
+- **Version:** 1.3
 - **Date:** 2026-10-08
 - **Test level:** Component test
 - **Test file:** `HeaderMain.browser.test.jsx`
@@ -51,7 +51,7 @@ This plan describes the component tests for `HeaderMain`, the main header with n
 - **Browser:** Chromium
 - **Test design techniques:** State Transition Testing (menu closed to open to closed, also through a link click), Equivalence Partitioning (no stored page / stored page / storage error, link with and without storage key), Error Guessing (`sessionStorage.getItem` throws)
 - **Structural coverage:** Statement Coverage and Branch Coverage (documented in the test comments)
-- **Isolation:** Router, locale store and both child components are mocked; `sessionStorage` is cleared and the pathname is reset to `/en-US` before each test
+- **Isolation:** Router, locale store and both child components are mocked; before each test all spies are restored (`vi.restoreAllMocks()`), `sessionStorage` is cleared and the pathname is reset to `/en-US`
 
 ### 7. Item Pass/Fail Criteria
 
@@ -195,8 +195,8 @@ npx vitest run --config vitest.config.js vitest/component/headermain
 ### 12. Notes
 
 - TC-HM-002 and TC-HM-006 look for the text `tvShows`. This is a raw key, because the i18n mock has no title for `tvShows`. The tests therefore document a missing mock entry and not a real label.
-- The mock path of `LanguageSwitcher` is `../../components/LanguageSwitcher`, which is relative to the test file. It should be checked that this path points to the real component.
-- TC-HM-003 uses `vi.spyOn(Storage.prototype, 'getItem')`. `vi.clearAllMocks()` in `beforeEach` does not restore the original implementation. A restore (`vi.restoreAllMocks()` or `mockRestore()`) would make later tests safer.
+- `LanguageSwitcher` and `TypeHeadSearch` are mocked with the alias path `@/components/...`. The alias must resolve to the real component, otherwise the mock has no effect.
+- TC-HM-003 uses `vi.spyOn(Storage.prototype, 'getItem')`. `vi.clearAllMocks()` does not restore the original implementation, so `beforeEach` calls `vi.restoreAllMocks()` first. Without it the spy stayed active and made later tests (found with TC-HM-006) read no stored page.
 - The tests use `click`, not `pointerDown`, for the toggle button. `HeaderMain` toggles on `onClick`, so Enter and Space work too (DEF-01 in `cypress/accessibility/menu/menu-testplan.md`). `fireEvent.click` runs the same handler as the keyboard. Real keyboard operation is tested in Cypress (A11Y-MENU-10).
 - TC-HM-004 checks the DOM order only. The real tab order with a keyboard is tested in Cypress (A11Y-MENU-05).
 - TC-HM-005 checks only the state of the menu. The real page change after the click and the closing on a mobile viewport are tested in Cypress (NAV-05 and NAV-09 in `cypress/e2e/navigation/navigation-testplan.md`). TC-HM-005 prevents the browser default of the click, because a real navigation would unload the test iframe and hang the run.
