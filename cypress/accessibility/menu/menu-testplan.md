@@ -153,9 +153,9 @@ TC-MENU-04 and TC-MENU-06 run once per link (Home, Movies, TV shows).
 
 ## 15. Known Defects
 
-| ID     | Description                                                                                                                                                                                | Affected   | Status |
-| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | ------ |
-| DEF-01 | `HeaderMain` toggled the burger button with `onPointerDown`. Enter and Space fire `click` only, so the menu could not be opened with the keyboard (WCAG 2.1.1). Fixed with `onClick`.      | TC-MENU-10 | Fixed  |
+| ID     | Description                                                                                                                                                                           | Affected   | Status |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------ |
+| DEF-01 | `HeaderMain` toggled the burger button with `onPointerDown`. Enter and Space fire `click` only, so the menu could not be opened with the keyboard (WCAG 2.1.1). Fixed with `onClick`. | TC-MENU-10 | Fixed  |
 
 DEF-01 was fixed in commit `b5b97d7`. TC-MENU-10 guards against a regression.
 
