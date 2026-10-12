@@ -7,7 +7,7 @@ Structure follows ISTQB (test plan according to ISO/IEC/IEEE 29119-3).
 | Field   | Value                                          |
 | ------- | ---------------------------------------------- |
 | ID      | TP-NAV                                         |
-| Version | 0.4 (draft)                                    |
+| Version | 0.5 (draft)                                    |
 | Level   | System test (acceptance), automated end-to-end |
 | Type    | Functional test: navigation and locale routing |
 | Spec    | `cypress/e2e/navigation/navigation.cy.js`      |
@@ -29,7 +29,7 @@ language switcher, and move between pages while the locale stays in the URL.
 - `components/LanguageSwitcher` (locale change)
 - `components/TypeHeadSearch` (search to detail page)
 - Page objects: `cypress/POM/BasePage.js`, `cypress/POM/HeaderPage.js`
-- Selectors: `#navmenu` (navigation), `.burger-icon` (burger button), `#nav-home`, `#nav-movies`, `#nav-tv` (menu items), `#language-select` (language switcher), `#typeahead-search-input` (search)
+- Selectors: `#navmenu` (navigation), `.burger-icon` (burger button), `#nav-home`, `#nav-movies`, `#nav-tv` (menu items), `#language-select` (language switcher), `#typeahead-search-input` (search), `a.result#movie-<id>` (search result)
 
 ## 5. Features to Be Tested
 
@@ -37,7 +37,8 @@ language switcher, and move between pages while the locale stays in the URL.
 - Visible navigation and language switcher in the header (implemented).
 - Real page changes through the desktop menu links Movies, TV shows and Home (implemented).
 - Mobile menu: a selected link changes the page and closes the menu (implemented).
-- Real page changes through the language switcher and the search results (planned).
+- Mobile search flow: search from the open menu, open a result, menu closes (implemented).
+- Real page changes through the language switcher and the search results on desktop (planned).
 
 ## 6. Features Not to Be Tested
 
@@ -54,13 +55,14 @@ language switcher, and move between pages while the locale stays in the URL.
 - Related page changes of the same menu are combined in one flow (NAV-05) instead of one test per link, because every test reloads the app.
 - Page objects `BasePage` and `HeaderPage` hold the selectors. New page objects are added for list and detail pages when the first flow needs them.
 - Locale `en-US` is passed to `BasePage.visit('en-US')` in the spec. `cypress.env.json` does not exist and is not used (`allowCypressEnv` is `false`).
-- Tool: Cypress in Chrome. Flows use `cy.location()` and `cy.url()` for assertions instead of `cy.wait()`.
+- Tool: Cypress in Chrome. Flows use `cy.location()` and `cy.url()` for assertions instead of `cy.wait()`. The only wait is on the alias of a stubbed request (`cy.wait('@search')`).
 
 ## 8. Test Environment and Data
 
 - App on `http://localhost:3000`, started with `TMDB_API_KEY`.
 - Fixtures in `cypress/fixtures/` and the commands `cy.interceptTmdb()` and `cy.interceptTmdbError()` in `cypress/support/tmdb.commands.js` exist. They match requests of the browser only.
 - Mobile viewport: 375 x 667 (`cy.viewport` in the test).
+- NAV-14 stubs `GET /api/en-US/search` with one movie (`id` 603, `mediaType` `movie`).
 
 ## 9. Test Cases
 
@@ -74,6 +76,7 @@ language switcher, and move between pages while the locale stays in the URL.
 | NAV-04 | Language switcher (`#language-select`) is present in the header | implemented |
 | NAV-05 | Menu links open Movies, TV shows and Home (real page changes)   | implemented |
 | NAV-09 | Mobile: burger menu opens, link changes the page, menu closes   | implemented |
+| NAV-14 | Mobile: search result opens the detail page, menu closes        | implemented |
 
 ### Planned
 
@@ -84,7 +87,7 @@ language switcher, and move between pages while the locale stays in the URL.
 | NAV-11 | Search: ArrowDown and Enter open the detail page                                    | Vitest mocks `router.push`                            | planned |
 | NAV-12 | List, open a card, browser back keeps the loaded cards and the page number          | Vitest mocks fetch and router                         | planned |
 
-NAV-06 (TV shows link) and NAV-07 (Home link) are part of NAV-05 and have no separate test. The IDs stay unused.
+NAV-06 (TV shows link) and NAV-07 (Home link) are part of NAV-05 and have no separate test. The IDs stay unused. NAV-14 covers the search click on mobile; NAV-10 and NAV-11 stay planned for desktop and the keyboard.
 
 ## 10. Traceability
 
@@ -95,17 +98,19 @@ NAV-06 (TV shows link) and NAV-07 (Home link) are part of NAV-05 and have no sep
 | Menu links change the page           | NAV-05         |
 | Language switch keeps the route      | NAV-08         |
 | Mobile menu flow                     | NAV-09         |
+| Mobile search flow                   | NAV-14         |
 | Search result opens the detail page  | NAV-10, NAV-11 |
 | Back navigation keeps the list state | NAV-12         |
 
 ## 11. Risks
 
-- **R-01 Server-side TMDB requests:** Pages and API routes call TMDB on the server. `cy.intercept` only sees requests of the browser, so `cy.interceptTmdb()` does not stub them. Flows need either a real `TMDB_API_KEY` with stable titles or stubs of the app's own `/api/<locale>/...` routes. The search request in the browser can be stubbed (see A11Y-07).
+- **R-01 Server-side TMDB requests:** Pages and API routes call TMDB on the server. `cy.intercept` only sees requests of the browser, so `cy.interceptTmdb()` does not stub them. Flows need either a real `TMDB_API_KEY` with stable titles or stubs of the app's own `/api/<locale>/...` routes. The search request in the browser can be stubbed (see A11Y-07 and NAV-14). The detail page in NAV-14 is not stubbed, so the test asserts the path only.
 - **R-02 Dependence on live data:** Real TMDB data changes. Scenarios must not assert on a fixed title unless the data is stubbed.
 
 ## 12. Known Defects
 
 - **DEF-NAV-01 (fixed):** `HeaderMain` kept the mobile menu open after a link was selected, because only the burger button changed `menuOpen`. The link now closes the menu. NAV-09 guards against a regression.
+- **DEF-NAV-02 (suspected, not confirmed):** The search result click calls `router.push` in `TypeHeadSearch` and does not touch `menuOpen` in `HeaderMain`. The mobile menu may stay open after a result is opened. NAV-14 asserts that the menu closes and fails until this is fixed or the expectation is changed.
 
 ## 13. Run
 

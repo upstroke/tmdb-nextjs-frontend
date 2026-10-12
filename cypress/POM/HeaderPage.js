@@ -12,6 +12,12 @@ export const HeaderPage = () => {
   const navLink = (itemId) => cy.get(`${itemId} a`);
 
   /**
+   * Get a search result link
+   * @param {string} resultId - e.g. 'movie-603' or 'tv-1396'
+   */
+  const searchResult = (resultId) => cy.get(`a.result#${resultId}`);
+
+  /**
    * Visit the homepage with the given locale
    * @param {string} locale - e.g. 'en-US' or 'de-DE'
    */
@@ -25,6 +31,7 @@ export const HeaderPage = () => {
     navMenu,
     navLink,
     searchInput,
+    searchResult,
     languageSelect,
     visit
   };
