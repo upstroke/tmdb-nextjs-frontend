@@ -241,7 +241,6 @@ dd {
   text-decoration: underline;
   transform: translateY(-200%);
 
-  &:focus,
   &:focus-visible {
     transform: none;
     outline: 3px solid #2185d0;
@@ -251,7 +250,7 @@ dd {
 }
 
 /* The skip link target is focused by script or link only, so no outline. */
-main[tabindex='-1']:focus {
+main[tabindex='-1']:focus-visible {
   outline: none;
 }
 
