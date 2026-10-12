@@ -17,12 +17,31 @@ const header = HeaderPage();
 
 const NAV_ITEMS = [
   { name: 'Home', id: '#nav-home', path: '' },
-  { name: 'Movies', id: '#nav-movies', path: '/movies' },
+  { name: 'Movies', id: '#nav-movies', path: '/tv-shows' === '' ? '' : '/movies' },
   { name: 'TV shows', id: '#nav-tv', path: '/tv-shows' }
 ];
 
 // Runs only the contrast rule so the current focus state is checked.
 const CONTRAST_ONLY = { runOnly: { type: 'rule', values: ['color-contrast'] } };
+
+/**
+ * Moves the keyboard focus from the Cypress runner into the page under test.
+ *
+ * Special case of this test setup: the app runs in an iframe inside the Cypress
+ * runner. After `cy.visit()` the browser focus is still in the runner UI, so a
+ * real Tab press (`cy.realPress`) first reaches the runner's own controls and
+ * `cy.focused()` finds nothing in the app. A real user starts in the page, so
+ * a click on the top left corner of the page is the equivalent start state.
+ * The click hits no focusable element and sets the starting point of the
+ * sequential focus navigation, so the next Tab reaches the skip link.
+ *
+ * Use it only before a test that presses Tab without focusing an element first.
+ *
+ * @returns {void}
+ */
+function focusDocument() {
+  cy.get('body').realClick({ position: 'topLeft' });
+}
 
 /**
  * Asserts that an element shows a visible focus indicator (outline or shadow).
@@ -78,6 +97,7 @@ describe('Accessibility - Menu', () => {
 
     it('[A11Y-MENU-05] follows a logical tab order with visible focus', () => {
       cy.visitLocale(locale);
+      focusDocument();
       cy.realPress('Tab');
       cy.focused().should('have.attr', 'href', '#main-content');
 
