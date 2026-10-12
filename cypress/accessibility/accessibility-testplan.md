@@ -81,16 +81,12 @@ A11Y-12 only adds the axe check of the no-results state in the full page.
 - **Screen reader output:** Automated checks cannot replace a manual pass with NVDA or VoiceOver.
   See the manual checklist in `docs/testing/accessibility-audit-checklist.md`.
 
-## Accepted Behavior
+## Server Response
 
-- **`html[lang]` in the server response:** `app/layout.js` sits above `[locale]`, so the server
-  response does not carry the locale of the route. `LocaleSyncer` sets
-  `document.documentElement.lang` on the client after hydration, for direct visits and for
-  language switches. The tests check the value after hydration (A11Y-08, A11Y-15).
-  A test for `lang="de-DE"` in the raw server response of `/de-DE` was run and failed, which
-  confirms the behavior. The test was removed on purpose. Until hydration, screen readers and
-  crawlers can see the wrong language (WCAG 3.1.1). The behavior is accepted; a fix would move
-  the `<html>` element into `app/[locale]/layout.js`.
+- **`html[lang]` in the server response:** `app/[locale]/layout.js` renders the `<html>` element
+  with the locale of the route, so the server response carries the correct language. Screen
+  readers and crawlers see it before hydration (WCAG 3.1.1). A11Y-08 and A11Y-15 check the value
+  in the loaded page. No test reads the raw server response of `/de-DE`.
 
 ## Skip Link
 
@@ -158,9 +154,9 @@ Do not disable rules broadly.
 
 Tests use the constant `en-US`, the same as `DEFAULT_LOCALE` in `lib/i18n/config.js`.
 
-`html[lang]` is set on the client by `LocaleSyncer` after hydration. A11Y-08 opens each page in
+`html[lang]` is rendered by the server in `app/[locale]/layout.js`. A11Y-08 opens each page in
 `en-US` and switches to `de-DE` through the language switcher (`#language-select`). A11Y-15 opens
-`/de-DE` directly. Both check the value after hydration; see Accepted Behavior for the server
-response.
+`/de-DE` directly. Both check the value in the loaded page; see Server Response for the server
+output.
 
 Do not read the locale with `Cypress.env()`: `allowCypressEnv` is `false`.
