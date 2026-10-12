@@ -57,21 +57,24 @@ describe('Navigation', () => {
   it('[NAV-14] mobile: searches from the open menu, opens a result, and closes the menu', () => {
     // Only the search request of the browser is stubbed. The detail page loads on the server,
     // so the test checks the path and not the title (see R-01 in the test plan).
-    cy.intercept({ method: 'GET', pathname: '/api/en-US/search' }, {
-      body: {
-        movies: [
-          {
-            id: 603,
-            mediaType: 'movie',
-            title: 'The Matrix',
-            date: '1999-03-30',
-            rating: 8.2,
-            posterUrl: null
-          }
-        ],
-        tvShows: []
+    cy.intercept(
+      { method: 'GET', pathname: '/api/en-US/search' },
+      {
+        body: {
+          movies: [
+            {
+              id: 603,
+              mediaType: 'movie',
+              title: 'The Matrix',
+              date: '1999-03-30',
+              rating: 8.2,
+              posterUrl: null
+            }
+          ],
+          tvShows: []
+        }
       }
-    }).as('search');
+    ).as('search');
 
     cy.viewport(375, 667);
     base.visit('en-US');
