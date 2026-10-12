@@ -134,7 +134,10 @@ describe('HeaderMain (browser)', () => {
     fireEvent.click(toggleButton);
     expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
 
-    fireEvent.click(screen.getByRole('link', { name: /Movies Title/i }));
+    const moviesLink = screen.getByRole('link', { name: /Movies Title/i });
+    // Block the browser default: a real navigation would unload the test iframe and hang the run.
+    moviesLink.addEventListener('click', (event) => event.preventDefault());
+    fireEvent.click(moviesLink);
     expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
   });
 });
