@@ -136,8 +136,8 @@ describe('Accessibility - Menu', () => {
     });
 
     it('[A11Y-MENU-10] opens and closes the menu with the keyboard', () => {
-      // HeaderMain toggles on onPointerDown. Enter and Space only fire click,
-      // so this test fails until the button uses onClick.
+      // HeaderMain toggles on click, so Enter and Space work. Guards against
+      // a regression to onPointerDown (DEF-01), which keyboards cannot trigger.
       cy.visitLocale(locale);
       cy.get('.burger-icon').focus();
 
