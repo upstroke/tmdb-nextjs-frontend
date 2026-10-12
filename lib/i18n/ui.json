@@ -73,7 +73,8 @@
         "dialogErrorTitle": "Load error",
         "dialogOk": "OK",
         "loadMoreLoading": "Loading more results …",
-        "searchResultsCount": "{count} search results found"
+        "searchResultsCount": "{count} search results found",
+        "posterAlt": "Poster of {title}"
       },
       "formats": {
         "outOfTen": "out of 10",
@@ -167,7 +168,8 @@
         "dialogErrorTitle": "Fehler beim Laden",
         "dialogOk": "OK",
         "loadMoreLoading": "Lade weitere Ergebnisse …",
-        "searchResultsCount": "{count} Suchergebnisse gefunden"
+        "searchResultsCount": "{count} Suchergebnisse gefunden",
+        "posterAlt": "Poster von {title}"
       },
       "formats": {
         "outOfTen": "von 10",
@@ -261,7 +263,8 @@
         "dialogErrorTitle": "Error al cargar",
         "dialogOk": "Aceptar",
         "loadMoreLoading": "Cargando más resultados …",
-        "searchResultsCount": "{count} resultados de búsqueda encontrados"
+        "searchResultsCount": "{count} resultados de búsqueda encontrados",
+        "posterAlt": "Póster de {title}"
       },
       "formats": {
         "outOfTen": "de 10",
@@ -355,7 +358,8 @@
         "dialogErrorTitle": "Erreur de chargement",
         "dialogOk": "OK",
         "loadMoreLoading": "Chargement de résultats supplémentaires …",
-        "searchResultsCount": "{count} résultats de recherche trouvés"
+        "searchResultsCount": "{count} résultats de recherche trouvés",
+        "posterAlt": "Affiche de {title}"
       },
       "formats": {
         "outOfTen": "sur 10",
@@ -449,7 +453,8 @@
         "dialogErrorTitle": "Ошибка загрузки",
         "dialogOk": "OK",
         "loadMoreLoading": "Загрузка дополнительных результатов …",
-        "searchResultsCount": "Найдено результатов: {count}"
+        "searchResultsCount": "Найдено результатов: {count}",
+        "posterAlt": "Постер: {title}"
       },
       "formats": {
         "outOfTen": "из 10",
@@ -543,7 +548,8 @@
         "dialogErrorTitle": "Lỗi khi tải",
         "dialogOk": "OK",
         "loadMoreLoading": "Đang tải thêm kết quả …",
-        "searchResultsCount": "Đã tìm thấy {count} kết quả tìm kiếm"
+        "searchResultsCount": "Đã tìm thấy {count} kết quả tìm kiếm",
+        "posterAlt": "Áp phích của {title}"
       },
       "formats": {
         "outOfTen": "trên 10",

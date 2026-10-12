@@ -294,11 +294,14 @@ describe('Accessibility', () => {
     cy.checkPageA11y(CONTRAST_ONLY);
   });
 
-  it('[A11Y-21] uses a localized poster alt text on the en-US movie list', () => {
-    cy.visitLocale(locale, '/movies');
-    cy.get('a.default-card img')
-      .first()
-      .should('have.attr', 'alt')
-      .and('not.match', /^Poster von\b/);
+  ['en-US', 'de-DE'].forEach((testLocale) => {
+    it(`[A11Y-21] uses the localized poster alt text on the ${testLocale} movie list`, () => {
+      cy.visitLocale(testLocale, '/movies');
+
+      cy.i18n(testLocale).then(({ messages }) => {
+        const prefix = messages.posterAlt.replace('{title}', '').trim();
+        cy.get('a.default-card img').first().should('have.attr', 'alt').and('include', prefix);
+      });
+    });
   });
 });

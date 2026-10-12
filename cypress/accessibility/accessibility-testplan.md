@@ -35,10 +35,10 @@ application without encountering accessibility violations.
 | A11Y-18 | Header         | Contrast of the focused element              |
 | A11Y-19 | Lists          | Hover contrast of a card                     |
 | A11Y-20 | Movie list     | Hover contrast of the load more button       |
-| A11Y-21 | Movie list     | Localized poster alternative text in en-US   |
+| A11Y-21 | Movie list     | Localized poster alternative text            |
 
 A11Y-08, A11Y-09, and A11Y-14 run once per page, with the page name in the test title. A11Y-16 runs
-once per navigation link, A11Y-19 once per list.
+once per navigation link, A11Y-19 once per list, and A11Y-21 once per tested locale (en-US, de-DE).
 
 ## States to Include
 
@@ -81,10 +81,14 @@ A11Y-12 only adds the axe check of the no-results state in the full page.
   confirms the behavior. The test was removed on purpose. Until hydration, screen readers and
   crawlers can see the wrong language (WCAG 3.1.1). The behavior is accepted; a fix would move
   the `<html>` element into `app/[locale]/layout.js`.
-- **Poster alternative text:** A11Y-21 currently fails because `CardDefault` hard-codes the German
-  prefix `Poster von` for all locales. The failing test is intentionally kept to require a
-  localized poster alternative text when the component is changed. This affects language of parts
-  (WCAG 3.1.2).
+
+## Poster Alternative Text
+
+`CardDefault` builds the poster alternative text from `messages.posterAlt` in
+`lib/i18n/ui.json`. The message contains the placeholder `{title}`, like `searchResultsCount`
+contains `{count}`, so each language can use its own word order. A11Y-21 reads the message of the
+locale with `cy.i18n()`, removes the placeholder, and checks that the alt text of the first poster
+contains the remaining text. This catches a text from the wrong language (WCAG 3.1.2).
 
 ## Data
 

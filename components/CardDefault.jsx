@@ -39,7 +39,7 @@ export default function CardDefault({
   scrollId = '',
   isLoading = false
 }) {
-  const { labels, formats, fallbacks } = useI18n();
+  const { labels, formats, fallbacks, messages } = useI18n();
   const locale = useLocale();
   const activeRegion = locale.split('-')[1] ?? 'US';
 
@@ -64,6 +64,7 @@ export default function CardDefault({
   const genreText = (genres ?? []).map((g) => g.name).join(' / ');
   const notAvailableText = fallbacks.notAvailable;
   const cardTitle = title?.trim() || notAvailableText;
+  const posterAlt = messages.posterAlt.replace('{title}', cardTitle);
   const cardDate = date?.trim() ? formatDate(date, locale) : '';
   const cardRating = typeof rating === 'number' && rating > 0 ? rating.toFixed(1) : null;
   const certificationMeta = getCertificationMeta(String(certification), activeRegion);
@@ -92,7 +93,7 @@ export default function CardDefault({
           {!imageErrored && (
             <Image
               src={cardImageUrl}
-              alt={`Poster von ${cardTitle}`}
+              alt={posterAlt}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 220px"
               style={{ objectFit: 'cover' }}
