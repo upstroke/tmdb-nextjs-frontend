@@ -101,7 +101,6 @@ describe('HeaderMain (browser)', () => {
     render(<HeaderMain />);
 
     const moviesLink = screen.getByRole('link', { name: /Movies Title/i });
-    expect(moviesLink).toHaveHref ? null : null;
     expect(moviesLink).toHaveAttribute('href', '/en-US/movies');
   });
 
