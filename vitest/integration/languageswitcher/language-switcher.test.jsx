@@ -14,7 +14,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, act, cleanup } from '@testing-library/react';
 import React from 'react';
 import LanguageSwitcher from '../../../components/LanguageSwitcher.jsx';
-import { AppLocaleProvider, LocaleSyncer } from '@/components/providers/LocaleProvider.jsx';
+import { AppLocaleProvider } from '@/components/providers/LocaleProvider.jsx';
 import { useLocale, useI18n, setLocale } from '@/lib/stores/locale.jsx';
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/lib/i18n/config.js';
 import { getLocaleText, getSupportedLocales } from '@/lib/i18n/helpers.js';
@@ -65,7 +65,6 @@ describe('LanguageSwitcher (integration)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     sessionStorage.clear();
-    document.documentElement.lang = '';
   });
 
   afterEach(() => {
@@ -92,14 +91,14 @@ describe('LanguageSwitcher (integration)', () => {
       );
     });
 
-    // TC-LS-09
-    it('starts with the locale stored in sessionStorage', () => {
+    // TC-LS-08
+    it('starts with the default locale and ignores a locale stored in sessionStorage', () => {
       sessionStorage.setItem(STORAGE_KEY, NEXT_LOCALE);
 
       renderSwitcher();
 
-      expect(getSelect()).toHaveValue(NEXT_LOCALE);
-      expect(probeLocale()).toBe(NEXT_LOCALE);
+      expect(getSelect()).toHaveValue(DEFAULT_LOCALE);
+      expect(probeLocale()).toBe(DEFAULT_LOCALE);
     });
   });
 
@@ -172,28 +171,49 @@ describe('LanguageSwitcher (integration)', () => {
   });
 
   describe('URL as source of truth', () => {
-    // TC-LS-08
-    it('syncs store and html lang when LocaleSyncer receives a new locale', () => {
-      const { rerender } = render(
-        <AppLocaleProvider>
-          <LocaleSyncer locale={NEXT_LOCALE} />
+    // TC-LS-09
+    it('starts with initialLocale from the URL', () => {
+      render(
+        <AppLocaleProvider initialLocale={NEXT_LOCALE}>
           <Probe />
         </AppLocaleProvider>
       );
 
       expect(probeLocale()).toBe(NEXT_LOCALE);
-      expect(document.documentElement.lang).toBe(NEXT_LOCALE);
-      expect(sessionStorage.getItem(STORAGE_KEY)).toBe(NEXT_LOCALE);
+    });
+
+    // TC-LS-10
+    it('follows initialLocale when the locale in the URL changes', () => {
+      const { rerender } = render(
+        <AppLocaleProvider initialLocale={DEFAULT_LOCALE}>
+          <Probe />
+        </AppLocaleProvider>
+      );
+      expect(probeLocale()).toBe(DEFAULT_LOCALE);
 
       rerender(
-        <AppLocaleProvider>
-          <LocaleSyncer locale={DEFAULT_LOCALE} />
+        <AppLocaleProvider initialLocale={NEXT_LOCALE}>
           <Probe />
         </AppLocaleProvider>
       );
 
-      expect(probeLocale()).toBe(DEFAULT_LOCALE);
-      expect(document.documentElement.lang).toBe(DEFAULT_LOCALE);
+      expect(probeLocale()).toBe(NEXT_LOCALE);
+    });
+
+    // TC-LS-11
+    it('shows the selected locale at once, before the new route has loaded', () => {
+      nav.pathname = `/${DEFAULT_LOCALE}/movies/1`;
+      render(
+        <AppLocaleProvider initialLocale={DEFAULT_LOCALE}>
+          <LanguageSwitcher />
+          <Probe />
+        </AppLocaleProvider>
+      );
+
+      selectLocale(NEXT_LOCALE);
+
+      expect(probeLocale()).toBe(NEXT_LOCALE);
+      expect(getSelect()).toHaveValue(NEXT_LOCALE);
     });
   });
 });

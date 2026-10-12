@@ -111,8 +111,8 @@ Coverage reports **exclude**:
 
 - `**/*.test.js`, `**/*.test.jsx` - Test files
 - `**/*.cy.js`, `**/*.cy.jsx` - Cypress tests
-- `app/[locale]/**` - Pages (tested via Cypress and integration tests, but not counted)
-- `app/layout.js`, `app/page.js`, `app/*.js` - Root layout and page
+- `app/[locale]/**` - Pages and the root layout `app/[locale]/layout.js` (tested via Cypress and integration tests, but not counted)
+- `app/*.js` - Files directly in `app/`
 - `lib/stores/locale.jsx`, `components/providers/**` - Providers
 - `proxy.js` and config files
 - `node_modules/**`, `vitest/**` - Dependencies and test helpers

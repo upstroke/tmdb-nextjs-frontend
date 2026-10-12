@@ -117,8 +117,6 @@ export default defineConfig({
         '**/*.cy.{js,jsx}',
         'app/[locale]/**',
         'app/*.js',
-        'app/layout.js',
-        'app/page.js',
         'proxy.js',
         'next.config.js',
         'postcss.config.js',
