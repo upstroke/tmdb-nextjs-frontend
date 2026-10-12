@@ -1,4 +1,4 @@
-// vitest/component/HeaderMain.browser.test.jsx
+// vitest/component/headermain/HeaderMain.browser.test.jsx
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -22,7 +22,11 @@ vi.mock('next/navigation', () => ({
 // Provide stable store values including dummy functions for deep child component safety
 vi.mock('@/lib/stores/locale', () => ({
   useI18n: () => ({
-    labels: { navigationToggle: 'Toggle menu', mainNavigation: 'Main navigation' },
+    labels: {
+      navigationToggle: 'Toggle menu',
+      mainNavigation: 'Main navigation',
+      skipToContent: 'Skip to main content'
+    },
     titles: { home: 'Home Title', movies: 'Movies Title' }
   }),
   useLocale: () => 'en-US',
@@ -47,8 +51,9 @@ describe('HeaderMain (browser)', () => {
   });
 
   // TC-HM-001
-  // Statement Coverage: Covers list navigation loops, standard layouts, and pointer interactive bindings.
-  it('mounts, processes navigation item configurations, and toggles mobile responsive overlays on pointer interaction', () => {
+  // Statement Coverage: Covers list navigation loops, standard layouts, and click interactive bindings.
+  // The burger button toggles on click (not pointerdown), so Enter and Space work too (WCAG 2.1.1).
+  it('mounts, processes navigation item configurations, and toggles mobile responsive overlays on click', () => {
     render(<HeaderMain />);
 
     expect(screen.getByRole('navigation', { name: 'Main navigation' })).toBeInTheDocument();
@@ -65,10 +70,10 @@ describe('HeaderMain (browser)', () => {
     const toggleButton = screen.getByRole('button', { name: 'Toggle menu' });
     expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
 
-    fireEvent.pointerDown(toggleButton);
+    fireEvent.click(toggleButton);
     expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
 
-    fireEvent.pointerDown(toggleButton);
+    fireEvent.click(toggleButton);
     expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
   });
 
@@ -98,5 +103,24 @@ describe('HeaderMain (browser)', () => {
 
     const moviesLink = screen.getByRole('link', { name: /Movies Title/i });
     expect(moviesLink).toHaveAttribute('href', '/en-US/movies');
+  });
+
+  // TC-HM-004
+  // Statement Coverage: Covers the skip link rendered as the first focusable element before burger button and navigation.
+  it('renders a skip link to the main content before the burger button and the navigation', () => {
+    render(<HeaderMain />);
+
+    const skipLink = screen.getByRole('link', { name: 'Skip to main content' });
+    expect(skipLink).toHaveAttribute('href', '#main-content');
+
+    const toggleButton = screen.getByRole('button', { name: 'Toggle menu' });
+    const navigation = screen.getByRole('navigation', { name: 'Main navigation' });
+
+    expect(skipLink.compareDocumentPosition(toggleButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    );
+    expect(skipLink.compareDocumentPosition(navigation) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    );
   });
 });

@@ -24,7 +24,7 @@ export default async function SearchPage({ params, searchParams }) {
 
   if (!query || query.length < 4) {
     return (
-      <main className="ui container search-page">
+      <main id="main-content" tabIndex={-1} className="ui container search-page">
         <h1 className="ui dividing header">{messages.search}</h1>
         <p>{messages.searchHint}</p>
       </main>
@@ -33,7 +33,7 @@ export default async function SearchPage({ params, searchParams }) {
 
   if (!apiKey) {
     return (
-      <main className="ui container search-page">
+      <main id="main-content" tabIndex={-1} className="ui container search-page">
         <p>{messages.apiKeyMissing}</p>
       </main>
     );
@@ -56,7 +56,7 @@ export default async function SearchPage({ params, searchParams }) {
   }
 
   return (
-    <main className="ui container search-page">
+    <main id="main-content" tabIndex={-1} className="ui container search-page">
       <h1 className="ui dividing header">
         {messages.searchResultsFor} &ldquo;{query}&rdquo;
       </h1>

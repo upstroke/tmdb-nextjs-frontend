@@ -9,6 +9,7 @@ import { IdParamSchema } from '@/lib/schemas/tmdb';
 import DetailsHero from '@/components/DetailsHero';
 import MediaTypeLabel from '@/components/MediaTypeLabel';
 import DialogMessage from '@/components/DialogMessage';
+import { formatMessage } from '@/lib/i18n/format';
 
 /** @typedef {import('@/lib/schemas/tmdb').MediaDetail} MediaDetail */
 /** @typedef {import('@/lib/schemas/tmdb').WatchProviderResult} WatchProviderResult */
@@ -22,16 +23,20 @@ import DialogMessage from '@/components/DialogMessage';
  * cast, and crew. Missing values fall back to `fallbacks.notAvailable`. Lists
  * are deduplicated by id. The certification is resolved for the region of the
  * locale (default `US`). Invalid route params, a missing `TMDB_API_KEY`, and
- * load errors render a `DialogMessage` instead of the page.
+ * load errors render a `DialogMessage` instead of the page. The message for
+ * invalid route params uses the raw `locale` param; an unknown locale falls
+ * back to the default locale texts.
  *
  * @param {object} props
  * @param {Promise<{ locale: string, id: string }>} props.params - Route params (async in Next.js 15+).
  * @returns {Promise<JSX.Element>}
  */
 export default async function MovieDetailPage({ params }) {
-  const paramsParsed = IdParamSchema.safeParse(await params);
+  const rawParams = await params;
+  const paramsParsed = IdParamSchema.safeParse(rawParams);
   if (!paramsParsed.success) {
-    return <DialogMessage message="Invalid URL parameters." />;
+    const { messages: fallbackMessages } = getLocaleText(rawParams?.locale);
+    return <DialogMessage message={fallbackMessages.invalidUrlParams} />;
   }
   const { locale, id } = paramsParsed.data;
 
@@ -96,7 +101,7 @@ export default async function MovieDetailPage({ params }) {
         emptyLabel={fallbacks.notAvailable}
       />
 
-      <main className="ui text container details-view">
+      <main id="main-content" tabIndex={-1} className="ui text container details-view">
         <header className="details-header">
           <dl className="details-meta">
             <div>
@@ -207,7 +212,7 @@ export default async function MovieDetailPage({ params }) {
                 <li key={`movie-trailer-${index}`}>
                   <a className="ui red button" href={url} target="_blank" rel="noopener noreferrer">
                     <i className="youtube icon" aria-hidden="true" />
-                    {(buttons.watchTrailer ?? '').replace('{index}', String(index + 1))}
+                    {formatMessage(buttons.watchTrailer, { index: index + 1 })}
                   </a>
                 </li>
               ))}

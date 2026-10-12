@@ -36,6 +36,15 @@ This project uses multiple test runners for different purposes:
 - **Coverage:** NOT included in Vitest coverage reports
 - **Documentation:** [Acceptance Tests](testing/acceptance-tests.md)
 
+### Accessibility Tests (Cypress)
+
+- **Framework:** Cypress with axe-core (`cypress-axe`)
+- **Location:** `../cypress/accessibility/`
+- **Purpose:** Automated WCAG 2.2 AA checks on the homepage, movie and TV show lists and detail pages, the error message for an invalid id, and the open search results
+- **Data:** Lists and detail pages load their data on the server, so `cy.intercept()` cannot stub them; these tests use the real TMDB API and need `TMDB_API_KEY`. Only the search request is stubbed.
+- **Coverage:** NOT included in Vitest coverage reports
+- **Documentation:** [Accessibility test plan](../cypress/accessibility/accessibility-testplan.md)
+
 ### Security Tests (Cypress)
 
 - **Framework:** Cypress
@@ -58,15 +67,20 @@ npm run test:component
 # Run Vitest with coverage
 npm run test:coverage
 
-# Run Cypress acceptance tests (headless, app must run on http://localhost:3000)
+# Run Cypress acceptance and accessibility tests (headless, app must run on http://localhost:3000)
 npm run test:e2e
 
 # Run only the Cypress security tests (app must run on http://localhost:3000)
 npm run test:e2e:security
 
+# Run only the Cypress accessibility tests (app must run on http://localhost:3000 with TMDB_API_KEY)
+npm run test:e2e:a11y
+
 # Open the Cypress interactive runner
 npm run test:e2e:open
 ```
+
+`npm run test:e2e` runs every spec matched by `specPattern` in `cypress.config.js`: `cypress/e2e/**` and `cypress/accessibility/**`.
 
 ## Lint and Format Before Tests
 
@@ -119,7 +133,7 @@ vitest/
 cypress/
 ├── e2e/               # Acceptance / flow tests
 │   └── security/      # Security tests and test plan
-├── accessibility/     # Accessibility checks
+├── accessibility/     # Accessibility checks and test plan
 ├── POM/               # Page Objects
 ├── fixtures/          # Cypress fixtures
 └── support/           # Cypress support files
@@ -132,7 +146,8 @@ cypress/
 | **Vitest Unit**        | Pure functions, utilities, services, stores             |
 | **Vitest Integration** | API route handlers and pages with service integration   |
 | **Vitest Component**   | Individual React components in isolation                |
-| **Cypress Acceptance** | User flows (E2E tests), keyboard, focus, accessibility  |
+| **Cypress Acceptance** | User flows (E2E tests), keyboard, focus                 |
+| **Cypress A11y**       | Automated WCAG 2.2 AA checks with axe-core              |
 | **Cypress Security**   | Manipulated input, headers, redirects, API key exposure |
 
 ## Documentation
@@ -144,4 +159,5 @@ cypress/
 - [Page Objects](testing/page-objects.md)
 - [Common Rules](testing/common-rules.md)
 - [Security Tests](testing/security-tests.md)
+- [Accessibility Test Plan](../cypress/accessibility/accessibility-testplan.md)
 - [Accessibility Audit Checklist](testing/accessibility-audit-checklist.md)

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { deduplicateById } from '@/lib/utils/deduplicateById';
+import { formatMessage } from '@/lib/i18n/format';
 import { useI18n, useLocale } from '@/lib/stores/locale';
 
 const STORAGE_KEY_QUERY = 'search-query';
@@ -372,7 +373,7 @@ export default function TypeHeadSearch() {
           writeStorage(STORAGE_KEY_QUERY, term);
           const count = dedupMovies.length + dedupTv.length;
           if (count > 0) {
-            scheduleAnnouncement(messages.searchResultsCount.replace('{count}', String(count)));
+            scheduleAnnouncement(formatMessage(messages.searchResultsCount, { count }));
           } else if (term.length >= 4) {
             scheduleAnnouncement(messages.searchNoResults);
           }

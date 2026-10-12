@@ -7,7 +7,7 @@
 **Test Level:** Integration Test
 **Framework:** Vitest (jsdom) + React Testing Library
 
-This test plan documents the automated integration tests in `paged-list.test.jsx`. They cover the chain list page → `createTmdbApi` → `initialData` → `PagedList` → "load more" → real API route → `createTmdbApi` → cards, plus restore from `sessionStorage`, duplicates, errors and scrolling. Real modules are wired together; only the TMDB network (`globalThis.fetch`) is mocked. TC-PL-01 to TC-PL-11 run for all three lists (home, movies, tv-shows) with `describe.each`; TC-PL-12 and TC-PL-13 run only for the home page. User journeys (clicking through pages, real routing) are covered by Cypress (`cypress/e2e`).
+This test plan documents the automated integration tests in `paged-list.test.jsx`. They cover the chain list page → `createTmdbApi` → `initialData` → `PagedList` → "load more" → real API route → `createTmdbApi` → cards, plus restore from `sessionStorage`, duplicates, errors and scrolling. Real modules are wired together; only the TMDB network (`globalThis.fetch`) is mocked. TC-PL-01 to TC-PL-11 run for all three lists (home, movies, tv-shows) with `describe.each`; TC-PL-12 to TC-PL-14 run only for the home page. User journeys (clicking through pages, real routing) are covered by Cypress (`cypress/e2e`).
 
 ## Test Items
 
@@ -29,7 +29,7 @@ This test plan documents the automated integration tests in `paged-list.test.jsx
 - Missing API key and empty first page
 - Scrolling to the first new card after loading
 - Error dialog for a failing first page (`initialData.error` from the server page)
-- Home page only: invalid locale parameter and the choice of the details endpoint (movie or tv show) for the featured item
+- Home page only: localized invalid URL message (missing or invalid locale parameter, fallback to the default locale) and the choice of the details endpoint (movie or tv show) for the featured item
 
 ## Features Not to Be Tested
 
@@ -41,27 +41,28 @@ This test plan documents the automated integration tests in `paged-list.test.jsx
 
 ## Test Approach
 
-A fetch router answers TMDB endpoints from `paged-list.browser.fixtures.js` and forwards internal `/api/{locale}/{apiPath}?page=n` calls to the real route handler. The fixture has 3 trending pages per list: page 1 with three items, page 2 with the last item of page 1 again plus one new item, page 3 with one item. The home list is mixed (tv show, movie, tv show, movie, tv show) because `/trending/all/day` returns both types. Error cases are triggered per page via `overrides.pages` (`'fail'` or a custom body); the timeout via `overrides.hangFrom`; custom details via `overrides.details`. The test reads the cards from `.default-card h3`, locale texts come from `getLocaleText(DEFAULT_LOCALE)`, so no text is hard-coded except the English `Invalid URL parameters.` of the home page. Per list, `LISTS` holds the message keys for the empty state (`emptyKey`, the home page has none and falls back to `noContent`) and for the server load error (`loadErrorKey`). `IntersectionObserver` is replaced by a constructor function that exposes its callback; `showModal` of the `<dialog>` is replaced because jsdom does not implement it.
+A fetch router answers TMDB endpoints from `paged-list.browser.fixtures.js` and forwards internal `/api/{locale}/{apiPath}?page=n` calls to the real route handler. The fixture has 3 trending pages per list: page 1 with three items, page 2 with the last item of page 1 again plus one new item, page 3 with one item. The home list is mixed (tv show, movie, tv show, movie, tv show) because `/trending/all/day` returns both types. Error cases are triggered per page via `overrides.pages` (`'fail'` or a custom body); the timeout via `overrides.hangFrom`; custom details via `overrides.details`. The test reads the cards from `.default-card h3`, locale texts come from `getLocaleText(DEFAULT_LOCALE)`, so no text is hard-coded. Per list, `LISTS` holds the message keys for the empty state (`emptyKey`, the home page has none and falls back to `noContent`) and for the server load error (`loadErrorKey`). `IntersectionObserver` is replaced by a constructor function that exposes its callback; `showModal` of the `<dialog>` is replaced because jsdom does not implement it.
 
 ## Test Cases
 
-TC-PL-01 to TC-PL-11 are executed for `home`, `movies` and `tv-shows`; TC-PL-12 and TC-PL-13 only for `home`.
+TC-PL-01 to TC-PL-11 are executed for `home`, `movies` and `tv-shows`; TC-PL-12 to TC-PL-14 only for `home`.
 
-| ID       | Automated Test                                                                     | Covered Behavior                                                                                     |
-| -------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| TC-PL-01 | `renders heading, featured item and the cards of the first trending page`          | Heading, details request for the featured item, three cards, load more enabled, no internal API call |
-| TC-PL-02 | `loads the next page through the real API route and appends the cards`             | One call `/api/{locale}/{apiPath}?page=2`, four cards, button enabled, stored page `2`               |
-| TC-PL-03 | `does not show a card twice when the next page repeats it`                         | No duplicate titles after page 2                                                                     |
-| TC-PL-04 | `disables load more and keeps the stored page when the next page has no new cards` | Cards unchanged, button disabled, stored page stays `1`                                              |
-| TC-PL-05 | `restores all pages up to the stored page`                                         | Stored page `3` loads pages 2 and 3, five cards, button disabled                                     |
-| TC-PL-06 | `shows the error dialog and keeps the cards when the next page fails`              | `loadMoreError` visible, cards kept, button enabled again                                            |
-| TC-PL-07 | `shows the timeout message when the next page does not answer within 15 seconds`   | `loadTimeout` visible after 15 s, cards kept                                                         |
-| TC-PL-08 | `shows the missing API key message without any request`                            | `apiKeyMissing`, no cards, no fetch                                                                  |
-| TC-PL-09 | `shows the empty message when the first page has no results`                       | Message of `noMoviesFound` / `noTvShows` / `noContent`, no cards                                     |
-| TC-PL-10 | `scrolls to the first new card after loading the next page`                        | Observed element id `{cardIdPrefix}-4`, `scrollIntoView` with `smooth` / `start`                     |
-| TC-PL-11 | `shows the load error of the server page instead of the empty message`             | `contentLoadError` / `moviesLoadError` / `tvShowsLoadError` visible, no empty message, no cards      |
-| TC-PL-12 | `shows the invalid URL message for missing locale parameter without any request`   | Home page only: `Invalid URL parameters.`, no cards, no fetch                                        |
-| TC-PL-13 | `loads the details of a movie when the first trending item is a movie`             | Home page only: request `/movie/{id}`, no details request `/tv/{id}` for the tv show in the list     |
+| ID       | Automated Test                                                                              | Covered Behavior                                                                                     |
+| -------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| TC-PL-01 | `renders heading, featured item and the cards of the first trending page`                   | Heading, details request for the featured item, three cards, load more enabled, no internal API call |
+| TC-PL-02 | `loads the next page through the real API route and appends the cards`                      | One call `/api/{locale}/{apiPath}?page=2`, four cards, button enabled, stored page `2`               |
+| TC-PL-03 | `does not show a card twice when the next page repeats it`                                  | No duplicate titles after page 2                                                                     |
+| TC-PL-04 | `disables load more and keeps the stored page when the next page has no new cards`          | Cards unchanged, button disabled, stored page stays `1`                                              |
+| TC-PL-05 | `restores all pages up to the stored page`                                                  | Stored page `3` loads pages 2 and 3, five cards, button disabled                                     |
+| TC-PL-06 | `shows the error dialog and keeps the cards when the next page fails`                       | `loadMoreError` visible, cards kept, button enabled again                                            |
+| TC-PL-07 | `shows the timeout message when the next page does not answer within 15 seconds`            | `loadTimeout` visible after 15 s, cards kept                                                         |
+| TC-PL-08 | `shows the missing API key message without any request`                                     | `apiKeyMissing`, no cards, no fetch                                                                  |
+| TC-PL-09 | `shows the empty message when the first page has no results`                                | Message of `noMoviesFound` / `noTvShows` / `noContent`, no cards                                     |
+| TC-PL-10 | `scrolls to the first new card after loading the next page`                                 | Observed element id `{cardIdPrefix}-4`, `scrollIntoView` with `smooth` / `start`                     |
+| TC-PL-11 | `shows the load error of the server page instead of the empty message`                      | `contentLoadError` / `moviesLoadError` / `tvShowsLoadError` visible, no empty message, no cards      |
+| TC-PL-12 | `shows the localized invalid URL message for missing locale parameter without any request`  | Home page only: `invalidUrlParams` (default locale), no cards, no fetch                              |
+| TC-PL-13 | `loads the details of a movie when the first trending item is a movie`                      | Home page only: request `/movie/{id}`, no details request `/tv/{id}` for the tv show in the list     |
+| TC-PL-14 | `falls back to the default locale text for an invalid locale parameter without any request` | Home page only: locale `x`, `invalidUrlParams` (default locale), no cards, no fetch                  |
 
 ## Detailed Test Cases
 
@@ -139,12 +140,12 @@ TC-PL-01 to TC-PL-11 are executed for `home`, `movies` and `tv-shows`; TC-PL-12 
 **Steps:** Render the page.
 **Expected Result:** The dialog shows the load error message, the empty message is not displayed, no cards are rendered.
 
-### TC-PL-12: Invalid URL parameters (home only)
+### TC-PL-12: Invalid URL parameters, missing locale (home only)
 
-**Objective:** Verify that the home page rejects a missing locale parameter.
+**Objective:** Verify that the home page rejects a missing locale parameter with a localized message.
 **Preconditions:** The page is called with `params` that contain no `locale`, so `LocaleParamSchema` fails.
 **Steps:** Render the page.
-**Expected Result:** The text `Invalid URL parameters.` is displayed, no cards are rendered, no request is sent.
+**Expected Result:** The text `messages.invalidUrlParams` of the default locale is displayed, no cards are rendered, no request is sent.
 
 ### TC-PL-13: Featured movie (home only)
 
@@ -152,6 +153,13 @@ TC-PL-01 to TC-PL-11 are executed for `home`, `movies` and `tv-shows`; TC-PL-12 
 **Preconditions:** The first item of trending page 1 is a movie; the second item is a tv show.
 **Steps:** Render the page.
 **Expected Result:** The page requests `/movie/{id}` for the featured item, the title of the movie is displayed, and no `/tv/{id}` details request is sent for the tv show in the list.
+
+### TC-PL-14: Invalid URL parameters, invalid locale (home only)
+
+**Objective:** Verify the fallback to the default locale text when the locale is present but invalid.
+**Preconditions:** The page is called with `locale: 'x'`; `LocaleParamSchema` requires 2 to 10 characters, so it fails, and `getLocaleText('x')` has no texts for `x`.
+**Steps:** Render the page.
+**Expected Result:** The text `messages.invalidUrlParams` of the default locale is displayed, no cards are rendered, no request is sent.
 
 ## Pass/Fail Criteria
 
@@ -166,7 +174,9 @@ A test case passes when every assertion within its `it(...)` block succeeds. It 
 - Fixtures are shared by all lists and have 3 pages; a page 4 is not covered.
 - TC-PL-11 fails without the line `if (initialData?.error) setError(initialData.error);` in `PagedList.jsx`.
 - TC-PL-12 depends on `LocaleParamSchema` rejecting `params` without `locale`.
-- The text `Invalid URL parameters.` of the home page is hard-coded in the page and not part of the locale messages.
+- TC-PL-14 depends on `LocaleParamSchema` rejecting a locale of fewer than 2 characters and on `getLocaleText` falling back to `DEFAULT_LOCALE`.
+- TC-PL-12 and TC-PL-14 depend on the key `invalidUrlParams` in the locale messages (`ui.json`) and on the home page using it.
+- The movies and tv-shows pages do not validate their route parameters; the invalid URL message is only tested on the home page.
 
 ## Execution
 

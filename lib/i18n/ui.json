@@ -32,6 +32,7 @@
         "languageSelect": "Select language",
         "navigationToggle": "Open or close navigation",
         "mainNavigation": "Main navigation",
+        "skipToContent": "Skip to main content",
         "movie": "Movie",
         "tvShow": "TV",
         "streamingProviders": "Streaming providers",
@@ -60,6 +61,7 @@
         "noContent": "No content found.",
         "noMoviesFound": "No movies found.",
         "apiKeyMissing": "TMDB_API_KEY is missing",
+        "invalidUrlParams": "Invalid URL parameters.",
         "contentLoadError": "Content could not be loaded",
         "moviesLoadError": "Movies could not be loaded",
         "movieLoadError": "Movie could not be loaded",
@@ -73,7 +75,8 @@
         "dialogErrorTitle": "Load error",
         "dialogOk": "OK",
         "loadMoreLoading": "Loading more results …",
-        "searchResultsCount": "{count} search results found"
+        "searchResultsCount": "{count} search results found",
+        "posterAlt": "Poster of {title}"
       },
       "formats": {
         "outOfTen": "out of 10",
@@ -126,6 +129,7 @@
         "languageSelect": "Sprache auswählen",
         "navigationToggle": "Navigation öffnen oder schließen",
         "mainNavigation": "Hauptnavigation",
+        "skipToContent": "Zum Hauptinhalt springen",
         "movie": "Movie",
         "tvShow": "TV",
         "streamingProviders": "Streaminganbieter",
@@ -154,6 +158,7 @@
         "noContent": "Keine Inhalte gefunden.",
         "noMoviesFound": "Keine Filme gefunden.",
         "apiKeyMissing": "TMDB_API_KEY fehlt",
+        "invalidUrlParams": "Ungültige URL-Parameter.",
         "contentLoadError": "Inhalte konnten nicht geladen werden",
         "moviesLoadError": "Filme konnten nicht geladen werden",
         "movieLoadError": "Film konnte nicht geladen werden",
@@ -167,7 +172,8 @@
         "dialogErrorTitle": "Fehler beim Laden",
         "dialogOk": "OK",
         "loadMoreLoading": "Lade weitere Ergebnisse …",
-        "searchResultsCount": "{count} Suchergebnisse gefunden"
+        "searchResultsCount": "{count} Suchergebnisse gefunden",
+        "posterAlt": "Poster von {title}"
       },
       "formats": {
         "outOfTen": "von 10",
@@ -220,6 +226,7 @@
         "languageSelect": "Seleccionar idioma",
         "navigationToggle": "Abrir o cerrar navegación",
         "mainNavigation": "Navegación principal",
+        "skipToContent": "Saltar al contenido principal",
         "movie": "Película",
         "tvShow": "TV",
         "streamingProviders": "Proveedores de streaming",
@@ -248,6 +255,7 @@
         "noContent": "No se encontró contenido.",
         "noMoviesFound": "No se encontraron películas.",
         "apiKeyMissing": "Falta TMDB_API_KEY",
+        "invalidUrlParams": "Parámetros de URL no válidos.",
         "contentLoadError": "No se pudo cargar el contenido",
         "moviesLoadError": "No se pudieron cargar las películas",
         "movieLoadError": "No se pudo cargar la película",
@@ -261,7 +269,8 @@
         "dialogErrorTitle": "Error al cargar",
         "dialogOk": "Aceptar",
         "loadMoreLoading": "Cargando más resultados …",
-        "searchResultsCount": "{count} resultados de búsqueda encontrados"
+        "searchResultsCount": "{count} resultados de búsqueda encontrados",
+        "posterAlt": "Póster de {title}"
       },
       "formats": {
         "outOfTen": "de 10",
@@ -314,6 +323,7 @@
         "languageSelect": "Choisir la langue",
         "navigationToggle": "Ouvrir ou fermer la navigation",
         "mainNavigation": "Navigation principale",
+        "skipToContent": "Aller au contenu principal",
         "movie": "Film",
         "tvShow": "TV",
         "streamingProviders": "Fournisseurs de streaming",
@@ -342,6 +352,7 @@
         "noContent": "Aucun contenu trouvé.",
         "noMoviesFound": "Aucun film trouvé.",
         "apiKeyMissing": "TMDB_API_KEY manquant",
+        "invalidUrlParams": "Paramètres d'URL non valides.",
         "contentLoadError": "Impossible de charger le contenu",
         "moviesLoadError": "Impossible de charger les films",
         "movieLoadError": "Impossible de charger le film",
@@ -355,7 +366,8 @@
         "dialogErrorTitle": "Erreur de chargement",
         "dialogOk": "OK",
         "loadMoreLoading": "Chargement de résultats supplémentaires …",
-        "searchResultsCount": "{count} résultats de recherche trouvés"
+        "searchResultsCount": "{count} résultats de recherche trouvés",
+        "posterAlt": "Affiche de {title}"
       },
       "formats": {
         "outOfTen": "sur 10",
@@ -408,6 +420,7 @@
         "languageSelect": "Выбрать язык",
         "navigationToggle": "Открыть или закрыть навигацию",
         "mainNavigation": "Основная навигация",
+        "skipToContent": "Перейти к основному содержимому",
         "movie": "Фильм",
         "tvShow": "Телешоу",
         "streamingProviders": "Стриминговые сервисы",
@@ -436,6 +449,7 @@
         "noContent": "Контент не найден.",
         "noMoviesFound": "Фильмы не найдены.",
         "apiKeyMissing": "Отсутствует TMDB_API_KEY",
+        "invalidUrlParams": "Недопустимые параметры URL.",
         "contentLoadError": "Не удалось загрузить контент",
         "moviesLoadError": "Не удалось загрузить фильмы",
         "movieLoadError": "Не удалось загрузить фильм",
@@ -449,7 +463,8 @@
         "dialogErrorTitle": "Ошибка загрузки",
         "dialogOk": "OK",
         "loadMoreLoading": "Загрузка дополнительных результатов …",
-        "searchResultsCount": "Найдено результатов: {count}"
+        "searchResultsCount": "Найдено результатов: {count}",
+        "posterAlt": "Постер: {title}"
       },
       "formats": {
         "outOfTen": "из 10",
@@ -502,6 +517,7 @@
         "languageSelect": "Chọn ngôn ngữ",
         "navigationToggle": "Mở hoặc đóng điều hướng",
         "mainNavigation": "Điều hướng chính",
+        "skipToContent": "Chuyển đến nội dung chính",
         "movie": "Phim",
         "tvShow": "Chương trình TV",
         "streamingProviders": "Nhà cung cấp streaming",
@@ -530,6 +546,7 @@
         "noContent": "Không tìm thấy nội dung.",
         "noMoviesFound": "Không tìm thấy phim nào.",
         "apiKeyMissing": "Thiếu TMDB_API_KEY",
+        "invalidUrlParams": "Tham số URL không hợp lệ.",
         "contentLoadError": "Không thể tải nội dung",
         "moviesLoadError": "Không thể tải phim",
         "movieLoadError": "Không thể tải phim",
@@ -543,7 +560,8 @@
         "dialogErrorTitle": "Lỗi khi tải",
         "dialogOk": "OK",
         "loadMoreLoading": "Đang tải thêm kết quả …",
-        "searchResultsCount": "Đã tìm thấy {count} kết quả tìm kiếm"
+        "searchResultsCount": "Đã tìm thấy {count} kết quả tìm kiếm",
+        "posterAlt": "Áp phích của {title}"
       },
       "formats": {
         "outOfTen": "trên 10",

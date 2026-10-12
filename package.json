@@ -19,6 +19,7 @@
     "test:e2e": "cypress run --e2e --browser chrome",
     "test:e2e:open": "cypress open --e2e --browser chrome",
     "test:e2e:security": "cypress run --e2e --browser chrome --spec \"cypress/e2e/security/**/*.cy.js\"",
+    "test:e2e:a11y": "cypress run --e2e --browser chrome --spec \"cypress/accessibility/**/*.cy.js\"",
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
@@ -43,6 +44,7 @@
     "axe-core": "^4.14.0",
     "cypress": "^15.21.1",
     "cypress-axe": "^1.7.0",
+    "cypress-real-events": "^1.14.0",
     "eslint": "^9.28.0",
     "eslint-config-next": "^16.4.0",
     "eslint-plugin-jsdoc": "^65.2.4",

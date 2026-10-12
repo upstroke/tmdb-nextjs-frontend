@@ -14,18 +14,21 @@ import PagedList from '@/components/PagedList';
  * When its details fail to load, the page still renders without it. Errors
  * while loading the trending list are passed to `PagedList` through
  * `initialData.error`. Invalid route params and a missing `TMDB_API_KEY` render
- * a short message instead of the list.
+ * a short message instead of the list. The invalid params message uses the raw
+ * locale when available and falls back to the default locale otherwise.
  *
  * @param {object} props
  * @param {Promise<{ locale: string }>} props.params - Route params (async in Next.js 15+).
  * @returns {Promise<JSX.Element>}
  */
 export default async function HomePage({ params }) {
-  const paramsParsed = LocaleParamSchema.safeParse(await params);
+  const rawParams = await params;
+  const paramsParsed = LocaleParamSchema.safeParse(rawParams);
   if (!paramsParsed.success) {
+    const { messages: fallbackMessages } = getLocaleText(rawParams?.locale);
     return (
-      <main className="ui container fluid home-page">
-        <p>Invalid URL parameters.</p>
+      <main id="main-content" tabIndex={-1} className="ui container fluid home-page">
+        <p>{fallbackMessages.invalidUrlParams}</p>
       </main>
     );
   }
@@ -36,7 +39,7 @@ export default async function HomePage({ params }) {
 
   if (!apiKey) {
     return (
-      <main className="ui container fluid home-page">
+      <main id="main-content" tabIndex={-1} className="ui container fluid home-page">
         <p>{messages.apiKeyMissing}</p>
       </main>
     );
@@ -88,7 +91,7 @@ export default async function HomePage({ params }) {
   const initialData = { featured, cards, page: 1, hasMore, error };
 
   return (
-    <main className="ui container fluid home-page">
+    <main id="main-content" tabIndex={-1} className="ui container fluid home-page">
       <PagedList
         initialData={initialData}
         apiPath="trending"

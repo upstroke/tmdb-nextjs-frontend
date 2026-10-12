@@ -380,13 +380,13 @@ describe('PagedList on the home page (integration, home only)', () => {
   afterEach(teardownEnvironment);
 
   // TC-PL-12
-  it('shows the invalid URL message for missing locale parameter without any request', async () => {
+  it('shows the localized invalid URL message for missing locale parameter without any request', async () => {
     mockFetch(list);
 
     const ui = await list.Page({ params: Promise.resolve({}) });
     const { container } = render(<AppLocaleProvider>{ui}</AppLocaleProvider>);
 
-    expect(screen.getByText('Invalid URL parameters.')).toBeInTheDocument();
+    expect(screen.getByText(messages.invalidUrlParams)).toBeInTheDocument();
     expect(container.querySelectorAll('.default-card')).toHaveLength(0);
     expect(globalThis.fetch).not.toHaveBeenCalled();
   });
@@ -419,5 +419,17 @@ describe('PagedList on the home page (integration, home only)', () => {
     expect((await screen.findAllByText(movieItem.title)).length).toBeGreaterThan(0);
     expect(tmdbCalls(`/movie/${movieItem.id}?`).length).toBeGreaterThan(0);
     expect(tmdbCalls(`/tv/${tvItem.id}?`)).toHaveLength(0);
+  });
+
+  // TC-PL-14
+  it('falls back to the default locale text for an invalid locale parameter without any request', async () => {
+    mockFetch(list);
+
+    const ui = await list.Page({ params: Promise.resolve({ locale: 'x' }) });
+    const { container } = render(<AppLocaleProvider>{ui}</AppLocaleProvider>);
+
+    expect(screen.getByText(messages.invalidUrlParams)).toBeInTheDocument();
+    expect(container.querySelectorAll('.default-card')).toHaveLength(0);
+    expect(globalThis.fetch).not.toHaveBeenCalled();
   });
 });

@@ -23,7 +23,7 @@ export default async function TvShowsPage({ params }) {
 
   if (!apiKey) {
     return (
-      <main className="ui container fluid tv-shows-page">
+      <main id="main-content" tabIndex={-1} className="ui container fluid tv-shows-page">
         <p>{messages.apiKeyMissing}</p>
       </main>
     );
@@ -71,7 +71,7 @@ export default async function TvShowsPage({ params }) {
   const initialData = { featured, cards, page: 1, hasMore, error };
 
   return (
-    <main className="ui container fluid tv-shows-page">
+    <main id="main-content" tabIndex={-1} className="ui container fluid tv-shows-page">
       <PagedList
         initialData={initialData}
         apiPath="tv-shows"
