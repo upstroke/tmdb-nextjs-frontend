@@ -123,7 +123,7 @@ export default async function TvShowDetailPage({ params }) {
         emptyLabel={fallbacks.notAvailable}
       />
 
-      <main className="ui text container details-view">
+      <main id="main-content" tabIndex={-1} className="ui text container details-view">
         <header className="details-header">
           <dl className="details-meta">
             <div>
