@@ -6,6 +6,7 @@ import { useState } from 'react';
 import MediaTypeLabel from './MediaTypeLabel';
 import { getCertificationMeta } from '@/lib/utils/certificationMeta';
 import { formatDate } from '@/lib/utils/formatDate';
+import { formatMessage } from '@/lib/i18n/format';
 import { useI18n, useLocale } from '@/lib/stores/locale';
 
 /**
@@ -64,7 +65,7 @@ export default function CardDefault({
   const genreText = (genres ?? []).map((g) => g.name).join(' / ');
   const notAvailableText = fallbacks.notAvailable;
   const cardTitle = title?.trim() || notAvailableText;
-  const posterAlt = messages.posterAlt.replace('{title}', cardTitle);
+  const posterAlt = formatMessage(messages.posterAlt, { title: cardTitle });
   const cardDate = date?.trim() ? formatDate(date, locale) : '';
   const cardRating = typeof rating === 'number' && rating > 0 ? rating.toFixed(1) : null;
   const certificationMeta = getCertificationMeta(String(certification), activeRegion);
