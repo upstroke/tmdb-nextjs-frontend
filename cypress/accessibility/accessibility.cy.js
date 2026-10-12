@@ -130,7 +130,10 @@ describe('Accessibility', () => {
 
   it('[A11Y-06] has no axe violations on the error message for an invalid id', () => {
     cy.visitLocale(locale, '/tv-shows/abc');
-    cy.contains('Invalid URL parameters.').should('be.visible');
+
+    cy.i18n(locale).then(({ messages }) => {
+      cy.contains(messages.invalidUrlParams).should('be.visible');
+    });
     cy.checkPageA11y();
   });
 
