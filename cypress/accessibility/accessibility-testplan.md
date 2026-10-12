@@ -50,14 +50,16 @@ A11Y-08, A11Y-09, and A11Y-14 run once per page, with the page name in the test 
 - **Screen reader output:** Automated checks cannot replace a manual pass with NVDA or VoiceOver.
   See the manual checklist in `docs/testing/accessibility-audit-checklist.md`.
 
-## Accepted Limitations
+## Accepted Behavior
 
 - **`html[lang]` in the server response:** `app/layout.js` sits above `[locale]`, so the server
-  response carries the default locale for every route. `LocaleSyncer` sets
+  response does not carry the locale of the route. `LocaleSyncer` sets
   `document.documentElement.lang` on the client after hydration, for direct visits and for
-  language switches. The tests check the value after hydration (A11Y-08, A11Y-15). Until
-  hydration, screen readers and crawlers can see the wrong language (WCAG 3.1.1). The risk is
-  accepted; a fix would move the `<html>` element into `app/[locale]/layout.js`.
+  language switches. The tests check the value after hydration (A11Y-08, A11Y-15).
+  A test for `lang="de-DE"` in the raw server response of `/de-DE` was run and failed, which
+  confirms the behavior. The test was removed on purpose. Until hydration, screen readers and
+  crawlers can see the wrong language (WCAG 3.1.1). The behavior is accepted; a fix would move
+  the `<html>` element into `app/[locale]/layout.js`.
 
 ## Data
 
@@ -93,7 +95,7 @@ Tests use the constant `en-US`, the same as `DEFAULT_LOCALE` in `lib/i18n/config
 
 `html[lang]` is set on the client by `LocaleSyncer` after hydration. A11Y-08 opens each page in
 `en-US` and switches to `de-DE` through the language switcher (`#language-select`). A11Y-15 opens
-`/de-DE` directly. Both check the value after hydration; see Accepted Limitations for the server
+`/de-DE` directly. Both check the value after hydration; see Accepted Behavior for the server
 response.
 
 Do not read the locale with `Cypress.env()`: `allowCypressEnv` is `false`.
