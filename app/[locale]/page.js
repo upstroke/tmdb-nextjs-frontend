@@ -24,7 +24,7 @@ export default async function HomePage({ params }) {
   const paramsParsed = LocaleParamSchema.safeParse(await params);
   if (!paramsParsed.success) {
     return (
-      <main className="ui container fluid home-page">
+      <main id="main-content" tabIndex={-1} className="ui container fluid home-page">
         <p>Invalid URL parameters.</p>
       </main>
     );
@@ -36,7 +36,7 @@ export default async function HomePage({ params }) {
 
   if (!apiKey) {
     return (
-      <main className="ui container fluid home-page">
+      <main id="main-content" tabIndex={-1} className="ui container fluid home-page">
         <p>{messages.apiKeyMissing}</p>
       </main>
     );
@@ -88,7 +88,7 @@ export default async function HomePage({ params }) {
   const initialData = { featured, cards, page: 1, hasMore, error };
 
   return (
-    <main className="ui container fluid home-page">
+    <main id="main-content" tabIndex={-1} className="ui container fluid home-page">
       <PagedList
         initialData={initialData}
         apiPath="trending"
