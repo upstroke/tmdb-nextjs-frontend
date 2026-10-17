@@ -129,12 +129,12 @@ describe('TabGroupe (browser)', () => {
     expect(firstTab).toHaveAttribute('aria-selected', 'true');
     expect(document.activeElement).toBe(firstTab);
 
-    // 4. Move left from the first tab -> wraps around to the last tab
+    // 4. TC-TG-02a: ArrowLeft from the first tab wraps around to the last tab
     fireEvent.keyDown(firstTab, { key: 'ArrowLeft' });
     expect(lastTab).toHaveAttribute('aria-selected', 'true');
     expect(document.activeElement).toBe(lastTab);
 
-    // 5. Move right from the last tab -> wraps around to the first tab
+    // 5. TC-TG-02b: ArrowRight from the last tab wraps around to the first tab
     fireEvent.keyDown(lastTab, { key: 'ArrowRight' });
     expect(firstTab).toHaveAttribute('aria-selected', 'true');
     expect(document.activeElement).toBe(firstTab);
