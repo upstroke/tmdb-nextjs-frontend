@@ -7,8 +7,7 @@ import { getSupportedLocales } from '@/lib/i18n/helpers';
 import { resolveLocale } from '@/lib/i18n/resolver';
 import { SUPPORTED_LOCALES } from '@/lib/i18n/config';
 
-// Survives the remount caused by changing the locale route segment.
-let shouldRestoreFocus = false;
+const RESTORE_FOCUS_KEY = 'restore-language-select-focus';
 
 /**
  * Dropdown control for switching the active locale.
@@ -33,17 +32,17 @@ export default function LanguageSwitcher() {
   }));
 
   useEffect(() => {
-    if (!shouldRestoreFocus) return;
+    if (sessionStorage.getItem(RESTORE_FOCUS_KEY) !== 'true') return;
 
-    shouldRestoreFocus = false;
+    sessionStorage.removeItem(RESTORE_FOCUS_KEY);
     selectRef.current?.focus();
   }, [currentLocale]);
 
   /**
    * Switches the app to the selected locale: stores it, swaps the locale
    * segment in the current pathname (or prepends it when missing), and replaces
-   * the route without scrolling. Marks the select for focus restoration after
-   * the locale change.
+   * the route without scrolling. Sets a one-shot session flag so the newly
+   * mounted language select can restore focus after the navigation.
    *
    * @param {import('react').ChangeEvent<HTMLSelectElement>} event - Change event of the language select.
    * @returns {void}
@@ -51,7 +50,7 @@ export default function LanguageSwitcher() {
   function handleChange(event) {
     const nextLocale = resolveLocale(event.currentTarget.value);
     setLocale(nextLocale);
-    shouldRestoreFocus = true;
+    sessionStorage.setItem(RESTORE_FOCUS_KEY, 'true');
 
     const currentSegment = SUPPORTED_LOCALES.find(
       (l) => pathname.startsWith(`/${l}/`) || pathname === `/${l}`
