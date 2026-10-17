@@ -14,9 +14,9 @@ const RESTORE_FOCUS_KEY = 'restore-language-select-focus';
  *
  * On change the component updates the global locale store, replaces the locale
  * segment in the current pathname, and performs a client-side navigation to the
- * same route in the selected language. The locale change can mount the
- * component twice; the session flag therefore stays available for one second
- * so both mounts can restore focus to the language select.
+ * same route in the selected language. The select element can be replaced by a
+ * later render; a ref callback restores focus to each newly mounted select
+ * while the one-shot session flag is present.
  *
  * @returns {JSX.Element}
  */
@@ -33,16 +33,30 @@ export default function LanguageSwitcher() {
   }));
 
   useEffect(() => {
-    if (sessionStorage.getItem(RESTORE_FOCUS_KEY) !== 'true') return;
-
-    selectRef.current?.focus();
-
     const timeoutId = setTimeout(() => {
       sessionStorage.removeItem(RESTORE_FOCUS_KEY);
     }, 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [currentLocale]);
+  }, []);
+
+  /**
+   * Stores the select node and restores focus when a new select mounts while
+   * the one-shot locale-focus flag is present.
+   *
+   * @param {HTMLSelectElement|null} node - Mounted select element.
+   * @returns {void}
+   */
+  function handleSelectRef(node) {
+    selectRef.current = node;
+
+    if (
+      node &&
+      sessionStorage.getItem(RESTORE_FOCUS_KEY) === 'true'
+    ) {
+      node.focus();
+    }
+  }
 
   /**
    * Switches the app to the selected locale: stores it, swaps the locale
@@ -74,7 +88,7 @@ export default function LanguageSwitcher() {
         {labels.languageSelect}
       </label>
       <select
-        ref={selectRef}
+        ref={handleSelectRef}
         id="language-select"
         value={currentLocale}
         aria-label={labels.languageSelect}
