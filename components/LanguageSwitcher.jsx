@@ -35,7 +35,29 @@ export default function LanguageSwitcher() {
     if (sessionStorage.getItem(RESTORE_FOCUS_KEY) !== 'true') return;
 
     sessionStorage.removeItem(RESTORE_FOCUS_KEY);
-    selectRef.current?.focus();
+
+    // The locale change reloads the route. A late hydration/navigation step
+    // can reset focus to <body> after the initial focus() call, so restore it
+    // for a few frames until it stays on the select.
+    let attempts = 0;
+
+    const restoreFocus = () => {
+      const select = selectRef.current;
+      if (!select) return;
+
+      if (document.activeElement !== select) {
+        select.focus();
+      }
+
+      if (document.activeElement === select) return;
+
+      attempts += 1;
+      if (attempts < 20) {
+        requestAnimationFrame(restoreFocus);
+      }
+    };
+
+    restoreFocus();
   }, [currentLocale]);
 
   /**
