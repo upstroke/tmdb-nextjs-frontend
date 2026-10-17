@@ -13,36 +13,36 @@ application without encountering accessibility violations.
 
 ## Covered Scenarios
 
-| ID      | Page           | State                                        |
-| ------- | -------------- | -------------------------------------------- |
-| A11Y-01 | Homepage       | Page loaded, content visible                 |
-| A11Y-02 | Movie list     | Page loaded with live TMDB data              |
-| A11Y-03 | TV show list   | Page loaded with live TMDB data              |
-| A11Y-04 | Movie detail   | Movie 155 loaded with live TMDB data         |
-| A11Y-05 | TV show detail | Series 1396 with season tabs, live TMDB data |
-| A11Y-06 | Error message  | Invalid id shows the error message           |
-| A11Y-07 | Search         | Typeahead with stubbed search results        |
-| A11Y-08 | Pages (de-DE)  | Switch to de-DE with the language switcher   |
-| A11Y-09 | All pages      | Landmarks and heading order (axe rules)      |
-| A11Y-10 | Header         | Focus indicator on the skip link             |
-| A11Y-11 | Search         | Result count in the live region              |
-| A11Y-12 | Search         | No results message                           |
-| A11Y-13 | Search         | Error message when the request fails         |
-| A11Y-14 | Small viewport | 320 px width, no horizontal scrolling        |
-| A11Y-15 | Homepage       | html lang after load on direct de-DE visit   |
-| A11Y-16 | Header         | Hover contrast of navigation links           |
-| A11Y-17 | Search         | Hover contrast of a search result            |
-| A11Y-18 | Header         | Contrast of the focused skip link            |
-| A11Y-19 | Lists          | Hover contrast of a card                     |
-| A11Y-20 | Movie list     | Hover contrast of the load more button       |
-| A11Y-21 | Movie list     | Localized poster alternative text            |
-| A11Y-22 | All pages      | Skip link moves focus to the main content    |
-| A11Y-23 | Homepage       | html lang in the raw server response         |
-| A11Y-24 | TV show detail | Hover contrast of a season tab               |
-| A11Y-25 | TV show detail | Focus contrast of a season tab               |
-| A11Y-26 | Error dialog   | Focus inside dialog and Escape closes it     |
+| ID      | Page           | State                                                                             |
+| ------- | -------------- | --------------------------------------------------------------------------------- |
+| A11Y-01 | Homepage       | Page loaded, content visible                                                      |
+| A11Y-02 | Movie list     | Page loaded with live TMDB data                                                   |
+| A11Y-03 | TV show list   | Page loaded with live TMDB data                                                   |
+| A11Y-04 | Movie detail   | Movie 155 loaded with live TMDB data                                              |
+| A11Y-05 | TV show detail | Series 1396 with season tabs, live TMDB data                                      |
+| A11Y-06 | Error message  | Invalid id shows the error message                                                |
+| A11Y-07 | Search         | Typeahead with stubbed search results                                             |
+| A11Y-08 | Pages (de-DE)  | Switch to de-DE with the language switcher                                        |
+| A11Y-09 | All pages      | Landmarks and heading order (axe rules)                                           |
+| A11Y-10 | Header         | Focus indicator on the skip link                                                  |
+| A11Y-11 | Search         | Result count in the live region                                                   |
+| A11Y-12 | Search         | No results message                                                                |
+| A11Y-13 | Search         | Error message when the request fails                                              |
+| A11Y-14 | Small viewport | 320 px width, no horizontal scrolling                                             |
+| A11Y-15 | Homepage       | html lang after load on direct de-DE visit                                        |
+| A11Y-16 | Header         | Hover contrast of navigation links                                                |
+| A11Y-17 | Search         | Hover contrast of a search result                                                 |
+| A11Y-18 | Header         | Contrast of the focused skip link                                                 |
+| A11Y-19 | Lists          | Hover contrast of a card                                                          |
+| A11Y-20 | Movie list     | Hover contrast of the load more button                                            |
+| A11Y-21 | Movie list     | Localized poster alternative text                                                 |
+| A11Y-22 | All pages      | Skip link moves focus to the main content                                         |
+| A11Y-23 | Homepage       | html lang in the raw server response                                              |
+| A11Y-24 | TV show detail | Hover contrast of a season tab                                                    |
+| A11Y-25 | TV show detail | Focus contrast of a season tab                                                    |
+| A11Y-26 | Error dialog   | Focus inside dialog and Escape closes it                                          |
 | A11Y-27 | Movie list     | Load more announces loading, appends cards, and moves focus to the first new card |
-| A11Y-28 | Homepage       | Focus stays on the language select after switching to de-DE |
+| A11Y-28 | Homepage       | Focus stays on the language select after switching to de-DE                       |
 
 A11Y-08, A11Y-09, A11Y-14, and A11Y-22 run once per page, with the page name in the test title.
 A11Y-16 runs once per navigation link, A11Y-19 once per list, and A11Y-21 once per tested locale
@@ -51,25 +51,25 @@ A11Y-16 runs once per navigation link, A11Y-19 once per list, and A11Y-21 once p
 
 ## Spec Files
 
-| Spec file | Test cases |
-| --- | --- |
-| `pages/page-axe.cy.js` | A11Y-01, A11Y-02, A11Y-03, A11Y-04, A11Y-05, A11Y-06 |
-| `pages/locale.cy.js` | A11Y-08, A11Y-15 |
-| `pages/landmarks.cy.js` | A11Y-09 |
-| `pages/reflow.cy.js` | A11Y-14 |
-| `pages/alt-text.cy.js` | A11Y-21 |
-| `search/search-axe.cy.js` | A11Y-07, A11Y-12, A11Y-13 |
-| `search/search-live-region.cy.js` | A11Y-11 |
-| `focus/skip-link.cy.js` | A11Y-10, A11Y-18, A11Y-22 |
-| `focus/season-tabs.cy.js` | A11Y-24, A11Y-25 |
-| `focus/error-dialog.cy.js` | A11Y-26 |
-| `focus/language-switch.cy.js` | A11Y-28 |
-| `lists/load-more.cy.js` | A11Y-27 |
-| `contrast/navigation-hover.cy.js` | A11Y-16 |
-| `contrast/search-hover.cy.js` | A11Y-17 |
-| `contrast/cards-hover.cy.js` | A11Y-19 |
-| `contrast/load-more-hover.cy.js` | A11Y-20 |
-| `html-lang.cy.js` | A11Y-23 |
+| Spec file                         | Test cases                                           |
+| --------------------------------- | ---------------------------------------------------- |
+| `pages/page-axe.cy.js`            | A11Y-01, A11Y-02, A11Y-03, A11Y-04, A11Y-05, A11Y-06 |
+| `pages/locale.cy.js`              | A11Y-08, A11Y-15                                     |
+| `pages/landmarks.cy.js`           | A11Y-09                                              |
+| `pages/reflow.cy.js`              | A11Y-14                                              |
+| `pages/alt-text.cy.js`            | A11Y-21                                              |
+| `search/search-axe.cy.js`         | A11Y-07, A11Y-12, A11Y-13                            |
+| `search/search-live-region.cy.js` | A11Y-11                                              |
+| `focus/skip-link.cy.js`           | A11Y-10, A11Y-18, A11Y-22                            |
+| `focus/season-tabs.cy.js`         | A11Y-24, A11Y-25                                     |
+| `focus/error-dialog.cy.js`        | A11Y-26                                              |
+| `focus/language-switch.cy.js`     | A11Y-28                                              |
+| `lists/load-more.cy.js`           | A11Y-27                                              |
+| `contrast/navigation-hover.cy.js` | A11Y-16                                              |
+| `contrast/search-hover.cy.js`     | A11Y-17                                              |
+| `contrast/cards-hover.cy.js`      | A11Y-19                                              |
+| `contrast/load-more-hover.cy.js`  | A11Y-20                                              |
+| `html-lang.cy.js`                 | A11Y-23                                              |
 
 ## States to Include
 
@@ -133,7 +133,7 @@ A11Y-12 only adds the axe check of the no-results state in the full page.
 ## Skip Link
 
 `HeaderMain` renders a link with `href="#main-content"` as the first element of the header. Its
- text comes from `labels.skipToContent` in `lib/i18n/ui.json`. The link is off-screen until it
+text comes from `labels.skipToContent` in `lib/i18n/ui.json`. The link is off-screen until it
 receives keyboard focus; the styles in `styles/app.scss` use `:focus-visible` only. A11Y-10 checks
 that the first Tab stop is the skip link and shows a visible focus indicator. A11Y-18 checks the
 color contrast of the focused link. A11Y-22 presses Tab and Enter on each page and checks that the
