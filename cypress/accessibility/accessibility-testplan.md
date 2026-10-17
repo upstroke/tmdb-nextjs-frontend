@@ -38,6 +38,8 @@ application without encountering accessibility violations.
 | A11Y-21 | Movie list     | Localized poster alternative text            |
 | A11Y-22 | All pages      | Skip link moves focus to the main content    |
 | A11Y-23 | Homepage       | html lang in the raw server response         |
+| A11Y-24 | TV show detail | Hover contrast of a season tab               |
+| A11Y-25 | TV show detail | Focus contrast of a season tab               |
 
 A11Y-08, A11Y-09, A11Y-14, and A11Y-22 run once per page, with the page name in the test title.
 A11Y-16 runs once per navigation link, A11Y-19 once per list, and A11Y-21 once per tested locale
@@ -56,6 +58,7 @@ A11Y-16 runs once per navigation link, A11Y-19 once per list, and A11Y-21 once p
 | `search/search-axe.cy.js` | A11Y-07, A11Y-12, A11Y-13 |
 | `search/search-live-region.cy.js` | A11Y-11 |
 | `focus/skip-link.cy.js` | A11Y-10, A11Y-18, A11Y-22 |
+| `focus/season-tabs.cy.js` | A11Y-24, A11Y-25 |
 | `contrast/navigation-hover.cy.js` | A11Y-16 |
 | `contrast/search-hover.cy.js` | A11Y-17 |
 | `contrast/cards-hover.cy.js` | A11Y-19 |
@@ -69,9 +72,9 @@ A11Y-16 runs once per navigation link, A11Y-19 once per list, and A11Y-21 once p
 - Search results open, empty, and failed
 - Second locale (`de-DE`), reached through the language switcher and through a direct URL
 - Small viewport (320 px, equals 200% zoom on a 1280 px wide screen)
-- Hover and focus state of navigation links, search results, cards, and the load more button
+- Hover and focus state of navigation links, search results, cards, the load more button, and
+  season tabs
 - Keyboard focus on the skip link, and focus moved to `#main-content` after activation
-- Not yet covered: hover contrast of the season tabs
 
 ## Dialogs
 
@@ -149,8 +152,9 @@ npm run test:e2e:a11y
 
 ## Hover and Focus Contrast
 
-`cy.trigger('mouseover')` does not apply the CSS `:hover` state, so A11Y-16, A11Y-17, A11Y-19, and
-A11Y-20 use [cypress-real-events](https://github.com/dmtrKovalenko/cypress-real-events). It sends
+`cy.trigger('mouseover')` does not apply the CSS `:hover` state, so A11Y-16, A11Y-17, A11Y-19,
+A11Y-20, A11Y-24, and A11Y-25 use
+[cypress-real-events](https://github.com/dmtrKovalenko/cypress-real-events). It sends
 real mouse and keyboard events through the Chrome DevTools Protocol and works in Chromium-based
 browsers only. The npm scripts run Chrome. The spec imports the package directly with
 `import 'cypress-real-events'`.
@@ -166,7 +170,7 @@ Tags checked: `wcag2a`, `wcag2aa`, `wcag21aa`, `wcag22aa`.
 A11Y-09 additionally runs the best-practice rules `landmark-one-main`, `landmark-unique`,
 `page-has-heading-one`, `heading-order`, and `region`.
 
-A11Y-16 to A11Y-20 run the rule `color-contrast` only.
+A11Y-16 to A11Y-20 and A11Y-24 to A11Y-25 run the rule `color-contrast` only.
 
 Document intentional exceptions in the spec file directly above `cy.checkPageA11y()`.
 Do not disable rules broadly.
