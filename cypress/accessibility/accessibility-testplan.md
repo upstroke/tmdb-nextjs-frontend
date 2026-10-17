@@ -100,9 +100,15 @@ A11Y-16 runs once per navigation link, A11Y-19 once per list, and A11Y-21 once p
 - **Status message for missing results:** The message shown when the search finds nothing.
 - **Skip link markup:** TC-HM-004 checks the link target and that the link comes before the burger
   button and the navigation.
+- **Season tab keyboard handling:** Tablist roles, accessible name, roving tabindex, Arrow Left
+  and Right with wrap-around, Home and End, focus movement between tabs, panel association, and
+  keyboard navigation within the episode list.
+- **Season tab loading and fallback states:** The loading message and the plain-text fallback when
+  no episode data is available.
 
 The first three are tested in `vitest/component/typeheadsearch/TypeHeadSearch.browser.test.jsx`,
-TC-HM-004 in `vitest/component/headermain/HeaderMain.browser.test.jsx`.
+TC-HM-004 in `vitest/component/headermain/HeaderMain.browser.test.jsx`, and the season tab cases
+in `vitest/component/tabgroupe/TabGroupe.browser.test.jsx`.
 A11Y-12 only adds the axe check of the no-results state in the full page.
 
 ## Covered in a Separate Plan
@@ -135,8 +141,7 @@ hash is `#main-content` and that the focus is on the `main` element (WCAG 2.4.1)
 
 ## Poster Alternative Text
 
-`CardDefault` builds the poster alternative text from `messages.posterAlt` in
-`lib/i18n/ui.json`. The message contains the placeholder `{title}`, like `searchResultsCount`
+`CardDefault` builds the poster alternative text from `messages.posterAlt` in `lib/i18n/ui.json`. The message contains the placeholder `{title}`, like `searchResultsCount`
 contains `{count}`, so each language can use its own word order. A11Y-21 reads the message of the
 locale with `cy.i18n()`, removes the placeholder, and checks that the alt text of the first poster
 contains the remaining text. This catches a text from the wrong language (WCAG 3.1.2).
@@ -194,7 +199,7 @@ Do not disable rules broadly.
 Tests use the constant `en-US`, the same as `DEFAULT_LOCALE` in `lib/i18n/config.js`.
 
 `html[lang]` is rendered by the server in `app/[locale]/layout.js`. A11Y-08 opens each page in
-`en-US` and switches to `de-DE` through the language switcher (`#language-select`). A11Y-15 opens
+`en-US` and switches to de-DE through the language switcher (`#language-select`). A11Y-15 opens
 `/de-DE` directly. Both check the value in the loaded page; A11Y-23 checks the raw server
 response, see Server Response.
 
