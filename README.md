@@ -167,7 +167,7 @@ See [docs/testing.md](docs/testing.md) for the testing strategy, commands, and c
 Use the validation commands to run the existing test suites as regression checks:
 
 ```bash
-npm run validate          # Fast and full local validation
+npm run validate          # Fast validation plus component, integration, and coverage tests
 npm run validate:fast     # ESLint, Prettier check, and Vitest unit tests
 npm run validate:full     # Vitest component tests, integration tests, and coverage
 npm run validate:e2e      # Production build and Cypress end-to-end tests

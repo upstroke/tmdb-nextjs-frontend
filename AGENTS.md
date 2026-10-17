@@ -107,7 +107,7 @@ Use the validation commands to run the existing test suites as regression checks
 - Cypress validation requires the app to run on `http://localhost:3000`; `validate:e2e` and `validate:a11y` build the app first.
 - The accessibility suite needs a valid `TMDB_API_KEY` for specs that use live TMDB data.
 
-The pre-commit hook runs `npm run validate:fast`. It intentionally excludes component, integration, Cypress, security, and accessibility tests because they are slower or require a running application.
+The pre-commit hook runs `npx lint-staged && npm run validate:fast`. It intentionally excludes component, integration, Cypress, security, and accessibility tests because they are slower or require a running application.
 
 Additional commands:
 
