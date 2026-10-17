@@ -75,14 +75,14 @@ Prefer these tools when they are available:
 
 Choose the test tool and environment by scope:
 
-| Level | Tool | Location | Purpose |
-| --- | --- | --- | --- |
-| Unit | Vitest (jsdom) | `vitest/unit/` | Isolated logic, schemas, utilities, services, stores, and route behavior with controlled dependencies |
-| Integration | Vitest (jsdom) + Testing Library | `vitest/integration/` | Real route/service/schema or page integration, with the external TMDB network mocked |
-| Component | Vitest browser mode (Playwright, Chromium) | `vitest/component/` | Isolated component rendering, props, interaction, keyboard, focus, and ARIA states |
-| e2e | Cypress | `cypress/e2e/` | Full-application user flows such as search, detail pages, and navigation |
+| Level         | Tool                                         | Location                                                      | Purpose                                                                                                    |
+| ------------- | -------------------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Unit          | Vitest (jsdom)                               | `vitest/unit/`                                                | Isolated logic, schemas, utilities, services, stores, and route behavior with controlled dependencies      |
+| Integration   | Vitest (jsdom) + Testing Library             | `vitest/integration/`                                         | Real route/service/schema or page integration, with the external TMDB network mocked                       |
+| Component     | Vitest browser mode (Playwright, Chromium)   | `vitest/component/`                                           | Isolated component rendering, props, interaction, keyboard, focus, and ARIA states                         |
+| e2e           | Cypress                                      | `cypress/e2e/`                                                | Full-application user flows such as search, detail pages, and navigation                                   |
 | Accessibility | Vitest browser mode; Cypress + `cypress-axe` | `vitest/component/`, `cypress/accessibility/`, `cypress/e2e/` | Component-level semantics and interaction; full-page axe, keyboard, focus, visibility, and contrast checks |
-| Security | Cypress | `cypress/e2e/security/` | Manipulated input, XSS, API key exposure, list and search API routes |
+| Security      | Cypress                                      | `cypress/e2e/security/`                                       | Manipulated input, XSS, API key exposure, list and search API routes                                       |
 
 Rules:
 

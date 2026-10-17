@@ -164,14 +164,14 @@ cypress/
 
 ## When to Use Which
 
-| Test Type | Use For |
-| --- | --- |
-| **Vitest Unit** | Isolated utilities, schemas, services, stores, and route behavior |
-| **Vitest Integration** | Real route/service/schema and page integration with the external network mocked |
-| **Vitest Component** | Isolated React components, including keyboard, focus, and ARIA behavior in Chromium |
-| **Cypress Acceptance** | Full-application user flows and cross-page behavior |
-| **Cypress A11y** | Full-page axe scans and targeted application-level accessibility checks |
-| **Cypress Security** | Manipulated input, headers, redirects, API key exposure |
+| Test Type              | Use For                                                                             |
+| ---------------------- | ----------------------------------------------------------------------------------- |
+| **Vitest Unit**        | Isolated utilities, schemas, services, stores, and route behavior                   |
+| **Vitest Integration** | Real route/service/schema and page integration with the external network mocked     |
+| **Vitest Component**   | Isolated React components, including keyboard, focus, and ARIA behavior in Chromium |
+| **Cypress Acceptance** | Full-application user flows and cross-page behavior                                 |
+| **Cypress A11y**       | Full-page axe scans and targeted application-level accessibility checks             |
+| **Cypress Security**   | Manipulated input, headers, redirects, API key exposure                             |
 
 Use English for explanatory documentation, test names, and comments. Preserve identifiers and intentionally localized test data. Keep test plans and affected documentation in sync with test changes.
 
