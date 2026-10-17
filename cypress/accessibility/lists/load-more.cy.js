@@ -34,7 +34,7 @@ describe('Accessibility — load more', () => {
 
     cy.get('.load-more button')
       .should('have.attr', 'aria-busy', 'false');
-    cy.get('#movie-999999')
+    cy.contains('a.default-card', 'Accessibility Test Movie')
       .should('be.visible')
       .and('be.focused');
   });
