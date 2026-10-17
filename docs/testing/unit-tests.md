@@ -1,121 +1,59 @@
 # Unit Tests
 
-## Overview
+## Purpose
 
-Unit tests verify individual functions, utilities, and services in isolation. They are the fastest tests and form the base of the test pyramid.
+Unit tests verify isolated logic with Vitest. The `unit` project in `vitest.config.js` uses jsdom and matches `vitest/unit/**/*.test.{js,jsx}`.
 
-## Tool
+## Scope
 
-- **Vitest** - Fast, Jest-compatible test runner
+- Utilities, formatting, validation, and Zod schemas.
+- Services with controlled external dependencies.
+- Locale helpers, resolvers, and store logic.
+- Isolated API route behavior, including validation and error handling.
+- Boundary values, missing data, and malformed input.
+
+A route test is not automatically an integration test. Use `vitest/integration/` when exercising real application modules together, such as the route, service, schemas, and page, with only the external network mocked.
+
+Use Vitest browser mode for isolated React component behavior. Use Cypress for the running application and end-to-end flows.
 
 ## Location
 
-```
-tests/unit/
-├── i18n/            # i18n helper tests
-├── routes/          # API route handler tests (Integration)
-├── security/        # Security unit tests
-├── services/        # Service layer tests
-├── stores/          # Store logic tests
-├── utils/           # Utility function tests
-└── *.test.js        # Test files
-```
+Tests live under `vitest/unit/`, grouped by subject, including `i18n/`, `routes/`, `security/`, `services/`, `stores/`, and `utils/`. Shared domain fixtures belong in `vitest/fixtures/`; reuse existing mocks and setup utilities where appropriate.
 
-## What to Test
-
-### ✅ Test These:
-
-- Utility functions (formatting, validation, sanitization)
-- Zod schemas (validation logic)
-- Service functions (API data transformation)
-- i18n helpers and resolvers
-- Store logic
-- API route handlers (Integration Tests)
-- Pure functions (no side effects)
-- Edge cases and error handling
-
-### ❌ Don't Test:
-
-- React components (use Cypress component tests)
-- DOM manipulation (use Cypress)
-- Integration behavior (use integration tests for routes)
-- Acceptance user flows (use Cypress Acceptance tests)
-
-## Example
-
-```js
-// tests/unit/utils/format.test.js
-import { formatRating, formatDate } from '@/utils/format';
-
-describe('formatRating', () => {
-  it('formats rating to one decimal', () => {
-    expect(formatRating(8.5)).toBe('8.5');
-  });
-
-  it('handles null rating', () => {
-    expect(formatRating(null)).toBe('N/A');
-  });
-
-  it('rounds to one decimal', () => {
-    expect(formatRating(8.567)).toBe('8.6');
-  });
-});
-
-describe('formatDate', () => {
-  it('formats ISO date string', () => {
-    const result = formatDate('2024-01-15T10:30:00Z');
-    expect(result).toMatch(/\d{1,2}\.\d{1,2}\.\d{4}/);
-  });
-
-  it('handles invalid date', () => {
-    expect(formatDate('invalid')).toBe('Invalid date');
-  });
-});
-```
-
-## Best Practices
-
-1. **Test one thing per test** - Keep tests focused
-2. **Use descriptive names** - `it('formats rating to one decimal')`
-3. **Arrange-Act-Assert pattern**:
-   ```js
-   it('formats rating', () => {
-     // Arrange
-     const rating = 8.5;
-
-     // Act
-     const result = formatRating(rating);
-
-     // Assert
-     expect(result).toBe('8.5');
-   });
-   ```
-4. **Test edge cases** - null, undefined, empty strings, boundary values
-5. **Keep tests fast** - No API calls, no database, no timers
-6. **Use mocks for external dependencies** - Mock services, stores, i18n
+Inspect existing tests such as `vitest/unit/utils/formatDate.test.js` and `vitest/unit/services/tmdb-api.test.js` before adding a new pattern. Do not assume illustrative formatting functions or fallback strings are actual application contracts.
 
 ## Running Tests
 
 ```bash
-# All unit tests (includes integration tests)
-npm run test
+# Unit project only
+npm run test:unit
 
-# With coverage (excludes Cypress tests)
+# One unit test file, single run
+npx vitest run --project unit vitest/unit/utils/formatDate.test.js
+
+# All Vitest projects, not only unit tests
+npm test
+
+# Combined coverage across Vitest projects
 npm run test:coverage
-
-# Specific file
-npx vitest tests/unit/utils/format.test.js
 ```
+
+## Best Practices
+
+- Use concise English names and Arrange-Act-Assert structure.
+- Keep each test focused on clearly described behavior.
+- Mock external technical boundaries and restore mocks and environment changes.
+- Avoid live TMDB requests and real credentials in unit tests.
+- Cover null, undefined, empty values, boundaries, and errors where relevant.
+- Use fake timers when time-dependent behavior needs deterministic testing; restore them afterward.
+- Assert observable outputs rather than internal implementation details.
+- Update the matching test plan and affected documentation with test changes.
 
 ## Coverage
 
-- **Goal**: 80% globally (branches, functions, lines, statements)
-- **Enforced via**: `vitest.config.js`
-- **Excluded from coverage**:
-  - Cypress Component Tests (`../../vitest`)
-  - Cypress Acceptance Tests (`../../vitest`)
-  - Test setup files (`../../vitest`)
-  - Test mocks (`../../vitest`)
+The enforced global threshold is 80% statements, not 80% for every metric or every individual test project. Unit, integration, and browser component tests contribute to the combined report. Cypress tests do not.
+
+Consult `vitest.config.js` and [Testing Strategy](../testing.md) for exact includes, exclusions, and report settings rather than maintaining a second configuration listing here.
 
 ## Related Documentation
 
@@ -123,3 +61,4 @@ npx vitest tests/unit/utils/format.test.js
 - [Integration Tests](integration-tests.md)
 - [Component Tests](component-tests.md)
 - [Acceptance Tests](acceptance-tests.md)
+- [Common Test Rules](common-rules.md)
