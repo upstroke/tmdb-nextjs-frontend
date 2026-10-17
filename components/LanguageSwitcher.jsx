@@ -12,8 +12,11 @@ const RESTORE_FOCUS_KEY = 'restore-language-select-focus';
 /**
  * Dropdown control for switching the active locale.
  *
- * TEMPORARY DIAGNOSTICS: Logs focus changes to identify what resets focus to
- * <body> after a locale switch. Remove this instrumentation after debugging.
+ * On change the component updates the global locale store, replaces the locale
+ * segment in the current pathname, and performs a client-side navigation to the
+ * same route in the selected language. The locale change can mount the
+ * component twice; the session flag therefore stays available for one second
+ * so both mounts can restore focus to the language select.
  *
  * @returns {JSX.Element}
  */
@@ -30,64 +33,22 @@ export default function LanguageSwitcher() {
   }));
 
   useEffect(() => {
-    const onFocusOut = (event) => {
-      console.log(
-        '[language-switcher] focusout:',
-        event.target,
-        '→ relatedTarget:',
-        event.relatedTarget
-      );
-    };
-
-    const onFocusIn = (event) => {
-      console.log('[language-switcher] focusin:', event.target);
-    };
-
-    document.addEventListener('focusout', onFocusOut);
-    document.addEventListener('focusin', onFocusIn);
-
-    return () => {
-      document.removeEventListener('focusout', onFocusOut);
-      document.removeEventListener('focusin', onFocusIn);
-    };
-  }, []);
-
-  useEffect(() => {
     if (sessionStorage.getItem(RESTORE_FOCUS_KEY) !== 'true') return;
 
-    sessionStorage.removeItem(RESTORE_FOCUS_KEY);
+    selectRef.current?.focus();
 
-    let frames = 0;
+    const timeoutId = setTimeout(() => {
+      sessionStorage.removeItem(RESTORE_FOCUS_KEY);
+    }, 1000);
 
-    const restoreFocus = () => {
-      const select = selectRef.current;
-      if (!select) return;
-
-      if (document.activeElement !== select) {
-        select.focus();
-      }
-
-      console.log(
-        '[language-switcher] restore frame:',
-        frames,
-        'activeElement:',
-        document.activeElement
-      );
-
-      frames += 1;
-      if (frames < 20) {
-        requestAnimationFrame(restoreFocus);
-      }
-    };
-
-    restoreFocus();
+    return () => clearTimeout(timeoutId);
   }, [currentLocale]);
 
   /**
    * Switches the app to the selected locale: stores it, swaps the locale
    * segment in the current pathname (or prepends it when missing), and replaces
-   * the route without scrolling. Sets a one-shot session flag so the newly
-   * mounted language select can restore focus after the navigation.
+   * the route without scrolling. Sets a one-shot session flag so newly mounted
+   * language selects can restore focus after the navigation.
    *
    * @param {import('react').ChangeEvent<HTMLSelectElement>} event - Change event of the language select.
    * @returns {void}
