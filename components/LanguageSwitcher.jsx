@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useI18n, useLocale, setLocale } from '@/lib/stores/locale';
 import { getSupportedLocales } from '@/lib/i18n/helpers';
@@ -11,7 +12,8 @@ import { SUPPORTED_LOCALES } from '@/lib/i18n/config';
  *
  * On change the component updates the global locale store, replaces the locale
  * segment in the current pathname, and performs a client-side navigation to the
- * same route in the selected language.
+ * same route in the selected language. After the navigation, focus is restored
+ * to the language select.
  *
  * @returns {JSX.Element}
  */
@@ -20,11 +22,20 @@ export default function LanguageSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
   const currentLocale = useLocale();
+  const selectRef = useRef(null);
+  const previousLocaleRef = useRef(currentLocale);
 
   const locales = getSupportedLocales().map((code) => ({
     value: code,
     label: code.split('-')[0].toUpperCase()
   }));
+
+  useEffect(() => {
+    if (previousLocaleRef.current !== currentLocale) {
+      previousLocaleRef.current = currentLocale;
+      selectRef.current?.focus();
+    }
+  }, [currentLocale]);
 
   /**
    * Switches the app to the selected locale: stores it, swaps the locale
@@ -54,6 +65,7 @@ export default function LanguageSwitcher() {
         {labels.languageSelect}
       </label>
       <select
+        ref={selectRef}
         id="language-select"
         value={currentLocale}
         aria-label={labels.languageSelect}
