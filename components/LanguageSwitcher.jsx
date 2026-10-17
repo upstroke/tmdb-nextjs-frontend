@@ -12,10 +12,8 @@ const RESTORE_FOCUS_KEY = 'restore-language-select-focus';
 /**
  * Dropdown control for switching the active locale.
  *
- * On change the component updates the global locale store, replaces the locale
- * segment in the current pathname, and performs a client-side navigation to the
- * same route in the selected language. After the navigation, focus is restored
- * to the language select.
+ * TEMPORARY DIAGNOSTICS: Logs focus changes to identify what resets focus to
+ * <body> after a locale switch. Remove this instrumentation after debugging.
  *
  * @returns {JSX.Element}
  */
@@ -32,13 +30,33 @@ export default function LanguageSwitcher() {
   }));
 
   useEffect(() => {
+    const onFocusOut = (event) => {
+      console.log(
+        '[language-switcher] focusout:',
+        event.target,
+        '→ relatedTarget:',
+        event.relatedTarget
+      );
+    };
+
+    const onFocusIn = (event) => {
+      console.log('[language-switcher] focusin:', event.target);
+    };
+
+    document.addEventListener('focusout', onFocusOut);
+    document.addEventListener('focusin', onFocusIn);
+
+    return () => {
+      document.removeEventListener('focusout', onFocusOut);
+      document.removeEventListener('focusin', onFocusIn);
+    };
+  }, []);
+
+  useEffect(() => {
     if (sessionStorage.getItem(RESTORE_FOCUS_KEY) !== 'true') return;
 
     sessionStorage.removeItem(RESTORE_FOCUS_KEY);
 
-    // The locale change reloads the route. A late hydration/navigation step
-    // can reset focus to <body> after the initial focus() call, so keep
-    // restoring it for a short, bounded window.
     let frames = 0;
 
     const restoreFocus = () => {
@@ -48,6 +66,13 @@ export default function LanguageSwitcher() {
       if (document.activeElement !== select) {
         select.focus();
       }
+
+      console.log(
+        '[language-switcher] restore frame:',
+        frames,
+        'activeElement:',
+        document.activeElement
+      );
 
       frames += 1;
       if (frames < 20) {
