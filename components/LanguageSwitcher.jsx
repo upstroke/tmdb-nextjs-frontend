@@ -23,7 +23,7 @@ export default function LanguageSwitcher() {
   const pathname = usePathname();
   const currentLocale = useLocale();
   const selectRef = useRef(null);
-  const previousLocaleRef = useRef(currentLocale);
+  const shouldRestoreFocusRef = useRef(false);
 
   const locales = getSupportedLocales().map((code) => ({
     value: code,
@@ -31,16 +31,17 @@ export default function LanguageSwitcher() {
   }));
 
   useEffect(() => {
-    if (previousLocaleRef.current !== currentLocale) {
-      previousLocaleRef.current = currentLocale;
-      selectRef.current?.focus();
-    }
+    if (!shouldRestoreFocusRef.current) return;
+
+    shouldRestoreFocusRef.current = false;
+    selectRef.current?.focus();
   }, [currentLocale]);
 
   /**
    * Switches the app to the selected locale: stores it, swaps the locale
    * segment in the current pathname (or prepends it when missing), and replaces
-   * the route without scrolling.
+   * the route without scrolling. Marks the select for focus restoration after
+   * the locale change.
    *
    * @param {import('react').ChangeEvent<HTMLSelectElement>} event - Change event of the language select.
    * @returns {void}
@@ -48,6 +49,7 @@ export default function LanguageSwitcher() {
   function handleChange(event) {
     const nextLocale = resolveLocale(event.currentTarget.value);
     setLocale(nextLocale);
+    shouldRestoreFocusRef.current = true;
 
     const currentSegment = SUPPORTED_LOCALES.find(
       (l) => pathname.startsWith(`/${l}/`) || pathname === `/${l}`
