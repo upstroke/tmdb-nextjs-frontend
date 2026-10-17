@@ -181,15 +181,19 @@ npm run validate:a11y     # Production build and Cypress accessibility tests
 
 ## Pre-Commit Hook
 
-Husky runs the fast validation before every commit:
+Husky runs the following command from `.husky/pre-commit` before every commit:
 
-```bash
-npm run validate:fast
+```sh
+npx lint-staged && npm run validate:fast
 ```
 
-This runs ESLint, the Prettier check, and the Vitest unit tests. It intentionally excludes component, integration, Cypress, security, and accessibility tests because they are slower or require a running application.
+1. `lint-staged` runs `prettier --write` on staged JavaScript, JSX, Sass, CSS, Markdown, and JSON files using the configuration in `package.json`.
+2. Only if lint-staged succeeds, `validate:fast` runs ESLint, the project-wide Prettier check, and the Vitest unit tests.
+3. A failure in either command prevents the commit.
 
-`lint-staged` formats changed JavaScript, JSX, Sass, CSS, Markdown, and JSON files with Prettier before they are committed.
+Formatting applies to matching staged files, whereas `validate:fast` checks the project, not just the staged changes. Running `npm run validate:fast` directly does not run lint-staged or automatically format files.
+
+The hook intentionally excludes component, integration, Cypress, security, and accessibility tests because they are slower or require a running application. Run `npm run validate` and the relevant browser checks before a pull request.
 
 ## Code Quality
 

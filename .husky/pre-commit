@@ -1,1 +1,1 @@
-npm run validate:fast
+npx lint-staged && npm run validate:fast
