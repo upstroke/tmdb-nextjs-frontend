@@ -7,6 +7,9 @@ import { getSupportedLocales } from '@/lib/i18n/helpers';
 import { resolveLocale } from '@/lib/i18n/resolver';
 import { SUPPORTED_LOCALES } from '@/lib/i18n/config';
 
+// Survives the remount caused by changing the locale route segment.
+let shouldRestoreFocus = false;
+
 /**
  * Dropdown control for switching the active locale.
  *
@@ -23,7 +26,6 @@ export default function LanguageSwitcher() {
   const pathname = usePathname();
   const currentLocale = useLocale();
   const selectRef = useRef(null);
-  const shouldRestoreFocusRef = useRef(false);
 
   const locales = getSupportedLocales().map((code) => ({
     value: code,
@@ -31,9 +33,9 @@ export default function LanguageSwitcher() {
   }));
 
   useEffect(() => {
-    if (!shouldRestoreFocusRef.current) return;
+    if (!shouldRestoreFocus) return;
 
-    shouldRestoreFocusRef.current = false;
+    shouldRestoreFocus = false;
     selectRef.current?.focus();
   }, [currentLocale]);
 
@@ -49,7 +51,7 @@ export default function LanguageSwitcher() {
   function handleChange(event) {
     const nextLocale = resolveLocale(event.currentTarget.value);
     setLocale(nextLocale);
-    shouldRestoreFocusRef.current = true;
+    shouldRestoreFocus = true;
 
     const currentSegment = SUPPORTED_LOCALES.find(
       (l) => pathname.startsWith(`/${l}/`) || pathname === `/${l}`
