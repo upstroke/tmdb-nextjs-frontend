@@ -37,9 +37,9 @@ export default function LanguageSwitcher() {
     sessionStorage.removeItem(RESTORE_FOCUS_KEY);
 
     // The locale change reloads the route. A late hydration/navigation step
-    // can reset focus to <body> after the initial focus() call, so restore it
-    // for a few frames until it stays on the select.
-    let attempts = 0;
+    // can reset focus to <body> after the initial focus() call, so keep
+    // restoring it for a short, bounded window.
+    let frames = 0;
 
     const restoreFocus = () => {
       const select = selectRef.current;
@@ -49,10 +49,8 @@ export default function LanguageSwitcher() {
         select.focus();
       }
 
-      if (document.activeElement === select) return;
-
-      attempts += 1;
-      if (attempts < 20) {
+      frames += 1;
+      if (frames < 20) {
         requestAnimationFrame(restoreFocus);
       }
     };
