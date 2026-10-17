@@ -368,6 +368,13 @@ main.ui.text.container.details-view {
       &::before {
         display: none;
       }
+
+      > a.button {
+        &:focus-visible {
+          outline: 2px solid v.$focus-ring-blue;
+          outline-offset: 1px;
+        }
+      }
     }
   }
 }

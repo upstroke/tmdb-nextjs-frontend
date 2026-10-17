@@ -89,6 +89,7 @@ export default function PagedList({
     const obs = new IntersectionObserver(
       (entries, o) => {
         if (entries.some((e) => e.isIntersecting)) {
+          target.focus();
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
           o.disconnect();
           setScrollTargetId(null);
@@ -108,7 +109,7 @@ export default function PagedList({
    * The request is aborted after 15 seconds. Cards already in the list are
    * filtered out. When no new cards remain, `hasMore` is set to false. After a
    * successful load the page number is stored and the first new card becomes
-   * the scroll target.
+   * the scroll and focus target.
    *
    * @returns {Promise<void>}
    */

@@ -34,8 +34,8 @@
     }
 
     &:focus-visible {
-      outline: 2px solid var(--focus-ring-blue);
-      outline-offset: 2px;
+      outline: 2px solid variables.$focus-ring-blue;
+      outline-offset: -2px;
     }
   }
 }
@@ -79,7 +79,7 @@
     }
 
     &:focus-visible {
-      outline: 2px solid var(--focus-ring-blue);
+      outline: 2px solid variables.$focus-ring-blue;
       outline-offset: 2px;
     }
 

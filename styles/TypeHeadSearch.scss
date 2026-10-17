@@ -88,7 +88,7 @@
   #typeahead-search-results [role='group'] > a.result:focus-visible,
   #typeahead-search-results [role='group'] > a.result[aria-selected='true'],
   #typeahead-search-results [role='group'] > a.result.result-focused {
-    outline: 2px solid var(--focus-ring-blue);
+    outline: 2px solid v.$focus-ring-blue;
     outline-offset: -2px;
   }
 

@@ -79,6 +79,17 @@ describe('TabGroupe (browser)', () => {
     expect(firstTab).toHaveAttribute('aria-selected', 'true');
     expect(firstTab).toHaveAttribute('tabIndex', '0');
 
+    // Verify inactive tabs use the roving tabindex pattern
+    const inactiveTabs = [
+      screen.getByRole('tab', { name: 'Season 2' }),
+      screen.getByRole('tab', { name: 'Season 3' }),
+      screen.getByRole('tab', { name: 'Season 4' })
+    ];
+    inactiveTabs.forEach((tab) => {
+      expect(tab).toHaveAttribute('tabIndex', '-1');
+      expect(tab).toHaveAttribute('aria-selected', 'false');
+    });
+
     // Verify episode content visibility within the active panel view
     expect(screen.getByText('1. Pilot')).toBeInTheDocument();
     expect(screen.getByText('The series premiere introduces Ted Lasso.')).toBeInTheDocument();
@@ -99,44 +110,72 @@ describe('TabGroupe (browser)', () => {
   it('supports interactive keyboard navigation patterns across sequential tab items', () => {
     render(<TabGroupe tabs={sampleTabs} initialTab="season-1" ariaLabel="Keyboard Tabs" />);
 
-    const currentTab = screen.getByRole('tab', { name: 'Season 1' });
+    const firstTab = screen.getByRole('tab', { name: 'Season 1' });
+    const secondTab = screen.getByRole('tab', { name: 'Season 2' });
+    const lastTab = screen.getByRole('tab', { name: 'Season 4' });
 
     // 1. Move focus to the right -> switches active panel view to Season 2
-    fireEvent.keyDown(currentTab, { key: 'ArrowRight' });
-    expect(screen.getByRole('tab', { name: 'Season 2' })).toHaveAttribute('aria-selected', 'true');
+    fireEvent.keyDown(firstTab, { key: 'ArrowRight' });
+    expect(secondTab).toHaveAttribute('aria-selected', 'true');
+    expect(document.activeElement).toBe(secondTab);
 
     // 2. Jump direct to the last item using End key -> switches active view to Season 4
-    fireEvent.keyDown(currentTab, { key: 'End' });
-    expect(screen.getByRole('tab', { name: 'Season 4' })).toHaveAttribute('aria-selected', 'true');
+    fireEvent.keyDown(firstTab, { key: 'End' });
+    expect(lastTab).toHaveAttribute('aria-selected', 'true');
+    expect(document.activeElement).toBe(lastTab);
 
     // 3. Jump direct back to the first item using Home key -> resets active view to Season 1
-    fireEvent.keyDown(currentTab, { key: 'Home' });
-    expect(screen.getByRole('tab', { name: 'Season 1' })).toHaveAttribute('aria-selected', 'true');
+    fireEvent.keyDown(firstTab, { key: 'Home' });
+    expect(firstTab).toHaveAttribute('aria-selected', 'true');
+    expect(document.activeElement).toBe(firstTab);
 
-    // 4. Fire unmapped key -> branch abort exit (ignores transformation)
-    fireEvent.keyDown(currentTab, { key: 'Enter' });
-    expect(screen.getByRole('tab', { name: 'Season 1' })).toHaveAttribute('aria-selected', 'true');
+    // 4. TC-TG-02a: ArrowLeft from the first tab wraps around to the last tab
+    fireEvent.keyDown(firstTab, { key: 'ArrowLeft' });
+    expect(lastTab).toHaveAttribute('aria-selected', 'true');
+    expect(document.activeElement).toBe(lastTab);
+
+    // 5. TC-TG-02b: ArrowRight from the last tab wraps around to the first tab
+    fireEvent.keyDown(lastTab, { key: 'ArrowRight' });
+    expect(firstTab).toHaveAttribute('aria-selected', 'true');
+    expect(document.activeElement).toBe(firstTab);
+
+    // 6. Fire unmapped key -> branch abort exit (ignores transformation)
+    fireEvent.keyDown(firstTab, { key: 'Enter' });
+    expect(firstTab).toHaveAttribute('aria-selected', 'true');
   });
 
   // TC-TG-03
   // Statement Coverage: Covers structured lists item focus shifts, delayed microtask indexing, and sub-queries DOM nodes focus handlers.
   // Branch Coverage: Fully explores all conditional entries inside handleEpisodeKeydown mapping branches (ArrowDown, ArrowUp, Home, End).
-  it('supports focused accessibility keyboard navigation tracking inside active episodes list panels', () => {
+  it('supports focused accessibility keyboard navigation tracking inside active episodes list panels', async () => {
     render(<TabGroupe tabs={sampleTabs} initialTab="season-1" ariaLabel="Episode Keyboard" />);
 
     const firstEpisode = screen.getByText('1. Pilot').closest('li');
+    const secondEpisode = screen.getByText('2. Biscuits').closest('li');
 
     // 1. ArrowDown navigation -> shifts focused index down to the second episode list node item
     fireEvent.keyDown(firstEpisode, { key: 'ArrowDown' });
+    await vi.waitFor(() => {
+      expect(document.activeElement).toBe(secondEpisode);
+    });
 
     // 2. ArrowUp navigation -> shifts focused index back up to the first episode node item
-    fireEvent.keyDown(firstEpisode, { key: 'ArrowUp' });
+    fireEvent.keyDown(secondEpisode, { key: 'ArrowUp' });
+    await vi.waitFor(() => {
+      expect(document.activeElement).toBe(firstEpisode);
+    });
 
     // 3. End navigation -> jumps focus indicator to the final item boundary index
     fireEvent.keyDown(firstEpisode, { key: 'End' });
+    await vi.waitFor(() => {
+      expect(document.activeElement).toBe(secondEpisode);
+    });
 
     // 4. Home navigation -> returns focus indicator to initial element index position
-    fireEvent.keyDown(firstEpisode, { key: 'Home' });
+    fireEvent.keyDown(secondEpisode, { key: 'Home' });
+    await vi.waitFor(() => {
+      expect(document.activeElement).toBe(firstEpisode);
+    });
 
     // 5. Fire unmapped key inside lists view -> bypass exit condition check branch
     fireEvent.keyDown(firstEpisode, { key: 'Escape' });
