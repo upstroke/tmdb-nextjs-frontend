@@ -4,6 +4,8 @@ A Next.js frontend for browsing movies and TV shows from the TMDB API.
 
 The application provides a media catalog with trending sections, paginated lists, detail pages, localized typeahead search, and fallback mechanisms for missing data.
 
+![TMDB Next.js Frontend – Homepage](docs/images/homepage.png)
+
 ## Project Goal
 
 This project serves as a frontend for a TMDB-based media catalog.
