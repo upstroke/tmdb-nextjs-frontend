@@ -97,7 +97,20 @@ Rules:
 
 # Validation
 
-- Use `npm run check` before finishing a change. It runs `npm run lint`, `npm run format:check`, and `npm test` in that order.
+Use the validation commands to run the existing test suites as regression checks.
+
+- Use `npm run validate:fast` for quick feedback before committing. It runs ESLint, the Prettier check, and Vitest unit tests.
+- Use `npm run validate` before pushing a change or opening a pull request. It runs the fast validation, component tests, integration tests, and coverage.
+- Use `npm run validate:full` to run component tests, integration tests, and coverage without repeating the fast checks.
+- Use `npm run validate:e2e` for a production build followed by all Cypress end-to-end tests.
+- Use `npm run validate:a11y` for a production build followed by the Cypress accessibility suite.
+- Cypress validation requires the app to run on `http://localhost:3000`; `validate:e2e` and `validate:a11y` build the app first.
+- The accessibility suite needs a valid `TMDB_API_KEY` for specs that use live TMDB data.
+
+The pre-commit hook runs `npm run validate:fast`. It intentionally excludes component, integration, Cypress, security, and accessibility tests because they are slower or require a running application.
+
+Additional commands:
+
 - Use `npm run lint` for ESLint. It fails on any warning (`--max-warnings=0`), so fix warnings instead of leaving them.
 - Use `npm run format:check` to check Prettier formatting. `npm run format` rewrites files, so run it only with the user’s approval.
 - Suppress a lint rule only with a targeted `eslint-disable-next-line` comment and a short reason. Do not disable rules for a whole file.
@@ -105,8 +118,8 @@ Rules:
 - Use `npx vitest` for Vitest watch mode.
 - Use `npm run test:unit`, `npm run test:integration`, or `npm run test:component` for focused Vitest validation.
 - Use `npm run test:coverage` when coverage is required.
-- Run `npm run build` for production-build validation.
-- Treat Cypress as a separate validation step. `npm run check` does not include it. `npm run test:e2e` runs the specs headlessly (`cypress run --e2e --browser chrome`) and `npm run test:e2e:open` opens the interactive runner. The app must run on `http://localhost:3000`.
+- Use `npm run build` for production-build validation.
+- Treat Cypress as a separate validation step. `npm run check` does not include it. `npm run test:e2e` runs the specs headlessly (`cypress run --e2e --browser chrome`) and `npm run test:e2e:open` opens the interactive runner.
 - Use `npm run test:e2e:security` to run only the security specs. Restart or rebuild the server first if server code changed.
 
 Do not edit files, run destructive commands, change dependencies, push commits,

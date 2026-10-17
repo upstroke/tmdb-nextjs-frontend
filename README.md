@@ -61,6 +61,7 @@ The displayed streaming providers and watch links are supplied through the TMDB 
 - Vitest for unit, component, and integration testing
 - Cypress for browser-based acceptance (end-to-end), accessibility, and security testing
 - Prettier and ESLint for formatting and code quality
+- Husky and lint-staged for pre-commit validation
 
 ## Type Safety Strategy
 
@@ -131,6 +132,8 @@ npm install
 npm run dev
 ```
 
+`npm install` also initializes Husky through the `prepare` script.
+
 ## Testing
 
 Tests are separated by runner and purpose:
@@ -158,6 +161,35 @@ npm run test:e2e:open       # Cypress interactive runner
 The accessibility tests for lists and detail pages load real TMDB data on the server, so the app needs a valid `TMDB_API_KEY`.
 
 See [docs/testing.md](docs/testing.md) for the testing strategy, commands, and conventions.
+
+## Validation Workflow
+
+Use the validation commands to run the existing test suites as regression checks:
+
+```bash
+npm run validate          # Fast and full local validation
+npm run validate:fast     # ESLint, Prettier check, and Vitest unit tests
+npm run validate:full     # Vitest component tests, integration tests, and coverage
+npm run validate:e2e      # Production build and Cypress end-to-end tests
+npm run validate:a11y     # Production build and Cypress accessibility tests
+```
+
+- Run `npm run validate:fast` for quick feedback before committing.
+- Run `npm run validate` before pushing a change or opening a pull request.
+- Run `npm run validate:e2e` or `npm run validate:a11y` when browser behavior, routing, security, or accessibility is affected.
+- `validate:e2e` and `validate:a11y` build the app and require `TMDB_API_KEY` where the affected Cypress specs use live TMDB data.
+
+## Pre-Commit Hook
+
+Husky runs the fast validation before every commit:
+
+```bash
+npm run validate:fast
+```
+
+This runs ESLint, the Prettier check, and the Vitest unit tests. It intentionally excludes component, integration, Cypress, security, and accessibility tests because they are slower or require a running application.
+
+`lint-staged` formats changed JavaScript, JSX, Sass, CSS, Markdown, and JSON files with Prettier before they are committed.
 
 ## Code Quality
 
