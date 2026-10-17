@@ -41,7 +41,7 @@ application without encountering accessibility violations.
 | A11Y-24 | TV show detail | Hover contrast of a season tab               |
 | A11Y-25 | TV show detail | Focus contrast of a season tab               |
 | A11Y-26 | Error dialog   | Focus inside dialog and Escape closes it     |
-| A11Y-27 | Movie list     | Load more announces loading and appends cards |
+| A11Y-27 | Movie list     | Load more announces loading, appends cards, and moves focus to the first new card |
 
 A11Y-08, A11Y-09, A11Y-14, and A11Y-22 run once per page, with the page name in the test title.
 A11Y-16 runs once per navigation link, A11Y-19 once per list, and A11Y-21 once per tested locale
@@ -80,7 +80,7 @@ A11Y-16 runs once per navigation link, A11Y-19 once per list, and A11Y-21 once p
   season tabs
 - Keyboard focus on the skip link, and focus moved to `#main-content` after activation
 - Error dialog open, focused, and closed with Escape
-- Load more loading state announced and new cards appended
+- Load more loading state announced, new cards appended, and focus moved to the first new card
 
 ## Dialogs
 
@@ -112,14 +112,6 @@ A11Y-12 only adds the axe check of the no-results state in the full page.
 
 - **Screen reader output:** Automated checks cannot replace a manual pass with NVDA or VoiceOver.
   See the manual checklist in `docs/testing/accessibility-audit-checklist.md`.
-
-## Known Limitations
-
-- **Focus after load more:** After a successful load-more request, the application scrolls to the
-  first new card but does not restore focus to the load-more button or move focus to the new
-  content. A11Y-27 therefore covers the existing `aria-live` loading announcement and the appended
-  cards. After changing `LoadMore` or `PagedList` to restore or move focus, add a focus assertion
-  to A11Y-27.
 
 ## Server Response
 

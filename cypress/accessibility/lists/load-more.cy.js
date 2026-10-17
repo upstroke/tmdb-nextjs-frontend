@@ -3,7 +3,7 @@ import { card } from '../support/accessibility-helpers.js';
 describe('Accessibility — load more', () => {
   const locale = 'en-US';
 
-  it('[A11Y-27] announces the load more loading state and appends new cards', () => {
+  it('[A11Y-27] announces the load more loading state, appends new cards, and moves focus to the first new card', () => {
     const newCard = card(999999, 'movie', 'Accessibility Test Movie');
 
     cy.intercept('GET', '**/api/en-US/movies?page=2', {
@@ -34,7 +34,8 @@ describe('Accessibility — load more', () => {
 
     cy.get('.load-more button')
       .should('have.attr', 'aria-busy', 'false');
-    cy.contains('a.default-card', 'Accessibility Test Movie')
-      .should('be.visible');
+    cy.get('#movie-999999')
+      .should('be.visible')
+      .and('be.focused');
   });
 });
