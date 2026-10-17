@@ -97,7 +97,7 @@ lib/
 styles/           # Sass styles (Fomantic UI)
 docs/             # Project documentation
 vitest/           # Vitest tests (unit, component, integration), fixtures, mocks, setup
-cypress/          # Cypress acceptance and security tests, page objects, fixtures, support
+cypress/          # Cypress acceptance, accessibility, and security tests, page objects, fixtures, support
 ```
 
 ## Environment Variables
@@ -141,26 +141,26 @@ npm run dev
 Tests are separated by runner and purpose:
 
 - [Vitest](https://vitest.dev/) unit tests: `vitest/unit/`
-- Vitest component tests (browser mode): `vitest/component/`
-- Vitest integration tests: `vitest/integration/`
-- Cypress browser-based acceptance tests: `cypress/e2e/` for route tests and shared UI behavior, `cypress/accessibility/` for accessibility checks
+- Vitest component tests (browser mode with Playwright/Chromium): `vitest/component/`
+- Vitest integration tests (jsdom): `vitest/integration/`
+- Cypress browser-based acceptance tests: `cypress/e2e/` for end-to-end flows and shared UI behavior, `cypress/accessibility/` for accessibility checks
 - Cypress security tests: `cypress/e2e/security/` for manipulated input, security headers, redirects, and API key exposure
 
 Cypress Page Objects live in `cypress/POM/`; Cypress-specific fixtures and support files live in `cypress/fixtures/` and `cypress/support/`. Shared domain fixtures for Vitest live in `vitest/fixtures/`.
 
 ```bash
-npm test                    # Vitest single run
+npm test                    # All Vitest projects, single run
 npm run test:unit           # Vitest unit tests only
 npm run test:component      # Vitest component tests (browser mode)
 npm run test:integration    # Vitest integration tests only
-npm run test:coverage       # Vitest with coverage
-npm run test:e2e            # Cypress headless, incl. accessibility (app must run on http://localhost:3000)
+npm run test:coverage       # All Vitest projects with combined coverage
+npm run test:e2e            # Cypress headless, incl. accessibility and security (app must run on http://localhost:3000)
 npm run test:e2e:security   # Cypress security tests only (app must run on http://localhost:3000)
 npm run test:e2e:a11y       # Cypress accessibility tests only (app must run on http://localhost:3000)
 npm run test:e2e:open       # Cypress interactive runner
 ```
 
-The accessibility tests for lists and detail pages load real TMDB data on the server, so the app needs a valid `TMDB_API_KEY`.
+The accessibility tests for lists and detail pages load real TMDB data on the server, so the app needs a valid `TMDB_API_KEY`. Isolated component accessibility behavior, including TypeHeadSearch and TabGroupe keyboard and ARIA states, is covered in Vitest browser mode. Passing automated checks alone does not establish full WCAG conformance; use the [manual audit checklist](docs/testing/accessibility-audit-checklist.md) as well.
 
 See [docs/testing.md](docs/testing.md) for the testing strategy, commands, and conventions.
 
@@ -177,9 +177,10 @@ npm run validate:a11y     # Production build and Cypress accessibility tests
 ```
 
 - Run `npm run validate:fast` for quick feedback before committing.
-- Run `npm run validate` before pushing a change or opening a pull request.
+- Run `npm run validate` before pushing a change or opening a pull request. It does not run a production build or Cypress. Run `npm run build` separately when production-build validation is needed.
 - Run `npm run validate:e2e` or `npm run validate:a11y` when browser behavior, routing, security, or accessibility is affected.
-- `validate:e2e` and `validate:a11y` build the app and require `TMDB_API_KEY` where the affected Cypress specs use live TMDB data.
+- `validate:e2e` and `validate:a11y` build the app but do not start a server. Cypress still requires a separately running app on `http://localhost:3000` and `TMDB_API_KEY` where specs use live TMDB data. For production testing, build, start the resulting app with `npm run start`, and run the relevant `test:e2e` command in a second terminal.
+- `bash scripts/validate.sh` is an alternative check sequence that includes a production build but no explicit coverage run; it is not equivalent to `npm run validate`.
 
 ## Pre-Commit Hook
 
@@ -205,10 +206,10 @@ Linting and formatting run separately from the tests:
 npm run lint            # ESLint, fails on any warning (--max-warnings=0)
 npm run format          # Prettier, rewrites files
 npm run format:check    # Prettier, check only
-npm run check           # lint + format:check + Vitest, run before committing
+npm run check           # lint + format:check + all Vitest tests
 ```
 
-`npm run check` does not include the Cypress tests, because they need a running app.
+`npm run check` does not include Cypress, a production build, or an explicit coverage run. Use the validation workflow above for broader checks.
 
 If a lint rule has to be suppressed, use a targeted `eslint-disable-next-line` comment with a short reason, for example for the plain `<img>` in the typeahead thumbnails and in the `next/image` test mock.
 
@@ -221,6 +222,7 @@ npm run start
 
 ## Documentation
 
-- `docs/testing.md` — testing strategy, commands, and test-level guidance
-- `docs/testing/security-tests.md` — security tests, test plan, and run instructions
-- `cypress/accessibility/accessibility-testplan.md` — accessibility test plan, data notes, and run instructions
+- [Testing Strategy](docs/testing.md) — testing strategy, commands, and test-level guidance
+- [Security Tests](docs/testing/security-tests.md) — security tests, test plan, and run instructions
+- [Accessibility Test Plan](cypress/accessibility/accessibility-testplan.md) — automated accessibility coverage, data notes, and run instructions
+- [Manual Accessibility Audit Checklist](docs/testing/accessibility-audit-checklist.md) — manual checks and audit records

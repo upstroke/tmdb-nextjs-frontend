@@ -73,39 +73,44 @@ Prefer these tools when they are available:
 
 # Test strategy
 
-Each test type has one tool and one purpose:
+Choose the test tool and environment by scope:
 
-| Level         | Tool                                       | Location                                 | Purpose                                                                                           |
-| ------------- | ------------------------------------------ | ---------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| Unit          | Vitest (jsdom)                             | `vitest/unit/`                           | Pure logic: mappers, Zod schemas, utilities                                                       |
-| Integration   | Vitest (jsdom) + Testing Library           | `vitest/integration/`                    | Real integration only: a page or section renders with mocked data and values reach the components |
-| Component     | Vitest browser mode (Playwright, Chromium) | `vitest/component/`                      | Component behavior in a real browser: rendering, props, interaction                               |
-| e2e           | Cypress                                    | `cypress/e2e/`                           | User flows such as search, detail page, and navigation                                            |
-| Accessibility | Cypress + `cypress-axe`                    | `cypress/accessibility/`, `cypress/e2e/` | Keyboard, focus, ARIA, visibility, contrast                                                       |
-| Security      | Cypress                                    | `cypress/e2e/security/`                  | Manipulated input, XSS, API key exposure, list and search API routes                              |
+| Level | Tool | Location | Purpose |
+| --- | --- | --- | --- |
+| Unit | Vitest (jsdom) | `vitest/unit/` | Isolated logic, schemas, utilities, services, stores, and route behavior with controlled dependencies |
+| Integration | Vitest (jsdom) + Testing Library | `vitest/integration/` | Real route/service/schema or page integration, with the external TMDB network mocked |
+| Component | Vitest browser mode (Playwright, Chromium) | `vitest/component/` | Isolated component rendering, props, interaction, keyboard, focus, and ARIA states |
+| e2e | Cypress | `cypress/e2e/` | Full-application user flows such as search, detail pages, and navigation |
+| Accessibility | Vitest browser mode; Cypress + `cypress-axe` | `vitest/component/`, `cypress/accessibility/`, `cypress/e2e/` | Component-level semantics and interaction; full-page axe, keyboard, focus, visibility, and contrast checks |
+| Security | Cypress | `cypress/e2e/security/` | Manipulated input, XSS, API key exposure, list and search API routes |
 
 Rules:
 
-- Do not write component tests in jsdom. jsdom has no layout and cannot check color contrast or real focus behavior. Use Vitest browser mode in `vitest/component/` instead.
-- Keep `vitest/integration/` limited to true integration tests. Assert on the rendered DOM (roles, text), not on props.
-- Test keyboard interaction, focus management, and ARIA states of a single component in Vitest browser mode (`vitest/component/`). Test them in Cypress when they span pages or need the full app, for example tabs, modals, and dropdowns.
-- Run `cy.checkA11y()` (`cypress-axe`) on pages and after relevant interactions.
+- Do not write component tests in jsdom. jsdom has no layout and cannot establish color contrast or real browser focus behavior. Use Vitest browser mode in `vitest/component/` instead.
+- Keep `vitest/integration/` limited to true integration tests. Mock the external TMDB network with `globalThis.fetch`, not the internal modules whose integration is being checked. Assert on the rendered DOM (roles, text), not props, for page or section scenarios; assert meaningful response status and payloads for API scenarios.
+- Test keyboard interaction, focus management, and ARIA states of a single component in Vitest browser mode, including TypeHeadSearch and TabGroupe. Use Cypress when the behavior spans pages or needs the full app. See [Covered in Vitest](cypress/accessibility/accessibility-testplan.md#covered-in-vitest).
+- Use the project wrapper `cy.checkPageA11y()` on pages and after relevant interactions in accessibility scenarios. Inspect its setup before using direct axe calls.
 - Do not add tests for purely presentational components. Integration or Cypress tests cover them.
-- Check whether a dialog is really open and visible in Cypress. jsdom has no `showModal`, so Vitest tests stub it and only assert the message text.
+- Check actual dialog visibility, focus, and Escape behavior in the existing Cypress scenarios. jsdom integration tests may stub `showModal` and assert message content; this jsdom limitation does not apply to Vitest browser mode.
 - In Cypress specs, do not use `Cypress.env()`. `allowCypressEnv` is `false`, so use `cy.env()`.
+- Keep Cypress Page Objects in `cypress/POM/`; do not import them into Vitest tests.
+- Unit and integration tests control external network responses. Cypress may use live TMDB data when required by the relevant test plan; document the API-key requirement and external-data limitations.
+- Automated checks do not establish full WCAG conformance. Use the [manual audit checklist](docs/testing/accessibility-audit-checklist.md) as well.
 - When you fix, change, add, or delete a test, update its test plan and the affected docs in the same change. See `.agent/skills/tmdb-testing/SKILL.md`.
+- Use English for explanatory documentation, test names, and comments; preserve identifiers and intentionally localized test data.
 
 # Validation
 
 Use the validation commands to run the existing test suites as regression checks.
 
 - Use `npm run validate:fast` for quick feedback before committing. It runs ESLint, the Prettier check, and Vitest unit tests.
-- Use `npm run validate` before pushing a change or opening a pull request. It runs the fast validation, component tests, integration tests, and coverage.
+- Use `npm run validate` before pushing a change or opening a pull request. It runs the fast validation, component tests, integration tests, and coverage, but no production build or Cypress.
 - Use `npm run validate:full` to run component tests, integration tests, and coverage without repeating the fast checks.
 - Use `npm run validate:e2e` for a production build followed by all Cypress end-to-end tests.
 - Use `npm run validate:a11y` for a production build followed by the Cypress accessibility suite.
-- Cypress validation requires the app to run on `http://localhost:3000`; `validate:e2e` and `validate:a11y` build the app first.
+- Cypress validation requires a separately running app on `http://localhost:3000`; `validate:e2e` and `validate:a11y` build the app but do not start a server. For production testing, build and start the app, then run the relevant `test:e2e` command in a second terminal.
 - The accessibility suite needs a valid `TMDB_API_KEY` for specs that use live TMDB data.
+- `bash scripts/validate.sh` includes a production build but no explicit coverage run. It is not equivalent to `npm run validate`; choose checks according to the task scope.
 
 The pre-commit hook runs `npx lint-staged && npm run validate:fast`. It intentionally excludes component, integration, Cypress, security, and accessibility tests because they are slower or require a running application.
 
@@ -114,13 +119,13 @@ Additional commands:
 - Use `npm run lint` for ESLint. It fails on any warning (`--max-warnings=0`), so fix warnings instead of leaving them.
 - Use `npm run format:check` to check Prettier formatting. `npm run format` rewrites files, so run it only with the user’s approval.
 - Suppress a lint rule only with a targeted `eslint-disable-next-line` comment and a short reason. Do not disable rules for a whole file.
-- Use `npm test` for the Vitest single run.
+- Use `npm test` for all Vitest projects in a single run.
 - Use `npx vitest` for Vitest watch mode.
 - Use `npm run test:unit`, `npm run test:integration`, or `npm run test:component` for focused Vitest validation.
-- Use `npm run test:coverage` when coverage is required.
+- Use `npm run test:coverage` for combined Vitest coverage; the enforced global threshold is 80% statements. Cypress does not contribute to this report.
 - Use `npm run build` for production-build validation.
-- Treat Cypress as a separate validation step. `npm run check` does not include it. `npm run test:e2e` runs the specs headlessly (`cypress run --e2e --browser chrome`) and `npm run test:e2e:open` opens the interactive runner.
-- Use `npm run test:e2e:security` to run only the security specs. Restart or rebuild the server first if server code changed.
+- Treat Cypress as a separate validation step. `npm run check` includes lint, formatting, and all Vitest tests, but no Cypress, build, or explicit coverage run. `npm run test:e2e` runs the specs headlessly (`cypress run --e2e --browser chrome`) and `npm run test:e2e:open` opens the interactive runner.
+- Use `npm run test:e2e:security` to run only the security specs. Rebuild and restart the production server first if server code changed.
 
 Do not edit files, run destructive commands, change dependencies, push commits,
 or create pull requests without the user’s explicit approval.
