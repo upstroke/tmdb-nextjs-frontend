@@ -53,6 +53,8 @@ describe('CardDefault (browser)', () => {
 
     const timeElement = document.querySelector(`time[datetime="${movie.releaseDate}"]`);
     expect(timeElement).toBeInTheDocument();
+
+    expect(true).toBe(false);
   });
 
   // TC-CD-002
