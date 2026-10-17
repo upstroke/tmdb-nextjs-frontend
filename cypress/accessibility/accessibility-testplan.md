@@ -42,6 +42,7 @@ application without encountering accessibility violations.
 | A11Y-25 | TV show detail | Focus contrast of a season tab               |
 | A11Y-26 | Error dialog   | Focus inside dialog and Escape closes it     |
 | A11Y-27 | Movie list     | Load more announces loading, appends cards, and moves focus to the first new card |
+| A11Y-28 | Homepage       | Focus stays on the language select after switching to de-DE |
 
 A11Y-08, A11Y-09, A11Y-14, and A11Y-22 run once per page, with the page name in the test title.
 A11Y-16 runs once per navigation link, A11Y-19 once per list, and A11Y-21 once per tested locale
@@ -62,6 +63,7 @@ A11Y-16 runs once per navigation link, A11Y-19 once per list, and A11Y-21 once p
 | `focus/skip-link.cy.js` | A11Y-10, A11Y-18, A11Y-22 |
 | `focus/season-tabs.cy.js` | A11Y-24, A11Y-25 |
 | `focus/error-dialog.cy.js` | A11Y-26 |
+| `focus/language-switch.cy.js` | A11Y-28 |
 | `lists/load-more.cy.js` | A11Y-27 |
 | `contrast/navigation-hover.cy.js` | A11Y-16 |
 | `contrast/search-hover.cy.js` | A11Y-17 |
@@ -81,6 +83,7 @@ A11Y-16 runs once per navigation link, A11Y-19 once per list, and A11Y-21 once p
 - Keyboard focus on the skip link, and focus moved to `#main-content` after activation
 - Error dialog open, focused, and closed with Escape
 - Load more loading state announced, new cards appended, and focus moved to the first new card
+- Language switched while focus remains on the language select
 
 ## Dialogs
 
