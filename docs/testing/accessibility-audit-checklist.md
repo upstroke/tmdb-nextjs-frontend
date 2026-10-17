@@ -1,177 +1,71 @@
-# Accessibility Audit Checklist
+# Manual Accessibility Audit Checklist
 
-## Overview
+## Purpose
 
-This checklist ensures the application meets **WCAG 2.1 AA** accessibility standards. Accessibility tests are **acceptance tests** organized by page/component.
+Use this checklist for manual checks against the project's WCAG 2.2 AA accessibility goal. It complements automated tests; completing it or passing axe checks alone does not establish full WCAG conformance. Unchecked items are not evidence of a successful audit.
 
-## Test Structure
+## Automated Coverage
 
-```
-tests/cypress/acceptance/accessibility/
-├── homepage/          # Homepage A11y audit
-├── movieDetail/       # Movie detail page A11y
-├── tvShowDetail/      # TV show detail page A11y
-└── components/        # Component-specific A11y (CardDefault, Navigation, etc.)
-```
+The [Accessibility Test Plan](../../cypress/accessibility/accessibility-testplan.md) is the source of truth for automated scenarios, spec files, data requirements, and execution instructions. Its Covered in Vitest section documents component-level coverage for TabGroupe, TypeHeadSearch, and the skip link. Cypress covers page-level and full-application accessibility behavior. Do not duplicate the scenario inventory here.
 
----
+See [Testing Strategy](../testing.md) for runner configuration and commands.
 
-## Automated Testing
+## Audit Record
 
-### Cypress + axe-core
+For each audit, record the date, commit or release, tested routes and locales, browser and operating system, assistive technology, viewport or zoom settings, and results. Record failures with reproduction steps and issue references. Mark non-applicable checks with a reason rather than checking them as passed.
 
-```javascript
-// tests/cypress/acceptance/accessibility/homepage/homepage.cy.js
-describe('Homepage Accessibility', () => {
-  it('passes WCAG 2.1 AA audit', () => {
-    cy.visitWithLocale('/', 'en-US');
-    cy.checkPageA11y();
-  });
-});
-```
+## Keyboard Navigation
 
-### Component A11y
+- [ ] All interactive controls are reachable and operable using the keyboard.
+- [ ] Tab and Shift+Tab follow a logical order.
+- [ ] Focus indicators are visible and focused controls are not entirely obscured.
+- [ ] No keyboard traps occur; modal focus remains inside the dialog until it closes.
+- [ ] Skip links become visible on focus and move focus to main content.
+- [ ] Dialog opening, closing, and focus restoration behave appropriately.
+- [ ] Search results and season tabs support their documented keyboard interactions.
+- [ ] Loading additional results and changing language preserve or move focus appropriately.
 
-```javascript
-// tests/cypress/acceptance/components/cardDefault/cardDefault.cy.js
-import { CardDefault } from '../../POM/CardDefault';
+## Screen Reader Checks
 
-const card = CardDefault();
+- [ ] Test representative routes with VoiceOver on macOS and/or NVDA on Windows; record the actual combinations used.
+- [ ] Page titles, document language, landmarks, and headings provide useful orientation.
+- [ ] Informative images have meaningful alternatives; decorative images do not add noise.
+- [ ] Inputs, buttons, links, and custom controls have meaningful accessible names.
+- [ ] Roles, states, and relationships of search results, tabs, and dialogs are conveyed correctly.
+- [ ] Search counts, empty results, errors, and loading states are announced without unnecessary repetition.
+- [ ] Both en-US and de-DE provide understandable labels and announcements.
 
-describe('CardDefault Accessibility', () => {
-  it('has accessible name and role', () => {
-    const movieData = {
-      id: 123,
-      mediaType: 'movie',
-      title: 'Test Movie'
-    };
+## Visual and Responsive Checks
 
-    card.mount(movieData);
-    card.card().should('have.attr', 'role', 'link');
-    card.title().should('have.attr', 'aria-label');
-  });
-});
-```
+- [ ] Normal text has a contrast ratio of at least 4.5:1; large text at least 3:1.
+- [ ] Required visual information in controls and states has sufficient non-text contrast.
+- [ ] Color is not the only way information is conveyed.
+- [ ] Resting, hover, focus, selected, and error states remain understandable.
+- [ ] Text can be resized to 200% without loss of content or functionality.
+- [ ] At a viewport width of 320 CSS pixels, content reflows without two-dimensional scrolling except where essential. Test zoom separately; a narrow viewport is not itself a zoom test.
+- [ ] User text-spacing adjustments do not hide or truncate essential content or controls.
+- [ ] Forced-colors or high-contrast settings preserve readable content and identifiable controls.
+- [ ] Interactive targets satisfy applicable WCAG 2.2 AA target-size requirements or a documented exception.
 
----
+## Content and Interaction
 
-## Running Audits
+- [ ] Link text describes its purpose in context.
+- [ ] Labels and instructions are understandable.
+- [ ] Errors are identified in text and associated with the affected input where applicable.
+- [ ] Required fields are identified where applicable.
+- [ ] Headings, lists, and tables use appropriate semantics.
+- [ ] Hover or focus content is dismissible, hoverable, and persistent where required.
+- [ ] Pointer interactions have keyboard alternatives; dragging has a non-dragging alternative where applicable.
+- [ ] Motion and any automatically updating content do not prevent use; relevant pause or stop controls are available where needed.
 
-```bash
-# All acceptance tests (includes accessibility)
-npm run test:component
-npm run test:e2e
+## Results and Follow-up
 
-# Specific accessibility test
-npx cypress run --e2e --spec "tests/cypress/acceptance/accessibility/homepage/homepage.cy.js"
-```
-
----
-
-## Manual Checklist
-
-### ✅ Keyboard Navigation
-
-- [ ] All interactive elements are focusable
-- [ ] Focus order is logical (Tab key)
-- [ ] Focus indicators are visible
-- [ ] No keyboard traps
-- [ ] Skip links work correctly
-- [ ] Modal dialogs trap focus
-
-### ✅ Screen Reader Support
-
-- [ ] All images have alt text
-- [ ] Form inputs have labels
-- [ ] Buttons have accessible names
-- [ ] Dynamic content is announced (aria-live)
-- [ ] Landmarks are used correctly (main, nav, etc.)
-- [ ] Headings are in logical order
-
-### ✅ Visual Design
-
-- [ ] Text contrast ratio ≥ 4.5:1 (normal text)
-- [ ] Text contrast ratio ≥ 3:1 (large text)
-- [ ] Color is not the only way to convey information
-- [ ] Focus states are clearly visible
-- [ ] Text can be zoomed to 200% without loss
-
-### ✅ Interactive Elements
-
-- [ ] All buttons are clickable
-- [ ] Links have descriptive text
-- [ ] Form errors are clearly identified
-- [ ] Required fields are marked
-- [ ] Custom controls have proper ARIA roles
-
-### ✅ Content
-
-- [ ] Page has a unique title
-- [ ] Language is declared
-- [ ] Content is structured with headings
-- [ ] Lists are marked up correctly
-- [ ] Tables have headers (if used)
-
----
-
-## Testing Tools
-
-### Automated
-
-- **axe-core** (via cypress-axe) – `cy.checkPageA11y()`
-- **WAVE** browser extension
-- **Lighthouse** accessibility audit
-
-### Manual
-
-- **Keyboard-only navigation** (Tab, Shift+Tab, Enter, Space, Arrow keys)
-- **Screen readers**: NVDA (Windows), VoiceOver (Mac)
-- **Browser zoom**: Test up to 200%
-- **High contrast mode**
-
----
-
-## Common Issues
-
-### Critical
-
-- Missing alt text on images
-- Missing form labels
-- Keyboard inaccessible elements
-- Missing focus indicators
-- Poor color contrast
-
-### Important
-
-- Missing ARIA labels on custom controls
-- Illogical heading structure
-- Missing skip links
-- Auto-playing media without controls
-
----
-
-## A11y Test Plans
-
-Each page/component should have a test plan:
-
-```
-accessibility/homepage/
-├── Homepage-A11y-Testplan.md   # WCAG audit checklist + Gherkin scenarios
-└── homepage.cy.js              # Automated tests
-```
-
-### Test Plan Content
-
-- **WCAG Success Criteria** – Relevant A/B level criteria
-- **Test Scenarios** – Keyboard, Screen Reader, Visual
-- **Pass/Fail Criteria** – Zero violations for A + AA
-- **Manual Checklist** – Page-specific items
-
----
+Document observed behavior, not only checkbox completion. Link failures to issues and record retest results after fixes. Keep automated coverage changes in the accessibility test plan and matching specs rather than maintaining a second inventory here.
 
 ## Related Documentation
 
+- [Accessibility Test Plan](../../cypress/accessibility/accessibility-testplan.md)
 - [Testing Strategy](../testing.md)
-- [Acceptance Tests](acceptance-tests.md)
 - [Component Tests](component-tests.md)
-- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
+- [Acceptance Tests](acceptance-tests.md)
+- [WCAG 2.2 Quick Reference](https://www.w3.org/WAI/WCAG22/quickref/)
