@@ -17,12 +17,8 @@ describe('Accessibility — load more', () => {
 
     cy.visitLocale(locale, '/movies');
 
-    cy.get('.load-more')
-      .should('have.attr', 'aria-live', 'polite');
-    cy.get('.load-more button')
-      .should('be.visible')
-      .and('not.be.disabled')
-      .click();
+    cy.get('.load-more').should('have.attr', 'aria-live', 'polite');
+    cy.get('.load-more button').should('be.visible').and('not.be.disabled').click();
 
     cy.i18n(locale).then(({ messages }) => {
       cy.get('.load-more button')
@@ -32,8 +28,7 @@ describe('Accessibility — load more', () => {
 
     cy.wait('@loadMore');
 
-    cy.get('.load-more button')
-      .should('have.attr', 'aria-busy', 'false');
+    cy.get('.load-more button').should('have.attr', 'aria-busy', 'false');
     cy.contains('a.default-card', 'Accessibility Test Movie')
       .should('be.visible')
       .and('be.focused');

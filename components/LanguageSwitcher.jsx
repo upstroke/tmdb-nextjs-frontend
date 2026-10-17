@@ -50,10 +50,7 @@ export default function LanguageSwitcher() {
   function handleSelectRef(node) {
     selectRef.current = node;
 
-    if (
-      node &&
-      sessionStorage.getItem(RESTORE_FOCUS_KEY) === 'true'
-    ) {
+    if (node && sessionStorage.getItem(RESTORE_FOCUS_KEY) === 'true') {
       node.focus();
     }
   }

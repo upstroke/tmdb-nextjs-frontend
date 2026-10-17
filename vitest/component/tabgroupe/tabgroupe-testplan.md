@@ -42,14 +42,14 @@ The tab keyboard scenarios align with the WAI-ARIA Tabs pattern: `ArrowRight`, `
 
 ## Test Cases
 
-| ID       | Automated Test                                                                                   | Covered Behavior                                                                                                                                  |
-| -------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| TC-TG-01 | `renders tab list and default active panel contents including episode structures`                | Initial rendering, tab list accessibility, default selected tab, roving tabindex, default episode content, mouse selection of Season 2, and `onTabSelect` callback |
-| TC-TG-02 | `supports interactive keyboard navigation patterns across sequential tab items`                  | Tab keyboard handling for `ArrowRight`, `End`, `Home`, `ArrowLeft`, wrap-around navigation, focus movement, and unsupported `Enter`                |
-| TC-TG-02a | `supports interactive keyboard navigation patterns across sequential tab items`                 | `ArrowLeft` from the first tab wraps around to the last tab and moves focus to it                                                                  |
-| TC-TG-02b | `supports interactive keyboard navigation patterns across sequential tab items`                 | `ArrowRight` from the last tab wraps around to the first tab and moves focus to it                                                                 |
-| TC-TG-03 | `supports focused accessibility keyboard navigation tracking inside active episodes list panels` | Episode-list keyboard handling for `ArrowDown`, `ArrowUp`, `End`, `Home`, actual focus movement, and unsupported `Escape`                           |
-| TC-TG-04 | `handles distinct loading templates and plain text fallbacks correctly`                          | Loading branch for Season 3 and plain-text fallback-content branch for Season 4                                                                   |
+| ID        | Automated Test                                                                                   | Covered Behavior                                                                                                                                                   |
+| --------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| TC-TG-01  | `renders tab list and default active panel contents including episode structures`                | Initial rendering, tab list accessibility, default selected tab, roving tabindex, default episode content, mouse selection of Season 2, and `onTabSelect` callback |
+| TC-TG-02  | `supports interactive keyboard navigation patterns across sequential tab items`                  | Tab keyboard handling for `ArrowRight`, `End`, `Home`, `ArrowLeft`, wrap-around navigation, focus movement, and unsupported `Enter`                                |
+| TC-TG-02a | `supports interactive keyboard navigation patterns across sequential tab items`                  | `ArrowLeft` from the first tab wraps around to the last tab and moves focus to it                                                                                  |
+| TC-TG-02b | `supports interactive keyboard navigation patterns across sequential tab items`                  | `ArrowRight` from the last tab wraps around to the first tab and moves focus to it                                                                                 |
+| TC-TG-03  | `supports focused accessibility keyboard navigation tracking inside active episodes list panels` | Episode-list keyboard handling for `ArrowDown`, `ArrowUp`, `End`, `Home`, actual focus movement, and unsupported `Escape`                                          |
+| TC-TG-04  | `handles distinct loading templates and plain text fallbacks correctly`                          | Loading branch for Season 3 and plain-text fallback-content branch for Season 4                                                                                    |
 
 ## Detailed Test Cases
 
