@@ -44,6 +44,24 @@ A11Y-16 runs once per navigation link, A11Y-19 once per list, and A11Y-21 once p
 (en-US, de-DE). A11Y-23 runs once per tested locale and lives in
 `cypress/accessibility/html-lang.cy.js`.
 
+## Spec Files
+
+| Spec file | Test cases |
+| --- | --- |
+| `pages/page-axe.cy.js` | A11Y-01, A11Y-02, A11Y-03, A11Y-04, A11Y-05, A11Y-06 |
+| `pages/locale.cy.js` | A11Y-08, A11Y-15 |
+| `pages/landmarks.cy.js` | A11Y-09 |
+| `pages/reflow.cy.js` | A11Y-14 |
+| `pages/alt-text.cy.js` | A11Y-21 |
+| `search/search-axe.cy.js` | A11Y-07, A11Y-12, A11Y-13 |
+| `search/search-live-region.cy.js` | A11Y-11 |
+| `focus/skip-link.cy.js` | A11Y-10, A11Y-18, A11Y-22 |
+| `contrast/navigation-hover.cy.js` | A11Y-16 |
+| `contrast/search-hover.cy.js` | A11Y-17 |
+| `contrast/cards-hover.cy.js` | A11Y-19 |
+| `contrast/load-more-hover.cy.js` | A11Y-20 |
+| `html-lang.cy.js` | A11Y-23 |
+
 ## States to Include
 
 - Page loaded (success state)
@@ -94,7 +112,7 @@ A11Y-12 only adds the axe check of the no-results state in the full page.
 ## Skip Link
 
 `HeaderMain` renders a link with `href="#main-content"` as the first element of the header. Its
-text comes from `labels.skipToContent` in `lib/i18n/ui.json`. The link is off-screen until it
+ text comes from `labels.skipToContent` in `lib/i18n/ui.json`. The link is off-screen until it
 receives keyboard focus; the styles in `styles/app.scss` use `:focus-visible` only. A11Y-10 checks
 that the first Tab stop is the skip link and shows a visible focus indicator. A11Y-18 checks the
 color contrast of the focused link. A11Y-22 presses Tab and Enter on each page and checks that the
