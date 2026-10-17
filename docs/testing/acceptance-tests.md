@@ -1,226 +1,80 @@
 # Acceptance Tests
 
-## Overview
+## Purpose
 
-Acceptance tests verify the application from the **user's perspective**. They are organized by **business functionality**, not technology.
+Cypress acceptance tests verify the running application from the user's perspective: navigation, search, detail pages, shared UI behavior, accessibility, and security. They complement Vitest unit, integration, and browser component tests. Isolated component tests use Vitest browser mode, not Cypress component testing.
 
-## Test Structure
+## Location
 
-```
-tests/cypress/acceptance/
-├── components/      # Funktionale Abnahmetests (Components)
-├── flows/           # Funktionale Abnahmetests (User Journeys)
-└── accessibility/   # Accessibility Abnahmetests (WCAG)
-```
+- `cypress/e2e/`: end-to-end user flows and shared application behavior.
+- `cypress/e2e/security/`: manipulated input, security headers, redirects, and API key exposure.
+- `cypress/accessibility/`: page-level accessibility checks and targeted keyboard, focus, contrast, and live-region scenarios.
+- `cypress/POM/`: reusable Page Objects.
+- `cypress/fixtures/`: Cypress-specific fixtures.
+- `cypress/support/`: Cypress setup and custom commands.
 
-**No Features folder** – Feature acceptance criteria are documented in component stories.
-
----
-
-## Components
-
-**Components** are **UI components with acceptance criteria** documented in stories.
-
-### Examples
-
-| Component       | User Story                                         | Test Folder               |
-| --------------- | -------------------------------------------------- | ------------------------- |
-| **CardDefault** | "Display movie/TV card with poster, title, rating" | `components/cardDefault/` |
-| **SearchInput** | "Search for movies and TV shows"                   | `components/searchInput/` |
-| **Navigation**  | "Navigate to Home, Movies, TV Shows"               | `components/navigation/`  |
-| **TabGroupe**   | "Select season of a TV show"                       | `components/tabGroupe/`   |
-
-### Structure per Component
-
-```
-components/cardDefault/
-├── CardDefault-Testplan.md   # ISTQB test plan with Gherkin scenarios
-└── cardDefault.cy.js         # Test implementation
-```
-
-### Example
-
-```javascript
-// tests/cypress/acceptance/components/cardDefault/cardDefault.cy.js
-import { CardDefault } from '../../POM/CardDefault';
-
-const card = CardDefault();
-
-describe('CardDefault Component', () => {
-  it('renders movie card with title and rating', () => {
-    const movieData = {
-      id: 123,
-      mediaType: 'movie',
-      title: 'Test Movie',
-      rating: 7.5
-    };
-
-    card.mount(movieData);
-    card.title().should('contain.text', 'Test Movie');
-    card.rating().should('contain.text', '7.5');
-  });
-});
-```
-
----
-
-## Flows
-
-**Flows** are **user journeys** across multiple pages/components.
-
-### Examples
-
-| Flow                  | User Journey                                       | Test Folder                |
-| --------------------- | -------------------------------------------------- | -------------------------- |
-| **MovieDetail**       | "Open movie detail page from homepage"             | `flows/movieDetail/`       |
-| **TvShowDetail**      | "Open TV show detail with season selection"        | `flows/tvShowDetail/`      |
-| **FindAndWatchMovie** | "Search movie → View detail → See watch providers" | `flows/findAndWatchMovie/` |
-
-### Structure per Flow
-
-```
-flows/movieDetail/
-├── MovieDetail-Testplan.md   # ISTQB test plan with user journey
-└── movieDetail.cy.js         # Test implementation (E2E)
-```
-
-### Example
-
-```javascript
-// tests/cypress/acceptance/flows/movieDetail/movieDetail.cy.js
-describe('Movie Detail Flow', () => {
-  it('opens movie detail from homepage', () => {
-    cy.visitWithLocale('/', 'en-US');
-    cy.interceptTmdb();
-
-    cy.findByTestId('card-default').first().click();
-    cy.url().should('include', '/movies/');
-    cy.findByRole('heading', { level: 1 }).should('be.visible');
-  });
-});
-```
-
----
-
-## Accessibility
-
-**Accessibility tests** verify WCAG 2.1/2.2 compliance. They are **acceptance tests** with special tooling.
-
-### Examples
-
-| Page               | A11y Test Folder              |
-| ------------------ | ----------------------------- |
-| **Homepage**       | `accessibility/homepage/`     |
-| **Movie Detail**   | `accessibility/movieDetail/`  |
-| **TV Show Detail** | `accessibility/tvShowDetail/` |
-
-### Structure per A11y Test
-
-```
-accessibility/homepage/
-├── Homepage-A11y-Testplan.md   # WCAG audit checklist
-└── homepage.cy.js              # A11y test implementation
-```
-
-### Example
-
-```javascript
-// tests/cypress/acceptance/accessibility/homepage/homepage.cy.js
-describe('Homepage Accessibility', () => {
-  it('passes WCAG 2.1 AA audit', () => {
-    cy.visitWithLocale('/', 'en-US');
-    cy.checkPageA11y();
-  });
-});
-```
-
----
-
-## Component vs. Flow vs. Accessibility
-
-| Dimension     | Component                        | Flow                         | Accessibility                        |
-| ------------- | -------------------------------- | ---------------------------- | ------------------------------------ |
-| **Scope**     | Single component                 | Multiple pages               | Single page                          |
-| **Test-Type** | Component Testing (`cy.mount()`) | E2E Testing (`cy.visit()`)   | E2E Testing (`cy.visit()`)           |
-| **Speed**     | Fast (< 5s)                      | Slower (> 10s)               | Medium (~5s)                         |
-| **Focus**     | Acceptance criteria              | User journey                 | WCAG compliance                      |
-| **Example**   | "Card renders title"             | "Homepage → Search → Detail" | "All elements have accessible names" |
-
----
-
-## What to Test
-
-### ✅ Test These:
-
-- **Components**: Acceptance criteria from stories
-- **Flows**: Complete user journeys
-- **Accessibility**: WCAG 2.1/2.2 AA compliance
-- **Critical paths**: Happy paths + important edge cases
-
-### ❌ Don't Test:
-
-- Implementation details
-- Every possible user path (too slow)
-- Visual details (use visual regression tools)
-- Features already covered by component stories
-
----
-
-## Best Practices
-
-1. **Organize by business functionality** – Not technology
-2. **Use Page Objects** – For reusable selectors (see [Page Objects](page-objects.md))
-3. **Keep tests independent** – Each test runs alone
-4. **Use realistic data** – Fixtures from `../../vitest`
-5. **Assert on user-visible content** – Text, roles, labels
-6. **One test plan per component/flow** – ISTQB format with Gherkin
-7. **A11y tests per page** – WCAG audit checklist
-
----
+The E2E spec patterns in `cypress.config.js` include both `cypress/e2e/**` and `cypress/accessibility/**`. The previous `tests/cypress/acceptance/` structure and Cypress component-runner examples do not describe the current setup.
 
 ## Running Tests
 
+Start the application separately on `http://localhost:3000`, then run:
+
 ```bash
-# All acceptance tests (component + flow + a11y)
-npm run test:component
+# All configured Cypress E2E specs, including accessibility and security
 npm run test:e2e
 
-# Specific component test
-npx cypress run --component --spec "tests/cypress/acceptance/components/cardDefault/cardDefault.cy.js"
+# Interactive E2E runner
+npm run test:e2e:open
 
-# Specific flow test
-npx cypress run --e2e --spec "tests/cypress/acceptance/flows/movieDetail/movieDetail.cy.js"
+# Accessibility specs only
+npm run test:e2e:a11y
 
-# Specific a11y test
-npx cypress run --e2e --spec "tests/cypress/acceptance/accessibility/homepage/homepage.cy.js"
+# Security specs only
+npm run test:e2e:security
+
+# One existing accessibility spec
+npx cypress run --e2e --browser chrome --spec "cypress/accessibility/pages/page-axe.cy.js"
 ```
 
----
+The npm scripts use Chrome. `npm run test:component` runs Vitest component tests; it is not a Cypress acceptance-test command.
 
-## Cypress Configuration
+## Production Validation
 
-### `cypress.config.js`
+`npm run validate:e2e` builds the application and then runs the Cypress E2E suite. `npm run validate:a11y` builds it and then runs the accessibility suite. A build does not start a server: these commands still require a running application on `http://localhost:3000`.
 
-```js
-export default defineConfig({
-  e2e: {
-    specPattern: 'tests/cypress/acceptance/**/*.cy.{js,jsx}'
-    // ...
-  },
-  component: {
-    specPattern: 'tests/cypress/acceptance/**/*.cy.{js,jsx}'
-    // ...
-  }
-});
-```
+For production testing, stop any existing server as needed, run `npm run build`, start the built application with `npm run start`, and run the relevant Cypress command in another terminal. Restart or rebuild after server-side changes so tests exercise the intended code.
 
-**Both patterns are identical** – tests are organized by **business functionality**, not technology.
+## Data and Network Boundaries
 
----
+Use Cypress fixtures and Page Objects where appropriate. Browser-originated requests can be stubbed with `cy.intercept()`, but it does not intercept server-side TMDB requests.
+
+Accessibility checks for lists and detail pages use live TMDB data and require a valid server-side `TMDB_API_KEY`. Search scenarios can stub browser requests. Follow the relevant test plan for each spec's exact data requirements rather than assuming all tests are fully mocked. Never expose the API key in browser code or fixtures.
+
+## Accessibility and Security
+
+The project targets WCAG 2.2 AA. Use the accessibility test plan for automated coverage and the separate manual checklist for screen-reader, keyboard, zoom, and visual audits. Passing automated checks alone does not establish full WCAG conformance.
+
+Keep component-level keyboard and ARIA checks in Vitest browser mode when isolation is appropriate; use Cypress for full-application behavior and cross-page flows.
+
+Security scenarios should verify controlled handling of malformed external input and check that secrets do not reach the browser. See the security test documentation and matching test plan.
+
+## Best Practices and Maintenance
+
+- Assert on user-visible behavior and meaningful request/response outcomes, not implementation details.
+- Prefer role, accessible-name, and text queries where possible.
+- Keep tests independent and use Cypress's retryable assertions rather than arbitrary waits.
+- Reuse existing Page Objects and custom commands instead of inventing parallel patterns.
+- Do not use `Cypress.env()` in specs; `allowCypressEnv` is false, so use `cy.env()` when needed.
+- Update the matching test plan and affected documentation whenever a test changes. Keep scenario IDs, paths, descriptions, and assertions consistent.
+
+Cypress results are separate from Vitest coverage. `npm run check` and `npm run validate` do not run Cypress; execute the relevant browser checks separately.
 
 ## Related Documentation
 
 - [Testing Strategy](../testing.md)
 - [Component Tests](component-tests.md)
+- [Integration Tests](integration-tests.md)
 - [Page Objects](page-objects.md)
-- [Accessibility Audit](accessibility-audit-checklist.md)
+- [Accessibility Test Plan](../../cypress/accessibility/accessibility-testplan.md)
+- [Manual Accessibility Audit Checklist](accessibility-audit-checklist.md)
+- [Security Tests](security-tests.md)
