@@ -88,6 +88,9 @@ html {
 }
 
 .ui.cards.media-card-list > li > a.default-card {
+  transition:
+    transform 280ms cubic-bezier(0.22, 1, 0.36, 1) 150ms,
+    box-shadow 280ms ease-out 150ms;
   display: flex;
   width: 100%;
   height: 100%;
@@ -95,11 +98,23 @@ html {
   figure {
     margin: 0;
   }
+
+  .image-stage {
+    transition: filter 280ms ease-in-out 150ms;
+  }
 }
 
 .ui.cards.media-card-list > li > a.default-card:hover,
-.ui.cards.media-card-list > li > a.default-card:focus-visible {
+.ui.cards.media-card-list > li > a.default-card:focus-visible,
+.ui.cards.media-card-list > li > a.default-card:focus {
+  transition-delay: 50ms;
   transform: translateY(-2px);
+  box-shadow: rgba(0, 0, 0, 0.18) 4px 4px 12px;
+
+  .image-stage {
+    transition: 20ms;
+    filter: brightness(1.08) saturate(1.15);
+  }
 }
 
 dl,
