@@ -40,6 +40,7 @@ application without encountering accessibility violations.
 | A11Y-23 | Homepage       | html lang in the raw server response         |
 | A11Y-24 | TV show detail | Hover contrast of a season tab               |
 | A11Y-25 | TV show detail | Focus contrast of a season tab               |
+| A11Y-26 | Error dialog   | Focus inside dialog and Escape closes it     |
 
 A11Y-08, A11Y-09, A11Y-14, and A11Y-22 run once per page, with the page name in the test title.
 A11Y-16 runs once per navigation link, A11Y-19 once per list, and A11Y-21 once per tested locale
@@ -59,6 +60,7 @@ A11Y-16 runs once per navigation link, A11Y-19 once per list, and A11Y-21 once p
 | `search/search-live-region.cy.js` | A11Y-11 |
 | `focus/skip-link.cy.js` | A11Y-10, A11Y-18, A11Y-22 |
 | `focus/season-tabs.cy.js` | A11Y-24, A11Y-25 |
+| `focus/error-dialog.cy.js` | A11Y-26 |
 | `contrast/navigation-hover.cy.js` | A11Y-16 |
 | `contrast/search-hover.cy.js` | A11Y-17 |
 | `contrast/cards-hover.cy.js` | A11Y-19 |
@@ -75,11 +77,15 @@ A11Y-16 runs once per navigation link, A11Y-19 once per list, and A11Y-21 once p
 - Hover and focus state of navigation links, search results, cards, the load more button, and
   season tabs
 - Keyboard focus on the skip link, and focus moved to `#main-content` after activation
+- Error dialog open, focused, and closed with Escape
 
 ## Dialogs
 
-`components/DialogMessage.jsx` is the only dialog component in `components/`. A11Y-06 covers it
-with the error message for an invalid id.
+`components/DialogMessage.jsx` is the only dialog component in `components/`.
+
+- A11Y-06 covers the error message for an invalid id with an axe check.
+- A11Y-26 covers the native modal dialog behavior: focus moves into the dialog, `Escape` closes
+  it, and focus leaves the dialog.
 
 ## Covered in Vitest
 
