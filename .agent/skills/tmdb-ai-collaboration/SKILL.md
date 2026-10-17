@@ -2,7 +2,7 @@
 name: tmdb-ai-collaboration
 description: Plan, scope, validate, and review AI-assisted work in the TMDB Next.js frontend while keeping the user in control of edits, commands, commits, and pull requests. Use for broad, ambiguous, multi-step, or risky tasks, for implementation plans, and before commits, pushes, pull requests, deletions, dependency changes, or configuration changes.
 metadata:
-  version: '0.3.2'
+  version: '0.3.3'
 ---
 
 # TMDB AI collaboration
@@ -45,8 +45,9 @@ lower one.
 7. Do not modify files outside the approved scope; stop and ask if more files
    seem necessary. Suggest standardizations but do not implement them without
    approval. Do not reorganize the directory structure without approval.
-8. After changes, inspect the diff and run `scripts/validate.sh` when a
-   standard validation pass is appropriate.
+8. After changes, inspect the diff and choose the appropriate checks from the
+   validation workflow in `README.md` and `AGENTS.md`. Distinguish the npm
+   validation workflow from `scripts/validate.sh`, as described below.
 9. Report facts only: files changed, commands run, outcomes, skipped checks,
    unresolved risks, and follow-up decisions. Keep responses brief.
 
@@ -101,23 +102,26 @@ task needs something different.
 
 ## Validation
 
-`scripts/validate.sh` runs the project’s standard local checks:
+Use the npm validation workflow documented in `README.md` and `AGENTS.md`:
 
-```bash
-npm run lint
-npm run format:check
-npm run test:unit
-npm run test:component
-npm run test:integration
-npm run build
-```
+- `npm run validate:fast`: lint, formatting check, and unit tests.
+- `npm run validate`: fast checks plus component tests, integration tests, and
+  combined Vitest coverage. It does not run a production build.
+- `npm run build`: separate production-build validation when relevant.
 
-`npm run lint` fails on any warning (`--max-warnings=0`). For a quicker check
-without the production build, use `npm run check` (lint, format check, and the
-Vitest single run).
+The existing `bash scripts/validate.sh` is an alternative sequence that runs
+lint, formatting check, unit tests, component tests, integration tests, and a
+production build. It does not explicitly run coverage and is not equivalent
+to `npm run validate`. Do not change either workflow merely to align wording.
+
+`npm run check` runs lint, formatting check, and all Vitest tests without a
+production build or an explicit coverage run. `npm run lint` fails on any
+warning (`--max-warnings=0`).
 
 Run Cypress acceptance tests separately when the change affects a user journey,
-navigation flow, browser behavior, or an existing acceptance test.
+navigation flow, browser behavior, or an existing acceptance test. Cypress
+requires a separately running application. The `validate:e2e` and
+`validate:a11y` scripts build the app but do not start a server.
 
 Do not claim validation succeeded unless every command completed successfully
 and its output was observed.

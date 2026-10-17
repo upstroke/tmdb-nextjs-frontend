@@ -2,7 +2,7 @@
 name: tmdb-security
 description: Review, test, and harden the TMDB Next.js frontend against manipulated input and API key exposure, including Zod validation, API routes, the locale proxy, and Cypress security specs. Use when touching API routes, input validation, the proxy, environment variables, or security tests.
 metadata:
-  version: '0.1.1'
+  version: '0.1.2'
 ---
 
 # TMDB Security Skill
@@ -35,12 +35,19 @@ This skill enables the AI agent to review, test, and harden the TMDB Next.js fro
 2. Check the existing schema and route before adding new validation.
 3. Add or change the Zod schema, then the route.
 4. Add a Cypress test in `cypress/e2e/security/` and a row in the test plan.
-5. Restart the server, then run the security specs. Report the result to the user.
+5. For production testing, rebuild and restart the server after server-code changes, then run the security specs in a second terminal. Report the result to the user.
 
 ## Run
 
+In the first terminal, build and start the app on `http://localhost:3000` with a valid server-side `TMDB_API_KEY`:
+
 ```bash
 npm run build && npm start
+```
+
+In a second terminal:
+
+```bash
 npm run test:e2e:security
 ```
 
@@ -55,8 +62,8 @@ Set `CYPRESS_TMDB_API_KEY` to also search for the exact key value.
 
 ## Documentation
 
-- **Security Tests**: [`docs/testing/security-tests.md`](../../../docs/testing/security-tests.md)
-- **Test plan**: [`cypress/e2e/security/security-testplan.md`](../../../cypress/e2e/security/security-testplan.md)
+- **Security Tests**: [`docs/testing/security-tests.md`](../../../../docs/testing/security-tests.md)
+- **Test plan**: [`cypress/e2e/security/security-testplan.md`](../../../../cypress/e2e/security/security-testplan.md)
 - **Testing skill**: [`tmdb-testing`](../tmdb-testing/SKILL.md)
 
 ## When to Use

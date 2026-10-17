@@ -2,7 +2,7 @@
 name: tmdb-development
 description: Implement features, fixes, refactors, components, routes, and styling in the TMDB Next.js frontend following the project structure, i18n, validation, and code style rules. Use when implementing or changing features, components, routes, styles, or translations.
 metadata:
-  version: '0.1.0'
+  version: '0.1.1'
 ---
 
 # TMDB Development Skill
@@ -39,7 +39,9 @@ For tests, see the `tmdb-testing` skill.
 
 ### 1. Write API Routes
 
-Example from `app/api/[locale]/search/route.js`: validate the locale and query with Zod, read the key from the environment, call the service layer, and return localized error messages.
+Inspect `app/api/[locale]/search/route.js` and the existing TMDB service before adapting a route. Preserve validation, service-layer usage, locale handling, and safe error responses.
+
+The following is schematic, not a complete route or a verbatim copy of the implementation. Imports, query validation, and service setup are omitted. Never log the raw caught error or return its details to the client.
 
 ```js
 export async function GET(request, { params }) {
@@ -53,14 +55,13 @@ export async function GET(request, { params }) {
   const { locale } = localeParsed.data;
   const { messages } = getLocaleText(locale);
 
-  // ... validate the query, check TMDB_API_KEY
+  // ... validate the query and configure the existing TMDB service
 
   try {
-    const api = createTmdbApi(fetch, apiKey, locale);
     const searchResult = await api.searchMedia(query);
     // ... map and return the result
-  } catch (e) {
-    console.error('Search failed:', e);
+  } catch {
+    // Log only explicitly reviewed, non-sensitive context if needed.
     return NextResponse.json(
       { movies: [], tvShows: [], results: [], error: messages.searchError },
       { status: 500 }
@@ -68,6 +69,8 @@ export async function GET(request, { params }) {
   }
 }
 ```
+
+The schematic 500 response represents an operational failure, not an accepted response to malformed user input. Follow the security rules for input-driven failures.
 
 ### 2. Write Components
 
@@ -90,7 +93,7 @@ Utility functions live in `lib/utils/`. Document parameters and return types wit
 
 ### 4. Write Tests
 
-See the `tmdb-testing` skill and [`docs/testing.md`](../../../docs/testing.md).
+See the `tmdb-testing` skill and [`docs/testing.md`](../../../../docs/testing.md).
 
 ## Code Style
 
@@ -101,10 +104,10 @@ See the `tmdb-testing` skill and [`docs/testing.md`](../../../docs/testing.md).
 
 ## Documentation
 
-The project structure and the npm scripts are described only in [`README.md`](../../../README.md). Do not copy them into this skill.
+The project structure and the npm scripts are described in [`README.md`](../../../../README.md). Refer to it instead of maintaining another complete inventory in this skill.
 
-- **Testing Strategy**: [`docs/testing.md`](../../../docs/testing.md)
-- **README**: [`README.md`](../../../README.md)
+- **Testing Strategy**: [`docs/testing.md`](../../../../docs/testing.md)
+- **README**: [`README.md`](../../../../README.md)
 
 ## When to Use
 

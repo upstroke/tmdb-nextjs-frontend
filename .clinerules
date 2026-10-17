@@ -3,9 +3,3 @@
 Project rules, test strategy, and validation commands are in `AGENTS.md`.
 Read it and the applicable skills in `.agent/skills/` before acting.
 Do not duplicate those rules here.
-
-## Cline Settings
-
-- **max_context_tokens**: 100000
-- **auto_load_files**: true
-- **Model**: Qwen3 (local on M1 Mac)

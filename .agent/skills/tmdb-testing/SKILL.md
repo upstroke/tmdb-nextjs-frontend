@@ -2,7 +2,7 @@
 name: tmdb-testing
 description: Write and maintain unit, integration, component, Cypress acceptance, accessibility, and security tests for the TMDB Next.js frontend using the project test strategy. Use when adding, changing, or fixing any test, or when a test plan needs updating.
 metadata:
-  version: '0.2.0'
+  version: '0.2.1'
 ---
 
 # TMDB Testing Skill
@@ -17,10 +17,12 @@ This skill enables the AI agent to write and maintain tests for the TMDB Next.js
 - Integration tests (Vitest, jsdom)
 - Component tests (Vitest browser mode, Playwright)
 - Acceptance tests (Cypress)
-- Accessibility tests (Cypress + `cypress-axe`)
-- Security tests (Cypress, see [Security Tests](../../../docs/testing/security-tests.md) and the `tmdb-security` skill)
+- Accessibility tests (Vitest browser mode for isolated component behavior; Cypress + `cypress-axe` for full-application checks)
+- Security tests (Cypress, see [Security Tests](../../../../docs/testing/security-tests.md) and the `tmdb-security` skill)
 
 ## Capabilities
+
+The snippets below illustrate test design, not complete runnable files. Inspect the existing tests for actual imports, setup, fixtures, component contracts, and helper definitions before adapting them.
 
 ### 1. Write Unit Tests (Vitest)
 
@@ -55,8 +57,7 @@ The page `DialogMessage` calls `HTMLDialogElement.showModal`, which jsdom does n
 ### 3. Write Component Tests (Vitest browser mode)
 
 ```js
-// vitest/component/CardDefault.browser.test.jsx
-// Statement Coverage: Covers normal variables, element rendering, custom styles.
+// Schematic component test; follow the existing component's actual contract.
 it('renders movie card with correct route, title, genres, date, rating and certification', () => {
   render(
     <CardDefault
@@ -85,10 +86,10 @@ Do not write component tests in jsdom: it has no layout and cannot check color c
 ### 4. Write Acceptance Tests (Cypress)
 
 ```js
-// cypress/e2e/search/search.cy.js
+// Schematic search flow; use the existing locale and network setup.
 describe('Search Flow', () => {
   it('finds movies by title', () => {
-    cy.visit('/');
+    cy.visitLocale('en-US');
     cy.findByRole('searchbox', { name: /search movies/i }).type('Inception{enter}');
     cy.findByText(/Inception/i).should('exist');
   });
@@ -98,7 +99,7 @@ describe('Search Flow', () => {
 Use Page Objects from `cypress/POM/` for complex flows.
 
 ```js
-// cypress/e2e/navigation/navigation.cy.js
+// Schematic navigation example; initialize base with the existing BasePage factory.
 describe('Navigation', () => {
   it('[NAV-01] loads the homepage without errors', () => {
     base.visit('en-US');
@@ -107,12 +108,12 @@ describe('Navigation', () => {
 });
 ```
 
-### 5. Write Accessibility Tests (Cypress)
+### 5. Write Accessibility Tests
 
 See the `tmdb-accessibility` skill for keyboard, focus, ARIA, and contrast tests.
 
 ```js
-// cypress/accessibility/accessibility.cy.js
+// Schematic full-page accessibility check.
 describe('Accessibility: Homepage', () => {
   it('has no detectable accessibility violations', () => {
     cy.visitLocale('en-US');
@@ -121,7 +122,7 @@ describe('Accessibility: Homepage', () => {
 });
 ```
 
-Test keyboard interaction, focus management, and ARIA states in Cypress, for example tabs, modals, and dropdowns.
+Use Vitest browser mode for keyboard interaction, focus management, and ARIA states of an isolated component, including TypeHeadSearch and TabGroupe. Use Cypress for page-level and full-application behavior, including dialogs, cross-page navigation, and interactions that require the running app. See the accessibility test plan's Covered in Vitest section.
 
 ### 6. Write Security Tests (Cypress)
 
@@ -144,7 +145,7 @@ Do not use `Cypress.env()` in specs. `allowCypressEnv` is `false`, so read env v
 
 ## Test Structure and Scripts
 
-The folder structure and the npm scripts are described only in [`docs/testing.md`](../../../docs/testing.md) and [`README.md`](../../../README.md). Do not copy them into this skill.
+The folder structure and the npm scripts are described in [`docs/testing.md`](../../../../docs/testing.md) and [`README.md`](../../../../README.md). Refer to them instead of maintaining another complete inventory in this skill.
 
 ## Keep Tests, Test Plans and Docs in Sync
 
@@ -161,23 +162,24 @@ Whenever you fix, change, add, or delete a test, update the matching documentati
 ## Best Practices
 
 1. **Use Testing Library queries by priority**: `findByRole` first, then `findByLabelText` and `findByText`; use `findByTestId` only when no accessible query fits.
-2. **Test user interactions**: Real clicks, typing, navigation
-3. **Wait for content**: Use `findBy*` queries instead of `cy.wait()`
-4. **Page objects**: For complex flows, use the page object pattern
-5. **Accessibility first**: Run `cy.checkA11y()` on every page and after relevant interactions
-6. **Test plans**: Keep the test plan of every test file (unit, integration, component, acceptance) in sync with its test file, see [Keep Tests, Test Plans and Docs in Sync](#keep-tests-test-plans-and-docs-in-sync)
+2. **Test user interactions**: Real clicks, typing, navigation.
+3. **Wait for content**: Use retryable queries and assertions; avoid arbitrary time-based waits. Use request aliases when waiting for a specific Cypress network request.
+4. **Page objects**: Use existing Cypress Page Objects for complex application flows, not as Vitest helpers.
+5. **Accessibility first**: Use the project wrapper `cy.checkPageA11y()` on pages and after relevant interactions in accessibility scenarios; do not substitute direct axe calls without inspecting the wrapper and test requirements.
+6. **Test plans**: Keep the test plan of every test file (unit, integration, component, acceptance) in sync with its test file, see [Keep Tests, Test Plans and Docs in Sync](#keep-tests-test-plans-and-docs-in-sync).
 
 ## Documentation
 
-- **Testing Strategy**: [`docs/testing.md`](../../../docs/testing.md)
-- **Unit Tests**: [`docs/testing/unit-tests.md`](../../../docs/testing/unit-tests.md)
-- **Integration Tests**: [`docs/testing/integration-tests.md`](../../../docs/testing/integration-tests.md)
-- **Component Tests**: [`docs/testing/component-tests.md`](../../../docs/testing/component-tests.md)
-- **Acceptance Tests**: [`docs/testing/acceptance-tests.md`](../../../docs/testing/acceptance-tests.md)
-- **Accessibility**: [`docs/testing/accessibility-audit-checklist.md`](../../../docs/testing/accessibility-audit-checklist.md)
-- **Security Tests**: [`docs/testing/security-tests.md`](../../../docs/testing/security-tests.md)
-- **Page Objects**: [`docs/testing/page-objects.md`](../../../docs/testing/page-objects.md)
-- **Common Rules**: [`docs/testing/common-rules.md`](../../../docs/testing/common-rules.md)
+- **Testing Strategy**: [`docs/testing.md`](../../../../docs/testing.md)
+- **Unit Tests**: [`docs/testing/unit-tests.md`](../../../../docs/testing/unit-tests.md)
+- **Integration Tests**: [`docs/testing/integration-tests.md`](../../../../docs/testing/integration-tests.md)
+- **Component Tests**: [`docs/testing/component-tests.md`](../../../../docs/testing/component-tests.md)
+- **Acceptance Tests**: [`docs/testing/acceptance-tests.md`](../../../../docs/testing/acceptance-tests.md)
+- **Accessibility**: [`docs/testing/accessibility-audit-checklist.md`](../../../../docs/testing/accessibility-audit-checklist.md)
+- **Accessibility Test Plan**: [`cypress/accessibility/accessibility-testplan.md`](../../../../cypress/accessibility/accessibility-testplan.md)
+- **Security Tests**: [`docs/testing/security-tests.md`](../../../../docs/testing/security-tests.md)
+- **Page Objects**: [`docs/testing/page-objects.md`](../../../../docs/testing/page-objects.md)
+- **Common Rules**: [`docs/testing/common-rules.md`](../../../../docs/testing/common-rules.md)
 
 ## When to Use
 
