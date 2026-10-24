@@ -19,6 +19,16 @@ Its focus is on:
 - a maintainable and testable architecture
 - accessibility compliance (WCAG 2.2 AA)
 
+## AI-assisted development and technical debt
+
+This project uses AI-assisted development within a clearly defined engineering workflow. `AGENTS.md` is the central entry point for AI coding assistants and directs them to task-specific skills, project constraints, testing rules, security requirements, and validation commands.
+
+The `.agent/skills/` directory provides focused guidance for TMDB development, testing, accessibility, security, and AI collaboration. Project documentation in `docs/` supplements this context with testing strategy, security tests, and accessibility audit guidance.
+
+I am aware that AI-generated code can introduce hidden technical debt, including duplicated logic, architectural inconsistencies, unnecessary dependencies, and security issues that may not be visible in passing tests. Therefore, AI is treated as an accelerator, not as a replacement for architectural decisions, quality assurance, or critical code review.
+
+The project mitigates these risks through a dedicated TMDB service layer, server-side API integration, Zod-based runtime validation, automated Vitest and Cypress tests, accessibility checks, security tests, and review-oriented Git workflows.
+
 ## Features
 
 - Homepage with trending movies and TV shows
