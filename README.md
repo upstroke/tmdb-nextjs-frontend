@@ -199,11 +199,17 @@ npm run test:unit           # Vitest unit tests only
 npm run test:component      # Vitest component tests (browser mode)
 npm run test:integration    # Vitest integration tests only
 npm run test:coverage       # All Vitest projects with combined coverage
-npm run test:e2e            # Cypress headless, incl. accessibility and security (app must run on http://localhost:3000)
-npm run test:e2e:security   # Cypress security tests only (app must run on http://localhost:3000)
-npm run test:e2e:a11y       # Cypress accessibility tests only (app must run on http://localhost:3000)
-npm run test:e2e:open       # Cypress interactive runner
 ```
+
+### End-to-end tests
+
+```bash
+npm run test:e2e:server            # Cypress headless, incl. accessibility and security
+npm run test:e2e:security:server   # Cypress security tests only
+npm run test:e2e:a11y:server       # Cypress accessibility tests only
+```
+
+These commands build-independent start the production server on `http://localhost:3000`, wait until it is available, run Cypress, and stop the server afterwards.
 
 The accessibility tests for lists and detail pages load real TMDB data on the server, so the app needs a valid `TMDB_API_KEY`. Isolated component accessibility behavior, including TypeHeadSearch and TabGroupe keyboard and ARIA states, is covered in Vitest browser mode. Passing automated checks alone does not establish full WCAG conformance; use the [manual audit checklist](docs/testing/accessibility-audit-checklist.md) as well.
 
