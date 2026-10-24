@@ -146,11 +146,11 @@ The following known technical debt items should be considered when planning rela
 - This may produce incorrect certifications or watch-provider data for locales such as `en`.
 - Treat region as an explicit parameter with documented fallback behavior.
 
-### TD-007: Remove redundant coverage tooling
+### TD-007: Remove redundant coverage tooling — completed
 
-- Both `@vitest/coverage-istanbul` and `@vitest/coverage-v8` are installed.
-- Review whether both coverage providers and `vite-plugin-istanbul` are still required.
-- Remove unused dependencies after verifying the coverage workflow.
+- Status: Completed.
+- `@vitest/coverage-v8` was removed because the Vitest configuration uses the Istanbul coverage provider.
+- `@vitest/coverage-istanbul` and `vite-plugin-istanbul` remain required for the current coverage workflow.
 
 # Validation
 
