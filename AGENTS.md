@@ -99,6 +99,59 @@ Rules:
 - When you fix, change, add, or delete a test, update its test plan and the affected docs in the same change. See `.agent/skills/tmdb-testing/SKILL.md`.
 - Use English for explanatory documentation, test names, and comments; preserve identifiers and intentionally localized test data.
 
+# Technical debt backlog
+
+The following known technical debt items should be considered when planning related changes. They are not urgent defects, but they may affect scalability, resilience, memory usage, or data-quality guarantees.
+
+## High priority
+
+### TD-001: Reduce per-card certification requests
+
+- `getList()` enriches every card with a separate certification request through `enrichCardCertifications()`.
+- A list of 20 items can therefore trigger up to 20 additional TMDB requests.
+- Consider loading certifications only on detail pages, loading them lazily, caching them more aggressively, or making them optional for list views.
+
+### TD-002: Bound in-memory caches
+
+- `certificationCache` and `watchProvidersCache` are unbounded `Map()` instances.
+- Long-running server processes can accumulate entries without a size limit or expiration.
+- Replace them with an LRU cache with a maximum size and TTL, or use request-scoped caching where process-wide caching is unnecessary.
+
+## Medium priority
+
+### TD-003: Add timeout, retry, and resilience handling to TMDB requests
+
+- `request()` currently performs a direct `fetch()` without a timeout, retry strategy, or circuit breaker.
+- Add an `AbortSignal.timeout()` for outgoing TMDB requests.
+- Consider a limited retry with exponential backoff for transient `5xx` responses on idempotent GET requests.
+- Ensure timeout and network errors are clearly distinguished from TMDB API errors.
+
+### TD-004: Avoid bypassing Zod validation with raw fallbacks
+
+- Several mapping functions return unvalidated raw objects when Zod validation fails.
+- This weakens the runtime data-quality guarantee for TMDB data.
+- Introduce explicit partial-data types or a validation-warning mechanism instead of casting raw objects to validated types.
+- Ensure the UI can distinguish between fully validated and partially validated data.
+
+## Low priority
+
+### TD-005: Split `getFeaturedToday()` into smaller functions
+
+- The function combines trending selection, detail loading, certification loading, provider loading, mapping, validation, and fallback creation.
+- Extract focused helpers such as `pickFeaturedItem()`, `loadFeaturedDetails()`, and `buildFeaturedItem()`.
+
+### TD-006: Make region fallback explicit
+
+- The current region fallback derives `DE` when no region can be derived from the locale.
+- This may produce incorrect certifications or watch-provider data for locales such as `en`.
+- Treat region as an explicit parameter with documented fallback behavior.
+
+### TD-007: Remove redundant coverage tooling
+
+- Both `@vitest/coverage-istanbul` and `@vitest/coverage-v8` are installed.
+- Review whether both coverage providers and `vite-plugin-istanbul` are still required.
+- Remove unused dependencies after verifying the coverage workflow.
+
 # Validation
 
 Use the validation commands to run the existing test suites as regression checks.
