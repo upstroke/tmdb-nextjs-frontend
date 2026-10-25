@@ -17,6 +17,11 @@ import DialogMessage from '@/components/DialogMessage';
  * sessionStorage via `restorePagedList`. Subsequent pages are fetched from the
  * internal API route at `/api/[locale]/[apiPath]`.
  *
+ * When `cacheInitialData` is true, the supplied initial data comes from the
+ * shared trending cache and starts at page 0. This makes the first Load more
+ * request page 1 of the dedicated feed. Session restoration is skipped in this
+ * mode.
+ *
  * Errors are surfaced through `DialogMessage`. This includes an error that the
  * server page passes in `initialData.error` when the first page could not be
  * loaded. Duplicate items across pages are removed using `deduplicateMedia`.
@@ -29,6 +34,8 @@ import DialogMessage from '@/components/DialogMessage';
  * @param {string} props.listKeyPrefix - Prefix for React list keys on card wrapper elements.
  * @param {string} [props.heading] - Optional section heading rendered above the card grid.
  * @param {string} [props.emptyMessageKey='noContent'] - i18n message key shown when the list is empty.
+ * @param {boolean} [props.cacheInitialData=false] - Whether initial cards come from the shared trending cache.
+ * @param {(cards: Array<object>) => void} [props.onCardsAppended] - Called with newly appended cards.
  * @returns {JSX.Element}
  */
 export default function PagedList({
@@ -38,14 +45,16 @@ export default function PagedList({
   cardIdPrefix,
   listKeyPrefix,
   heading,
-  emptyMessageKey = 'noContent'
+  emptyMessageKey = 'noContent',
+  cacheInitialData = false,
+  onCardsAppended
 }) {
   const { messages } = useI18n();
   const locale = useLocale();
 
   const [featured, setFeatured] = useState(null);
   const [cards, setCards] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(cacheInitialData ? initialData?.page ?? 0 : 1);
   const [hasMore, setHasMore] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -56,6 +65,17 @@ export default function PagedList({
   useEffect(() => {
     if (initializedRef.current) return;
     initializedRef.current = true;
+
+    if (cacheInitialData) {
+      setFeatured(initialData?.featured ?? null);
+      setCards(initialData?.cards ?? []);
+      setCurrentPage(initialData?.page ?? 0);
+      setHasMore(initialData?.hasMore === true);
+      if (initialData?.error) setError(initialData.error);
+      setLoading(false);
+      return;
+    }
+
     restorePagedList({
       storageKey,
       initialData,
@@ -143,7 +163,10 @@ export default function PagedList({
       setCards((prev) => [...prev, ...newCards]);
       setCurrentPage(result.page ?? nextPage);
       setHasMore(result.hasMore === true);
-      storeCurrentPage(storageKey, result.page ?? nextPage);
+      onCardsAppended?.(newCards);
+      if (!cacheInitialData) {
+        storeCurrentPage(storageKey, result.page ?? nextPage);
+      }
       setScrollTargetId(`${cardIdPrefix}-${previousCount + 1}`);
     } catch (exception) {
       if (exception.name === 'AbortError') {

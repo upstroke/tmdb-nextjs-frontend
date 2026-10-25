@@ -15,6 +15,7 @@ import 'fomantic-ui-css/components/segment.css';
 import '@/styles/app.scss';
 import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from '@/lib/i18n/config';
 import { AppLocaleProvider } from '@/components/providers/LocaleProvider';
+import TrendingCacheProvider from '@/components/TrendingCacheProvider';
 import HeaderMain from '@/components/HeaderMain';
 import FooterMain from '@/components/FooterMain';
 import { notFound } from 'next/navigation';
@@ -52,11 +53,13 @@ export default async function LocaleLayout({ children, params }) {
     <html data-scroll-behavior="smooth" lang={locale}>
       <body>
         <AppLocaleProvider initialLocale={locale}>
-          <div id="root">
-            <HeaderMain />
-            {children}
-            <FooterMain />
-          </div>
+          <TrendingCacheProvider initialLocale={locale}>
+            <div id="root">
+              <HeaderMain />
+              {children}
+              <FooterMain />
+            </div>
+          </TrendingCacheProvider>
         </AppLocaleProvider>
       </body>
     </html>

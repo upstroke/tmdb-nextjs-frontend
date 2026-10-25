@@ -1,6 +1,6 @@
 import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/helpers';
-import { LocaleParamSchema } from '@/lib/schemas/tmdb';
+import TrendingCacheInitializer from '@/components/TrendingCacheInitializer';
 import PagedList from '@/components/PagedList';
 
 /** @typedef {import('@/lib/schemas/tmdb').FeaturedItem} FeaturedItem */
@@ -32,6 +32,7 @@ export default async function HomePage({ params }) {
       </main>
     );
   }
+
   const { locale } = paramsParsed.data;
 
   const { messages, titles } = getLocaleText(locale);
@@ -92,6 +93,7 @@ export default async function HomePage({ params }) {
 
   return (
     <main id="main-content" tabIndex={-1} className="ui container fluid home-page">
+      <TrendingCacheInitializer cards={cards} />
       <PagedList
         initialData={initialData}
         apiPath="trending"

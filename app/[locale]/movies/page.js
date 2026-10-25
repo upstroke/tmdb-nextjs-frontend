@@ -1,6 +1,6 @@
 import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/helpers';
-import PagedList from '@/components/PagedList';
+import MovieTrendingList from '@/components/MovieTrendingList';
 
 /**
  * Movies page (`/[locale]/movies`). Server component that loads trending movies
@@ -72,7 +72,7 @@ export default async function MoviesPage({ params }) {
 
   return (
     <main id="main-content" tabIndex={-1} className="ui container fluid movies-page">
-      <PagedList
+      <MovieTrendingList
         initialData={initialData}
         apiPath="movies"
         storageKey="movies-page"
