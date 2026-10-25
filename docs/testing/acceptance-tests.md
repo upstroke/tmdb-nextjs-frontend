@@ -35,9 +35,7 @@ npm run test:e2e -- --spec "cypress/e2e/security/routing.cy.js"
 
 Do not override baseUrl with Cypress CLI flags: managed runs target `http://localhost:3000`. The runner sets CYPRESS_BASE_URL to this address, overriding an inherited environment value.
 
-`validate:e2e` and `validate:a11y` use the same managed lifecycle without a second build. Existing `:server` commands remain aliases with the same behavior. No separate server terminal is required.
-
-`cy:run`, `cy:run:security`, and `cy:run:a11y` are low-level Cypress-only commands. Direct Cypress invocation bypasses production startup and the occupied-port check; use managed commands for security validation.
+No separate server terminal is required. Direct Cypress invocation bypasses production startup and the occupied-port check; use managed commands for security validation.
 
 ## Data and network boundaries
 
@@ -53,7 +51,6 @@ Browser requests can be intercepted with cy.intercept; server-side TMDB requests
 - Both passing and failing Cypress runs stop the managed server and propagate a nonzero result on failure.
 - Closing the interactive runner stops its server.
 - Build failures do not start a server or Cypress.
-- Existing :server aliases and validation aliases do not duplicate builds.
 
 These lifecycle checks require local execution; source changes alone do not establish that they pass.
 

@@ -91,9 +91,6 @@ npm run test:unit
 npm run test:integration
 npm run test:component
 
-# Run the complete Vitest browser project
-npm run test:browser
-
 # Run all Vitest projects with combined coverage; no Next.js server needed
 npm run test:coverage
 
@@ -124,27 +121,24 @@ npm run lint
 # Prettier, check only
 npm run format:check
 
-# Lint + format check + all Vitest tests
-npm run check
+# Prettier, rewrite files
+npm run format
 ```
 
-The individual test scripts do not run the linter, so a focused run such as `npm run test:unit` stays fast. `npm run check` does not include Cypress, a production build, or an explicit coverage run.
+The individual test scripts do not run the linter, so a focused run such as `npm run test:unit` stays fast.
 
 ## Validation Workflow
 
 - `npm run validate:all`: complete automated validation described above.
 - `npm run validate:fast`: lint, formatting check, and unit tests. The pre-commit hook runs `npx lint-staged && npm run validate:fast`; lint-staged formats matching staged files first.
 - `npm run validate`: fast validation plus component tests, integration tests, and combined coverage. It does not run a production build or Cypress.
-- `npm run validate:full`: component tests, integration tests, and coverage without repeating the fast checks.
 - `npm run build`: separate production-build validation.
-- `npm run validate:e2e` and `npm run validate:a11y`: managed production build, startup, respective Cypress suite, and shutdown, just like the corresponding `test:e2e` commands. Existing `:server` variants are aliases and also build once per invocation.
 - `bash scripts/validate.sh`: alternative sequence with lint, formatting, unit, component, integration tests, and a build, but no explicit coverage run. It is not equivalent to `npm run validate` or `npm run validate:all`.
 
 Do not start a separate server for managed E2E commands. The runner checks port
 3000 before and after building, rejects occupied ports, and starts `next start`
 with `NODE_ENV=production`. Do not override its baseUrl or start another server
-during the run. Low-level `cy:run*` scripts and direct Cypress invocation bypass
-this lifecycle. See [Acceptance Tests](testing/acceptance-tests.md) for details.
+during the run. See [Acceptance Tests](testing/acceptance-tests.md) for details.
 
 ## Coverage
 

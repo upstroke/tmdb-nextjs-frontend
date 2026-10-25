@@ -31,8 +31,8 @@ These rules apply to all automated tests in this project.
 - Do not modify production code, test configuration, dependencies, environment files, or unrelated tests unless explicitly included in the task.
 - Do not install tools or packages without prior approval.
 - Run the narrowest relevant test command first, then broader checks justified by the scope.
-- Run `npm run check` for lint with `--max-warnings=0`, formatting, and all Vitest tests before considering a test-change task fully validated. Fix lint warnings rather than leaving them.
-- Use the documented validation workflow for broader regression checks. Cypress requires a separately running application and is not included in `npm run check` or `npm run validate`.
+- Run `npm run validate` for lint with `--max-warnings=0`, formatting, all Vitest tests, and combined coverage before considering a test-change task fully validated. Fix lint warnings rather than leaving them.
+- Use the documented validation workflow for broader regression checks. Cypress requires a managed production run and is not included in `npm run validate`.
 - Review the complete diff before considering a task complete.
 - Report changed files, changed test cases, executed and skipped checks, results, and remaining risks. If a check cannot be run, state that explicitly rather than implying validation passed.
 

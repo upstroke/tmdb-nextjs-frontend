@@ -27,19 +27,13 @@ The app is read-only, and TMDB secures its own API. The tests cover the parts wh
 
 ## Run
 
-The app must run on `http://localhost:3000` and needs `TMDB_API_KEY`. For the bundle check, use a production build:
-
-```bash
-npm run build && npm start
-```
-
-In a second terminal:
+The managed runner builds the production application, starts it on `http://localhost:3000`, runs Cypress, and stops the server afterwards. It requires `TMDB_API_KEY` and a free port 3000:
 
 ```bash
 npm run test:e2e:security
 ```
 
-The script runs `cypress run --e2e --browser chrome` for `cypress/e2e/security/**/*.cy.js`.
+The runner executes Cypress with Chrome for `cypress/e2e/security/**/*.cy.js`.
 
 To also search for the exact key value:
 
@@ -47,13 +41,13 @@ To also search for the exact key value:
 CYPRESS_TMDB_API_KEY=... npm run test:e2e:security
 ```
 
-To run a single spec, pass it to Cypress directly:
+To run a single spec with the managed production server:
 
 ```bash
-npx cypress run --e2e --browser chrome --spec cypress/e2e/security/list-api.cy.js
+npm run test:e2e:security -- --spec cypress/e2e/security/list-api.cy.js
 ```
 
-After changing server code, restart the server. Without a rebuild, `next start` keeps serving the old code.
+After changing server code, run the managed command again. It rebuilds the application before starting the production server.
 
 ## Rules
 
