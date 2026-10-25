@@ -67,7 +67,7 @@ Prefer these tools when they are available:
 - `rg` (`ripgrep`) for fast text searches
 - `fd` for fast file and directory searches
 - `fzf` for interactive selection and filtering
-- `bat` for readable file output
+- `bat` for readable Git diffs
 - `delta` for readable Git diffs
 - `sd` for simple, targeted text changes
 
@@ -179,13 +179,17 @@ Use the validation commands to run the existing test suites as regression checks
 - Use `npm run validate:fast` for quick feedback before committing. It runs ESLint, the Prettier check, and Vitest unit tests.
 - Use `npm run validate` before pushing a change or opening a pull request. It runs the fast validation, component tests, integration tests, and coverage, but no production build or Cypress.
 - Use `npm run validate:full` to run component tests, integration tests, and coverage without repeating the fast checks.
-- Use `npm run validate:e2e` for a production build followed by all Cypress end-to-end tests.
-- Use `npm run validate:a11y` for a production build followed by the Cypress accessibility suite.
-- Cypress validation requires a separately running app on `http://localhost:3000`; `validate:e2e` and `validate:a11y` build the app but do not start a server. For production testing, build and start the app, then run the relevant `test:e2e` command in a second terminal.
+- `npm run test:e2e` and `npm run validate:e2e` manage a production build, server startup, Cypress, and server cleanup using `scripts/run-e2e.mjs` and the existing start-server-and-test dependency. They build only once per invocation.
+- `npm run test:e2e:security` uses the same lifecycle for security specs; `npm run test:e2e:a11y` and `npm run validate:a11y` do so for accessibility specs.
+- Stop any server on port 3000 first. Managed commands reject an occupied port rather than reuse or kill another process. They check again after building. Do not start another server during the run.
+- `npm run test:e2e:open` builds and starts production before opening Cypress and keeps the server until Cypress exits. Existing `:server` commands are compatible aliases.
+- Pass Cypress arguments after `--`, for example `npm run test:e2e -- --spec "cypress/e2e/security/routing.cy.js"`. Do not override the managed baseUrl of http://localhost:3000.
+- Low-level `cy:run*` scripts and direct Cypress invocations do not manage the server and must not be mistaken for production validation.
 - The accessibility suite needs a valid `TMDB_API_KEY` for specs that use live TMDB data.
 - `bash scripts/validate.sh` includes a production build but no explicit coverage run. It is not equivalent to `npm run validate`; choose checks according to the task scope.
+- See `docs/testing/acceptance-tests.md` for the production-runner validation checklist.
 
-The pre-commit hook runs `npx lint-staged && npm run validate:fast`. It intentionally excludes component, integration, Cypress, security, and accessibility tests because they are slower or require a running application.
+The pre-commit hook runs `npx lint-staged && npm run validate:fast`. It intentionally excludes component, integration, Cypress, security, and accessibility tests because they are slower or require application startup.
 
 Additional commands:
 
@@ -197,8 +201,7 @@ Additional commands:
 - Use `npm run test:unit`, `npm run test:integration`, or `npm run test:component` for focused Vitest validation.
 - Use `npm run test:coverage` for combined Vitest coverage; the enforced global threshold is 80% statements. Cypress does not contribute to this report.
 - Use `npm run build` for production-build validation.
-- Treat Cypress as a separate validation step. `npm run check` includes lint, formatting, and all Vitest tests, but no Cypress, build, or explicit coverage run. `npm run test:e2e` runs the specs headlessly (`cypress run --e2e --browser chrome`) and `npm run test:e2e:open` opens the interactive runner.
-- Use `npm run test:e2e:security` to run only the security specs. Rebuild and restart the production server first if server code changed.
+- Treat Cypress as a separate validation step. `npm run check` includes lint, formatting, and all Vitest tests, but no Cypress, build, or explicit coverage run.
 
 Do not edit files, run destructive commands, change dependencies, push commits,
 or create pull requests without the user’s explicit approval.
