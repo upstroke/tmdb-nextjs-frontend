@@ -74,7 +74,9 @@ export default function TrendingCacheProvider({ initialLocale, children }) {
     function getNextFeedPage(mediaType) {
       const cards = mediaType === 'movie' ? cache.movieCards : cache.tvCards;
       const lastRequestedPage =
-        mediaType === 'movie' ? cache.movieLastRequestedPage : cache.tvLastRequestedPage;
+        mediaType === 'movie'
+          ? cache.movieLastRequestedPage
+          : cache.tvLastRequestedPage;
       const countBasedPage = Math.floor(cards.length / TRENDING_PAGE_SIZE) + 1;
 
       return Math.max(countBasedPage, lastRequestedPage + 1);
@@ -94,14 +96,25 @@ export default function TrendingCacheProvider({ initialLocale, children }) {
             };
           }
 
+          const movieCards = (cards ?? []).filter(
+            (card) => card.mediaType === 'movie'
+          );
+          const tvCards = (cards ?? []).filter(
+            (card) => card.mediaType === 'tv'
+          );
+
+          if (movieCards.length === 0 && tvCards.length === 0) {
+            return previous;
+          }
+
           if (previous.movieCards.length > 0 || previous.tvCards.length > 0) {
             return previous;
           }
 
           return {
             ...previous,
-            movieCards: (cards ?? []).filter((card) => card.mediaType === 'movie'),
-            tvCards: (cards ?? []).filter((card) => card.mediaType === 'tv')
+            movieCards,
+            tvCards
           };
         });
       },
@@ -109,8 +122,11 @@ export default function TrendingCacheProvider({ initialLocale, children }) {
         setCache((previous) => {
           if (previous.locale !== initialLocale) return previous;
 
-          const existingCards = mediaType === 'movie' ? previous.movieCards : previous.tvCards;
-          const existingKeys = new Set(existingCards.map(getMediaKey).filter(Boolean));
+          const existingCards =
+            mediaType === 'movie' ? previous.movieCards : previous.tvCards;
+          const existingKeys = new Set(
+            existingCards.map(getMediaKey).filter(Boolean)
+          );
           const newCards = (cards ?? []).filter((card) => {
             const key = getMediaKey(card);
             return key && !existingKeys.has(key);
@@ -143,5 +159,9 @@ export default function TrendingCacheProvider({ initialLocale, children }) {
     };
   }, [cache, initialLocale]);
 
-  return <TrendingCacheContext.Provider value={value}>{children}</TrendingCacheContext.Provider>;
+  return (
+    <TrendingCacheContext.Provider value={value}>
+      {children}
+    </TrendingCacheContext.Provider>
+  );
 }
