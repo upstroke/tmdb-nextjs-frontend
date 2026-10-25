@@ -4,17 +4,32 @@ import { createContext, useContext, useMemo, useState } from 'react';
 
 const TRENDING_PAGE_SIZE = 20;
 
+/**
+ * Client-side cache state for Trending All cards.
+ *
+ * Movie and TV cards are stored separately because Trending All returns a
+ * dynamic mixture of media types. The page counters track the last dedicated
+ * Movies or TV Shows feed page that was requested.
+ *
+ * @typedef {object} TrendingCacheState
+ * @property {string} locale - Locale that owns this cache instance.
+ * @property {import('@/lib/schemas/tmdb').CardItem[]} movieCards - Cached movie cards.
+ * @property {import('@/lib/schemas/tmdb').CardItem[]} tvCards - Cached TV show cards.
+ * @property {number} movieLastRequestedPage - Last Movies feed page requested.
+ * @property {number} tvLastRequestedPage - Last TV Shows feed page requested.
+ */
+
 const TrendingCacheContext = createContext(null);
 
 /**
  * Access the shared client-side trending cache.
  *
- * @returns {{
- *   locale: string,
- *   movieCards: Array<object>,
- *   tvCards: Array<object>,
- *   initializeCards: (cards: Array<object>) => void,
- *   addCards: (mediaType: 'movie' | 'tv', cards: Array<object>) => void,
+ * @returns {TrendingCacheState & {
+ *   initializeCards: (cards: import('@/lib/schemas/tmdb').CardItem[]) => void,
+ *   addCards: (
+ *     mediaType: 'movie' | 'tv',
+ *     cards: import('@/lib/schemas/tmdb').CardItem[]
+ *   ) => void,
  *   getNextFeedPage: (mediaType: 'movie' | 'tv') => number,
  *   markFeedPageLoaded: (mediaType: 'movie' | 'tv', page: number) => void
  * }} Trending cache API.
@@ -45,6 +60,7 @@ export function useTrendingCache() {
  * @returns {JSX.Element}
  */
 export default function TrendingCacheProvider({ initialLocale, children }) {
+  /** @type {TrendingCacheState} */
   const [cache, setCache] = useState({
     locale: initialLocale,
     movieCards: [],
