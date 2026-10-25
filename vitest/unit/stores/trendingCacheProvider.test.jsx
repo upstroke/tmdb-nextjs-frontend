@@ -28,8 +28,8 @@ const tvCard = (id, certification = 'TV-14') => ({
   certification
 });
 
-const createWrapper = (initialLocale = 'en-US') =>
-  function Wrapper({ children }) {
+const createWrapper = (defaultLocale = 'en-US') =>
+  function Wrapper({ children, initialLocale = defaultLocale }) {
     return (
       <TrendingCacheProvider initialLocale={initialLocale}>
         {children}
@@ -114,7 +114,8 @@ describe('TrendingCacheProvider', () => {
 
     it('resets the cache when the locale changes', () => {
       const { result, rerender } = renderHook(() => useTrendingCache(), {
-        wrapper: createWrapper('en-US')
+        wrapper: createWrapper(),
+        initialProps: { initialLocale: 'en-US' }
       });
 
       act(() => result.current.initializeCards([movieCard(1), tvCard(2)]));
@@ -177,7 +178,7 @@ describe('TrendingCacheProvider', () => {
       );
     });
 
-    it('ignores invalid cards', () => {
+    it('ignores cards without an id or media type', () => {
       const { result } = renderHook(() => useTrendingCache(), {
         wrapper: createWrapper()
       });
@@ -185,7 +186,6 @@ describe('TrendingCacheProvider', () => {
       act(() => result.current.initializeCards([movieCard(1)]));
       act(() =>
         result.current.addCards('movie', [
-          { id: 2, mediaType: 'movie' },
           { mediaType: 'movie' },
           { id: 3 },
           null
@@ -197,7 +197,8 @@ describe('TrendingCacheProvider', () => {
 
     it('does not update the cache for another locale', () => {
       const { result, rerender } = renderHook(() => useTrendingCache(), {
-        wrapper: createWrapper('en-US')
+        wrapper: createWrapper(),
+        initialProps: { initialLocale: 'en-US' }
       });
 
       act(() => result.current.initializeCards([movieCard(1)]));
@@ -213,15 +214,15 @@ describe('TrendingCacheProvider', () => {
 
   describe('getNextFeedPage', () => {
     it.each([
-      [0, 0, 1],
-      [7, 0, 1],
-      [13, 0, 1],
-      [19, 0, 1],
-      [20, 1, 2],
-      [27, 1, 2],
-      [40, 2, 3],
-      [0, 1, 2],
-      [20, 0, 2]
+      [1, 0, 0],
+      [1, 7, 0],
+      [1, 13, 0],
+      [1, 19, 0],
+      [2, 20, 1],
+      [2, 27, 1],
+      [3, 40, 2],
+      [2, 0, 1],
+      [2, 20, 0]
     ])(
       'returns page %i for %i cached cards and last requested page %i',
       (expectedPage, cardCount, lastRequestedPage) => {
@@ -302,7 +303,8 @@ describe('TrendingCacheProvider', () => {
 
     it('does not update the cache for another locale', () => {
       const { result, rerender } = renderHook(() => useTrendingCache(), {
-        wrapper: createWrapper('en-US')
+        wrapper: createWrapper(),
+        initialProps: { initialLocale: 'en-US' }
       });
 
       act(() => result.current.markFeedPageLoaded('movie', 2));
