@@ -114,17 +114,23 @@ The following known technical debt items should be considered when planning rela
 
 ## High priority
 
-### TD-001: Reduce redundant trending requests while preserving card certifications
+### TD-001: Reduce redundant trending requests while preserving card certifications — implemented on feature branch
 
-- The home page loads `/trending/all/day?page=1`; its 20 cards can be split into movie and TV cards for reuse on the Movies and TV Shows pages.
-- Movies and TV Shows currently load their own dedicated trending feeds, even though the first Trending All page already contains cards that appear in those feeds.
-- Reuse the first Trending All response as a shared client-side cache: movie cards become the initial Movies list and TV cards become the initial TV Shows list.
+- Status: Implemented on `feature/TD-001-Reduce-redundant-trending`; pending validation and merge.
+- The home page loads `/trending/all/day?page=1`; its cards are split dynamically by `mediaType` into movie and TV cards for reuse on the Movies and TV Shows pages.
+- A locale-scoped client-side cache stores already known movie and TV cards separately. It survives client-side navigation between Home, Movies, and TV Shows.
+- Movies and TV Shows render cached cards when available and do not make an initial dedicated trending request in that case. When the cache is empty, the existing server-side first-page fallback is used.
+- Home “Load more” adds newly loaded Trending All cards to the shared cache, separated by media type. This lets later visits to Movies or TV Shows benefit from cards loaded through the homepage.
 - The dedicated Movies or TV Shows trending feed is requested only after the user clicks “Load more”.
-- On “Load more”, the relevant dedicated feed is requested starting at page 1, deduplicated against the cached cards using `${mediaType}-${id}`, and only new cards are appended.
+- The next dedicated feed page is derived separately for movies and TV shows from the number of cached cards: `floor(cardCount / 20) + 1`. TMDB trending feeds return 20 results per page.
+- With fewer than 20 cached cards for a media type, the first “Load more” request targets page 1 of that dedicated feed. With 20 or more cached cards, it targets the next not-yet-consumed page.
+- The cache also records the last requested page per media type. If a requested page contains only duplicates, the next request advances beyond that page instead of repeating it.
+- A cache count of zero can never produce page 0: the calculation returns page 1, and an empty cache falls back to the server-rendered first page.
+- On “Load more”, the relevant dedicated feed response is deduplicated against the cached cards using `${mediaType}-${id}`, and only new cards are appended.
 - Existing cards and their certifications remain available while navigating between Home, Movies, and TV Shows; certifications are loaded only for cards not already present in the cache.
 - Certification badges remain visible on every list card; certifications are neither removed nor deferred in this task.
 - Trending All is split dynamically by `mediaType`; the implementation does not assume it always contains exactly 10 movies and 10 TV shows.
-- A full browser reload may reset the client-side cache; this is acceptable.
+- A full browser reload clears the client-side cache. The existing `PagedList` sessionStorage restoration may still restore previously loaded pages after a reload; this behavior is intentionally retained for now.
 - A custom homepage mix of separate movie and TV trending feeds is out of scope for this task.
 
 ### TD-002: Bound in-memory caches
