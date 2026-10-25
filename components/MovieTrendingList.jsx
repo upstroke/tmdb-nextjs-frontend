@@ -1,38 +1,31 @@
 'use client';
 
+import { useState } from 'react';
 import { useTrendingCache } from '@/components/TrendingCacheProvider';
 import PagedList from '@/components/PagedList';
-import { deduplicateMedia } from '@/lib/utils/deduplicateMedia';
 
 /**
- * Client wrapper for the Movies trending list.
+ * Movies list using either the cache present on mount or the server fallback.
  *
- * Combines the server-rendered first page with any movie cards already stored
- * in the shared trending cache. Cached cards preserve previously loaded cards
- * during client-side navigation; deduplication prevents a card from appearing
- * twice.
+ * Keep the source stable for this mount: populating the cache after load more
+ * must not disable sessionStorage writes on a server-backed list. Cached data
+ * uses the last loaded feed page; PagedList increments it once when loading.
+ * Full displayed cards are cached after an append, including server/restored
+ * cards, so a later mount does not lose the first page.
  *
- * The next dedicated Movies feed page is the page after the last successfully
- * requested page. Cached card counts are not used to infer API pagination.
- *
- * @param {object} props
- * @param {object} props.initialData - Server-rendered Movies fallback data.
- * @param {object} [props.rest] - Remaining PagedList props.
- * @returns {JSX.Element}
+ * @param {object} props - Component props.
+ * @param {object} props.initialData - Server fallback data.
+ * @returns {JSX.Element} Paged movie list.
  */
 export default function MovieTrendingList({ initialData, ...pagedListProps }) {
   const { movieCards, addCards, getNextFeedPage, markFeedPageLoaded } = useTrendingCache();
-
-  const serverCards = initialData?.cards ?? [];
-  const mergedCards = deduplicateMedia([...serverCards, ...movieCards]);
-  const useCache = mergedCards.length > 0;
-  const nextPage = getNextFeedPage('movie');
+  const [useCache] = useState(() => movieCards.length > 0);
 
   const listInitialData = useCache
     ? {
         ...initialData,
-        cards: mergedCards,
-        page: nextPage,
+        cards: movieCards,
+        page: getNextFeedPage('movie') - 1,
         hasMore: true
       }
     : initialData;
@@ -42,8 +35,8 @@ export default function MovieTrendingList({ initialData, ...pagedListProps }) {
       {...pagedListProps}
       initialData={listInitialData}
       cacheInitialData={useCache}
-      onCardsAppended={(newCards, loadedPage) => {
-        addCards('movie', newCards);
+      onCardsAppended={(newCards, loadedPage, allCards) => {
+        addCards('movie', allCards ?? newCards);
         markFeedPageLoaded('movie', loadedPage);
       }}
     />

@@ -1,31 +1,31 @@
 'use client';
 
+import { useState } from 'react';
 import { useTrendingCache } from '@/components/TrendingCacheProvider';
 import PagedList from '@/components/PagedList';
 
 /**
- * Client wrapper for the TV Shows trending list.
+ * TV list using either the cache present on mount or the server fallback.
  *
- * Uses cached Trending All TV cards when available. The next dedicated TV
- * Shows feed page is derived from the number of cached TV cards: TMDB trending
- * feeds return 20 results per page. For example, 10 cached cards mean page 1
- * is next, while 20 cached cards mean page 2 is next.
+ * Keep the source stable for this mount: populating the cache after load more
+ * must not disable sessionStorage writes on a server-backed list. Cached data
+ * uses the last loaded feed page; PagedList increments it once when loading.
+ * Full displayed cards are cached after an append, including server/restored
+ * cards, so a later mount does not lose the first page.
  *
- * @param {object} props
- * @param {object} props.initialData - Server-rendered TV Shows fallback data.
- * @param {object} [props.rest] - Remaining PagedList props.
- * @returns {JSX.Element}
+ * @param {object} props - Component props.
+ * @param {object} props.initialData - Server fallback data.
+ * @returns {JSX.Element} Paged TV list.
  */
 export default function TvTrendingList({ initialData, ...pagedListProps }) {
   const { tvCards, addCards, getNextFeedPage, markFeedPageLoaded } = useTrendingCache();
-  const useCache = tvCards.length > 0;
-  const nextPage = getNextFeedPage('tv');
+  const [useCache] = useState(() => tvCards.length > 0);
 
   const listInitialData = useCache
     ? {
         ...initialData,
         cards: tvCards,
-        page: nextPage,
+        page: getNextFeedPage('tv') - 1,
         hasMore: true
       }
     : initialData;
@@ -35,8 +35,8 @@ export default function TvTrendingList({ initialData, ...pagedListProps }) {
       {...pagedListProps}
       initialData={listInitialData}
       cacheInitialData={useCache}
-      onCardsAppended={(newCards, loadedPage) => {
-        addCards('tv', newCards);
+      onCardsAppended={(newCards, loadedPage, allCards) => {
+        addCards('tv', allCards ?? newCards);
         markFeedPageLoaded('tv', loadedPage);
       }}
     />

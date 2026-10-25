@@ -18,25 +18,25 @@ import DialogMessage from '@/components/DialogMessage';
  * internal API route at `/api/[locale]/[apiPath]`.
  *
  * When `cacheInitialData` is true, the supplied initial data comes from the
- * shared trending cache. Its `page` value is the next dedicated feed page that
- * should be loaded, derived by the caller from the number of cached cards.
- * The state is initialized directly from that data, so no state updates are
- * required in the mount effect. Session restoration is skipped in this mode.
+ * shared trending cache. Its `page` is the last loaded dedicated feed page
+ * (zero when no dedicated page has loaded), not the next page to request.
+ * PagedList increments this value exactly once. Session restoration is skipped
+ * in cache mode. The caller must keep this mode stable throughout the mount.
  *
  * Errors are surfaced through `DialogMessage`. This includes an error that the
  * server page passes in `initialData.error` when the first page could not be
  * loaded. Duplicate items across pages are removed using `deduplicateMedia`.
  *
  * @param {object} props
- * @param {object} props.initialData - Server-rendered first page data passed as initial state.
- * @param {string} props.apiPath - Relative path segment appended to `/api/[locale]/` for pagination requests.
- * @param {string} props.storageKey - sessionStorage key used to persist and restore the current page number.
- * @param {string} props.cardIdPrefix - Prefix for the HTML id set on each card element (used for scroll targeting).
- * @param {string} props.listKeyPrefix - Prefix for React list keys on card wrapper elements.
- * @param {string} [props.heading] - Optional section heading rendered above the card grid.
- * @param {string} [props.emptyMessageKey='noContent'] - i18n message key shown when the list is empty.
- * @param {boolean} [props.cacheInitialData=false] - Whether initial cards come from the shared trending cache.
- * @param {(cards: Array<object>, loadedPage: number) => void} [props.onCardsAppended] - Called with newly appended cards and the loaded page number.
+ * @param {object} props.initialData - Initial list data.
+ * @param {string} props.apiPath - API path segment for pagination.
+ * @param {string} props.storageKey - sessionStorage page key.
+ * @param {string} props.cardIdPrefix - Card id prefix for scroll targeting.
+ * @param {string} props.listKeyPrefix - React list key prefix.
+ * @param {string} [props.heading] - List heading.
+ * @param {string} [props.emptyMessageKey='noContent'] - Empty-state message key.
+ * @param {boolean} [props.cacheInitialData=false] - Whether cards come from cache.
+ * @param {(cards: Array<object>, loadedPage: number, allCards: Array<object>) => void} [props.onCardsAppended] - Receives new cards, loaded page and the complete displayed list.
  * @returns {JSX.Element}
  */
 export default function PagedList({
@@ -126,15 +126,9 @@ export default function PagedList({
   }, [scrollTargetId]);
 
   /**
-   * Loads the next page and appends it to the list.
-   *
-   * Does nothing while a request is running or when there are no more pages.
-   * The request is aborted after 15 seconds. Cards already in the list are
-   * filtered out. When no new cards remain, `hasMore` is set to false. After a
-   * successful load the page number is stored and the first new card becomes
-   * the scroll and focus target.
-   *
-   * @returns {Promise<void>}
+   * Loads and deduplicates the next page, preserving existing timeout,
+   * no-new-card termination, session storage and scroll behavior.
+   * @returns {Promise<void>} Completes after the request settles.
    */
   async function loadMore() {
     if (loading || !hasMore) return;
@@ -170,7 +164,7 @@ export default function PagedList({
       setCards((prev) => [...prev, ...newCards]);
       setCurrentPage(loadedPage);
       setHasMore(result.hasMore === true);
-      onCardsAppended?.(newCards, loadedPage);
+      onCardsAppended?.(newCards, loadedPage, [...cards, ...newCards]);
       if (!cacheInitialData) {
         storeCurrentPage(storageKey, loadedPage);
       }
