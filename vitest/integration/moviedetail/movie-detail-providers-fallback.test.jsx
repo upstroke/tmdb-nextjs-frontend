@@ -120,8 +120,7 @@ describe('Movie detail page (integration)', () => {
     expect(within(providersSection).getByText(fallbacks.notAvailable)).toBeInTheDocument();
     expect(screen.queryByText('TMDB request failed: 404')).not.toBeInTheDocument();
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      expect.stringContaining(`/movie/${MOVIE_ID}/watch/providers`),
-      expect.anything()
+      expect.stringContaining(`/movie/${MOVIE_ID}/watch/providers`)
     );
   });
 });

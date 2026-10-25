@@ -19,3 +19,9 @@ exists, then uses Testing Library `within` to assert the localized not-available
 text inside that section only. Other missing movie fields may legitimately
 render the same fallback elsewhere; they must neither cause ambiguous matches
 nor allow an unrelated fallback to satisfy this assertion.
+
+## Network assertion
+
+TC-MD-01 verifies that fetch was called with a URL containing
+`/movie/123/watch/providers`. The TMDB service passes only the URL to fetch;
+the assertion therefore does not require a second options argument.
