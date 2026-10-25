@@ -55,10 +55,22 @@ export default function TrendingCacheProvider({ initialLocale, children }) {
   });
 
   const value = useMemo(() => {
+    /**
+     * Creates a stable deduplication key for a media card.
+     *
+     * @param {import('@/lib/schemas/tmdb').CardItem} card - Media card.
+     * @returns {string|null} Deduplication key or null for invalid cards.
+     */
     function getMediaKey(card) {
       return card?.mediaType && card?.id ? `${card.mediaType}-${card.id}` : null;
     }
 
+    /**
+     * Calculates the next dedicated feed page for a media type.
+     *
+     * @param {'movie' | 'tv'} mediaType - Media type to look up.
+     * @returns {number} Next page number, never below 1.
+     */
     function getNextFeedPage(mediaType) {
       const cards = mediaType === 'movie' ? cache.movieCards : cache.tvCards;
       const lastRequestedPage =

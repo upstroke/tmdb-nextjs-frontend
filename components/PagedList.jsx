@@ -20,7 +20,8 @@ import DialogMessage from '@/components/DialogMessage';
  * When `cacheInitialData` is true, the supplied initial data comes from the
  * shared trending cache. Its `page` value is the next dedicated feed page that
  * should be loaded, derived by the caller from the number of cached cards.
- * Session restoration is skipped in this mode.
+ * The state is initialized directly from that data, so no state updates are
+ * required in the mount effect. Session restoration is skipped in this mode.
  *
  * Errors are surfaced through `DialogMessage`. This includes an error that the
  * server page passes in `initialData.error` when the first page could not be
@@ -52,12 +53,22 @@ export default function PagedList({
   const { messages } = useI18n();
   const locale = useLocale();
 
-  const [featured, setFeatured] = useState(null);
-  const [cards, setCards] = useState([]);
-  const [currentPage, setCurrentPage] = useState(cacheInitialData ? initialData?.page ?? 1 : 1);
-  const [hasMore, setHasMore] = useState(false);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [featured, setFeatured] = useState(
+    cacheInitialData ? initialData?.featured ?? null : null
+  );
+  const [cards, setCards] = useState(
+    cacheInitialData ? initialData?.cards ?? [] : []
+  );
+  const [currentPage, setCurrentPage] = useState(
+    cacheInitialData ? initialData?.page ?? 1 : 1
+  );
+  const [hasMore, setHasMore] = useState(
+    cacheInitialData ? initialData?.hasMore === true : false
+  );
+  const [error, setError] = useState(
+    cacheInitialData && initialData?.error ? initialData.error : null
+  );
+  const [loading, setLoading] = useState(!cacheInitialData);
   const [scrollTargetId, setScrollTargetId] = useState(null);
   const initializedRef = useRef(false);
   const observerRef = useRef(null);
@@ -66,15 +77,7 @@ export default function PagedList({
     if (initializedRef.current) return;
     initializedRef.current = true;
 
-    if (cacheInitialData) {
-      setFeatured(initialData?.featured ?? null);
-      setCards(initialData?.cards ?? []);
-      setCurrentPage(initialData?.page ?? 1);
-      setHasMore(initialData?.hasMore === true);
-      if (initialData?.error) setError(initialData.error);
-      setLoading(false);
-      return;
-    }
+    if (cacheInitialData) return;
 
     restorePagedList({
       storageKey,
