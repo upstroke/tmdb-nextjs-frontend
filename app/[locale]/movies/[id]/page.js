@@ -16,7 +16,7 @@ import { formatMessage } from '@/lib/i18n/format';
 
 /**
  * Movie detail page (`/[locale]/movies/[id]`). Server component that loads a
- * movie and its watch providers from TMDB in parallel and renders the details.
+ * movie and its watch providers from TMDB and renders the details.
  *
  * The page shows hero, certification, rating, genres, overview, homepage,
  * trailers, release date, streaming providers, production companies, runtime,
@@ -26,6 +26,10 @@ import { formatMessage } from '@/lib/i18n/format';
  * load errors render a `DialogMessage` instead of the page. The message for
  * invalid route params uses the raw `locale` param; an unknown locale falls
  * back to the default locale texts.
+ *
+ * Watch-provider failures do not fail the page. TMDB does not provide provider
+ * data for every movie, so a missing or failing provider response renders the
+ * movie details without the streaming-provider section.
  *
  * @param {object} props
  * @param {Promise<{ locale: string, id: string }>} props.params - Route params (async in Next.js 15+).
@@ -57,12 +61,28 @@ export default async function MovieDetailPage({ params }) {
 
   try {
     const api = createTmdbApi(fetch, apiKey, locale);
-    const [details, watchProviders] = await Promise.all([
+    const [detailsResult, providersResult] = await Promise.allSettled([
       api.getMovieDetails(id),
       api.getWatchProviders('movie', id)
     ]);
-    movie = { ...details, trailerUrls: details.trailerUrls ?? [] };
-    providers = watchProviders;
+
+    if (detailsResult.status === 'rejected') {
+      throw detailsResult.reason;
+    }
+
+    movie = {
+      ...detailsResult.value,
+      trailerUrls: detailsResult.value.trailerUrls ?? []
+    };
+
+    if (providersResult.status === 'rejected') {
+      console.warn(
+        `Watch providers could not be loaded (movie/${id}):`,
+        providersResult.reason
+      );
+    } else {
+      providers = providersResult.value;
+    }
   } catch (e) {
     console.error('Failed to load movie details:', e);
     error = e instanceof Error ? e.message : messages.movieLoadError;
@@ -202,7 +222,7 @@ export default async function MovieDetailPage({ params }) {
         <section aria-labelledby="trailer-heading">
           <h3
             id="trailer-heading"
-            className={`ui medium dividing header${labels.trailer ? '' : ' u-not-available'}`}
+            className={`ui medium dividing header${labels.homepage ? '' : ' u-not-available'}`}
           >
             {labels.trailer}
           </h3>
@@ -259,8 +279,7 @@ export default async function MovieDetailPage({ params }) {
                           height: 40,
                           borderRadius: '0.25rem',
                           overflow: 'hidden',
-                          background: '#f0f0f0',
-                          flexShrink: 0
+                          background: '#f0f0f0'
                         }}
                       >
                         <Image
@@ -287,8 +306,7 @@ export default async function MovieDetailPage({ params }) {
                       )}
                       <span>
                         {' '}
-                        —{' '}
-                        {
+                        —{
                           labels[
                             `providerType${provider.type.charAt(0).toUpperCase() + provider.type.slice(1)}`
                           ]
@@ -331,13 +349,11 @@ export default async function MovieDetailPage({ params }) {
           >
             {labels.runtime}
           </h3>
-          <p>
-            {movie.runtime != null ? (
-              <span>{movie.runtime} min</span>
-            ) : (
-              <span className="u-not-available">{fallbacks.notAvailable}</span>
-            )}
-          </p>
+          {movie.runtime != null ? (
+            <span>{movie.runtime} min</span>
+          ) : (
+            <span className="u-not-available">{fallbacks.notAvailable}</span>
+          )}
         </section>
 
         <section aria-labelledby="cast-heading">
