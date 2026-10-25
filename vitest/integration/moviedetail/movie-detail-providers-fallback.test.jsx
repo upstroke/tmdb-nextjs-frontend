@@ -10,7 +10,7 @@
  * Test plan: TP-MD-001 (test case ID TC-MD-01 is noted above the it block).
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, within } from '@testing-library/react';
 import MovieDetailPage from '../../../app/[locale]/movies/[id]/page.js';
 import { AppLocaleProvider } from '@/components/providers/LocaleProvider.jsx';
 import { DEFAULT_LOCALE } from '@/lib/i18n/config.js';
@@ -113,7 +113,11 @@ describe('Movie detail page (integration)', () => {
 
     expect(screen.getAllByText(MOVIE_TITLE).length).toBeGreaterThan(0);
     expect(screen.getByText(movieDetails.overview)).toBeInTheDocument();
-    expect(screen.getByText(fallbacks.notAvailable)).toBeInTheDocument();
+    const providersSection = document.querySelector(
+      'section[aria-labelledby="watch-providers-heading"]'
+    );
+    expect(providersSection).not.toBeNull();
+    expect(within(providersSection).getByText(fallbacks.notAvailable)).toBeInTheDocument();
     expect(screen.queryByText('TMDB request failed: 404')).not.toBeInTheDocument();
     expect(globalThis.fetch).toHaveBeenCalledWith(
       expect.stringContaining(`/movie/${MOVIE_ID}/watch/providers`),

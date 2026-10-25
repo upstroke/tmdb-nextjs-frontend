@@ -11,3 +11,11 @@ external TMDB network is mocked through `globalThis.fetch`.
 | ID       | Scenario                                                              | Expected result                                                                                                     |
 | -------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | TC-MD-01 | Movie details succeed, but the watch-provider request returns `404`. | The movie page renders its details and overview, shows the not-available fallback for streaming providers, and does not show the TMDB 404 error. |
+
+## Provider fallback assertion
+
+TC-MD-01 first verifies that `section[aria-labelledby="watch-providers-heading"]`
+exists, then uses Testing Library `within` to assert the localized not-available
+text inside that section only. Other missing movie fields may legitimately
+render the same fallback elsewhere; they must neither cause ambiguous matches
+nor allow an unrelated fallback to satisfy this assertion.
