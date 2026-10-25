@@ -39,6 +39,9 @@ export function useTrendingCache() {
  * page, so 10 cached movie cards mean movie feed page 1 is still pending,
  * while 20 cached cards mean page 1 has been consumed and page 2 is next.
  *
+ * When the locale changes, the cache is reset so a locale never sees another
+ * locale's trending cards or feed page counters.
+ *
  * @param {object} props
  * @param {string} props.initialLocale - Locale owning this cache.
  * @param {import('react').ReactNode} props.children - Wrapped application tree.
@@ -53,6 +56,19 @@ export default function TrendingCacheProvider({ initialLocale, children }) {
     movieLastRequestedPage: 0,
     tvLastRequestedPage: 0
   });
+
+  // Reset the cache during render when the locale prop changes. This follows
+  // React's documented pattern for resetting state when a prop changes and
+  // prevents one locale from seeing another locale's cached cards.
+  if (cache.locale !== initialLocale) {
+    setCache({
+      locale: initialLocale,
+      movieCards: [],
+      tvCards: [],
+      movieLastRequestedPage: 0,
+      tvLastRequestedPage: 0
+    });
+  }
 
   const value = useMemo(() => {
     /**
