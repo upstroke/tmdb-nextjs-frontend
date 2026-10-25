@@ -209,17 +209,14 @@ Vitest and coverage do not require a separately running Next.js server.
 npm run validate:all
 ```
 
-This runs `npm run validate && npm run test:e2e`: ESLint, Prettier check, unit,
-component and integration tests, combined Vitest coverage, then a production
-build and all configured Cypress specs, including security and accessibility.
+This runs the Vitest validation workflow, then a production build and all
+configured Cypress specs, including security and accessibility.
 The E2E runner starts and stops its production server automatically. A failing
-command prevents later commands from starting. The existing coverage stage
-reruns Vitest projects with instrumentation; individual script behavior is unchanged.
+command prevents later commands from starting.
 
 Stop any server on port 3000 before the run. Live-data scenarios require a
 valid server-side `TMDB_API_KEY`. Chrome and the Playwright Chromium browser
-used by component tests must be available. No package update is needed to add
-this script. Manual accessibility checks remain separate.
+used by component tests must be available. Manual accessibility checks remain separate.
 
 ### End-to-end tests
 
@@ -242,11 +239,6 @@ The runner checks port 3000 before and after building and rejects occupied
 ports rather than reusing a development server or killing another process.
 Do not start a separate server or override baseUrl during managed tests.
 
-Existing `test:e2e:*:server`, `test:e2e:server`, `validate:e2e:server` and
-`validate:a11y:server` commands remain aliases for the managed lifecycle;
-they also build and are not build-reuse shortcuts. Low-level `cy:run*` scripts
-run only Cypress and bypass automatic server management.
-
 To run one spec with the managed production server:
 
 ```bash
@@ -267,27 +259,36 @@ Use the validation commands to run the existing test suites as regression checks
 npm run validate:all
 npm run validate
 npm run validate:fast
-npm run validate:full
-npm run validate:e2e
-npm run validate:a11y
 ```
 
 - `validate:all`: complete automated validation, including lint, format, Vitest coverage, production build, and all Cypress specs with managed server startup and shutdown.
-- `validate`: fast validation plus component, integration, and coverage tests; no production build or Cypress.
+- `validate`: lint, formatting check, unit tests, component tests, integration tests, and combined Vitest coverage; no production build or Cypress.
 - `validate:fast`: ESLint, Prettier check, and Vitest unit tests.
-- `validate:full`: Vitest component tests, integration tests, and coverage.
-- `validate:e2e`: production build, automatic server startup, all Cypress specs, and server shutdown.
-- `validate:a11y`: the same production lifecycle for Cypress accessibility specs only.
+
+`validate` and `validate:all` use `scripts/run-checks.mjs` for friendly progress output. They run the same underlying npm scripts and retain fail-fast behavior.
+
+Run one focused check through the existing validation commands:
+
+```bash
+npm run validate -- lint
+npm run validate -- format
+npm run validate -- unit
+npm run validate -- component
+npm run validate -- integration
+npm run validate -- coverage
+
+npm run validate:all -- e2e
+npm run validate:all -- security
+npm run validate:all -- a11y
+```
+
+For example, `npm run validate -- component` runs `npm run test:component`.
 
 Run `npm run validate:fast` for quick feedback before committing.
 Run `npm run validate:all` for the complete automated check before final review.
 For Vitest-only validation before pushing or opening a pull request, use
 `npm run validate`; use the relevant managed browser command when browser
 behavior is affected. `npm run build` remains available as a standalone build check.
-
-The `:server` validation aliases use the same managed lifecycle and do not need
-a separate server. Security and accessibility are already included in the full
-Cypress suite; do not run them again unless focused feedback is needed.
 
 `bash scripts/validate.sh` is an alternative check sequence that includes a production build but no explicit coverage run; it is not equivalent to `npm run validate` or `npm run validate:all`.
 
@@ -315,10 +316,7 @@ Linting and formatting run separately from the tests:
 npm run lint            # ESLint, fails on any warning (--max-warnings=0)
 npm run format          # Prettier, rewrites files
 npm run format:check    # Prettier, check only
-npm run check           # lint + format:check + all Vitest tests
 ```
-
-`npm run check` does not include Cypress, a production build, or an explicit coverage run. Use the validation workflow above for broader checks.
 
 If a lint rule has to be suppressed, use a targeted `eslint-disable-next-line` comment with a short reason, for example for the plain `<img>` in the typeahead thumbnails and in the `next/image` test mock.
 

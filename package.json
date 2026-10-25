@@ -19,8 +19,8 @@
     "test:e2e:security": "node scripts/run-e2e.mjs security",
     "test:e2e:a11y": "node scripts/run-e2e.mjs a11y",
     "test:coverage": "vitest run --coverage",
-    "validate": "npm run validate:fast && npm run test:component && npm run test:integration && npm run test:coverage",
-    "validate:all": "npm run validate && npm run test:e2e",
+    "validate": "node scripts/run-checks.mjs",
+    "validate:all": "node scripts/run-checks.mjs --all",
     "validate:fast": "npm run lint && npm run format:check && npm run test:unit",
     "prepare": "husky"
   },
