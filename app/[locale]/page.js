@@ -1,5 +1,6 @@
 import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/helpers';
+import { LocaleParamSchema } from '@/lib/schemas/tmdb';
 import TrendingCacheInitializer from '@/components/TrendingCacheInitializer';
 import PagedList from '@/components/PagedList';
 
