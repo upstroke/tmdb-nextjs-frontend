@@ -1,15 +1,8 @@
 /**
- * Security tests — locale proxy and detail page routes.
- *
- * proxy.js redirects paths without a locale prefix to /<locale>/<path>
- * and picks the locale from the Accept-Language header. Manipulated paths
- * and headers must never redirect to another host or cause a server error.
- *
- * Requests use the full base URL, because a request to "//evil.com" would
- * otherwise be sent to evil.com.
- *
- * See security-testplan.md for the full test plan.
- *
+ * Security tests for locale redirects and detail routes.
+ * See security-testplan.md (SEC-20, SEC-21, SEC-22, SEC-24).
+ * HTTP checks retain the full response-body stack-trace scan. Browser checks
+ * separately establish native dialog visibility and dismissal.
  * @tags @security
  */
 describe('Security: routing', () => {
@@ -67,20 +60,44 @@ describe('Security: routing', () => {
     });
   });
 
-  describe('detail pages with invalid ids', () => {
-    const ids = ['abc', '-1', '0', '1.5', '1e3', '99999999999', '%00', '<script>'];
-    const sections = ['movies', 'tv-shows'];
+  const rejectedIds = ['abc', '-1', '0', '1.5', '%00', '<script>'];
+  const acceptedNumericInputs = ['1e3', '99999999999'];
+  const sections = ['movies', 'tv-shows'];
 
+  describe('detail route HTTP safety (SEC-22)', () => {
     sections.forEach((section) => {
-      ids.forEach((id) => {
+      [...rejectedIds, ...acceptedNumericInputs].forEach((id) => {
         it(`/${section}/${id} returns no server error and no stack trace`, () => {
           cy.request({
             url: `/en-US/${section}/${encodeURIComponent(id)}`,
             failOnStatusCode: false
           }).then((res) => {
             expect(res.status, 'status').to.be.lessThan(500);
-            expect(String(res.body), 'stack trace').to.not.match(stackTrace);
+            const match = String(res.body).match(stackTrace);
+            expect(match?.[0] ?? null, 'exposed stack trace match').to.equal(null);
           });
+        });
+      });
+    });
+  });
+
+  describe('invalid URL dialog (SEC-24)', () => {
+    sections.forEach((section) => {
+      rejectedIds.forEach((id) => {
+        it(`/${section}/${id} opens the invalid URL dialog and closes it with OK`, () => {
+          cy.visit(`/en-US/${section}/${encodeURIComponent(id)}`);
+
+          cy.get('dialog.dialog-message')
+            .should('be.visible')
+            .and('have.prop', 'open', true)
+            .within(() => {
+              cy.contains('p', /^Invalid URL parameters\.$/).should('be.visible');
+              cy.contains('button', /^OK$/).click();
+            });
+
+          cy.get('dialog.dialog-message')
+            .should('not.be.visible')
+            .and('have.prop', 'open', false);
         });
       });
     });
