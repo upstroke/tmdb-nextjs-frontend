@@ -6,9 +6,10 @@ import PagedList from '@/components/PagedList';
 /**
  * Client wrapper for the Movies trending list.
  *
- * Uses cached Trending All movie cards when available. Otherwise renders the
- * server-provided fallback data. The cached list starts at page 0 so the first
- * Load more request loads page 1 of the dedicated Movies trending feed.
+ * Uses cached Trending All movie cards when available. The next dedicated
+ * Movies feed page is derived from the number of cached movie cards: TMDB
+ * trending feeds return 20 results per page. For example, 10 cached cards mean
+ * page 1 is next, while 20 cached cards mean page 2 is next.
  *
  * @param {object} props
  * @param {object} props.initialData - Server-rendered Movies fallback data.
@@ -16,14 +17,16 @@ import PagedList from '@/components/PagedList';
  * @returns {JSX.Element}
  */
 export default function MovieTrendingList({ initialData, ...pagedListProps }) {
-  const { movieCards, addCards } = useTrendingCache();
+  const { movieCards, addCards, getNextFeedPage, markFeedPageLoaded } =
+    useTrendingCache();
   const useCache = movieCards.length > 0;
+  const nextPage = getNextFeedPage('movie');
 
   const listInitialData = useCache
     ? {
         ...initialData,
         cards: movieCards,
-        page: 0,
+        page: nextPage,
         hasMore: true
       }
     : initialData;
@@ -33,7 +36,10 @@ export default function MovieTrendingList({ initialData, ...pagedListProps }) {
       {...pagedListProps}
       initialData={listInitialData}
       cacheInitialData={useCache}
-      onCardsAppended={(newCards) => addCards('movie', newCards)}
+      onCardsAppended={(newCards, loadedPage) => {
+        addCards('movie', newCards);
+        markFeedPageLoaded('movie', loadedPage);
+      }}
     />
   );
 }

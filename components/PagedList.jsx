@@ -18,9 +18,9 @@ import DialogMessage from '@/components/DialogMessage';
  * internal API route at `/api/[locale]/[apiPath]`.
  *
  * When `cacheInitialData` is true, the supplied initial data comes from the
- * shared trending cache and starts at page 0. This makes the first Load more
- * request page 1 of the dedicated feed. Session restoration is skipped in this
- * mode.
+ * shared trending cache. Its `page` value is the next dedicated feed page that
+ * should be loaded, derived by the caller from the number of cached cards.
+ * Session restoration is skipped in this mode.
  *
  * Errors are surfaced through `DialogMessage`. This includes an error that the
  * server page passes in `initialData.error` when the first page could not be
@@ -35,7 +35,7 @@ import DialogMessage from '@/components/DialogMessage';
  * @param {string} [props.heading] - Optional section heading rendered above the card grid.
  * @param {string} [props.emptyMessageKey='noContent'] - i18n message key shown when the list is empty.
  * @param {boolean} [props.cacheInitialData=false] - Whether initial cards come from the shared trending cache.
- * @param {(cards: Array<object>) => void} [props.onCardsAppended] - Called with newly appended cards.
+ * @param {(cards: Array<object>, loadedPage: number) => void} [props.onCardsAppended] - Called with newly appended cards and the loaded page number.
  * @returns {JSX.Element}
  */
 export default function PagedList({
@@ -54,7 +54,7 @@ export default function PagedList({
 
   const [featured, setFeatured] = useState(null);
   const [cards, setCards] = useState([]);
-  const [currentPage, setCurrentPage] = useState(cacheInitialData ? initialData?.page ?? 0 : 1);
+  const [currentPage, setCurrentPage] = useState(cacheInitialData ? initialData?.page ?? 1 : 1);
   const [hasMore, setHasMore] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -69,7 +69,7 @@ export default function PagedList({
     if (cacheInitialData) {
       setFeatured(initialData?.featured ?? null);
       setCards(initialData?.cards ?? []);
-      setCurrentPage(initialData?.page ?? 0);
+      setCurrentPage(initialData?.page ?? 1);
       setHasMore(initialData?.hasMore === true);
       if (initialData?.error) setError(initialData.error);
       setLoading(false);
@@ -154,18 +154,22 @@ export default function PagedList({
       const newCards = deduplicateMedia(result.cards ?? []).filter(
         (card) => !existingKeys.has(getMediaKey(card))
       );
+      const loadedPage = result.page ?? nextPage;
+
       if (newCards.length === 0) {
         setHasMore(false);
-        storeCurrentPage(storageKey, currentPage);
+        if (!cacheInitialData) {
+          storeCurrentPage(storageKey, currentPage);
+        }
         return;
       }
       const previousCount = cards.length;
       setCards((prev) => [...prev, ...newCards]);
-      setCurrentPage(result.page ?? nextPage);
+      setCurrentPage(loadedPage);
       setHasMore(result.hasMore === true);
-      onCardsAppended?.(newCards);
+      onCardsAppended?.(newCards, loadedPage);
       if (!cacheInitialData) {
-        storeCurrentPage(storageKey, result.page ?? nextPage);
+        storeCurrentPage(storageKey, loadedPage);
       }
       setScrollTargetId(`${cardIdPrefix}-${previousCount + 1}`);
     } catch (exception) {

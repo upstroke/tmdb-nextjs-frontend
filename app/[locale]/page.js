@@ -2,10 +2,41 @@ import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/helpers';
 import { LocaleParamSchema } from '@/lib/schemas/tmdb';
 import TrendingCacheInitializer from '@/components/TrendingCacheInitializer';
+import { useTrendingCache } from '@/components/TrendingCacheProvider';
 import PagedList from '@/components/PagedList';
 
 /** @typedef {import('@/lib/schemas/tmdb').FeaturedItem} FeaturedItem */
 /** @typedef {import('@/lib/schemas/tmdb').CardItem} CardItem */
+
+/**
+ * Client boundary for the Home trending list. It forwards newly loaded
+ * Trending All cards to the shared cache, separated by media type.
+ *
+ * @param {object} props
+ * @param {object} props.initialData - Server-rendered Home data.
+ * @param {object} [props.rest] - Remaining PagedList props.
+ * @returns {JSX.Element}
+ */
+function HomeTrendingList({ initialData, ...pagedListProps }) {
+  const { addCards } = useTrendingCache();
+
+  return (
+    <PagedList
+      {...pagedListProps}
+      initialData={initialData}
+      onCardsAppended={(newCards) => {
+        addCards(
+          'movie',
+          newCards.filter((card) => card.mediaType === 'movie')
+        );
+        addCards(
+          'tv',
+          newCards.filter((card) => card.mediaType === 'tv')
+        );
+      }}
+    />
+  );
+}
 
 /**
  * Home page (`/[locale]`). Server component that loads today's trending media
@@ -95,7 +126,7 @@ export default async function HomePage({ params }) {
   return (
     <main id="main-content" tabIndex={-1} className="ui container fluid home-page">
       <TrendingCacheInitializer cards={cards} />
-      <PagedList
+      <HomeTrendingList
         initialData={initialData}
         apiPath="trending"
         storageKey="home-page"
