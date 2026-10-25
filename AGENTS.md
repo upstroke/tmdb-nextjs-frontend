@@ -105,11 +105,18 @@ The following known technical debt items should be considered when planning rela
 
 ## High priority
 
-### TD-001: Reduce per-card certification requests
+### TD-001: Reduce redundant trending requests while preserving card certifications
 
-- `getList()` enriches every card with a separate certification request through `enrichCardCertifications()`.
-- A list of 20 items can therefore trigger up to 20 additional TMDB requests.
-- Consider loading certifications only on detail pages, loading them lazily, caching them more aggressively, or making them optional for list views.
+- The home page loads `/trending/all/day?page=1`; its 20 cards can be split into movie and TV cards for reuse on the Movies and TV Shows pages.
+- Movies and TV Shows currently load their own dedicated trending feeds, even though the first Trending All page already contains cards that appear in those feeds.
+- Reuse the first Trending All response as a shared client-side cache: movie cards become the initial Movies list and TV cards become the initial TV Shows list.
+- The dedicated Movies or TV Shows trending feed is requested only after the user clicks “Load more”.
+- On “Load more”, the relevant dedicated feed is requested starting at page 1, deduplicated against the cached cards using `${mediaType}-${id}`, and only new cards are appended.
+- Existing cards and their certifications remain available while navigating between Home, Movies, and TV Shows; certifications are loaded only for cards not already present in the cache.
+- Certification badges remain visible on every list card; certifications are neither removed nor deferred in this task.
+- Trending All is split dynamically by `mediaType`; the implementation does not assume it always contains exactly 10 movies and 10 TV shows.
+- A full browser reload may reset the client-side cache; this is acceptable.
+- A custom homepage mix of separate movie and TV trending feeds is out of scope for this task.
 
 ### TD-002: Bound in-memory caches
 
