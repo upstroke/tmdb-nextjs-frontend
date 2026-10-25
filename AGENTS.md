@@ -120,12 +120,10 @@ The following known technical debt items should be considered when planning rela
 - The home page loads `/trending/all/day?page=1`; its cards are split dynamically by `mediaType` into movie and TV cards for reuse on the Movies and TV Shows pages.
 - A locale-scoped client-side cache stores already known movie and TV cards separately. It survives client-side navigation between Home, Movies, and TV Shows.
 - Movies and TV Shows render cached cards when available and do not make an initial dedicated trending request in that case. When the cache is empty, the existing server-side first-page fallback is used.
-- Home “Load more” adds newly loaded Trending All cards to the shared cache, separated by media type. This lets later visits to Movies or TV Shows benefit from cards loaded through the homepage.
+- Home “Load more” adds newly loaded Trending All cards to the shared cache, separated by media type. These cards improve display continuity and deduplication, but do not advance the dedicated Movies or TV Shows feed page counters.
 - The dedicated Movies or TV Shows trending feed is requested only after the user clicks “Load more”.
-- The next dedicated feed page is derived separately for movies and TV shows from the number of cached cards: `floor(cardCount / 20) + 1`. TMDB trending feeds return 20 results per page.
-- With fewer than 20 cached cards for a media type, the first “Load more” request targets page 1 of that dedicated feed. With 20 or more cached cards, it targets the next not-yet-consumed page.
-- The cache also records the last requested page per media type. If a requested page contains only duplicates, the next request advances beyond that page instead of repeating it.
-- A cache count of zero can never produce page 0: the calculation returns page 1, and an empty cache falls back to the server-rendered first page.
+- The next dedicated feed page is tracked separately for movies and TV shows. It is always the page after the last successfully requested page: initially page 1, then page 2, page 3, and so on.
+- Cached card counts are not used to infer API pagination. This keeps the behavior independent of the number of results TMDB returns per page and prevents a dedicated feed page from being skipped.
 - On “Load more”, the relevant dedicated feed response is deduplicated against the cached cards using `${mediaType}-${id}`, and only new cards are appended.
 - Existing cards and their certifications remain available while navigating between Home, Movies, and TV Shows; certifications are loaded only for cards not already present in the cache.
 - Certification badges remain visible on every list card; certifications are neither removed nor deferred in this task.

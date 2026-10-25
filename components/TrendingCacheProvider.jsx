@@ -2,8 +2,6 @@
 
 import { createContext, useContext, useMemo, useState } from 'react';
 
-const TRENDING_PAGE_SIZE = 20;
-
 const TrendingCacheContext = createContext(null);
 
 /**
@@ -33,11 +31,10 @@ export function useTrendingCache() {
  * Provides a locale-scoped client cache for Trending All cards. The cache
  * survives client-side navigation between Home, Movies and TV Shows.
  *
- * The cache tracks both the cards already known for each media type and the
- * last dedicated feed page that was requested. The next feed page is derived
- * from the number of cached cards: TMDB trending feeds return 20 results per
- * page, so 10 cached movie cards mean movie feed page 1 is still pending,
- * while 20 cached cards mean page 1 has been consumed and page 2 is next.
+ * The cache stores the cards already known for each media type. It also tracks
+ * the last dedicated Movies or TV Shows feed page that was requested. The next
+ * feed page is always the page after the last requested one; cached cards are
+ * used for display continuity and deduplication, not to infer API pagination.
  *
  * When the locale changes, the cache is reset so a locale never sees another
  * locale's trending cards or feed page counters.
@@ -88,14 +85,12 @@ export default function TrendingCacheProvider({ initialLocale, children }) {
      * @returns {number} Next page number, never below 1.
      */
     function getNextFeedPage(mediaType) {
-      const cards = mediaType === 'movie' ? cache.movieCards : cache.tvCards;
       const lastRequestedPage =
         mediaType === 'movie'
           ? cache.movieLastRequestedPage
           : cache.tvLastRequestedPage;
-      const countBasedPage = Math.floor(cards.length / TRENDING_PAGE_SIZE) + 1;
 
-      return Math.max(countBasedPage, lastRequestedPage + 1);
+      return lastRequestedPage + 1;
     }
 
     return {

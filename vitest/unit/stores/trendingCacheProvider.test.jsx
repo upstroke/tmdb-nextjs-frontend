@@ -212,55 +212,66 @@ describe('TrendingCacheProvider', () => {
   });
 
   describe('getNextFeedPage', () => {
-    it.each([
-      [1, 0, 0],
-      [1, 7, 0],
-      [1, 13, 0],
-      [1, 19, 0],
-      [2, 20, 1],
-      [2, 27, 1],
-      [3, 40, 2],
-      [2, 0, 1],
-      [2, 20, 0]
-    ])(
-      'returns page %i for %i cached cards and last requested page %i',
-      (expectedPage, cardCount, lastRequestedPage) => {
-        const { result } = renderHook(() => useTrendingCache(), {
-          wrapper: createWrapper()
-        });
-
-        const cards = Array.from({ length: cardCount }, (_, index) =>
-          movieCard(index + 1)
-        );
-
-        act(() => result.current.initializeCards(cards));
-
-        if (lastRequestedPage > 0) {
-          act(() =>
-            result.current.markFeedPageLoaded('movie', lastRequestedPage)
-          );
-        }
-
-        expect(result.current.getNextFeedPage('movie')).toBe(expectedPage);
-      }
-    );
-
-    it('calculates movie and TV pages independently', () => {
+    it('returns page 1 before any dedicated feed page was requested', () => {
       const { result } = renderHook(() => useTrendingCache(), {
         wrapper: createWrapper()
       });
 
       act(() =>
         result.current.initializeCards([
-          movieCard(1),
-          movieCard(2),
-          tvCard(3)
+          ...Array.from({ length: 20 }, (_, index) => movieCard(index + 1)),
+          tvCard(21)
         ])
       );
+
+      expect(result.current.getNextFeedPage('movie')).toBe(1);
+      expect(result.current.getNextFeedPage('tv')).toBe(1);
+    });
+
+    it('returns the page after the last requested movie page', () => {
+      const { result } = renderHook(() => useTrendingCache(), {
+        wrapper: createWrapper()
+      });
+
+      act(() => result.current.markFeedPageLoaded('movie', 1));
+      expect(result.current.getNextFeedPage('movie')).toBe(2);
+
+      act(() => result.current.markFeedPageLoaded('movie', 2));
+      expect(result.current.getNextFeedPage('movie')).toBe(3);
+    });
+
+    it('returns the page after the last requested TV page', () => {
+      const { result } = renderHook(() => useTrendingCache(), {
+        wrapper: createWrapper()
+      });
+
+      act(() => result.current.markFeedPageLoaded('tv', 4));
+      expect(result.current.getNextFeedPage('tv')).toBe(5);
+    });
+
+    it('calculates movie and TV pages independently', () => {
+      const { result } = renderHook(() => useTrendingCache(), {
+        wrapper: createWrapper()
+      });
+
       act(() => result.current.markFeedPageLoaded('movie', 1));
 
       expect(result.current.getNextFeedPage('movie')).toBe(2);
       expect(result.current.getNextFeedPage('tv')).toBe(1);
+    });
+
+    it('does not use the number of cached cards for pagination', () => {
+      const { result } = renderHook(() => useTrendingCache(), {
+        wrapper: createWrapper()
+      });
+
+      act(() =>
+        result.current.initializeCards(
+          Array.from({ length: 40 }, (_, index) => movieCard(index + 1))
+        )
+      );
+
+      expect(result.current.getNextFeedPage('movie')).toBe(1);
     });
   });
 
