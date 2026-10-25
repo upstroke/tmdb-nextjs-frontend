@@ -28,8 +28,8 @@ const tvCard = (id, certification = 'TV-14') => ({
   certification
 });
 
-const createWrapper = (defaultLocale = 'en-US') =>
-  function Wrapper({ children, initialLocale = defaultLocale }) {
+const createWrapper = (initialLocale = 'en-US') =>
+  function Wrapper({ children }) {
     return (
       <TrendingCacheProvider initialLocale={initialLocale}>
         {children}
@@ -112,21 +112,21 @@ describe('TrendingCacheProvider', () => {
       expect(result.current.tvCards).toEqual([tvCard(2)]);
     });
 
-    it('resets the cache when the locale changes', () => {
-      const { result, rerender } = renderHook(() => useTrendingCache(), {
-        wrapper: createWrapper(),
-        initialProps: { initialLocale: 'en-US' }
+    it('keeps caches isolated between locales', () => {
+      const english = renderHook(() => useTrendingCache(), {
+        wrapper: createWrapper('en-US')
+      });
+      const german = renderHook(() => useTrendingCache(), {
+        wrapper: createWrapper('de-DE')
       });
 
-      act(() => result.current.initializeCards([movieCard(1), tvCard(2)]));
+      act(() => english.result.current.initializeCards([movieCard(1)]));
+      act(() => german.result.current.initializeCards([movieCard(2)]));
 
-      rerender({ initialLocale: 'de-DE' });
-
-      act(() => result.current.initializeCards([movieCard(3)]));
-
-      expect(result.current.locale).toBe('de-DE');
-      expect(result.current.movieCards).toEqual([movieCard(3)]);
-      expect(result.current.tvCards).toEqual([]);
+      expect(english.result.current.locale).toBe('en-US');
+      expect(english.result.current.movieCards).toEqual([movieCard(1)]);
+      expect(german.result.current.locale).toBe('de-DE');
+      expect(german.result.current.movieCards).toEqual([movieCard(2)]);
     });
   });
 
@@ -195,20 +195,19 @@ describe('TrendingCacheProvider', () => {
       expect(result.current.movieCards).toEqual([movieCard(1)]);
     });
 
-    it('does not update the cache for another locale', () => {
-      const { result, rerender } = renderHook(() => useTrendingCache(), {
-        wrapper: createWrapper(),
-        initialProps: { initialLocale: 'en-US' }
+    it('does not update another locale cache when adding cards', () => {
+      const english = renderHook(() => useTrendingCache(), {
+        wrapper: createWrapper('en-US')
+      });
+      const german = renderHook(() => useTrendingCache(), {
+        wrapper: createWrapper('de-DE')
       });
 
-      act(() => result.current.initializeCards([movieCard(1)]));
+      act(() => english.result.current.initializeCards([movieCard(1)]));
+      act(() => german.result.current.addCards('movie', [movieCard(2)]));
 
-      rerender({ initialLocale: 'de-DE' });
-
-      expectUnchangedCache(result, () =>
-        result.current.addCards('movie', [movieCard(2)])
-      );
-      expect(result.current.movieCards).toEqual([movieCard(1)]);
+      expect(english.result.current.movieCards).toEqual([movieCard(1)]);
+      expect(german.result.current.movieCards).toEqual([movieCard(2)]);
     });
   });
 
@@ -301,20 +300,19 @@ describe('TrendingCacheProvider', () => {
       expect(result.current.movieLastRequestedPage).toBe(2);
     });
 
-    it('does not update the cache for another locale', () => {
-      const { result, rerender } = renderHook(() => useTrendingCache(), {
-        wrapper: createWrapper(),
-        initialProps: { initialLocale: 'en-US' }
+    it('does not update another locale cache when marking a page loaded', () => {
+      const english = renderHook(() => useTrendingCache(), {
+        wrapper: createWrapper('en-US')
+      });
+      const german = renderHook(() => useTrendingCache(), {
+        wrapper: createWrapper('de-DE')
       });
 
-      act(() => result.current.markFeedPageLoaded('movie', 2));
+      act(() => english.result.current.markFeedPageLoaded('movie', 2));
+      act(() => german.result.current.markFeedPageLoaded('movie', 3));
 
-      rerender({ initialLocale: 'de-DE' });
-
-      expectUnchangedCache(result, () =>
-        result.current.markFeedPageLoaded('movie', 3)
-      );
-      expect(result.current.movieLastRequestedPage).toBe(2);
+      expect(english.result.current.movieLastRequestedPage).toBe(2);
+      expect(german.result.current.movieLastRequestedPage).toBe(3);
     });
   });
 });
