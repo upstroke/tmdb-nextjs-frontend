@@ -53,6 +53,15 @@ These tests do not establish actual browser focus, native dialog behavior,
 Next.js routing, or live TMDB correctness. Cached end-of-feed metadata is not
 expanded in this change; the existing wrapper hasMore behavior is retained.
 
+## Dialog setup isolation
+
+jsdom may not implement HTMLDialogElement.showModal. Before each test, save
+its original own-property descriptor and define a configurable vi.fn stub that
+sets open to true. After cleanup, restore that descriptor, or delete the stub
+when the method was originally absent. Do not spy on a missing method.
+This setup supports the tests but does not establish native modal behavior.
+No production code or behavioral assertions are changed by this setup fix.
+
 ## Execution and required regression checks
 
 ```bash

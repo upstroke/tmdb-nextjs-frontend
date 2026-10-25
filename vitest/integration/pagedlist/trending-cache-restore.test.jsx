@@ -28,6 +28,8 @@ vi.mock('next/image', async () => {
   return { default: MockImage };
 });
 
+let originalShowModal;
+
 const cases = [
   { type: 'movie', path: 'movies', List: MovieTrendingList, route: moviesRoute, fixture: pagedListFixture.movies },
   { type: 'tv', path: 'tv-shows', List: TvTrendingList, route: tvRoute, fixture: pagedListFixture.tv }
@@ -108,6 +110,7 @@ async function setupList(config, { seeded = false, duplicates = false } = {}) {
 }
 
 beforeEach(() => {
+  originalShowModal = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, 'showModal');
   sessionStorage.clear();
   vi.stubEnv('TMDB_API_KEY', 'test-key');
   vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -115,13 +118,22 @@ beforeEach(() => {
   vi.stubGlobal('IntersectionObserver', vi.fn(function () {
     return { observe: vi.fn(), disconnect: vi.fn(), unobserve: vi.fn() };
   }));
-  vi.spyOn(HTMLDialogElement.prototype, 'showModal').mockImplementation(function () {
-    this.open = true;
+  Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {
+    configurable: true,
+    writable: true,
+    value: vi.fn(function showModal() {
+      this.open = true;
+    })
   });
 });
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+  if (originalShowModal) {
+    Object.defineProperty(HTMLDialogElement.prototype, 'showModal', originalShowModal);
+  } else {
+    delete HTMLDialogElement.prototype.showModal;
+  }
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
   sessionStorage.clear();
