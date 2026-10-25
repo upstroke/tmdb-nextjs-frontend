@@ -62,11 +62,12 @@ Use the project wrapper `cy.checkPageA11y()` for Cypress accessibility scans. Ex
 npm run validate:all
 ```
 
-This runs the Vitest validation workflow, then one production build and all
-configured Cypress specs, including security and accessibility. The existing
-E2E runner starts the production server, waits for it, and manages shutdown
-after Cypress exits. A failing command prevents later commands from starting;
-this is a fail-fast workflow, not a collect-all-errors run.
+This runs the Vitest validation workflow, one production build and all
+configured Cypress specs, including security and accessibility, followed by a
+production dependency audit with `npm audit --omit=dev --audit-level=high`.
+The existing E2E runner starts the production server, waits for it, and manages
+shutdown after Cypress exits. A failing command prevents later commands from
+starting; this is a fail-fast workflow, not a collect-all-errors run.
 
 Stop any manually running server on port 3000 first. A valid server-side
 `TMDB_API_KEY` is required for live-data scenarios, and Chrome plus the
@@ -76,6 +77,9 @@ No separate Next.js server is needed for Vitest or coverage.
 Security and accessibility are already included in the full Cypress run and
 need not be invoked again separately. Manual accessibility audits are still
 required; automated success does not establish full WCAG conformance.
+
+The dependency audit checks production dependencies only and fails on high or
+critical advisories. It does not modify the lockfile or installed packages.
 
 ## Running Tests
 
@@ -128,11 +132,11 @@ The individual test scripts do not run the linter, so a focused run such as `npm
 
 - `npm run validate:all`: complete automated validation described above.
 - `npm run validate:fast`: lint, formatting check, and unit tests. The pre-commit hook runs `npx lint-staged && npm run validate:fast`; lint-staged formats matching staged files first.
-- `npm run validate`: lint, formatting check, unit tests, component tests, integration tests, and combined coverage. It does not run a production build or Cypress.
+- `npm run validate`: lint, formatting check, unit tests, component tests, integration tests, and combined coverage. It does not run a production build, Cypress, or dependency audit.
 - `npm run build`: separate production-build validation.
 - `bash scripts/validate.sh`: alternative sequence with lint, formatting, unit, component, integration tests, and a build, but no explicit coverage run. It is not equivalent to `npm run validate` or `npm run validate:all`.
 
-`validate` and `validate:all` use `scripts/run-checks.mjs` for friendly progress output. They run the same underlying npm scripts and retain the fail-fast behavior.
+`validate` and `validate:all` use `scripts/run-checks.mjs` for friendly progress output. They run the same underlying npm commands and retain the fail-fast behavior.
 
 Run one focused check through the existing validation commands:
 
@@ -147,6 +151,7 @@ npm run validate -- coverage
 npm run validate:all -- e2e
 npm run validate:all -- security
 npm run validate:all -- a11y
+npm run validate:all -- audit
 ```
 
 For example, `npm run validate -- component` runs `npm run test:component`.

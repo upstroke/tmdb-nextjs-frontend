@@ -209,14 +209,18 @@ Vitest and coverage do not require a separately running Next.js server.
 npm run validate:all
 ```
 
-This runs the Vitest validation workflow, then a production build and all
-configured Cypress specs, including security and accessibility.
+This runs the Vitest validation workflow, a production build and all
+configured Cypress specs, including security and accessibility, followed by a
+production dependency audit with `npm audit --omit=dev --audit-level=high`.
 The E2E runner starts and stops its production server automatically. A failing
 command prevents later commands from starting.
 
 Stop any server on port 3000 before the run. Live-data scenarios require a
 valid server-side `TMDB_API_KEY`. Chrome and the Playwright Chromium browser
 used by component tests must be available. Manual accessibility checks remain separate.
+
+The dependency audit checks production dependencies only and fails on high or
+critical advisories. It does not modify the lockfile or installed packages.
 
 ### End-to-end tests
 
@@ -261,11 +265,11 @@ npm run validate
 npm run validate:fast
 ```
 
-- `validate:all`: complete automated validation, including lint, format, Vitest coverage, production build, and all Cypress specs with managed server startup and shutdown.
-- `validate`: lint, formatting check, unit tests, component tests, integration tests, and combined Vitest coverage; no production build or Cypress.
+- `validate:all`: complete automated validation, including lint, format, Vitest coverage, production build, all Cypress specs with managed server startup and shutdown, and a production dependency audit.
+- `validate`: lint, formatting check, unit tests, component tests, integration tests, and combined Vitest coverage; no production build, Cypress, or dependency audit.
 - `validate:fast`: ESLint, Prettier check, and Vitest unit tests.
 
-`validate` and `validate:all` use `scripts/run-checks.mjs` for friendly progress output. They run the same underlying npm scripts and retain fail-fast behavior.
+`validate` and `validate:all` use `scripts/run-checks.mjs` for friendly progress output. They run the same underlying npm commands and retain fail-fast behavior.
 
 Run one focused check through the existing validation commands:
 
@@ -280,6 +284,7 @@ npm run validate -- coverage
 npm run validate:all -- e2e
 npm run validate:all -- security
 npm run validate:all -- a11y
+npm run validate:all -- audit
 ```
 
 For example, `npm run validate -- component` runs `npm run test:component`.
@@ -306,7 +311,7 @@ npx lint-staged && npm run validate:fast
 
 Formatting applies to matching staged files, whereas `validate:fast` checks the project, not just the staged changes. Running `npm run validate:fast` directly does not run lint-staged or automatically format files.
 
-The hook intentionally excludes component, integration, Cypress, security, and accessibility tests because they are slower or require application startup. Run `npm run validate:all` for complete automated validation before final review.
+The hook intentionally excludes component, integration, Cypress, security, accessibility, and dependency-audit checks because they are slower, require application startup, or depend on external advisory data. Run `npm run validate:all` for complete automated validation before final review.
 
 ## Code Quality
 

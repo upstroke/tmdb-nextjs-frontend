@@ -177,11 +177,12 @@ The following known technical debt items should be considered when planning rela
 Use the validation commands to run the existing test suites as regression checks.
 
 - Use `npm run validate:fast` for quick feedback before committing. It runs ESLint, the Prettier check, and Vitest unit tests.
-- Use `npm run validate` before pushing a change or opening a pull request. It runs lint, the formatting check, unit tests, component tests, integration tests, and combined coverage, but no production build or Cypress.
-- Use `npm run validate:all` for complete automated validation. It runs the Vitest validation workflow, then a production build and all Cypress specs, including security and accessibility.
-- `validate` and `validate:all` use `scripts/run-checks.mjs` for friendly progress output. They run the same underlying npm scripts and retain fail-fast behavior.
+- Use `npm run validate` before pushing a change or opening a pull request. It runs lint, the formatting check, unit tests, component tests, integration tests, and combined coverage, but no production build, Cypress, or dependency audit.
+- Use `npm run validate:all` for complete automated validation. It runs the Vitest validation workflow, a production build, all Cypress specs including security and accessibility, and a production dependency audit.
+- `validate` and `validate:all` use `scripts/run-checks.mjs` for friendly progress output. They run the same underlying npm commands and retain fail-fast behavior.
 - Run a focused check with `npm run validate -- component`, for example. Available Vitest selectors are `lint`, `format`, `unit`, `component`, `integration`, and `coverage`.
-- Run a focused managed browser check with `npm run validate:all -- security`, for example. Available E2E selectors are `e2e`, `security`, and `a11y`.
+- Run a focused managed browser check with `npm run validate:all -- security`, for example. Available full-validation selectors are `e2e`, `security`, `a11y`, and `audit`.
+- The full-validation dependency audit runs `npm audit --omit=dev --audit-level=high`. It checks production dependencies only and fails on high or critical advisories. It does not modify the lockfile or installed packages.
 - Stop any server on port 3000 first. Managed commands reject an occupied port rather than reuse or kill another process. They check again after building. Do not start another server during the run.
 - `npm run test:e2e:open` builds and starts production before opening Cypress and keeps the server until Cypress exits.
 - Pass Cypress arguments after `--`, for example `npm run test:e2e -- --spec "cypress/e2e/security/routing.cy.js"`. Do not override the managed baseUrl of http://localhost:3000.
@@ -189,7 +190,7 @@ Use the validation commands to run the existing test suites as regression checks
 - `bash scripts/validate.sh` includes a production build but no explicit coverage run. It is not equivalent to `npm run validate`; choose checks according to the task scope.
 - See `docs/testing/acceptance-tests.md` for the production-runner validation checklist.
 
-The pre-commit hook runs `npx lint-staged && npm run validate:fast`. It intentionally excludes component, integration, Cypress, security, and accessibility tests because they are slower or require application startup.
+The pre-commit hook runs `npx lint-staged && npm run validate:fast`. It intentionally excludes component, integration, Cypress, security, accessibility, and dependency-audit checks because they are slower, require application startup, or depend on external advisory data.
 
 Additional commands:
 
@@ -202,6 +203,8 @@ Additional commands:
 - Use `npm run test:coverage` for combined Vitest coverage; the enforced global threshold is 80% statements. Cypress does not contribute to this report.
 - Use `npm run build` for production-build validation.
 - Treat Cypress as a separate validation step; it is not included in `npm run validate`.
+- Use `npm audit --omit=dev` to review production dependency advisories without enforcing a severity threshold.
+- Do not run `npm audit fix --force` without a reviewed dependency-upgrade plan; it can introduce breaking major-version changes.
 
 Do not edit files, run destructive commands, change dependencies, push commits,
 or create pull requests without the user’s explicit approval.

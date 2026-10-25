@@ -5,18 +5,24 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 
 const vitestChecks = [
-  { key: 'lint', label: 'Lint', script: 'lint' },
-  { key: 'format', label: 'Format check', script: 'format:check' },
-  { key: 'unit', label: 'Unit tests', script: 'test:unit' },
-  { key: 'component', label: 'Component tests', script: 'test:component' },
-  { key: 'integration', label: 'Integration tests', script: 'test:integration' },
-  { key: 'coverage', label: 'Coverage', script: 'test:coverage' }
+  { key: 'lint', label: 'Lint', args: ['run', 'lint'], retry: 'npm run lint' },
+  { key: 'format', label: 'Format check', args: ['run', 'format:check'], retry: 'npm run format:check' },
+  { key: 'unit', label: 'Unit tests', args: ['run', 'test:unit'], retry: 'npm run test:unit' },
+  { key: 'component', label: 'Component tests', args: ['run', 'test:component'], retry: 'npm run test:component' },
+  { key: 'integration', label: 'Integration tests', args: ['run', 'test:integration'], retry: 'npm run test:integration' },
+  { key: 'coverage', label: 'Coverage', args: ['run', 'test:coverage'], retry: 'npm run test:coverage' }
 ];
 
 const e2eChecks = [
-  { key: 'e2e', label: 'E2E tests', script: 'test:e2e' },
-  { key: 'security', label: 'Security tests', script: 'test:e2e:security' },
-  { key: 'a11y', label: 'Accessibility tests', script: 'test:e2e:a11y' }
+  { key: 'e2e', label: 'E2E tests', args: ['run', 'test:e2e'], retry: 'npm run test:e2e' },
+  { key: 'security', label: 'Security tests', args: ['run', 'test:e2e:security'], retry: 'npm run test:e2e:security' },
+  { key: 'a11y', label: 'Accessibility tests', args: ['run', 'test:e2e:a11y'], retry: 'npm run test:e2e:a11y' },
+  {
+    key: 'audit',
+    label: 'Dependency audit',
+    args: ['audit', '--omit=dev', '--audit-level=high'],
+    retry: 'npm audit --omit=dev --audit-level=high'
+  }
 ];
 
 /**
@@ -36,13 +42,13 @@ function parseArguments() {
 }
 
 /**
- * Runs one npm script with inherited output and propagates failure.
- * @param {string} script - npm script name.
- * @returns {Promise<void>} Resolves only when the script succeeds.
+ * Runs an npm command with inherited output and propagates failure.
+ * @param {string[]} args - npm command arguments.
+ * @returns {Promise<void>} Resolves only when the command succeeds.
  */
-function runScript(script) {
+function runNpm(args) {
   return new Promise((resolve, reject) => {
-    const child = spawn(npm, ['run', script], {
+    const child = spawn(npm, args, {
       cwd: root,
       stdio: 'inherit'
     });
@@ -50,7 +56,7 @@ function runScript(script) {
     child.once('error', reject);
     child.once('exit', (code, signal) => {
       if (code === 0) resolve();
-      else reject(new Error(`npm run ${script} failed (${signal ?? code}).`));
+      else reject(new Error(`npm ${args.join(' ')} failed (${signal ?? code}).`));
     });
   });
 }
@@ -92,13 +98,13 @@ async function main() {
     process.stdout.write(`\n▶ ${check.label} … running\n`);
 
     try {
-      await runScript(check.script);
+      await runNpm(check.args);
       const duration = formatDuration(Date.now() - checkStartedAt);
       process.stdout.write(`✔ ${check.label} passed in ${duration}\n`);
     } catch (error) {
       const duration = formatDuration(Date.now() - checkStartedAt);
       process.stderr.write(`\n✖ ${check.label} failed after ${duration}\n`);
-      process.stderr.write(`  Focused retry: npm run ${check.script}\n`);
+      process.stderr.write(`  Review or retry: ${check.retry}\n`);
       throw error;
     }
   }
