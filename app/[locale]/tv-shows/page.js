@@ -1,6 +1,6 @@
 import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/helpers';
-import PagedList from '@/components/PagedList';
+import TvTrendingList from '@/components/TvTrendingList';
 
 /**
  * TV shows page (`/[locale]/tv-shows`). Server component that loads trending TV
@@ -72,7 +72,7 @@ export default async function TvShowsPage({ params }) {
 
   return (
     <main id="main-content" tabIndex={-1} className="ui container fluid tv-shows-page">
-      <PagedList
+      <TvTrendingList
         initialData={initialData}
         apiPath="tv-shows"
         storageKey="tv-shows-page"

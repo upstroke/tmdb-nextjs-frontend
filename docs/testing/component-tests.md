@@ -16,9 +16,6 @@ Tests live in `vitest/component/` and match `**/*.browser.test.{js,jsx}`. The `b
 # Component tests only
 npm run test:component
 
-# The complete browser project
-npm run test:browser
-
 # One component's browser tests
 npx vitest run --project browser vitest/component/typeheadsearch/TypeHeadSearch.browser.test.jsx
 

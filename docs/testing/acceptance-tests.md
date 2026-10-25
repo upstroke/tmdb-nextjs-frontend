@@ -1,75 +1,66 @@
 # Acceptance Tests
 
-## Purpose
+## Purpose and locations
 
-Cypress acceptance tests verify the running application from the user's perspective: navigation, search, detail pages, shared UI behavior, accessibility, and security. They complement Vitest unit, integration, and browser component tests. Isolated component tests use Vitest browser mode, not Cypress component testing.
+Cypress tests the running application: navigation, search, detail pages, shared UI, accessibility, and security. Isolated component tests use Vitest browser mode.
 
-## Location
-
-- `cypress/e2e/`: end-to-end user flows and shared application behavior.
-- `cypress/e2e/security/`: manipulated input, security headers, redirects, and API key exposure.
-- `cypress/accessibility/`: page-level accessibility checks and targeted keyboard, focus, contrast, and live-region scenarios.
+- `cypress/e2e/`: application flows.
+- `cypress/e2e/security/`: security scenarios.
+- `cypress/accessibility/`: full-page accessibility scenarios.
 - `cypress/POM/`: reusable Page Objects.
-- `cypress/fixtures/`: Cypress-specific fixtures.
-- `cypress/support/`: Cypress setup and custom commands.
+- `cypress/fixtures/` and `cypress/support/`: fixtures and setup.
 
-The E2E spec patterns in `cypress.config.js` include both `cypress/e2e/**` and `cypress/accessibility/**`. The previous `tests/cypress/acceptance/` structure and Cypress component-runner examples do not describe the current setup.
+The configured E2E patterns include both E2E and accessibility specs.
 
-## Running Tests
+## Managed production runs
 
-Start the application separately on `http://localhost:3000`, then run:
+Stop any existing server on port 3000 before running:
 
 ```bash
-# All configured Cypress E2E specs, including accessibility and security
 npm run test:e2e
-
-# Interactive E2E runner
-npm run test:e2e:open
-
-# Accessibility specs only
-npm run test:e2e:a11y
-
-# Security specs only
 npm run test:e2e:security
-
-# One existing accessibility spec
-npx cypress run --e2e --browser chrome --spec "cypress/accessibility/pages/page-axe.cy.js"
+npm run test:e2e:a11y
+npm run test:e2e:open
 ```
 
-The npm scripts use Chrome. `npm run test:component` runs Vitest component tests; it is not a Cypress acceptance-test command.
+Each command checks port 3000, runs `next build`, checks the port again, starts `next start --port 3000` with NODE_ENV=production, waits for `/en-US`, and starts Cypress. The installed start-server-and-test manages server cleanup after Cypress exits. Interactive mode retains the server while Cypress is open.
 
-## Production Validation
+Occupied ports cause an error; existing servers are never deliberately reused or killed. Do not start another process on port 3000 during the run. The port preflight is not an exclusive reservation.
 
-`npm run validate:e2e` builds the application and then runs the Cypress E2E suite. `npm run validate:a11y` builds it and then runs the accessibility suite. A build does not start a server: these commands still require a running application on `http://localhost:3000`.
+Use Chrome and pass additional Cypress CLI arguments after `--`:
 
-For production testing, stop any existing server as needed, run `npm run build`, start the built application with `npm run start`, and run the relevant Cypress command in another terminal. Restart or rebuild after server-side changes so tests exercise the intended code.
+```bash
+npm run test:e2e -- --spec "cypress/e2e/security/routing.cy.js"
+```
 
-## Data and Network Boundaries
+Do not override baseUrl with Cypress CLI flags: managed runs target `http://localhost:3000`. The runner sets CYPRESS_BASE_URL to this address, overriding an inherited environment value.
 
-Use Cypress fixtures and Page Objects where appropriate. Browser-originated requests can be stubbed with `cy.intercept()`, but it does not intercept server-side TMDB requests.
+No separate server terminal is required. Direct Cypress invocation bypasses production startup and the occupied-port check; use managed commands for security validation.
 
-Accessibility checks for lists and detail pages use live TMDB data and require a valid server-side `TMDB_API_KEY`. Search scenarios can stub browser requests. Follow the relevant test plan for each spec's exact data requirements rather than assuming all tests are fully mocked. Never expose the API key in browser code or fixtures.
+## Data and network boundaries
 
-## Accessibility and Security
+A valid server-side TMDB_API_KEY is required for live-data scenarios. Preserve existing local environment configuration. Never expose the key in browser code or fixtures.
 
-The project targets WCAG 2.2 AA. Use the accessibility test plan for automated coverage and the separate manual checklist for screen-reader, keyboard, zoom, and visual audits. Passing automated checks alone does not establish full WCAG conformance.
+Browser requests can be intercepted with cy.intercept; server-side TMDB requests cannot. Follow each spec's test plan. Controlled external failures belong in integration tests with the external network mocked.
 
-Keep component-level keyboard and ARIA checks in Vitest browser mode when isolation is appropriate; use Cypress for full-application behavior and cross-page flows.
+## Runner validation checklist
 
-Security scenarios should verify controlled handling of malformed external input and check that secrets do not reach the browser. See the security test documentation and matching test plan.
+- With a dev server on port 3000, managed commands fail before building and leave that process running.
+- With a free port, a single production build precedes next start and Cypress.
+- A selected spec reaches the managed production server.
+- Both passing and failing Cypress runs stop the managed server and propagate a nonzero result on failure.
+- Closing the interactive runner stops its server.
+- Build failures do not start a server or Cypress.
 
-## Best Practices and Maintenance
+These lifecycle checks require local execution; source changes alone do not establish that they pass.
 
-- Assert on user-visible behavior and meaningful request/response outcomes, not implementation details.
-- Prefer role, accessible-name, and text queries where possible.
-- Keep tests independent and use Cypress's retryable assertions rather than arbitrary waits.
-- Reuse existing Page Objects and custom commands instead of inventing parallel patterns.
-- Do not use `Cypress.env()` in specs; `allowCypressEnv` is false, so use `cy.env()` when needed.
-- Update the matching test plan and affected documentation whenever a test changes. Keep scenario IDs, paths, descriptions, and assertions consistent.
+## Accessibility and security
 
-Cypress results are separate from Vitest coverage. `npm run check` and `npm run validate` do not run Cypress; execute the relevant browser checks separately.
+Target WCAG 2.2 AA, use the project's cy.checkPageA11y wrapper and manual audit checklist. Automated checks do not establish full conformance. Keep isolated keyboard and ARIA tests in Vitest browser mode.
 
-## Related Documentation
+Assert user-visible behavior and meaningful request outcomes, reuse Page Objects, and avoid arbitrary waits. Use cy.env rather than Cypress.env. Update the matching test plan when test behavior changes. Cypress results do not contribute to Vitest coverage.
+
+## Related documentation
 
 - [Testing Strategy](../testing.md)
 - [Component Tests](component-tests.md)

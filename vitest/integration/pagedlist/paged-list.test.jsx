@@ -21,6 +21,7 @@ import { GET as trendingRoute } from '../../../app/api/[locale]/trending/route.j
 import { GET as moviesRoute } from '../../../app/api/[locale]/movies/route.js';
 import { GET as tvShowsRoute } from '../../../app/api/[locale]/tv-shows/route.js';
 import { AppLocaleProvider } from '@/components/providers/LocaleProvider.jsx';
+import TrendingCacheProvider from '@/components/TrendingCacheProvider.jsx';
 import { DEFAULT_LOCALE } from '@/lib/i18n/config.js';
 import { getLocaleText } from '@/lib/i18n/helpers.js';
 import { rawFixtures } from '../../fixtures/tmdb/tmdb.browser.fixtures.js';
@@ -155,9 +156,19 @@ const internalCalls = () =>
 const tmdbCalls = (fragment) =>
   globalThis.fetch.mock.calls.map(([url]) => String(url)).filter((url) => url.includes(fragment));
 
+/**
+ * Renders a list page inside the same provider chain used by the locale layout.
+ *
+ * @param {object} list - List configuration under test.
+ * @returns {Promise<import('@testing-library/react').RenderResult>} Rendered page.
+ */
 async function renderList(list) {
   const ui = await list.Page({ params: Promise.resolve({ locale: DEFAULT_LOCALE }) });
-  return render(<AppLocaleProvider>{ui}</AppLocaleProvider>);
+  return render(
+    <AppLocaleProvider>
+      <TrendingCacheProvider initialLocale={DEFAULT_LOCALE}>{ui}</TrendingCacheProvider>
+    </AppLocaleProvider>
+  );
 }
 
 const cardTitles = (container) =>
@@ -384,7 +395,11 @@ describe('PagedList on the home page (integration, home only)', () => {
     mockFetch(list);
 
     const ui = await list.Page({ params: Promise.resolve({}) });
-    const { container } = render(<AppLocaleProvider>{ui}</AppLocaleProvider>);
+    const { container } = render(
+      <AppLocaleProvider>
+        <TrendingCacheProvider initialLocale={DEFAULT_LOCALE}>{ui}</TrendingCacheProvider>
+      </AppLocaleProvider>
+    );
 
     expect(screen.getByText(messages.invalidUrlParams)).toBeInTheDocument();
     expect(container.querySelectorAll('.default-card')).toHaveLength(0);
@@ -426,7 +441,11 @@ describe('PagedList on the home page (integration, home only)', () => {
     mockFetch(list);
 
     const ui = await list.Page({ params: Promise.resolve({ locale: 'x' }) });
-    const { container } = render(<AppLocaleProvider>{ui}</AppLocaleProvider>);
+    const { container } = render(
+      <AppLocaleProvider>
+        <TrendingCacheProvider initialLocale={DEFAULT_LOCALE}>{ui}</TrendingCacheProvider>
+      </AppLocaleProvider>
+    );
 
     expect(screen.getByText(messages.invalidUrlParams)).toBeInTheDocument();
     expect(container.querySelectorAll('.default-card')).toHaveLength(0);

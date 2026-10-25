@@ -56,6 +56,31 @@ Use the project wrapper `cy.checkPageA11y()` for Cypress accessibility scans. Ex
 - **Coverage:** NOT included in Vitest coverage reports
 - **Documentation:** [Security Tests](testing/security-tests.md) and the [test plan](../cypress/e2e/security/security-testplan.md)
 
+## Complete Automated Validation
+
+```bash
+npm run validate:all
+```
+
+This runs the Vitest validation workflow, one production build and all
+configured Cypress specs, including security and accessibility, followed by a
+production dependency audit with `npm audit --omit=dev --audit-level=high`.
+The existing E2E runner starts the production server, waits for it, and manages
+shutdown after Cypress exits. A failing command prevents later commands from
+starting; this is a fail-fast workflow, not a collect-all-errors run.
+
+Stop any manually running server on port 3000 first. A valid server-side
+`TMDB_API_KEY` is required for live-data scenarios, and Chrome plus the
+Playwright Chromium browser used by component tests must be available.
+No separate Next.js server is needed for Vitest or coverage.
+
+Security and accessibility are already included in the full Cypress run and
+need not be invoked again separately. Manual accessibility audits are still
+required; automated success does not establish full WCAG conformance.
+
+The dependency audit checks production dependencies only and fails on high or
+critical advisories. It does not modify the lockfile or installed packages.
+
 ## Running Tests
 
 ```bash
@@ -67,23 +92,23 @@ npm run test:unit
 npm run test:integration
 npm run test:component
 
-# Run the complete Vitest browser project
-npm run test:browser
-
-# Run all Vitest projects with combined coverage
+# Run all Vitest projects with combined coverage; no Next.js server needed
 npm run test:coverage
 
-# Run all Cypress E2E specs, including accessibility and security (app must run on http://localhost:3000)
+# Build production, manage its server, and run all Cypress specs
 npm run test:e2e
 
-# Run only the Cypress security tests (app must run on http://localhost:3000)
+# Same production lifecycle, security specs only
 npm run test:e2e:security
 
-# Run only the Cypress accessibility tests (app must run on http://localhost:3000 with TMDB_API_KEY where required)
+# Same production lifecycle, accessibility specs only
 npm run test:e2e:a11y
 
-# Open the Cypress interactive runner
+# Build and start production, then open Cypress interactively
 npm run test:e2e:open
+
+# Managed production run of one spec
+npm run test:e2e -- --spec "cypress/e2e/security/routing.cy.js"
 ```
 
 `npm run test:e2e` runs every spec matched by `specPattern` in `cypress.config.js`: `cypress/e2e/**` and `cypress/accessibility/**`.
@@ -97,28 +122,44 @@ npm run lint
 # Prettier, check only
 npm run format:check
 
-# Lint + format check + all Vitest tests
-npm run check
+# Prettier, rewrite files
+npm run format
 ```
 
-The individual test scripts do not run the linter, so a focused run such as `npm run test:unit` stays fast. `npm run check` does not include Cypress, a production build, or an explicit coverage run.
+The individual test scripts do not run the linter, so a focused run such as `npm run test:unit` stays fast.
 
 ## Validation Workflow
 
+- `npm run validate:all`: complete automated validation described above.
 - `npm run validate:fast`: lint, formatting check, and unit tests. The pre-commit hook runs `npx lint-staged && npm run validate:fast`; lint-staged formats matching staged files first.
-- `npm run validate`: fast validation plus component tests, integration tests, and combined coverage. Run before pushing or opening a pull request; it does not run a production build or Cypress.
-- `npm run validate:full`: component tests, integration tests, and coverage without repeating the fast checks.
+- `npm run validate`: lint, formatting check, unit tests, component tests, integration tests, and combined coverage. It does not run a production build, Cypress, or dependency audit.
 - `npm run build`: separate production-build validation.
-- `npm run validate:e2e` and `npm run validate:a11y`: build followed by the respective Cypress suite. They do not start a server; Cypress still requires a separately running application on `http://localhost:3000`.
-- `bash scripts/validate.sh`: alternative sequence with lint, formatting, unit, component, integration tests, and a build, but no explicit coverage run. It is not equivalent to `npm run validate`.
+- `bash scripts/validate.sh`: alternative sequence with lint, formatting, unit, component, integration tests, and a build, but no explicit coverage run. It is not equivalent to `npm run validate` or `npm run validate:all`.
 
-For production browser tests, build and start the app in one terminal:
+`validate` and `validate:all` use `scripts/run-checks.mjs` for friendly progress output. They run the same underlying npm commands and retain the fail-fast behavior.
+
+Run one focused check through the existing validation commands:
 
 ```bash
-npm run build && npm run start
+npm run validate -- lint
+npm run validate -- format
+npm run validate -- unit
+npm run validate -- component
+npm run validate -- integration
+npm run validate -- coverage
+
+npm run validate:all -- e2e
+npm run validate:all -- security
+npm run validate:all -- a11y
+npm run validate:all -- audit
 ```
 
-Then run `npm run test:e2e`, `npm run test:e2e:a11y`, or `npm run test:e2e:security` in a second terminal. Rebuild and restart after server-code changes. Follow the relevant test plan for live-data and API-key requirements.
+For example, `npm run validate -- component` runs `npm run test:component`.
+
+Do not start a separate server for managed E2E commands. The runner checks port
+3000 before and after building, rejects occupied ports, and starts `next start`
+with `NODE_ENV=production`. Do not override its baseUrl or start another server
+during the run. See [Acceptance Tests](testing/acceptance-tests.md) for details.
 
 ## Coverage
 

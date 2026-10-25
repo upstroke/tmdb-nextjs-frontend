@@ -67,7 +67,7 @@ Prefer these tools when they are available:
 - `rg` (`ripgrep`) for fast text searches
 - `fd` for fast file and directory searches
 - `fzf` for interactive selection and filtering
-- `bat` for readable file output
+- `bat` for readable Git diffs
 - `delta` for readable Git diffs
 - `sd` for simple, targeted text changes
 
@@ -114,17 +114,21 @@ The following known technical debt items should be considered when planning rela
 
 ## High priority
 
-### TD-001: Reduce redundant trending requests while preserving card certifications
+### TD-001: Reduce redundant trending requests while preserving card certifications — implemented on feature branch
 
-- The home page loads `/trending/all/day?page=1`; its 20 cards can be split into movie and TV cards for reuse on the Movies and TV Shows pages.
-- Movies and TV Shows currently load their own dedicated trending feeds, even though the first Trending All page already contains cards that appear in those feeds.
-- Reuse the first Trending All response as a shared client-side cache: movie cards become the initial Movies list and TV cards become the initial TV Shows list.
+- Status: Implemented on `feature/TD-001-Reduce-redundant-trending`; pending validation and merge.
+- The home page loads `/trending/all/day?page=1`; its cards are split dynamically by `mediaType` into movie and TV cards for reuse on the Movies and TV Shows pages.
+- A locale-scoped client-side cache stores already known movie and TV cards separately. It survives client-side navigation between Home, Movies, and TV Shows.
+- Movies and TV Shows render cached cards when available and do not make an initial dedicated trending request in that case. When the cache is empty, the existing server-side first-page fallback is used.
+- Home “Load more” adds newly loaded Trending All cards to the shared cache, separated by media type. These cards improve display continuity and deduplication, but do not advance the dedicated Movies or TV Shows feed page counters.
 - The dedicated Movies or TV Shows trending feed is requested only after the user clicks “Load more”.
-- On “Load more”, the relevant dedicated feed is requested starting at page 1, deduplicated against the cached cards using `${mediaType}-${id}`, and only new cards are appended.
+- The next dedicated feed page is tracked separately for movies and TV shows. It is always the page after the last successfully requested page: initially page 1, then page 2, page 3, and so on.
+- Cached card counts are not used to infer API pagination. This keeps the behavior independent of the number of results TMDB returns per page and prevents a dedicated feed page from being skipped.
+- On “Load more”, the relevant dedicated feed response is deduplicated against the cached cards using `${mediaType}-${id}`, and only new cards are appended.
 - Existing cards and their certifications remain available while navigating between Home, Movies, and TV Shows; certifications are loaded only for cards not already present in the cache.
 - Certification badges remain visible on every list card; certifications are neither removed nor deferred in this task.
 - Trending All is split dynamically by `mediaType`; the implementation does not assume it always contains exactly 10 movies and 10 TV shows.
-- A full browser reload may reset the client-side cache; this is acceptable.
+- A full browser reload clears the client-side cache. The existing `PagedList` sessionStorage restoration may still restore previously loaded pages after a reload; this behavior is intentionally retained for now.
 - A custom homepage mix of separate movie and TV trending feeds is out of scope for this task.
 
 ### TD-002: Bound in-memory caches
@@ -173,15 +177,20 @@ The following known technical debt items should be considered when planning rela
 Use the validation commands to run the existing test suites as regression checks.
 
 - Use `npm run validate:fast` for quick feedback before committing. It runs ESLint, the Prettier check, and Vitest unit tests.
-- Use `npm run validate` before pushing a change or opening a pull request. It runs the fast validation, component tests, integration tests, and coverage, but no production build or Cypress.
-- Use `npm run validate:full` to run component tests, integration tests, and coverage without repeating the fast checks.
-- Use `npm run validate:e2e` for a production build followed by all Cypress end-to-end tests.
-- Use `npm run validate:a11y` for a production build followed by the Cypress accessibility suite.
-- Cypress validation requires a separately running app on `http://localhost:3000`; `validate:e2e` and `validate:a11y` build the app but do not start a server. For production testing, build and start the app, then run the relevant `test:e2e` command in a second terminal.
+- Use `npm run validate` before pushing a change or opening a pull request. It runs lint, the formatting check, unit tests, component tests, integration tests, and combined coverage, but no production build, Cypress, or dependency audit.
+- Use `npm run validate:all` for complete automated validation. It runs the Vitest validation workflow, a production build, all Cypress specs including security and accessibility, and a production dependency audit.
+- `validate` and `validate:all` use `scripts/run-checks.mjs` for friendly progress output. They run the same underlying npm commands and retain fail-fast behavior.
+- Run a focused check with `npm run validate -- component`, for example. Available Vitest selectors are `lint`, `format`, `unit`, `component`, `integration`, and `coverage`.
+- Run a focused managed browser check with `npm run validate:all -- security`, for example. Available full-validation selectors are `e2e`, `security`, `a11y`, and `audit`.
+- The full-validation dependency audit runs `npm audit --omit=dev --audit-level=high`. It checks production dependencies only and fails on high or critical advisories. It does not modify the lockfile or installed packages.
+- Stop any server on port 3000 first. Managed commands reject an occupied port rather than reuse or kill another process. They check again after building. Do not start another server during the run.
+- `npm run test:e2e:open` builds and starts production before opening Cypress and keeps the server until Cypress exits.
+- Pass Cypress arguments after `--`, for example `npm run test:e2e -- --spec "cypress/e2e/security/routing.cy.js"`. Do not override the managed baseUrl of http://localhost:3000.
 - The accessibility suite needs a valid `TMDB_API_KEY` for specs that use live TMDB data.
 - `bash scripts/validate.sh` includes a production build but no explicit coverage run. It is not equivalent to `npm run validate`; choose checks according to the task scope.
+- See `docs/testing/acceptance-tests.md` for the production-runner validation checklist.
 
-The pre-commit hook runs `npx lint-staged && npm run validate:fast`. It intentionally excludes component, integration, Cypress, security, and accessibility tests because they are slower or require a running application.
+The pre-commit hook runs `npx lint-staged && npm run validate:fast`. It intentionally excludes component, integration, Cypress, security, accessibility, and dependency-audit checks because they are slower, require application startup, or depend on external advisory data.
 
 Additional commands:
 
@@ -193,8 +202,9 @@ Additional commands:
 - Use `npm run test:unit`, `npm run test:integration`, or `npm run test:component` for focused Vitest validation.
 - Use `npm run test:coverage` for combined Vitest coverage; the enforced global threshold is 80% statements. Cypress does not contribute to this report.
 - Use `npm run build` for production-build validation.
-- Treat Cypress as a separate validation step. `npm run check` includes lint, formatting, and all Vitest tests, but no Cypress, build, or explicit coverage run. `npm run test:e2e` runs the specs headlessly (`cypress run --e2e --browser chrome`) and `npm run test:e2e:open` opens the interactive runner.
-- Use `npm run test:e2e:security` to run only the security specs. Rebuild and restart the production server first if server code changed.
+- Treat Cypress as a separate validation step; it is not included in `npm run validate`.
+- Use `npm audit --omit=dev` to review production dependency advisories without enforcing a severity threshold.
+- Do not run `npm audit fix --force` without a reviewed dependency-upgrade plan; it can introduce breaking major-version changes.
 
 Do not edit files, run destructive commands, change dependencies, push commits,
 or create pull requests without the user’s explicit approval.
