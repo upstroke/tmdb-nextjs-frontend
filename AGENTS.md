@@ -99,6 +99,15 @@ Rules:
 - When you fix, change, add, or delete a test, update its test plan and the affected docs in the same change. See `.agent/skills/tmdb-testing/SKILL.md`.
 - Use English for explanatory documentation, test names, and comments; preserve identifiers and intentionally localized test data.
 
+## Planning guardrails
+
+For every non-trivial implementation or refactoring task, read and apply
+`.cline/plan-quality.md` before producing a plan.
+
+A plan is not complete unless it distinguishes verified repository facts from
+assumptions, identifies the lifetime of any cached data, and describes the
+exact request and UI behavior for each affected user flow.
+
 # Technical debt backlog
 
 The following known technical debt items should be considered when planning related changes. They are not urgent defects, but they may affect scalability, resilience, memory usage, or data-quality guarantees.
