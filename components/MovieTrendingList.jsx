@@ -17,8 +17,7 @@ import PagedList from '@/components/PagedList';
  * @returns {JSX.Element}
  */
 export default function MovieTrendingList({ initialData, ...pagedListProps }) {
-  const { movieCards, addCards, getNextFeedPage, markFeedPageLoaded } =
-    useTrendingCache();
+  const { movieCards, addCards, getNextFeedPage, markFeedPageLoaded } = useTrendingCache();
   const useCache = movieCards.length > 0;
   const nextPage = getNextFeedPage('movie');
 

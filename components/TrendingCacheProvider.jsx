@@ -74,9 +74,7 @@ export default function TrendingCacheProvider({ initialLocale, children }) {
     function getNextFeedPage(mediaType) {
       const cards = mediaType === 'movie' ? cache.movieCards : cache.tvCards;
       const lastRequestedPage =
-        mediaType === 'movie'
-          ? cache.movieLastRequestedPage
-          : cache.tvLastRequestedPage;
+        mediaType === 'movie' ? cache.movieLastRequestedPage : cache.tvLastRequestedPage;
       const countBasedPage = Math.floor(cards.length / TRENDING_PAGE_SIZE) + 1;
 
       return Math.max(countBasedPage, lastRequestedPage + 1);
@@ -111,11 +109,8 @@ export default function TrendingCacheProvider({ initialLocale, children }) {
         setCache((previous) => {
           if (previous.locale !== initialLocale) return previous;
 
-          const existingCards =
-            mediaType === 'movie' ? previous.movieCards : previous.tvCards;
-          const existingKeys = new Set(
-            existingCards.map(getMediaKey).filter(Boolean)
-          );
+          const existingCards = mediaType === 'movie' ? previous.movieCards : previous.tvCards;
+          const existingKeys = new Set(existingCards.map(getMediaKey).filter(Boolean));
           const newCards = (cards ?? []).filter((card) => {
             const key = getMediaKey(card);
             return key && !existingKeys.has(key);
@@ -148,9 +143,5 @@ export default function TrendingCacheProvider({ initialLocale, children }) {
     };
   }, [cache, initialLocale]);
 
-  return (
-    <TrendingCacheContext.Provider value={value}>
-      {children}
-    </TrendingCacheContext.Provider>
-  );
+  return <TrendingCacheContext.Provider value={value}>{children}</TrendingCacheContext.Provider>;
 }

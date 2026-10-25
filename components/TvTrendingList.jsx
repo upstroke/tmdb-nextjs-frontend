@@ -17,8 +17,7 @@ import PagedList from '@/components/PagedList';
  * @returns {JSX.Element}
  */
 export default function TvTrendingList({ initialData, ...pagedListProps }) {
-  const { tvCards, addCards, getNextFeedPage, markFeedPageLoaded } =
-    useTrendingCache();
+  const { tvCards, addCards, getNextFeedPage, markFeedPageLoaded } = useTrendingCache();
   const useCache = tvCards.length > 0;
   const nextPage = getNextFeedPage('tv');
 
