@@ -21,7 +21,7 @@ import { GET as trendingRoute } from '../../../app/api/[locale]/trending/route.j
 import { GET as moviesRoute } from '../../../app/api/[locale]/movies/route.js';
 import { GET as tvShowsRoute } from '../../../app/api/[locale]/tv-shows/route.js';
 import { AppLocaleProvider } from '@/components/providers/LocaleProvider.jsx';
-import { TrendingCacheProvider } from '@/components/TrendingCacheProvider.jsx';
+import TrendingCacheProvider from '@/components/TrendingCacheProvider.jsx';
 import { DEFAULT_LOCALE } from '@/lib/i18n/config.js';
 import { getLocaleText } from '@/lib/i18n/helpers.js';
 import { rawFixtures } from '../../fixtures/tmdb/tmdb.browser.fixtures.js';
