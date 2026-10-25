@@ -32,12 +32,12 @@ NAV-12.
 
 Every case runs for both movies and TV shows.
 
-| ID | Scenario | Expected result |
-| --- | --- | --- |
-| TC-PL-15 | Direct server-backed mount, load pages 2 and 3, leave and return | Session writes remain 2 then 3; all cards survive remount; no duplicate restoration requests. |
+| ID       | Scenario                                                                                                  | Expected result                                                                                                                                                  |
+| -------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TC-PL-15 | Direct server-backed mount, load pages 2 and 3, leave and return                                          | Session writes remain 2 then 3; all cards survive remount; no duplicate restoration requests.                                                                    |
 | TC-PL-16 | Seed one Home-style cached card with an existing session entry, open and load twice, remount and continue | Initially only the cached card appears; no restore fetch; requests are 1, 2, then 3 after remount; deduplicated cards stay in order; session entry is untouched. |
-| TC-PL-17 | Server mount with stored page 2, restore, append page 3, remount | Restored cards are included in cache; all cards remain; only page 2 and page 3 were fetched. |
-| TC-PL-18 | Server-backed mount, page 2 contains only duplicates | Cards stay unchanged; button disabled; session entry is 1. |
+| TC-PL-17 | Server mount with stored page 2, restore, append page 3, remount                                          | Restored cards are included in cache; all cards remain; only page 2 and page 3 were fetched.                                                                     |
+| TC-PL-18 | Server-backed mount, page 2 contains only duplicates                                                      | Cards stay unchanged; button disabled; session entry is 1.                                                                                                       |
 
 ## Lifetime and limitations
 

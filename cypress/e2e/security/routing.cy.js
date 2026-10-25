@@ -95,9 +95,7 @@ describe('Security: routing', () => {
               cy.contains('button', /^OK$/).click();
             });
 
-          cy.get('dialog.dialog-message')
-            .should('not.be.visible')
-            .and('have.prop', 'open', false);
+          cy.get('dialog.dialog-message').should('not.be.visible').and('have.prop', 'open', false);
         });
       });
     });

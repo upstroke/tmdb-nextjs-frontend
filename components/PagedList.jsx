@@ -54,17 +54,11 @@ export default function PagedList({
   const locale = useLocale();
 
   const [featured, setFeatured] = useState(
-    cacheInitialData ? initialData?.featured ?? null : null
+    cacheInitialData ? (initialData?.featured ?? null) : null
   );
-  const [cards, setCards] = useState(
-    cacheInitialData ? initialData?.cards ?? [] : []
-  );
-  const [currentPage, setCurrentPage] = useState(
-    cacheInitialData ? initialData?.page ?? 1 : 1
-  );
-  const [hasMore, setHasMore] = useState(
-    cacheInitialData ? initialData?.hasMore === true : false
-  );
+  const [cards, setCards] = useState(cacheInitialData ? (initialData?.cards ?? []) : []);
+  const [currentPage, setCurrentPage] = useState(cacheInitialData ? (initialData?.page ?? 1) : 1);
+  const [hasMore, setHasMore] = useState(cacheInitialData ? initialData?.hasMore === true : false);
   const [error, setError] = useState(
     cacheInitialData && initialData?.error ? initialData.error : null
   );

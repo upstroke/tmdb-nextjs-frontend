@@ -166,9 +166,7 @@ async function renderList(list) {
   const ui = await list.Page({ params: Promise.resolve({ locale: DEFAULT_LOCALE }) });
   return render(
     <AppLocaleProvider>
-      <TrendingCacheProvider initialLocale={DEFAULT_LOCALE}>
-        {ui}
-      </TrendingCacheProvider>
+      <TrendingCacheProvider initialLocale={DEFAULT_LOCALE}>{ui}</TrendingCacheProvider>
     </AppLocaleProvider>
   );
 }
@@ -399,9 +397,7 @@ describe('PagedList on the home page (integration, home only)', () => {
     const ui = await list.Page({ params: Promise.resolve({}) });
     const { container } = render(
       <AppLocaleProvider>
-        <TrendingCacheProvider initialLocale={DEFAULT_LOCALE}>
-          {ui}
-        </TrendingCacheProvider>
+        <TrendingCacheProvider initialLocale={DEFAULT_LOCALE}>{ui}</TrendingCacheProvider>
       </AppLocaleProvider>
     );
 
@@ -447,9 +443,7 @@ describe('PagedList on the home page (integration, home only)', () => {
     const ui = await list.Page({ params: Promise.resolve({ locale: 'x' }) });
     const { container } = render(
       <AppLocaleProvider>
-        <TrendingCacheProvider initialLocale={DEFAULT_LOCALE}>
-          {ui}
-        </TrendingCacheProvider>
+        <TrendingCacheProvider initialLocale={DEFAULT_LOCALE}>{ui}</TrendingCacheProvider>
       </AppLocaleProvider>
     );
 

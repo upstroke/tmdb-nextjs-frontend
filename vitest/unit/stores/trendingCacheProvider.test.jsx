@@ -1,8 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import TrendingCacheProvider, {
-  useTrendingCache
-} from '@/components/TrendingCacheProvider.jsx';
+import TrendingCacheProvider, { useTrendingCache } from '@/components/TrendingCacheProvider.jsx';
 
 const movieCard = (id, certification = 'PG-13') => ({
   id,
@@ -30,11 +28,7 @@ const tvCard = (id, certification = 'TV-14') => ({
 
 const createWrapper = (initialLocale = 'en-US') =>
   function Wrapper({ children }) {
-    return (
-      <TrendingCacheProvider initialLocale={initialLocale}>
-        {children}
-      </TrendingCacheProvider>
-    );
+    return <TrendingCacheProvider initialLocale={initialLocale}>{children}</TrendingCacheProvider>;
   };
 
 /**
@@ -56,12 +50,8 @@ function expectUnchangedCache(result, operation) {
 
   expect(result.current.movieCards).toBe(before.movieCards);
   expect(result.current.tvCards).toBe(before.tvCards);
-  expect(result.current.movieLastRequestedPage).toBe(
-    before.movieLastRequestedPage
-  );
-  expect(result.current.tvLastRequestedPage).toBe(
-    before.tvLastRequestedPage
-  );
+  expect(result.current.movieLastRequestedPage).toBe(before.movieLastRequestedPage);
+  expect(result.current.tvLastRequestedPage).toBe(before.tvLastRequestedPage);
 }
 
 describe('TrendingCacheProvider', () => {
@@ -77,13 +67,7 @@ describe('TrendingCacheProvider', () => {
         wrapper: createWrapper()
       });
 
-      act(() =>
-        result.current.initializeCards([
-          movieCard(1),
-          tvCard(2),
-          movieCard(3)
-        ])
-      );
+      act(() => result.current.initializeCards([movieCard(1), tvCard(2), movieCard(3)]));
 
       expect(result.current.movieCards).toEqual([movieCard(1), movieCard(3)]);
       expect(result.current.tvCards).toEqual([tvCard(2)]);
@@ -105,9 +89,7 @@ describe('TrendingCacheProvider', () => {
 
       act(() => result.current.initializeCards([movieCard(1), tvCard(2)]));
 
-      expectUnchangedCache(result, () =>
-        result.current.initializeCards([movieCard(4), tvCard(5)])
-      );
+      expectUnchangedCache(result, () => result.current.initializeCards([movieCard(4), tvCard(5)]));
       expect(result.current.movieCards).toEqual([movieCard(1)]);
       expect(result.current.tvCards).toEqual([tvCard(2)]);
     });
@@ -137,17 +119,9 @@ describe('TrendingCacheProvider', () => {
       });
 
       act(() => result.current.initializeCards([movieCard(1, 'PG')]));
-      act(() =>
-        result.current.addCards('movie', [
-          movieCard(1, 'PG-13'),
-          movieCard(2, 'R')
-        ])
-      );
+      act(() => result.current.addCards('movie', [movieCard(1, 'PG-13'), movieCard(2, 'R')]));
 
-      expect(result.current.movieCards).toEqual([
-        movieCard(1, 'PG'),
-        movieCard(2, 'R')
-      ]);
+      expect(result.current.movieCards).toEqual([movieCard(1, 'PG'), movieCard(2, 'R')]);
     });
 
     it('appends only new TV cards and preserves certifications', () => {
@@ -156,14 +130,9 @@ describe('TrendingCacheProvider', () => {
       });
 
       act(() => result.current.initializeCards([tvCard(1, 'TV-PG')]));
-      act(() =>
-        result.current.addCards('tv', [tvCard(1, 'TV-14'), tvCard(2, 'TV-MA')])
-      );
+      act(() => result.current.addCards('tv', [tvCard(1, 'TV-14'), tvCard(2, 'TV-MA')]));
 
-      expect(result.current.tvCards).toEqual([
-        tvCard(1, 'TV-PG'),
-        tvCard(2, 'TV-MA')
-      ]);
+      expect(result.current.tvCards).toEqual([tvCard(1, 'TV-PG'), tvCard(2, 'TV-MA')]);
     });
 
     it('does not update the cache when all cards are duplicates', () => {
@@ -173,9 +142,7 @@ describe('TrendingCacheProvider', () => {
 
       act(() => result.current.initializeCards([movieCard(1)]));
 
-      expectUnchangedCache(result, () =>
-        result.current.addCards('movie', [movieCard(1)])
-      );
+      expectUnchangedCache(result, () => result.current.addCards('movie', [movieCard(1)]));
     });
 
     it('ignores cards without an id or media type', () => {
@@ -184,13 +151,7 @@ describe('TrendingCacheProvider', () => {
       });
 
       act(() => result.current.initializeCards([movieCard(1)]));
-      act(() =>
-        result.current.addCards('movie', [
-          { mediaType: 'movie' },
-          { id: 3 },
-          null
-        ])
-      );
+      act(() => result.current.addCards('movie', [{ mediaType: 'movie' }, { id: 3 }, null]));
 
       expect(result.current.movieCards).toEqual([movieCard(1)]);
     });
@@ -295,18 +256,10 @@ describe('TrendingCacheProvider', () => {
 
       act(() => result.current.markFeedPageLoaded('movie', 2));
 
-      expectUnchangedCache(result, () =>
-        result.current.markFeedPageLoaded('movie', 0)
-      );
-      expectUnchangedCache(result, () =>
-        result.current.markFeedPageLoaded('movie', Number.NaN)
-      );
-      expectUnchangedCache(result, () =>
-        result.current.markFeedPageLoaded('movie', 1)
-      );
-      expectUnchangedCache(result, () =>
-        result.current.markFeedPageLoaded('movie', 2)
-      );
+      expectUnchangedCache(result, () => result.current.markFeedPageLoaded('movie', 0));
+      expectUnchangedCache(result, () => result.current.markFeedPageLoaded('movie', Number.NaN));
+      expectUnchangedCache(result, () => result.current.markFeedPageLoaded('movie', 1));
+      expectUnchangedCache(result, () => result.current.markFeedPageLoaded('movie', 2));
 
       expect(result.current.movieLastRequestedPage).toBe(2);
     });

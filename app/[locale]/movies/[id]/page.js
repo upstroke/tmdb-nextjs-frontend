@@ -76,10 +76,7 @@ export default async function MovieDetailPage({ params }) {
     };
 
     if (providersResult.status === 'rejected') {
-      console.warn(
-        `Watch providers could not be loaded (movie/${id}):`,
-        providersResult.reason
-      );
+      console.warn(`Watch providers could not be loaded (movie/${id}):`, providersResult.reason);
     } else {
       providers = providersResult.value;
     }
@@ -306,7 +303,8 @@ export default async function MovieDetailPage({ params }) {
                       )}
                       <span>
                         {' '}
-                        —{
+                        —
+                        {
                           labels[
                             `providerType${provider.type.charAt(0).toUpperCase() + provider.type.slice(1)}`
                           ]

@@ -18,32 +18,32 @@ Manipulated input must not execute code in the browser or crash the server. A co
 
 ## Test cases
 
-| ID | Spec | Test |
-| --- | --- | --- |
-| SEC-01 | `search-xss.cy.js` | Search XSS payloads are URL-encoded and not executed. |
-| SEC-02 | `search-xss.cy.js` | Malicious result titles and image URLs are rendered as text. |
-| SEC-03 | `search-xss.cy.js` | API 500 and unexpected response shapes do not break the header. |
-| SEC-04 | `search-xss.cy.js` | Manipulated sessionStorage does not crash the header. |
-| SEC-05 | `search-api.cy.js` | Missing, short, and long queries return empty results. |
-| SEC-06 | `search-api.cy.js` | Long and special queries never return 5xx. |
-| SEC-07 | `search-api.cy.js` | Manipulated locales never return 5xx; locales longer than 10 characters return 400. |
-| SEC-08 | `search-api.cy.js` | Other HTTP methods are rejected. |
-| SEC-09 | `search-api.cy.js` | A burst of 50 requests does not cause 5xx. |
-| SEC-10 | `search-api.cy.js` | Invalid detail-route ids never return 5xx. |
-| SEC-11 | `search-api.cy.js` | The key does not appear in search responses or homepage HTML. |
-| SEC-12 | `api-key.cy.js` | No browser request contains the key or goes directly to themoviedb.org. |
-| SEC-13 | `api-key.cy.js` | Homepage HTML and loaded `_next/static` JavaScript contain no key value or `api_key=`. |
-| SEC-14 | `api-key.cy.js` | Search response bodies and headers do not contain the key. |
-| SEC-15 | `list-api.cy.js` | Movies, trending, and TV lists return cards for valid requests. |
-| SEC-16 | `list-api.cy.js` | Invalid page values and unknown types fall back to page 1. |
-| SEC-17 | `list-api.cy.js` | Pages above the TMDB limit of 500 never return 5xx. |
-| SEC-18 | `list-api.cy.js` | Extra parameters are ignored; manipulated locales never return 5xx; long locales return 400; other methods are rejected. |
-| SEC-19 | `headers.cy.js` | Homepage, 404 page, search API, and list API send nosniff, DENY, and a restrictive CSP. |
-| SEC-20 | `routing.cy.js` | Manipulated paths never redirect to another origin or return 5xx. |
-| SEC-21 | `routing.cy.js` | Manipulated Accept-Language values redirect to a locale on the same origin and never return 5xx. |
-| SEC-22 | `routing.cy.js` | All eight detail-route inputs return less than 500 and pass the unchanged full-response stack-trace scan; failures report only the matching substring. |
-| SEC-23 | `headers.cy.js` | The same four paths send Referrer-Policy and Permissions-Policy. |
-| SEC-24 | `routing.cy.js` | Locally rejected ids open a visible native invalid-URL dialog; OK closes it. |
+| ID     | Spec               | Test                                                                                                                                                   |
+| ------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| SEC-01 | `search-xss.cy.js` | Search XSS payloads are URL-encoded and not executed.                                                                                                  |
+| SEC-02 | `search-xss.cy.js` | Malicious result titles and image URLs are rendered as text.                                                                                           |
+| SEC-03 | `search-xss.cy.js` | API 500 and unexpected response shapes do not break the header.                                                                                        |
+| SEC-04 | `search-xss.cy.js` | Manipulated sessionStorage does not crash the header.                                                                                                  |
+| SEC-05 | `search-api.cy.js` | Missing, short, and long queries return empty results.                                                                                                 |
+| SEC-06 | `search-api.cy.js` | Long and special queries never return 5xx.                                                                                                             |
+| SEC-07 | `search-api.cy.js` | Manipulated locales never return 5xx; locales longer than 10 characters return 400.                                                                    |
+| SEC-08 | `search-api.cy.js` | Other HTTP methods are rejected.                                                                                                                       |
+| SEC-09 | `search-api.cy.js` | A burst of 50 requests does not cause 5xx.                                                                                                             |
+| SEC-10 | `search-api.cy.js` | Invalid detail-route ids never return 5xx.                                                                                                             |
+| SEC-11 | `search-api.cy.js` | The key does not appear in search responses or homepage HTML.                                                                                          |
+| SEC-12 | `api-key.cy.js`    | No browser request contains the key or goes directly to themoviedb.org.                                                                                |
+| SEC-13 | `api-key.cy.js`    | Homepage HTML and loaded `_next/static` JavaScript contain no key value or `api_key=`.                                                                 |
+| SEC-14 | `api-key.cy.js`    | Search response bodies and headers do not contain the key.                                                                                             |
+| SEC-15 | `list-api.cy.js`   | Movies, trending, and TV lists return cards for valid requests.                                                                                        |
+| SEC-16 | `list-api.cy.js`   | Invalid page values and unknown types fall back to page 1.                                                                                             |
+| SEC-17 | `list-api.cy.js`   | Pages above the TMDB limit of 500 never return 5xx.                                                                                                    |
+| SEC-18 | `list-api.cy.js`   | Extra parameters are ignored; manipulated locales never return 5xx; long locales return 400; other methods are rejected.                               |
+| SEC-19 | `headers.cy.js`    | Homepage, 404 page, search API, and list API send nosniff, DENY, and a restrictive CSP.                                                                |
+| SEC-20 | `routing.cy.js`    | Manipulated paths never redirect to another origin or return 5xx.                                                                                      |
+| SEC-21 | `routing.cy.js`    | Manipulated Accept-Language values redirect to a locale on the same origin and never return 5xx.                                                       |
+| SEC-22 | `routing.cy.js`    | All eight detail-route inputs return less than 500 and pass the unchanged full-response stack-trace scan; failures report only the matching substring. |
+| SEC-23 | `headers.cy.js`    | The same four paths send Referrer-Policy and Permissions-Policy.                                                                                       |
+| SEC-24 | `routing.cy.js`    | Locally rejected ids open a visible native invalid-URL dialog; OK closes it.                                                                           |
 
 ## Detail-route cases (SEC-22 and SEC-24)
 

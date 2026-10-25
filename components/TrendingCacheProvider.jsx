@@ -86,9 +86,7 @@ export default function TrendingCacheProvider({ initialLocale, children }) {
      */
     function getNextFeedPage(mediaType) {
       const lastRequestedPage =
-        mediaType === 'movie'
-          ? cache.movieLastRequestedPage
-          : cache.tvLastRequestedPage;
+        mediaType === 'movie' ? cache.movieLastRequestedPage : cache.tvLastRequestedPage;
 
       return lastRequestedPage + 1;
     }
@@ -107,12 +105,8 @@ export default function TrendingCacheProvider({ initialLocale, children }) {
             };
           }
 
-          const movieCards = (cards ?? []).filter(
-            (card) => card.mediaType === 'movie'
-          );
-          const tvCards = (cards ?? []).filter(
-            (card) => card.mediaType === 'tv'
-          );
+          const movieCards = (cards ?? []).filter((card) => card.mediaType === 'movie');
+          const tvCards = (cards ?? []).filter((card) => card.mediaType === 'tv');
 
           if (movieCards.length === 0 && tvCards.length === 0) {
             return previous;
@@ -133,11 +127,8 @@ export default function TrendingCacheProvider({ initialLocale, children }) {
         setCache((previous) => {
           if (previous.locale !== initialLocale) return previous;
 
-          const existingCards =
-            mediaType === 'movie' ? previous.movieCards : previous.tvCards;
-          const existingKeys = new Set(
-            existingCards.map(getMediaKey).filter(Boolean)
-          );
+          const existingCards = mediaType === 'movie' ? previous.movieCards : previous.tvCards;
+          const existingKeys = new Set(existingCards.map(getMediaKey).filter(Boolean));
           const newCards = (cards ?? []).filter((card) => {
             const key = getMediaKey(card);
             return key && !existingKeys.has(key);
@@ -170,9 +161,5 @@ export default function TrendingCacheProvider({ initialLocale, children }) {
     };
   }, [cache, initialLocale]);
 
-  return (
-    <TrendingCacheContext.Provider value={value}>
-      {children}
-    </TrendingCacheContext.Provider>
-  );
+  return <TrendingCacheContext.Provider value={value}>{children}</TrendingCacheContext.Provider>;
 }
