@@ -22,15 +22,19 @@ import { formatMessage } from '@/lib/i18n/format';
  * and renders the details.
  *
  * Show and providers load in parallel; seasons are then fetched one by one. A
- * season that fails to load is shown with an empty episode list. The page shows
- * hero, certification, rating, genres, overview, homepage, trailers, first air
- * date, season tabs, streaming providers, production companies, cast, and crew.
- * Missing values fall back to `fallbacks.notAvailable`. Lists are deduplicated
- * by id. The certification is resolved for the region of the locale (default
- * `US`). Invalid route params, a missing `TMDB_API_KEY`, and load errors render
- * a `DialogMessage` instead of the page. The message for invalid route params
- * uses the raw `locale` param; an unknown locale falls back to the default
- * locale texts.
+ * season that fails to load or is not valid is shown with an empty episode
+ * list. The page shows hero, certification, rating, genres, overview, homepage,
+ * trailers, first air date, season tabs, streaming providers, production
+ * companies, cast, and crew. Missing values fall back to
+ * `fallbacks.notAvailable`. Lists are deduplicated by id. The certification is
+ * resolved for the region of the locale (default `US`). Invalid route params,
+ * a missing `TMDB_API_KEY`, and load errors render a `DialogMessage` instead
+ * of the page. The message for invalid route params uses the raw `locale`
+ * param; an unknown locale falls back to the default locale texts.
+ *
+ * Watch-provider failures do not fail the page. TMDB does not provide provider
+ * data for every TV show, so a missing or failing provider response renders the
+ * TV show details without the streaming-provider section.
  *
  * @param {object} props
  * @param {Promise<{ locale: string, id: string }>} props.params - Route params (async in Next.js 15+).
@@ -67,12 +71,16 @@ export default async function TvShowDetailPage({ params }) {
       api.getWatchProviders('tv', id)
     ]);
 
+    if (!details) {
+      throw new Error(messages.tvShowLoadError);
+    }
+
     /** @type {Season[]} */
     const seasonsWithEpisodes = await Promise.all(
       (details.seasons ?? []).map(async (season) => {
         try {
           const seasonDetails = await api.getTVSeasonDetails(id, season.season_number);
-          return { ...season, episodes: seasonDetails.episodes };
+          return { ...season, episodes: seasonDetails?.episodes ?? [] };
         } catch (e) {
           console.warn(`Failed to fetch season ${season.season_number}:`, e.message);
           return { ...season, episodes: [] };

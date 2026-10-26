@@ -41,6 +41,13 @@ export async function GET(request, { params }) {
     const api = createTmdbApi(fetch, apiKey, locale);
     const trending = await api.getTrendingAll(page);
 
+    if (!trending) {
+      return NextResponse.json(
+        { cards: [], page, hasMore: false, error: messages.loadMoreError },
+        { status: 502 }
+      );
+    }
+
     return NextResponse.json({
       cards: trending.results ?? [],
       page: trending.page ?? page,

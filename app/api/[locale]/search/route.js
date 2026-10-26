@@ -44,6 +44,13 @@ export async function GET(request, { params }) {
     const api = createTmdbApi(fetch, apiKey, locale);
     const searchResult = await api.searchMedia(query);
 
+    if (!searchResult) {
+      return NextResponse.json(
+        { movies: [], tvShows: [], results: [], error: messages.searchError },
+        { status: 502 }
+      );
+    }
+
     /** @type {CardItem[]} */
     const results = searchResult.results ?? [];
 
