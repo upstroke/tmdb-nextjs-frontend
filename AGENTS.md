@@ -147,7 +147,7 @@ The following known technical debt items should be considered when planning rela
 - Status: Completed.
 - TMDB requests use a 10-second `AbortSignal.timeout()`.
 - Transient network failures, timeout failures, invalid JSON responses, and HTTP 500, 502, 503, and 504 responses are retried up to two times.
-- Retry delays are 250 ms and 500 ms, giving a maximum of three attempts per request.
+- Retry delays are 100 ms and 200 ms, giving a maximum of three attempts per request.
 - HTTP 4xx responses and other non-retryable client errors are not retried.
 - HTTP failures remain `TMDBError` with the TMDB status code.
 - Network, timeout, and malformed-response failures are `TMDBNetworkError` and preserve the underlying error as `cause`.
