@@ -70,6 +70,10 @@ export default async function MovieDetailPage({ params }) {
       throw detailsResult.reason;
     }
 
+    if (!detailsResult.value) {
+      throw new Error(messages.movieLoadError);
+    }
+
     movie = {
       ...detailsResult.value,
       trailerUrls: detailsResult.value.trailerUrls ?? []

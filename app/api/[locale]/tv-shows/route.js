@@ -41,6 +41,13 @@ export async function GET(request, { params }) {
     const api = createTmdbApi(fetch, apiKey, locale);
     const tvShows = await api.getTrendingTVShows(page);
 
+    if (!tvShows) {
+      return NextResponse.json(
+        { cards: [], page, hasMore: false, error: messages.moreTvShowsLoadError },
+        { status: 502 }
+      );
+    }
+
     /** @type {CardItem[]} */
     const cards = Array.from(
       new Map((tvShows.results ?? []).map((c) => [`${c.id}-${c.mediaType}`, c])).values()

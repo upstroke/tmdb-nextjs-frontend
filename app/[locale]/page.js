@@ -13,11 +13,12 @@ import PagedList from '@/components/PagedList';
  * from TMDB and renders it as a paged list.
  *
  * The first trending item is loaded in detail and shown as the featured item.
- * When its details fail to load, the page still renders without it. Errors
- * while loading the trending list are passed to `PagedList` through
- * `initialData.error`. Invalid route params and a missing `TMDB_API_KEY` render
- * a short message instead of the list. The invalid params message uses the raw
- * locale when available and falls back to the default locale otherwise.
+ * When its details fail to load or are not valid, the page still renders
+ * without it. Errors while loading the trending list are passed to `PagedList`
+ * through `initialData.error`. Invalid route params and a missing
+ * `TMDB_API_KEY` render a short message instead of the list. The invalid
+ * params message uses the raw locale when available and falls back to the
+ * default locale otherwise.
  *
  * @param {object} props
  * @param {Promise<{ locale: string }>} props.params - Route params (async in Next.js 15+).
@@ -60,6 +61,11 @@ export default async function HomePage({ params }) {
 
   try {
     const result = await api.getTrendingAll(1);
+
+    if (!result) {
+      throw new Error(messages.contentLoadError);
+    }
+
     const source = result?.results?.[0] ?? result?.results?.[1] ?? null;
 
     if (source) {
@@ -68,17 +74,20 @@ export default async function HomePage({ params }) {
           source.mediaType === 'tv'
             ? await api.getTVShowDetails(source.id)
             : await api.getMovieDetails(source.id);
-        featured = {
-          id: details.id,
-          mediaType: details.mediaType,
-          title: details.title,
-          releaseDate: details.releaseDate,
-          overview: details.overview,
-          homepage: details.homepage,
-          genres: details.genres ?? [],
-          imageUrl: details.imageUrl,
-          posterUrl: details.posterUrl
-        };
+
+        if (details) {
+          featured = {
+            id: details.id,
+            mediaType: details.mediaType,
+            title: details.title,
+            releaseDate: details.releaseDate,
+            overview: details.overview,
+            homepage: details.homepage,
+            genres: details.genres ?? [],
+            imageUrl: details.imageUrl,
+            posterUrl: details.posterUrl
+          };
+        }
       } catch (e) {
         console.error('Featured details could not be loaded:', e);
       }

@@ -1,7 +1,6 @@
 # Agent skills
 
 This repository contains task-focused Agent Skills in `.agent/skills/`.
-
 Select and read the applicable `SKILL.md` before acting:
 
 - `tmdb-development` — features, fixes, refactors, components, routes, and styling
@@ -65,11 +64,11 @@ implementation plan.
 Prefer these tools when they are available:
 
 - `rg` (`ripgrep`) for fast text searches
-- `fd` for fast file and directory searches
+- `fd` (`fd-find`) for fast file and directory searches
 - `fzf` for interactive selection and filtering
 - `bat` for readable Git diffs
 - `delta` for readable Git diffs
-- `sd` for simple, targeted text changes
+- `sd` for targeted text changes
 
 # Test strategy
 
@@ -154,12 +153,18 @@ The following known technical debt items should be considered when planning rela
 - Certification and watch-provider enrichment retain their existing graceful fallbacks; list, detail, and featured-content failures continue to propagate to route or page error handling.
 - Focused resilience tests live in `vitest/unit/services/tmdb-api-resilience.test.js`.
 
-### TD-004: Avoid bypassing Zod validation with raw fallbacks
+### TD-004: Normalize invalid TMDB fields while preserving partial UI - ✅ implemented
 
-- Several mapping functions return unvalidated raw objects when Zod validation fails.
-- This weakens the runtime data-quality guarantee for TMDB data.
-- Introduce explicit partial-data types or a validation-warning mechanism instead of casting raw objects to validated types.
-- Ensure the UI can distinguish between fully validated and partially validated data.
+- Status: Implemented on `feature/TD-004-zod-validation-results`; pending validation and merge.
+- Missing, `null`, empty-string, and zero values continue to use the existing localized N/A, placeholder, and hidden-section fallbacks. They do not trigger the error dialog.
+- Invalid field types are normalized to safe values before Zod validation. For example, invalid strings become empty strings, invalid ratings become `0`, and invalid arrays become empty arrays.
+- `mapDetails()`, `getList()`, `searchMedia()`, `getFeaturedToday()`, and `getTVSeasonDetails()` no longer cast unvalidated raw TMDB objects to validated types.
+- These functions return `null` only when the normalized object still fails its Zod schema; this indicates that the core object is not safely renderable.
+- List and search API routes return their existing localized error response with empty cards or results and HTTP 502 when the service returns `null`.
+- The home page shows its existing content-load error when the trending list is unusable. It continues to render without the featured hero when featured details are unusable.
+- Movie and TV show detail pages show their existing `DialogMessage` when the core detail object is unusable.
+- An invalid individual TV season remains non-fatal: the TV show page renders that season with an empty episode list.
+- The error dialog remains reserved for network, timeout, HTTP, and unusable core-object failures; it is not used for individual missing or invalid optional fields.
 
 ## Low priority
 
@@ -174,9 +179,8 @@ The following known technical debt items should be considered when planning rela
 - This may produce incorrect certifications or watch-provider data for locales such as `en`.
 - Treat region as an explicit parameter with documented fallback behavior.
 
-### TD-007: Remove redundant coverage tooling — completed
+### TD-007: Remove redundant coverage tooling - ✅ implemented
 
-- Status: Completed.
 - `@vitest/coverage-v8` was removed because the Vitest configuration uses the Istanbul coverage provider.
 - `@vitest/coverage-istanbul` and `vite-plugin-istanbul` remain required for the current coverage workflow.
 
