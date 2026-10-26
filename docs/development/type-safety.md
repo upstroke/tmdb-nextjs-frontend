@@ -7,11 +7,11 @@ Type safety is achieved through two complementary tools:
 
 ## When to use which
 
-| Use case | Tool |
-| --- | --- |
-| Component props | JSDoc `@param` |
-| Function signatures | JSDoc `@param` / `@returns` |
-| Shared type definitions | JSDoc `@typedef` |
-| API response validation | Zod |
-| Form input validation | Zod |
-| External data ingestion | Zod |
+| Use case                | Tool                        |
+| ----------------------- | --------------------------- |
+| Component props         | JSDoc `@param`              |
+| Function signatures     | JSDoc `@param` / `@returns` |
+| Shared type definitions | JSDoc `@typedef`            |
+| API response validation | Zod                         |
+| Form input validation   | Zod                         |
+| External data ingestion | Zod                         |
