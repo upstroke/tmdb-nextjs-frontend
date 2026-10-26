@@ -16,7 +16,7 @@ import { AppLocaleProvider } from '@/components/providers/LocaleProvider.jsx';
 import { DEFAULT_LOCALE } from '@/lib/i18n/config.js';
 import { getLocaleText } from '@/lib/i18n/helpers.js';
 
-const { fallbacks } = getLocaleText(DEFAULT_LOCALE);
+const { fallbacks, messages } = getLocaleText(DEFAULT_LOCALE);
 
 vi.mock('next/image', async () => {
   const { MockImage } = await import('../../mocks/next-components.js');
@@ -114,8 +114,8 @@ describe('Movie detail page — TD-004 data validation', () => {
     await renderMoviePage();
 
     expect(screen.getAllByText(MOVIE_TITLE).length).toBeGreaterThan(0);
-    expect(screen.getByText(fallbacks.notAvailable)).toBeInTheDocument();
-    expect(screen.queryByText('Film konnte nicht geladen werden')).not.toBeInTheDocument();
+    expect(screen.getAllByText(fallbacks.notAvailable).length).toBeGreaterThan(0);
+    expect(screen.queryByText(messages.movieLoadError)).not.toBeInTheDocument();
   });
 
   // TC-MD-03
@@ -124,6 +124,6 @@ describe('Movie detail page — TD-004 data validation', () => {
 
     await renderMoviePage();
 
-    expect(screen.getByText('Film konnte nicht geladen werden')).toBeInTheDocument();
+    expect(screen.getByText(messages.movieLoadError)).toBeInTheDocument();
   });
 });
