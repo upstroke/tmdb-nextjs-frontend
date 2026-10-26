@@ -114,7 +114,7 @@ The following known technical debt items should be considered when planning rela
 
 ## High priority
 
-### ✅ TD-001: Reduce redundant trending requests while preserving card certifications — implemented on feature branch
+### TD-001: Reduce redundant trending requests while preserving card certifications - ✅ implemented
 
 - Status: Implemented on `feature/TD-001-Reduce-redundant-trending`; pending validation and merge.
 - The home page loads `/trending/all/day?page=1`; its cards are split dynamically by `mediaType` into movie and TV cards for reuse on the Movies and TV Shows pages.
@@ -131,7 +131,7 @@ The following known technical debt items should be considered when planning rela
 - A full browser reload clears the client-side cache. The existing `PagedList` sessionStorage restoration may still restore previously loaded pages after a reload; this behavior is intentionally retained for now.
 - A custom homepage mix of separate movie and TV trending feeds is out of scope for this task.
 
-### ✅ TD-002: Bound in-memory caches — resolved as request-scoped caching
+### TD-002: Bound in-memory caches — resolved as request-scoped caching - ✅ implemented
 
 - Status: Completed.
 - `certificationCache` and `watchProvidersCache` are intentionally request-scoped.
