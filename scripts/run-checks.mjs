@@ -6,17 +6,47 @@ const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 
 const vitestChecks = [
   { key: 'lint', label: 'Lint', args: ['run', 'lint'], retry: 'npm run lint' },
-  { key: 'format', label: 'Format check', args: ['run', 'format:check'], retry: 'npm run format:check' },
+  {
+    key: 'format',
+    label: 'Format check',
+    args: ['run', 'format:check'],
+    retry: 'npm run format:check'
+  },
   { key: 'unit', label: 'Unit tests', args: ['run', 'test:unit'], retry: 'npm run test:unit' },
-  { key: 'component', label: 'Component tests', args: ['run', 'test:component'], retry: 'npm run test:component' },
-  { key: 'integration', label: 'Integration tests', args: ['run', 'test:integration'], retry: 'npm run test:integration' },
-  { key: 'coverage', label: 'Coverage', args: ['run', 'test:coverage'], retry: 'npm run test:coverage' }
+  {
+    key: 'component',
+    label: 'Component tests',
+    args: ['run', 'test:component'],
+    retry: 'npm run test:component'
+  },
+  {
+    key: 'integration',
+    label: 'Integration tests',
+    args: ['run', 'test:integration'],
+    retry: 'npm run test:integration'
+  },
+  {
+    key: 'coverage',
+    label: 'Coverage',
+    args: ['run', 'test:coverage'],
+    retry: 'npm run test:coverage'
+  }
 ];
 
 const e2eChecks = [
   { key: 'e2e', label: 'E2E tests', args: ['run', 'test:e2e'], retry: 'npm run test:e2e' },
-  { key: 'security', label: 'Security tests', args: ['run', 'test:e2e:security'], retry: 'npm run test:e2e:security' },
-  { key: 'a11y', label: 'Accessibility tests', args: ['run', 'test:e2e:a11y'], retry: 'npm run test:e2e:a11y' },
+  {
+    key: 'security',
+    label: 'Security tests',
+    args: ['run', 'test:e2e:security'],
+    retry: 'npm run test:e2e:security'
+  },
+  {
+    key: 'a11y',
+    label: 'Accessibility tests',
+    args: ['run', 'test:e2e:a11y'],
+    retry: 'npm run test:e2e:a11y'
+  },
   {
     key: 'audit',
     label: 'Dependency audit',

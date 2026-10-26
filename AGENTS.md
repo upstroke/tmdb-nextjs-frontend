@@ -114,7 +114,7 @@ The following known technical debt items should be considered when planning rela
 
 ## High priority
 
-### TD-001: Reduce redundant trending requests while preserving card certifications — implemented on feature branch
+### ✅ TD-001: Reduce redundant trending requests while preserving card certifications — implemented on feature branch
 
 - Status: Implemented on `feature/TD-001-Reduce-redundant-trending`; pending validation and merge.
 - The home page loads `/trending/all/day?page=1`; its cards are split dynamically by `mediaType` into movie and TV cards for reuse on the Movies and TV Shows pages.
