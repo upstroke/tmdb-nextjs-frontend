@@ -10,6 +10,7 @@ This project uses multiple test runners for different purposes. Paths below are 
 - **Location:** `vitest/unit/`
 - **Purpose:** Fast, isolated tests for utility functions, schemas, services, stores, i18n, and route behavior with controlled dependencies
 - **Coverage:** Included in coverage reports
+- **Test plan:** Not required
 - **Documentation:** [Unit Tests](testing/unit-tests.md)
 
 ### Integration Tests (Vitest)
@@ -214,7 +215,7 @@ cypress/
 | **Cypress A11y**       | Full-page axe scans and targeted application-level accessibility checks             |
 | **Cypress Security**   | Manipulated input, headers, redirects, API key exposure                             |
 
-Use English for explanatory documentation, test names, and comments. Preserve identifiers and intentionally localized test data. Keep test plans and affected documentation in sync with test changes.
+Use English for explanatory documentation, test names, and comments. Preserve identifiers and intentionally localized test data. Keep test plans and affected documentation in sync with test changes where a test plan is required.
 
 ## Documentation
 

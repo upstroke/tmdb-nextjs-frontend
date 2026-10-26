@@ -4,6 +4,8 @@
 
 Unit tests verify isolated logic with Vitest. The `unit` project in `vitest.config.js` uses jsdom and matches `vitest/unit/**/*.test.{js,jsx}`.
 
+Unit tests do not require a separate test plan.
+
 ## Scope
 
 - Utilities, formatting, validation, and Zod schemas.
@@ -47,7 +49,7 @@ npm run test:coverage
 - Cover null, undefined, empty values, boundaries, and errors where relevant.
 - Use fake timers when time-dependent behavior needs deterministic testing; restore them afterward.
 - Assert observable outputs rather than internal implementation details.
-- Update the matching test plan and affected documentation with test changes.
+- Update affected documentation with test changes when the documented behavior, commands, structure, or project rules change. Unit tests do not require a separate test plan.
 
 ## Coverage
 
