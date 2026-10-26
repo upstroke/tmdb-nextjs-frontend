@@ -131,11 +131,14 @@ The following known technical debt items should be considered when planning rela
 - A full browser reload clears the client-side cache. The existing `PagedList` sessionStorage restoration may still restore previously loaded pages after a reload; this behavior is intentionally retained for now.
 - A custom homepage mix of separate movie and TV trending feeds is out of scope for this task.
 
-### TD-002: Bound in-memory caches
+### ✅ TD-002: Bound in-memory caches — resolved as request-scoped caching
 
-- `certificationCache` and `watchProvidersCache` are unbounded `Map()` instances.
-- Long-running server processes can accumulate entries without a size limit or expiration.
-- Replace them with an LRU cache with a maximum size and TTL, or use request-scoped caching where process-wide caching is unnecessary.
+- Status: Completed.
+- `certificationCache` and `watchProvidersCache` are intentionally request-scoped.
+- Each call to `createTmdbApi()` creates a new service instance for one request or render, so the caches do not persist across requests or server processes.
+- Within a request, the caches prevent duplicate TMDB requests for the same media item, particularly when enriching list cards or loading a featured item.
+- An LRU cache or TTL is unnecessary unless a future change intentionally introduces a process-wide cache shared across requests.
+- If a shared cache is introduced later, it must have an explicit maximum size and expiration strategy.
 
 ## Medium priority
 
