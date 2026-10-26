@@ -8,11 +8,11 @@ external TMDB network is mocked through `globalThis.fetch`.
 
 ## Test cases
 
-| ID       | Scenario                                                             | Expected result                                                                                                                                  |
-| -------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| TC-MD-01 | Movie details succeed, but the watch-provider request returns `404`. | The movie page renders its details and overview, shows the not-available fallback for streaming providers, and does not show the TMDB 404 error. |
-| TC-MD-02 | Movie details succeed, but optional overview, homepage and runtime fields are missing. | The movie page renders normally, missing fields use the localized not-available fallback, and no error dialog appears. |
-| TC-MD-03 | The movie details response has no `id`, so the core object is unusable. | The page shows the localized movie load error dialog instead of rendering invalid data. |
+| ID       | Scenario                                                                               | Expected result                                                                                                                                  |
+| -------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| TC-MD-01 | Movie details succeed, but the watch-provider request returns `404`.                   | The movie page renders its details and overview, shows the not-available fallback for streaming providers, and does not show the TMDB 404 error. |
+| TC-MD-02 | Movie details succeed, but optional overview, homepage and runtime fields are missing. | The movie page renders normally, missing fields use the localized not-available fallback, and no error dialog appears.                           |
+| TC-MD-03 | The movie details response has no `id`, so the core object is unusable.                | The page shows the localized movie load error dialog instead of rendering invalid data.                                                          |
 
 ## Provider fallback assertion
 

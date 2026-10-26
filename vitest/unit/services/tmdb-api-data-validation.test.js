@@ -32,26 +32,30 @@ describe('createTmdbApi — TD-004 data validation', () => {
   });
 
   it('normalizes a missing production company logo and keeps the detail object', () => {
-    const result = api.mapDetails({
-      ...baseMovie,
-      production_companies: [{ id: 1, name: 'Fox' }]
-    }, 'movie');
+    const result = api.mapDetails(
+      {
+        ...baseMovie,
+        production_companies: [{ id: 1, name: 'Fox' }]
+      },
+      'movie'
+    );
 
     expect(result).not.toBeNull();
-    expect(result.productionCompanies).toEqual([
-      { id: 1, name: 'Fox', logo_path: null }
-    ]);
+    expect(result.productionCompanies).toEqual([{ id: 1, name: 'Fox', logo_path: null }]);
   });
 
   it('normalizes invalid optional fields without rejecting the detail object', () => {
-    const result = api.mapDetails({
-      ...baseMovie,
-      overview: 42,
-      homepage: null,
-      vote_average: '8.8',
-      genres: 'Drama',
-      runtime: '139'
-    }, 'movie');
+    const result = api.mapDetails(
+      {
+        ...baseMovie,
+        overview: 42,
+        homepage: null,
+        vote_average: '8.8',
+        genres: 'Drama',
+        runtime: '139'
+      },
+      'movie'
+    );
 
     expect(result).not.toBeNull();
     expect(result.overview).toBe('');
@@ -62,19 +66,25 @@ describe('createTmdbApi — TD-004 data validation', () => {
   });
 
   it('returns null when the movie detail object has no id', () => {
-    const result = api.mapDetails({
-      ...baseMovie,
-      id: undefined
-    }, 'movie');
+    const result = api.mapDetails(
+      {
+        ...baseMovie,
+        id: undefined
+      },
+      'movie'
+    );
 
     expect(result).toBeNull();
   });
 
   it('returns null when the media type cannot be resolved', () => {
-    const result = api.mapDetails({
-      ...baseMovie,
-      media_type: 'person'
-    }, null);
+    const result = api.mapDetails(
+      {
+        ...baseMovie,
+        media_type: 'person'
+      },
+      null
+    );
 
     expect(result).toBeNull();
   });

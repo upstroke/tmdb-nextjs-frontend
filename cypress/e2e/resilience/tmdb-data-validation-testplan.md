@@ -4,13 +4,13 @@ Structure follows ISTQB (test plan according to ISO/IEC/IEEE 29119-3).
 
 ## 1. Test Plan Identifier
 
-| Field   | Value                                          |
-| ------- | ---------------------------------------------- |
-| ID      | TP-RES                                         |
-| Version | 0.1 (draft)                                    |
-| Level   | System test (acceptance), automated end-to-end |
+| Field   | Value                                                       |
+| ------- | ----------------------------------------------------------- |
+| ID      | TP-RES                                                      |
+| Version | 0.1 (draft)                                                 |
+| Level   | System test (acceptance), automated end-to-end              |
 | Type    | Functional test: resilience against unusable TMDB responses |
-| Spec    | `cypress/e2e/resilience/tmdb-data-validation.cy.js` |
+| Spec    | `cypress/e2e/resilience/tmdb-data-validation.cy.js`         |
 
 ## 2. Introduction
 
@@ -60,14 +60,14 @@ localized error message and the application remains usable.
 
 ## 9. Test Cases
 
-| ID     | Scenario                                                        | Expected result                                   |
-| ------ | --------------------------------------------------------------- | ------------------------------------------------- |
-| RES-01 | Search API returns HTTP 502 with an error response.             | The localized search error message is visible.    |
+| ID     | Scenario                                            | Expected result                                |
+| ------ | --------------------------------------------------- | ---------------------------------------------- |
+| RES-01 | Search API returns HTTP 502 with an error response. | The localized search error message is visible. |
 
 ## 10. Traceability
 
-| Feature                                   | Test Case |
-| ----------------------------------------- | --------- |
+| Feature                                    | Test Case |
+| ------------------------------------------ | --------- |
 | Search error message for unusable response | RES-01    |
 
 ## 11. Risks
