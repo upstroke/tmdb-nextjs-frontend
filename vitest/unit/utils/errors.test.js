@@ -1,10 +1,8 @@
 /**
- * The tests cover the factory function, name, message, and optional status
- * property of the error object returned by createTMDBError, including the
- * case where no status is passed.
+ * Tests for TMDB error factories.
  */
 import { describe, expect, it } from 'vitest';
-import { createTMDBError } from '@/lib/utils/errors.js';
+import { createTMDBError, createTMDBNetworkError } from '@/lib/utils/errors.js';
 
 describe('createTMDBError', () => {
   // Statement coverage: returned object extends the native Error class.
@@ -39,5 +37,33 @@ describe('createTMDBError', () => {
     };
     expect(throwIt).toThrow('Server error');
     expect(throwIt).toThrow(Error);
+  });
+});
+
+describe('createTMDBNetworkError', () => {
+  // Statement coverage: returned object extends the native Error class.
+  it('is an instance of Error', () => {
+    expect(createTMDBNetworkError('Network failure')).toBeInstanceOf(Error);
+  });
+
+  // Statement coverage: name identifies a network-level TMDB failure.
+  it('sets the name property to TMDBNetworkError', () => {
+    expect(createTMDBNetworkError('Network failure').name).toBe('TMDBNetworkError');
+  });
+
+  // Statement coverage: message is forwarded to the Error constructor.
+  it('sets the message to the provided string', () => {
+    expect(createTMDBNetworkError('Request timed out').message).toBe('Request timed out');
+  });
+
+  // Branch coverage: no cause is attached when none is provided.
+  it('leaves cause undefined when no underlying error is provided', () => {
+    expect(createTMDBNetworkError('Network failure').cause).toBeUndefined();
+  });
+
+  // Branch coverage: preserves the underlying timeout or fetch error.
+  it('attaches the provided cause', () => {
+    const cause = new Error('Timeout');
+    expect(createTMDBNetworkError('Request timed out', { cause }).cause).toBe(cause);
   });
 });
