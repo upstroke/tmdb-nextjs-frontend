@@ -23,18 +23,18 @@ implementation plan.
 
 # Documentation map
 
-| Topic | Source of truth |
-|---|---|
-| Project overview, setup, commands | `README.md` |
-| AI collaboration rules and review guards | `AGENTS.md` and `.agents/skills/tmdb-ai-collaboration/` |
-| TMDB integration and API-key handling | `docs/architecture/tmdb-integration.md` |
-| Internationalization | `docs/development/internationalization.md` |
-| Type safety | `docs/development/type-safety.md` |
-| Streaming data | `docs/development/streaming-data.md` |
-| Testing strategy, commands, coverage, and validation | `docs/testing.md` |
-| Security tests | `docs/testing/security-tests.md` |
-| Accessibility audits | `docs/testing/accessibility-audit-checklist.md` |
-| Technical debt | `docs/backlog/technical-debt.md` |
+| Topic                                                | Source of truth                                         |
+| ---------------------------------------------------- | ------------------------------------------------------- |
+| Project overview, setup, commands                    | `README.md`                                             |
+| AI collaboration rules and review guards             | `AGENTS.md` and `.agents/skills/tmdb-ai-collaboration/` |
+| TMDB integration and API-key handling                | `docs/architecture/tmdb-integration.md`                 |
+| Internationalization                                 | `docs/development/internationalization.md`              |
+| Type safety                                          | `docs/development/type-safety.md`                       |
+| Streaming data                                       | `docs/development/streaming-data.md`                    |
+| Testing strategy, commands, coverage, and validation | `docs/testing.md`                                       |
+| Security tests                                       | `docs/testing/security-tests.md`                        |
+| Accessibility audits                                 | `docs/testing/accessibility-audit-checklist.md`         |
+| Technical debt                                       | `docs/backlog/technical-debt.md`                        |
 
 Do not duplicate detailed reference material between `README.md`, `AGENTS.md`, skills, and `docs/`. Keep each source focused on its role.
 
@@ -107,14 +107,14 @@ Prefer these tools when they are available:
 
 Choose the test tool and environment by scope:
 
-| Level | Tool | Location | Purpose |
-|---|---|---|---|
-| Unit | Vitest (jsdom) | `vitest/unit/` | Isolated logic, schemas, utilities, services, stores, and route behavior |
-| Integration | Vitest (jsdom) + Testing Library | `vitest/integration/` | Route/service/schema or page integration with external TMDB network mocked |
-| Component | Vitest browser mode (Playwright, Chromium) | `vitest/component/` | Isolated rendering, props, interaction, keyboard, focus, and ARIA states |
-| e2e | Cypress | `cypress/e2e/` | Full-application user flows |
-| Accessibility | Vitest browser mode; Cypress + `cypress-axe` | `vitest/component/`, `cypress/accessibility/`, `cypress/e2e/` | Component semantics and interaction; full-page accessibility checks |
-| Security | Cypress | `cypress/e2e/security/` | Manipulated input, XSS, API key exposure, list and search API routes |
+| Level         | Tool                                         | Location                                                      | Purpose                                                                    |
+| ------------- | -------------------------------------------- | ------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Unit          | Vitest (jsdom)                               | `vitest/unit/`                                                | Isolated logic, schemas, utilities, services, stores, and route behavior   |
+| Integration   | Vitest (jsdom) + Testing Library             | `vitest/integration/`                                         | Route/service/schema or page integration with external TMDB network mocked |
+| Component     | Vitest browser mode (Playwright, Chromium)   | `vitest/component/`                                           | Isolated rendering, props, interaction, keyboard, focus, and ARIA states   |
+| e2e           | Cypress                                      | `cypress/e2e/`                                                | Full-application user flows                                                |
+| Accessibility | Vitest browser mode; Cypress + `cypress-axe` | `vitest/component/`, `cypress/accessibility/`, `cypress/e2e/` | Component semantics and interaction; full-page accessibility checks        |
+| Security      | Cypress                                      | `cypress/e2e/security/`                                       | Manipulated input, XSS, API key exposure, list and search API routes       |
 
 Key rules:
 

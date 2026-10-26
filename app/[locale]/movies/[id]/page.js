@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { loadTmdbResources } from '@/lib/server/load-tmdb-resources';
 import { createTmdbApi } from '@/lib/services/tmdb-api';
 import { getLocaleText } from '@/lib/i18n/helpers';
 import { formatDate } from '@/lib/utils/formatDate';
@@ -60,29 +61,29 @@ export default async function MovieDetailPage({ params }) {
   let error = null;
 
   try {
-    const api = createTmdbApi(fetch, apiKey, locale);
-    const [detailsResult, providersResult] = await Promise.allSettled([
-      api.getMovieDetails(id),
-      api.getWatchProviders('movie', id)
-    ]);
+    const loadResult = await loadTmdbResources(
+      () => createTmdbApi(fetch, apiKey, locale),
+      [
+        { name: 'movie', load: (api) => api.getMovieDetails(id) },
+        { name: 'providers', required: false, load: (api) => api.getWatchProviders('movie', id) }
+      ],
+      messages.movieLoadError
+    );
 
-    if (detailsResult.status === 'rejected') {
-      throw detailsResult.reason;
-    }
-
-    if (!detailsResult.value) {
-      throw new Error(messages.movieLoadError);
-    }
-
-    movie = {
-      ...detailsResult.value,
-      trailerUrls: detailsResult.value.trailerUrls ?? []
-    };
-
-    if (providersResult.status === 'rejected') {
-      console.warn(`Watch providers could not be loaded (movie/${id}):`, providersResult.reason);
+    if (loadResult.error) {
+      error = loadResult.error;
     } else {
-      providers = providersResult.value;
+      if (!loadResult.data.movie) {
+        error = messages.movieLoadError;
+      } else {
+        movie = {
+          ...loadResult.data.movie,
+          trailerUrls: loadResult.data.movie.trailerUrls ?? []
+        };
+        if (loadResult.data.providers !== undefined) {
+          providers = loadResult.data.providers;
+        }
+      }
     }
   } catch (e) {
     console.error('Failed to load movie details:', e);

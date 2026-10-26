@@ -65,9 +65,9 @@ Copy `.env.example` to `.env.local` and fill in your values:
 cp .env.example .env.local
 ```
 
-| Variable | Description |
-| --- | --- |
-| `TMDB_API_KEY` | API key for the TMDB API |
+| Variable                     | Description                   |
+| ---------------------------- | ----------------------------- |
+| `TMDB_API_KEY`               | API key for the TMDB API      |
 | `NEXT_PUBLIC_DEFAULT_LOCALE` | Default locale (e.g. `en-US`) |
 
 The TMDB API key is used only on the server. See [TMDB integration](docs/architecture/tmdb-integration.md).
