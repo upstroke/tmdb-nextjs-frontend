@@ -2,7 +2,7 @@
 name: tmdb-testing
 description: Write and maintain unit, integration, component, Cypress acceptance, accessibility, and security tests for the TMDB Next.js frontend using the project test strategy. Use when adding, changing, or fixing any test, or when a test plan needs updating.
 metadata:
-  version: '0.2.1'
+  version: '0.2.2'
 ---
 
 # TMDB Testing Skill
@@ -36,6 +36,8 @@ describe('formatHomepageLabel', () => {
   });
 });
 ```
+
+Unit tests do not require a separate test plan.
 
 ### 2. Write Integration Tests (Vitest)
 
@@ -149,9 +151,11 @@ The folder structure and the npm scripts are described in [`docs/testing.md`](..
 
 ## Keep Tests, Test Plans and Docs in Sync
 
-Whenever you fix, change, add, or delete a test, update the matching documentation in the same change. Do this when a test fails because the component behavior changed, and also when you only repair a test.
+Whenever you fix, change, add, or delete an integration, component, acceptance, accessibility, or security test, update the matching documentation in the same change. Do this when a test fails because the component behavior changed, and also when you only repair a test.
 
-1. **Test plan**: Open the test plan next to the test file (for example `vitest/component/typeheadsearch/typeheadsearch-testplan.md`). Update the test case table, the detailed test case, the features to be tested, and the risks and limitations.
+Unit tests do not require a separate test plan. When a unit test changes, update affected documentation only when the documented behavior, commands, structure, or project rules change.
+
+1. **Test plan**: For integration, component, acceptance, accessibility, and security tests, open the test plan next to the test file (for example `vitest/component/typeheadsearch/typeheadsearch-testplan.md`). Update the test case table, the detailed test case, the features to be tested, and the risks and limitations.
 2. **Paths and commands**: The test file path and the execution command in the plan must match the real file location.
 3. **IDs**: Keep existing test case IDs stable. A new test gets the next free number. A removed test is deleted from the plan.
 4. **Names**: The test name, the code comment, and the plan entry must describe the same behavior. If the assertion and the name disagree, fix the test or the name.
@@ -166,7 +170,7 @@ Whenever you fix, change, add, or delete a test, update the matching documentati
 3. **Wait for content**: Use retryable queries and assertions; avoid arbitrary time-based waits. Use request aliases when waiting for a specific Cypress network request.
 4. **Page objects**: Use existing Cypress Page Objects for complex application flows, not as Vitest helpers.
 5. **Accessibility first**: Use the project wrapper `cy.checkPageA11y()` on pages and after relevant interactions in accessibility scenarios; do not substitute direct axe calls without inspecting the wrapper and test requirements.
-6. **Test plans**: Keep the test plan of every test file (unit, integration, component, acceptance) in sync with its test file, see [Keep Tests, Test Plans and Docs in Sync](#keep-tests-test-plans-and-docs-in-sync).
+6. **Test plans**: Keep the test plan of every integration, component, acceptance, accessibility, and security test file in sync with its test file. Unit tests do not require a separate test plan; see [Keep Tests, Test Plans and Docs in Sync](#keep-tests-test-plans-and-docs-in-sync).
 
 ## Documentation
 

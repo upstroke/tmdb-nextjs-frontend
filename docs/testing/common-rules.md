@@ -40,7 +40,8 @@ These rules apply to all automated tests in this project.
 
 - Use concise English test names, comments, and documentation.
 - Preserve stable feature IDs and test case IDs.
-- Keep executable tests, their test plans, and related documentation consistent in the same change.
+- Keep executable tests, their test plans where required, and related documentation consistent in the same change.
+- Unit tests do not require a separate test plan. Integration, component, acceptance, accessibility, and security tests require a matching test plan.
 - If a documented expectation, an existing test, and the implementation disagree, report the discrepancy before changing them.
 - If instructions at the same priority level conflict, stop and explain the conflict before making changes.
 
