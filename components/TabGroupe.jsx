@@ -204,7 +204,9 @@ export default function TabGroupe({ tabs = [], initialTab, ariaLabel = '', onTab
               ))}
             </ol>
           ) : (
-            <p>{tab.content ?? ''}</p>
+            <div className="episodes-list">
+              <p className="episode-item">{tab.content ?? ''}</p>
+            </div>
           )}
         </div>
       ))}
