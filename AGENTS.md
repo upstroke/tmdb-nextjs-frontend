@@ -13,6 +13,31 @@ For work that spans several areas, read each applicable skill. Begin with
 `tmdb-ai-collaboration` when the request is ambiguous, broad, or asks for an
 implementation plan.
 
+# Reading order
+
+1. Read `README.md` for the project overview, setup, commands, and documentation index.
+2. Read this file for binding project rules.
+3. Read the applicable skills in `.agents/skills/`.
+4. Read the relevant detailed documentation in `docs/`.
+5. Read the relevant implementation, tests, and test plans before proposing changes.
+
+# Documentation map
+
+| Topic | Source of truth |
+|---|---|
+| Project overview, setup, commands | `README.md` |
+| AI collaboration rules and review guards | `AGENTS.md` and `.agents/skills/tmdb-ai-collaboration/` |
+| TMDB integration and API-key handling | `docs/architecture/tmdb-integration.md` |
+| Internationalization | `docs/development/internationalization.md` |
+| Type safety | `docs/development/type-safety.md` |
+| Streaming data | `docs/development/streaming-data.md` |
+| Testing strategy, commands, coverage, and validation | `docs/testing.md` |
+| Security tests | `docs/testing/security-tests.md` |
+| Accessibility audits | `docs/testing/accessibility-audit-checklist.md` |
+| Technical debt | `docs/backlog/technical-debt.md` |
+
+Do not duplicate detailed reference material between `README.md`, `AGENTS.md`, skills, and `docs/`. Keep each source focused on its role.
+
 # Planning and review
 
 For every non-trivial implementation or refactoring task, read and apply
@@ -103,7 +128,7 @@ Key rules:
 
 # Validation
 
-Use the validation commands documented in `README.md`:
+Use the validation commands documented in `README.md` and `docs/testing.md`:
 
 - `npm run validate:fast` for quick feedback before committing.
 - `npm run validate` before pushing a change or opening a pull request.
