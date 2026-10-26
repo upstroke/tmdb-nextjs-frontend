@@ -142,12 +142,17 @@ The following known technical debt items should be considered when planning rela
 
 ## Medium priority
 
-### TD-003: Add timeout, retry, and resilience handling to TMDB requests
+### TD-003: Add timeout, retry, and resilience handling to TMDB requests - ✅ implemented
 
-- `request()` currently performs a direct `fetch()` without a timeout, retry strategy, or circuit breaker.
-- Add an `AbortSignal.timeout()` for outgoing TMDB requests.
-- Consider a limited retry with exponential backoff for transient `5xx` responses on idempotent GET requests.
-- Ensure timeout and network errors are clearly distinguished from TMDB API errors.
+- Status: Completed.
+- TMDB requests use a 10-second `AbortSignal.timeout()`.
+- Transient network failures, timeout failures, invalid JSON responses, and HTTP 500, 502, 503, and 504 responses are retried up to two times.
+- Retry delays are 100 ms and 200 ms, giving a maximum of three attempts per request.
+- HTTP 4xx responses and other non-retryable client errors are not retried.
+- HTTP failures remain `TMDBError` with the TMDB status code.
+- Network, timeout, and malformed-response failures are `TMDBNetworkError` and preserve the underlying error as `cause`.
+- Certification and watch-provider enrichment retain their existing graceful fallbacks; list, detail, and featured-content failures continue to propagate to route or page error handling.
+- Focused resilience tests live in `vitest/unit/services/tmdb-api-resilience.test.js`.
 
 ### TD-004: Avoid bypassing Zod validation with raw fallbacks
 
