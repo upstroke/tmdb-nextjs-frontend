@@ -73,10 +73,6 @@ export default async function TvShowDetailPage({ params }) {
         {
           name: 'tvShow',
           load: (tmdbApi) => tmdbApi.getTVShowDetails(id)
-        },
-        {
-          name: 'providers',
-          load: (tmdbApi) => tmdbApi.getWatchProviders('tv', id)
         }
       ],
       messages.tvShowLoadError
@@ -111,7 +107,7 @@ export default async function TvShowDetailPage({ params }) {
         trailerUrls: loadResult.data.tvShow.trailerUrls ?? []
       };
 
-      providers = loadResult.data.providers;
+      providers = tvShow.providers ?? null;
     }
   } catch (e) {
     console.error('Failed to load tv show details:', e);
@@ -224,7 +220,7 @@ export default async function TvShowDetailPage({ params }) {
         <section aria-labelledby="overview-heading">
           <h3
             id="overview-heading"
-            className={`ui medium dividing header${labels.overview ? '' : ' u-not-available'}`}
+            className={`ui medium header${labels.overview ? '' : ' u-not-available'}`}
           >
             {labels.overview}
           </h3>
@@ -259,7 +255,7 @@ export default async function TvShowDetailPage({ params }) {
         <section aria-labelledby="trailer-heading">
           <h3
             id="trailer-heading"
-            className={`ui medium dividing header${labels.trailer ? '' : ' u-not-available'}`}
+            className={`ui medium dividing header${labels.homepage ? '' : ' u-not-available'}`}
           >
             {labels.trailer}
           </h3>
