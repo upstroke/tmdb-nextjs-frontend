@@ -2,7 +2,7 @@
  * Focused tests for TMDB request timeout, retry, and error classification.
  */
 import { describe, expect, it, vi } from 'vitest';
-import { createTmdbApi } from '@/lib/services/tmdb-api.js';
+import { createTmdbHttpClient } from '@/lib/services/tmdb/tmdb-http';
 
 const FAKE_KEY = 'test-key';
 
@@ -48,24 +48,24 @@ function errorResponse(status) {
   };
 }
 
-describe('createTmdbApi — request resilience', () => {
+describe('createTmdbHttpClient — request resilience', () => {
   it('retries transient 503 responses and succeeds on a later attempt', async () => {
     const fetchMock = makeSequentialFetch([
       errorResponse(503),
       errorResponse(503),
       okResponse({ results: [] })
     ]);
-    const api = createTmdbApi(fetchMock, FAKE_KEY, 'en-US');
+    const http = createTmdbHttpClient(fetchMock, FAKE_KEY, 'en-US');
 
-    await expect(api.request('/movie/550')).resolves.toEqual({ results: [] });
+    await expect(http.request('/movie/550')).resolves.toEqual({ results: [] });
     expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
   it('does not retry a 404 response', async () => {
     const fetchMock = makeSequentialFetch([errorResponse(404)]);
-    const api = createTmdbApi(fetchMock, FAKE_KEY, 'en-US');
+    const http = createTmdbHttpClient(fetchMock, FAKE_KEY, 'en-US');
 
-    await expect(api.request('/movie/999999')).rejects.toMatchObject({
+    await expect(http.request('/movie/999999')).rejects.toMatchObject({
       name: 'TMDBError',
       status: 404
     });
@@ -79,9 +79,9 @@ describe('createTmdbApi — request resilience', () => {
       { rejects: networkError },
       okResponse({ results: [] })
     ]);
-    const api = createTmdbApi(fetchMock, FAKE_KEY, 'en-US');
+    const http = createTmdbHttpClient(fetchMock, FAKE_KEY, 'en-US');
 
-    await expect(api.request('/movie/550')).resolves.toEqual({ results: [] });
+    await expect(http.request('/movie/550')).resolves.toEqual({ results: [] });
     expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
@@ -92,9 +92,9 @@ describe('createTmdbApi — request resilience', () => {
       { rejects: timeoutError },
       { rejects: timeoutError }
     ]);
-    const api = createTmdbApi(fetchMock, FAKE_KEY, 'en-US');
+    const http = createTmdbHttpClient(fetchMock, FAKE_KEY, 'en-US');
 
-    await expect(api.request('/movie/550')).rejects.toMatchObject({
+    await expect(http.request('/movie/550')).rejects.toMatchObject({
       name: 'TMDBNetworkError'
     });
     expect(fetchMock).toHaveBeenCalledTimes(3);
@@ -102,17 +102,17 @@ describe('createTmdbApi — request resilience', () => {
 
   it('does not retry a successful response', async () => {
     const fetchMock = makeSequentialFetch([okResponse({ results: [] })]);
-    const api = createTmdbApi(fetchMock, FAKE_KEY, 'en-US');
+    const http = createTmdbHttpClient(fetchMock, FAKE_KEY, 'en-US');
 
-    await expect(api.request('/movie/550')).resolves.toEqual({ results: [] });
+    await expect(http.request('/movie/550')).resolves.toEqual({ results: [] });
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   it('passes a timeout signal to fetch', async () => {
     const fetchMock = makeSequentialFetch([okResponse({ results: [] })]);
-    const api = createTmdbApi(fetchMock, FAKE_KEY, 'en-US');
+    const http = createTmdbHttpClient(fetchMock, FAKE_KEY, 'en-US');
 
-    await api.request('/movie/550');
+    await http.request('/movie/550');
     expect(fetchMock).toHaveBeenCalledWith(
       expect.stringContaining('https://api.themoviedb.org/3/movie/550'),
       expect.objectContaining({ signal: expect.any(AbortSignal) })
