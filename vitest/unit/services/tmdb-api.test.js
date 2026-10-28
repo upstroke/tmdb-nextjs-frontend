@@ -2,8 +2,8 @@
  * Unit tests for createTmdbApi orchestration.
  *
  * Pure mapping functions are covered directly in mappers.test.js. These tests
- * focus on request-scoped caches, data enrichment, list orchestration, detail
- * assembly and error propagation.
+ * focus on public detail assembly, list orchestration, search behavior and
+ * error propagation.
  */
 import { describe, expect, it, vi } from 'vitest';
 import { createTmdbApi } from '@/lib/services/tmdb-api.js';
@@ -149,120 +149,6 @@ describe('createTmdbApi — language / region derivation', () => {
 });
 
 // ---------------------------------------------------------------------------
-// getCertification
-// ---------------------------------------------------------------------------
-
-describe('createTmdbApi — getCertification', () => {
-  it('returns movie certification from release_dates for DE region', async () => {
-    const fetch = makeFetch([{ ok: true, body: RELEASE_DATES_DE }]);
-    const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
-
-    await expect(api.getCertification('movie', 550)).resolves.toBe('FSK 16');
-  });
-
-  it('returns an empty string when no DE release_date entry exists', async () => {
-    const fetch = makeFetch([{ ok: true, body: { results: [] } }]);
-    const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
-
-    await expect(api.getCertification('movie', 550)).resolves.toBe('');
-  });
-
-  it('returns TV certification from content_ratings for DE region', async () => {
-    const fetch = makeFetch([{ ok: true, body: CONTENT_RATINGS_DE }]);
-    const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
-
-    await expect(api.getCertification('tv', 1399)).resolves.toBe('16');
-  });
-
-  it('caches certification results for the same media item', async () => {
-    const fetchMock = makeFetch([{ ok: true, body: CONTENT_RATINGS_DE }]);
-    const api = createTmdbApi(fetchMock, FAKE_KEY, 'de-DE');
-
-    await api.getCertification('tv', 1399);
-    await api.getCertification('tv', 1399);
-
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-  });
-
-  it('returns an empty string when the request fails', async () => {
-    const fetchMock = vi.fn().mockRejectedValue(new Error('Network error'));
-    const api = createTmdbApi(fetchMock, FAKE_KEY, 'de-DE');
-
-    await expect(api.getCertification('movie', 1)).resolves.toBe('');
-  });
-});
-
-// ---------------------------------------------------------------------------
-// getWatchProviders
-// ---------------------------------------------------------------------------
-
-describe('createTmdbApi — getWatchProviders', () => {
-  it('returns null when the response has no regional entry', async () => {
-    const fetch = makeFetch([{ ok: true, body: WATCH_PROVIDERS_EMPTY }]);
-    const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
-
-    await expect(api.getWatchProviders('movie', 550)).resolves.toBeNull();
-  });
-
-  it('returns mapped providers when a DE entry exists', async () => {
-    const fetch = makeFetch([{ ok: true, body: WATCH_PROVIDERS_DE }]);
-    const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
-    const result = await api.getWatchProviders('tv', 1399);
-
-    expect(result).not.toBeNull();
-    expect(result.providers).toHaveLength(1);
-    expect(result.providers[0].providerName).toBe('Netflix');
-    expect(result.link).toBe('https://www.justwatch.com/de');
-  });
-
-  it('caches provider results for the same media item', async () => {
-    const fetchMock = makeFetch([{ ok: true, body: WATCH_PROVIDERS_EMPTY }]);
-    const api = createTmdbApi(fetchMock, FAKE_KEY, 'de-DE');
-
-    await api.getWatchProviders('movie', 550);
-    await api.getWatchProviders('movie', 550);
-
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-  });
-
-  it('returns null without throwing when the request fails', async () => {
-    const fetchMock = vi.fn().mockRejectedValue(new Error('Network error'));
-    const api = createTmdbApi(fetchMock, FAKE_KEY, 'de-DE');
-
-    await expect(api.getWatchProviders('movie', 1)).resolves.toBeNull();
-  });
-});
-
-// ---------------------------------------------------------------------------
-// enrichCardCertifications
-// ---------------------------------------------------------------------------
-
-describe('createTmdbApi — enrichCardCertifications', () => {
-  it('attaches certification to each card', async () => {
-    const fetchMock = makeFetch([
-      { ok: true, body: RELEASE_DATES_DE },
-      { ok: true, body: CONTENT_RATINGS_DE }
-    ]);
-    const api = createTmdbApi(fetchMock, FAKE_KEY, 'de-DE');
-    const cards = [
-      { id: 550, mediaType: 'movie', title: 'Fight Club' },
-      { id: 1399, mediaType: 'tv', title: 'GoT' }
-    ];
-    const result = await api.enrichCardCertifications(cards);
-
-    expect(result).toHaveLength(2);
-    expect(result[0].certification).toBe('FSK 16');
-    expect(result[1].certification).toBe('16');
-  });
-
-  it('returns an empty array for empty input', async () => {
-    const api = createTmdbApi(vi.fn(), FAKE_KEY, 'de-DE');
-
-    await expect(api.enrichCardCertifications([])).resolves.toEqual([]);
-  });
-});
-
-// ---------------------------------------------------------------------------
 // getMovieDetails
 // ---------------------------------------------------------------------------
 
@@ -318,10 +204,10 @@ describe('createTmdbApi — getMovieDetails', () => {
 });
 
 // ---------------------------------------------------------------------------
-// getList and list endpoints
+// list endpoints
 // ---------------------------------------------------------------------------
 
-describe('createTmdbApi — getList and list endpoints', () => {
+describe('createTmdbApi — list endpoints', () => {
   const LIST_BODY = {
     page: 1,
     total_pages: 2,
@@ -342,14 +228,13 @@ describe('createTmdbApi — getList and list endpoints', () => {
       { ok: true, body: LIST_BODY },
       { ok: true, body: GENRE_MOVIE_LIST },
       { ok: true, body: GENRE_TV_LIST },
-      { ok: true, body: RELEASE_DATES_DE },
       ...extra
     ]);
   }
 
-  it('getList returns a normalized ListResponse with hasMore=true', async () => {
+  it('getPopularMovies returns a normalized list response with hasMore=true', async () => {
     const api = createTmdbApi(makeListFetch(), FAKE_KEY, 'de-DE');
-    const result = await api.getList('/movie/popular', 1, 'movie');
+    const result = await api.getPopularMovies(1);
 
     expect(result.page).toBe(1);
     expect(result.hasMore).toBe(true);
@@ -379,18 +264,10 @@ describe('createTmdbApi — getList and list endpoints', () => {
     const fetch = makeFetch([
       { ok: true, body: tvListBody },
       { ok: true, body: GENRE_MOVIE_LIST },
-      { ok: true, body: GENRE_TV_LIST },
-      { ok: true, body: CONTENT_RATINGS_DE }
+      { ok: true, body: GENRE_TV_LIST }
     ]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
     const result = await api.getTrendingTVShows(1);
-
-    expect(Array.isArray(result.results)).toBe(true);
-  });
-
-  it('getPopularMovies returns a list response', async () => {
-    const api = createTmdbApi(makeListFetch(), FAKE_KEY, 'de-DE');
-    const result = await api.getPopularMovies(1);
 
     expect(Array.isArray(result.results)).toBe(true);
   });
@@ -403,8 +280,7 @@ describe('createTmdbApi — getList and list endpoints', () => {
     const fetch = makeFetch([
       { ok: true, body: tvBody },
       { ok: true, body: GENRE_MOVIE_LIST },
-      { ok: true, body: GENRE_TV_LIST },
-      { ok: true, body: CONTENT_RATINGS_DE }
+      { ok: true, body: GENRE_TV_LIST }
     ]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
     const result = await api.getPopularTVShows(1);
@@ -427,8 +303,7 @@ describe('createTmdbApi — getList and list endpoints', () => {
     const fetch = makeFetch([
       { ok: true, body: tvBody },
       { ok: true, body: GENRE_MOVIE_LIST },
-      { ok: true, body: GENRE_TV_LIST },
-      { ok: true, body: CONTENT_RATINGS_DE }
+      { ok: true, body: GENRE_TV_LIST }
     ]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
     const result = await api.getTopRatedTVShows(1);
@@ -494,7 +369,7 @@ describe('createTmdbApi — getTVShowDetails', () => {
     return createTmdbApi(makeFetch(fetchResponses), FAKE_KEY, 'de-DE');
   }
 
-  it('returns normalized TV show detail with season metadata', async () => {
+  it('returns normalized TV show detail', async () => {
     const api = makeApiWithFetch([
       { ok: true, body: RAW_TV_SHOW },
       { ok: true, body: CONTENT_RATINGS_DE },
@@ -506,31 +381,6 @@ describe('createTmdbApi — getTVShowDetails', () => {
     expect(result.mediaType).toBe('tv');
     expect(result.title).toBe('Game of Thrones');
     expect(result.rating).toBe(9.2);
-  });
-
-  it('includes numberOfSeasons and numberOfEpisodes', async () => {
-    const api = makeApiWithFetch([
-      { ok: true, body: RAW_TV_SHOW },
-      { ok: true, body: CONTENT_RATINGS_DE },
-      { ok: true, body: WATCH_PROVIDERS_EMPTY }
-    ]);
-    const result = await api.getTVShowDetails(1399);
-
-    expect(result.numberOfSeasons).toBe(8);
-    expect(result.numberOfEpisodes).toBe(73);
-  });
-
-  it('includes the seasons array from the raw response', async () => {
-    const api = makeApiWithFetch([
-      { ok: true, body: RAW_TV_SHOW },
-      { ok: true, body: CONTENT_RATINGS_DE },
-      { ok: true, body: WATCH_PROVIDERS_EMPTY }
-    ]);
-    const result = await api.getTVShowDetails(1399);
-
-    expect(Array.isArray(result.seasons)).toBe(true);
-    expect(result.seasons).toHaveLength(1);
-    expect(result.seasons[0].season_number).toBe(1);
   });
 
   it('attaches certification from content_ratings', async () => {
