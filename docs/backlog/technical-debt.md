@@ -6,7 +6,7 @@ The following known technical debt items should be considered when planning rela
 
 ### TD-001: Reduce redundant trending requests while preserving card certifications - implemented
 
-- Status: Implemented on `feature/TD-001-Reduce-redundant-trending`; pending validation and merge.
+- Status: Implemented and merged.
 - The home page loads `/trending/all/day?page=1`; its cards are split dynamically by `mediaType` into movie and TV cards for reuse on the Movies and TV Shows pages.
 - A locale-scoped client-side cache stores already known movie and TV cards separately. It survives client-side navigation between Home, Movies, and TV Shows.
 - Movies and TV Shows render cached cards when available and do not make an initial dedicated trending request in that case. When the cache is empty, the existing server-side first-page fallback is used.
@@ -46,7 +46,7 @@ The following known technical debt items should be considered when planning rela
 
 ### TD-004: Normalize invalid TMDB fields while preserving partial UI - implemented
 
-- Status: Implemented on `feature/TD-004-zod-validation-results`; pending validation and merge.
+- Status: Implemented and merged.
 - Missing, `null`, empty-string, and zero values continue to use the existing localized N/A, placeholder, and hidden-section fallbacks. They do not trigger the error dialog.
 - Invalid field types are normalized to safe values before Zod validation. For example, invalid strings become empty strings, invalid ratings become `0`, and invalid arrays become empty arrays.
 - `mapDetails()`, `getList()`, `searchMedia()`, `getFeaturedToday()`, and `getTVSeasonDetails()` no longer cast unvalidated raw TMDB objects to validated types.
