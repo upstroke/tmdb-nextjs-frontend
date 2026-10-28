@@ -6,7 +6,7 @@
  * mappers.test.js.
  */
 import { describe, expect, it, vi } from 'vitest';
-import { createTmdbApi } from '@/lib/services/tmdb-api.js';
+import { createTmdbApi } from '@/lib/services/tmdb-api';
 
 const FAKE_KEY = 'test-key';
 
@@ -100,14 +100,14 @@ const GENRE_TV_LIST = {
 };
 
 describe('createTmdbApi — coverage-focused public behavior', () => {
-  it('getList returns hasMore=false when page >= total_pages', async () => {
+  it('getPopularMovies returns hasMore=false when page >= total_pages', async () => {
     const fetch = makeFetch([
       { ok: true, body: LIST_BODY },
       { ok: true, body: GENRE_MOVIE_LIST },
       { ok: true, body: GENRE_TV_LIST }
     ]);
     const api = createTmdbApi(fetch, FAKE_KEY, 'de-DE');
-    const result = await api.getList('/movie/popular', 1, 'movie');
+    const result = await api.getPopularMovies(1);
 
     expect(result.hasMore).toBe(false);
   });
