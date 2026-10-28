@@ -22,6 +22,7 @@ cypress.env.json
 # misc
 .DS_Store
 *.pem
+.clinerules
 
 # debug
 npm-debug.log*

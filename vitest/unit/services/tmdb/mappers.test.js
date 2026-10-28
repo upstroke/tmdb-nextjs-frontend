@@ -35,8 +35,26 @@ const RAW_MOVIE = {
     { id: 2, name: 'No Logo' }
   ],
   credits: {
-    cast: [{ id: 1, credit_id: 'c1', name: 'Alice', character: 'Hero', order: 0, profile_path: '/alice.jpg' }],
-    crew: [{ id: 2, credit_id: 'c2', name: 'Bob', job: 'Director', department: 'Directing', profile_path: '/bob.jpg' }]
+    cast: [
+      {
+        id: 1,
+        credit_id: 'c1',
+        name: 'Alice',
+        character: 'Hero',
+        order: 0,
+        profile_path: '/alice.jpg'
+      }
+    ],
+    crew: [
+      {
+        id: 2,
+        credit_id: 'c2',
+        name: 'Bob',
+        job: 'Director',
+        department: 'Directing',
+        profile_path: '/bob.jpg'
+      }
+    ]
   },
   videos: {
     results: [
@@ -84,9 +102,7 @@ describe('resolveGenres', () => {
   });
 
   it('filters unknown genre IDs', () => {
-    expect(resolveGenres([18, 999], 'movie', GENRE_MAPS)).toEqual([
-      { id: 18, name: 'Drama' }
-    ]);
+    expect(resolveGenres([18, 999], 'movie', GENRE_MAPS)).toEqual([{ id: 18, name: 'Drama' }]);
   });
 
   it('returns an empty array for empty input', () => {
@@ -145,11 +161,7 @@ describe('mapCardItem', () => {
   });
 
   it('uses the fallback media type when media_type is absent', () => {
-    const result = mapCardItem(
-      { id: 1, title: 'Movie', vote_average: 7 },
-      GENRE_MAPS,
-      'movie'
-    );
+    const result = mapCardItem({ id: 1, title: 'Movie', vote_average: 7 }, GENRE_MAPS, 'movie');
 
     expect(result?.mediaType).toBe('movie');
   });
@@ -210,11 +222,7 @@ describe('mapWatchProvider', () => {
   });
 
   it('sets link to null when baseLink is null', () => {
-    const result = mapWatchProvider(
-      { provider_id: 8, provider_name: 'Netflix' },
-      'rent',
-      null
-    );
+    const result = mapWatchProvider({ provider_id: 8, provider_name: 'Netflix' }, 'rent', null);
 
     expect(result?.link).toBeNull();
   });
@@ -253,9 +261,7 @@ describe('getTrailerUrls', () => {
       }
     };
 
-    expect(getTrailerUrls(details)).toEqual([
-      'https://www.youtube.com/watch?v=abc123'
-    ]);
+    expect(getTrailerUrls(details)).toEqual(['https://www.youtube.com/watch?v=abc123']);
   });
 
   it('returns an empty array when there are no videos', () => {
@@ -430,10 +436,7 @@ describe('mapDetails', () => {
   });
 
   it('keeps certification and providers from the details object', () => {
-    const result = mapDetails(
-      { ...RAW_MOVIE, certification: 'FSK 16', providers: null },
-      'movie'
-    );
+    const result = mapDetails({ ...RAW_MOVIE, certification: 'FSK 16', providers: null }, 'movie');
 
     expect(result?.certification).toBe('FSK 16');
     expect(result?.providers).toBeNull();
