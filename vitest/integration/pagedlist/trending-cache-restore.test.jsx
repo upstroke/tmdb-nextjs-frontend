@@ -139,7 +139,10 @@ async function setupList(config, { seeded = false, duplicates = false } = {}) {
       return ok({ results: [] });
     }
 
-    if (value.includes(`/trending/${config.type}/day`)) {
+    if (
+      value.includes(`/trending/${config.type}/day`) ||
+      value.includes(`/trending/${config.type}/week`)
+    ) {
       const number = Number(new URL(value).searchParams.get('page') ?? 1);
       const body = config.fixture.pages[number];
 
