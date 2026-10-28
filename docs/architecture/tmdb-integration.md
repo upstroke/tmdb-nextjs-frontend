@@ -28,10 +28,22 @@ Browser / React UI
 
 - **Server-side REST API integration:** TMDB is consumed over HTTPS using its REST endpoints and JSON responses.
 - **Third-party API integration:** TMDB is an external service and is not part of the application backend.
-- **Dedicated service layer:** TMDB-specific request logic is centralized in `lib/services/tmdb-api.js`.
+- **Dedicated service layer:** TMDB-specific orchestration is centralized in `lib/services/tmdb-api.js`; HTTP transport, normalization, and mapping live in dedicated modules under `lib/services/tmdb/`.
 - **Backend-for-Frontend (BFF) characteristics:** Next.js prepares and supplies external data specifically for this web frontend.
 - **Secure credential handling:** `TMDB_API_KEY` remains on the server and is excluded from client bundles.
 - **Runtime validation:** External TMDB responses are validated with Zod schemas in `lib/schemas/`.
+
+## Service layer structure
+
+The TMDB integration is split into focused modules:
+
+- `lib/services/tmdb-api.js` exposes the public `createTmdbApi()` client and orchestrates TMDB operations.
+- `lib/services/tmdb/tmdb-http.js` handles the HTTP transport, API-key handling, locale parameters, and resilience behavior.
+- `lib/services/tmdb/normalizers.js` normalizes raw TMDB values.
+- `lib/services/tmdb/mappers.js` maps normalized TMDB data to the UI data models.
+- `lib/schemas/tmdb.js` contains the Zod schemas used for runtime validation.
+
+`createTmdbApi()` remains the public entry point for Server Components, API routes, and server-side data requests.
 
 ## API key
 
