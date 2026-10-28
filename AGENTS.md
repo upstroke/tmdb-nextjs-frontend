@@ -70,6 +70,7 @@ exact request and UI behavior for each affected user flow.
 
 - Treat TMDB API data as incomplete or unreliable until validated.
 - Reuse the TMDB service layer in `lib/services/tmdb-api.js`.
+- Keep HTTP transport in `lib/services/tmdb/tmdb-http.js`, normalization in `lib/services/tmdb/normalizers.js`, and UI mapping in `lib/services/tmdb/mappers.js`.
 - Use Zod schemas from `lib/schemas/` when external data enters the application.
 - Preserve existing fallback behavior for missing data.
 - Remove duplicates when loading additional paginated data.
@@ -77,7 +78,7 @@ exact request and UI behavior for each affected user flow.
 
 # Security
 
-- Keep `TMDB_API_KEY` on the server. Add it only in `lib/services/tmdb-api.js`.
+- Keep `TMDB_API_KEY` on the server. Pass it only through `createTmdbApi()` in `lib/services/tmdb-api.js` to the TMDB HTTP client in `lib/services/tmdb/tmdb-http.js`.
 - Treat query parameters, route parameters, and `sessionStorage` values as untrusted.
 - Validate untrusted input with Zod and give numbers an upper limit (`page` max 500).
 - Manipulated input must give a `400`, an empty result, or a fallback. It must never give a `5xx`.

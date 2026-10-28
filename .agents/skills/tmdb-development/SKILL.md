@@ -2,7 +2,7 @@
 name: tmdb-development
 description: Implement features, fixes, refactors, components, routes, and styling in the TMDB Next.js frontend following the project structure, i18n, validation, and code style rules. Use when implementing or changing features, components, routes, styles, or translations.
 metadata:
-  version: '0.1.1'
+  version: '0.1.2'
 ---
 
 # TMDB Development Skill
@@ -27,6 +27,7 @@ For tests, see the `tmdb-testing` skill.
 
 - Preserve the separation between `app/`, `components/`, and `lib/`.
 - Reuse the TMDB service layer `lib/services/tmdb-api.js`; do not call TMDB directly from routes or components.
+- Keep the TMDB integration layered: `lib/services/tmdb-api.js` orchestrates public operations, `lib/services/tmdb/tmdb-http.js` owns HTTP transport and resilience, while `normalizers.js` and `mappers.js` prepare TMDB data for the UI.
 - Validate external data with the Zod schemas from `lib/schemas/`.
 - Keep the locale in internal links and in TMDB requests.
 - Take UI texts from `lib/i18n/ui.json` through `getLocaleText`; do not hard-code them.
