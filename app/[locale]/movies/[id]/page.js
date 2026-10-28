@@ -63,9 +63,7 @@ export default async function MovieDetailPage({ params }) {
   try {
     const loadResult = await loadTmdbResources(
       () => createTmdbApi(fetch, apiKey, locale),
-      [
-        { name: 'movie', load: (api) => api.getMovieDetails(id) }
-      ],
+      [{ name: 'movie', load: (api) => api.getMovieDetails(id) }],
       messages.movieLoadError
     );
 

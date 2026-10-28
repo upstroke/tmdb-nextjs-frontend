@@ -62,7 +62,9 @@ describe('createTmdbHttpClient', () => {
       const [url, options] = fetchFn.mock.calls[0];
       const parsedUrl = new URL(url);
 
-      expect(parsedUrl.origin + parsedUrl.pathname).toBe('https://api.themoviedb.org/3/search/movie');
+      expect(parsedUrl.origin + parsedUrl.pathname).toBe(
+        'https://api.themoviedb.org/3/search/movie'
+      );
       expect(parsedUrl.searchParams.get('api_key')).toBe(API_KEY);
       expect(parsedUrl.searchParams.get('language')).toBe('de-DE');
       expect(parsedUrl.searchParams.get('query')).toBe('Fight Club');
