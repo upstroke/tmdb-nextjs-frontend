@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createTmdbApi } from '@/lib/services/tmdb-api.js';
+import { mapDetails } from '@/lib/services/tmdb/mappers';
 
 const FAKE_KEY = 'test-key';
 
@@ -32,7 +33,7 @@ describe('createTmdbApi — TD-004 data validation', () => {
   });
 
   it('normalizes a missing production company logo and keeps the detail object', () => {
-    const result = api.mapDetails(
+    const result = mapDetails(
       {
         ...baseMovie,
         production_companies: [{ id: 1, name: 'Fox' }]
@@ -45,7 +46,7 @@ describe('createTmdbApi — TD-004 data validation', () => {
   });
 
   it('normalizes invalid optional fields without rejecting the detail object', () => {
-    const result = api.mapDetails(
+    const result = mapDetails(
       {
         ...baseMovie,
         overview: 42,
@@ -66,7 +67,7 @@ describe('createTmdbApi — TD-004 data validation', () => {
   });
 
   it('returns null when the movie detail object has no id', () => {
-    const result = api.mapDetails(
+    const result = mapDetails(
       {
         ...baseMovie,
         id: undefined
@@ -78,7 +79,7 @@ describe('createTmdbApi — TD-004 data validation', () => {
   });
 
   it('returns null when the media type cannot be resolved', () => {
-    const result = api.mapDetails(
+    const result = mapDetails(
       {
         ...baseMovie,
         media_type: 'person'

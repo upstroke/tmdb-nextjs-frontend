@@ -73,10 +73,6 @@ export default async function TvShowDetailPage({ params }) {
         {
           name: 'tvShow',
           load: (tmdbApi) => tmdbApi.getTVShowDetails(id)
-        },
-        {
-          name: 'providers',
-          load: (tmdbApi) => tmdbApi.getWatchProviders('tv', id)
         }
       ],
       messages.tvShowLoadError
@@ -91,14 +87,14 @@ export default async function TvShowDetailPage({ params }) {
       const seasonsWithEpisodes = await Promise.all(
         (loadResult.data.tvShow.seasons ?? []).map(async (season) => {
           try {
-            const seasonDetails = await api.getTVSeasonDetails(id, season.season_number);
+            const seasonDetails = await api.getTVSeasonDetails(id, season.seasonNumber);
 
             return {
               ...season,
               episodes: seasonDetails?.episodes ?? []
             };
           } catch (e) {
-            console.warn(`Failed to fetch season ${season.season_number}:`, e.message);
+            console.warn(`Failed to fetch season ${season.seasonNumber}:`, e.message);
 
             return { ...season, episodes: [] };
           }
@@ -111,7 +107,7 @@ export default async function TvShowDetailPage({ params }) {
         trailerUrls: loadResult.data.tvShow.trailerUrls ?? []
       };
 
-      providers = loadResult.data.providers;
+      providers = tvShow.providers ?? null;
     }
   } catch (e) {
     console.error('Failed to load tv show details:', e);
@@ -142,8 +138,8 @@ export default async function TvShowDetailPage({ params }) {
     : { '--certification-icon-color': '#dedede', '--certification-icon-border-color': '#dedede' };
 
   const seasonTabs = (tvShow.seasons ?? []).map((season) => ({
-    id: String(season.season_number),
-    label: season.name ?? `Season ${season.season_number}`,
+    id: String(season.seasonNumber),
+    label: season.name ?? `Season ${season.seasonNumber}`,
     content: season.overview || fallbacks.notAvailable,
     episodes: season.episodes ?? []
   }));
@@ -224,7 +220,7 @@ export default async function TvShowDetailPage({ params }) {
         <section aria-labelledby="overview-heading">
           <h3
             id="overview-heading"
-            className={`ui medium dividing header${labels.overview ? '' : ' u-not-available'}`}
+            className={`ui medium header${labels.overview ? '' : ' u-not-available'}`}
           >
             {labels.overview}
           </h3>
@@ -259,7 +255,7 @@ export default async function TvShowDetailPage({ params }) {
         <section aria-labelledby="trailer-heading">
           <h3
             id="trailer-heading"
-            className={`ui medium dividing header${labels.trailer ? '' : ' u-not-available'}`}
+            className={`ui medium dividing header${labels.homepage ? '' : ' u-not-available'}`}
           >
             {labels.trailer}
           </h3>
@@ -311,7 +307,7 @@ export default async function TvShowDetailPage({ params }) {
         )}
 
         <section aria-labelledby="watch-providers-heading">
-          <h3 id="watch-providers-heading" className="ui medium dividing header">
+          <h3 className="ui medium dividing header">
             {labels.streamingProviders}{' '}
             <small className="justwatch-attribution">
               {labels.streamingDataProvidedBy} <strong>&copy;JustWatch</strong>
@@ -358,7 +354,7 @@ export default async function TvShowDetailPage({ params }) {
                       )}
                       <span>
                         {' '}
-                        —{' '}
+                        —
                         {
                           labels[
                             `providerType${provider.type.charAt(0).toUpperCase() + provider.type.slice(1)}`

@@ -63,10 +63,7 @@ export default async function MovieDetailPage({ params }) {
   try {
     const loadResult = await loadTmdbResources(
       () => createTmdbApi(fetch, apiKey, locale),
-      [
-        { name: 'movie', load: (api) => api.getMovieDetails(id) },
-        { name: 'providers', required: false, load: (api) => api.getWatchProviders('movie', id) }
-      ],
+      [{ name: 'movie', load: (api) => api.getMovieDetails(id) }],
       messages.movieLoadError
     );
 
@@ -80,9 +77,7 @@ export default async function MovieDetailPage({ params }) {
           ...loadResult.data.movie,
           trailerUrls: loadResult.data.movie.trailerUrls ?? []
         };
-        if (loadResult.data.providers !== undefined) {
-          providers = loadResult.data.providers;
-        }
+        providers = movie.providers ?? null;
       }
     }
   } catch (e) {

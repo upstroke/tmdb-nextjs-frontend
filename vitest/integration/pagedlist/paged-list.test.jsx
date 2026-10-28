@@ -66,7 +66,7 @@ const LISTS = [
     emptyKey: 'noMoviesFound',
     loadErrorKey: 'moviesLoadError',
     heading: titles.movies,
-    trendingPath: '/trending/movie/day',
+    trendingPath: '/trending/movie/week',
     detailsPath: '/movie/',
     fixture: pagedListFixture.movies
   },
@@ -80,7 +80,7 @@ const LISTS = [
     emptyKey: 'noTvShows',
     loadErrorKey: 'tvShowsLoadError',
     heading: titles.tvShows,
-    trendingPath: '/trending/tv/day',
+    trendingPath: '/trending/tv/week',
     detailsPath: '/tv/',
     fixture: pagedListFixture.tv
   }

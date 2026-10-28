@@ -56,7 +56,13 @@ const tvItems = [
   show(1200005, 'Fixture Show Five')
 ];
 
-const homeItems = [tvItems[0], movieItems[0], tvItems[1], movieItems[1], tvItems[2]];
+const homeItems = [
+  { ...tvItems[0], media_type: 'tv' },
+  movieItems[0],
+  tvItems[1],
+  movieItems[1],
+  tvItems[2]
+];
 
 const movieFeatured = {
   id: movieItems[1].id,
