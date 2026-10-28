@@ -6,9 +6,14 @@ import { describe, expect, it } from 'vitest';
 import { getMediaType, getTitle, getDate, getImageUrl } from '@/lib/services/tmdb/helpers.js';
 
 describe('getMediaType', () => {
-  // Branch: fallback is used when provided.
-  it('returns the fallback when a fallback is provided', () => {
-    expect(getMediaType({ media_type: 'tv' }, 'movie')).toBe('movie');
+  // Branch: explicit media_type takes precedence over fallback.
+  it('returns explicit media_type when a fallback is provided', () => {
+    expect(getMediaType({ media_type: 'tv' }, 'movie')).toBe('tv');
+  });
+
+  // Branch: fallback is used when media_type is absent.
+  it('returns the fallback when media_type is absent', () => {
+    expect(getMediaType({ title: 'Inception' }, 'movie')).toBe('movie');
   });
 
   // Branch: explicit media_type field is used when no fallback.
@@ -49,7 +54,7 @@ describe('getTitle', () => {
   });
 
   // Branch: returns empty string when both are absent.
-  it('returns empty string when neither title nor name is present', () => {
+  it('returns empty string when neither title nor name is absent', () => {
     expect(getTitle({})).toBe('');
   });
 });
@@ -67,7 +72,7 @@ describe('getDate', () => {
     expect(getDate({ first_air_date: '2008-01-20' })).toBe('2008-01-20');
   });
 
-  // Branch: returns empty string when both are absent.
+  // Branch: returns empty string when neither date field is absent.
   it('returns empty string when neither date field is present', () => {
     expect(getDate({})).toBe('');
   });
