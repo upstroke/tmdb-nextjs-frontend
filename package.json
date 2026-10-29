@@ -1,7 +1,27 @@
 {
   "name": "tmdb-nextjs-frontend",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
+  "license": "MIT",
+  "author": {
+    "name": "Gregor Arz",
+    "url": "https://github.com/upstroke"
+  },
+  "keywords": [
+    "react",
+    "next",
+    "tmdb",
+    "movies",
+    "tv-shows",
+    "accessibility",
+    "testing",
+    "vitest",
+    "cypress"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/upstroke/tmdb-nextjs-frontend"
+  },
   "type": "module",
   "scripts": {
     "dev": "next dev",

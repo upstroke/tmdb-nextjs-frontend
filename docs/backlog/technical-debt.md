@@ -4,7 +4,7 @@ The following known technical debt items should be considered when planning rela
 
 ## High priority
 
-### TD-001: Reduce redundant trending requests while preserving card certifications - implemented
+### TD-001: Reduce redundant trending requests while preserving card certifications - ✅ implemented
 
 - Status: Implemented and merged.
 - The home page loads `/trending/all/day?page=1`; its cards are split dynamically by `mediaType` into movie and TV cards for reuse on the Movies and TV Shows pages.
@@ -21,7 +21,7 @@ The following known technical debt items should be considered when planning rela
 - A full browser reload clears the client-side cache. The existing `PagedList` sessionStorage restoration may still restore previously loaded pages after a reload; this behavior is intentionally retained for now.
 - A custom homepage mix of separate movie and TV trending feeds is out of scope for this task.
 
-### TD-002: Bound in-memory caches - resolved as request-scoped caching - implemented
+### TD-002: Bound in-memory caches - resolved as request-scoped caching - ✅ implemented
 
 - Status: Completed.
 - `certificationCache` and `watchProvidersCache` are intentionally request-scoped.
@@ -32,7 +32,7 @@ The following known technical debt items should be considered when planning rela
 
 ## Medium priority
 
-### TD-003: Add timeout, retry, and resilience handling to TMDB requests - implemented
+### TD-003: Add timeout, retry, and resilience handling to TMDB requests - ✅ implemented
 
 - Status: Completed.
 - TMDB requests use a 10-second `AbortSignal.timeout()`.
@@ -44,7 +44,7 @@ The following known technical debt items should be considered when planning rela
 - Certification and watch-provider enrichment retain their existing graceful fallbacks; list, detail, and featured-content failures continue to propagate to route or page error handling.
 - Focused resilience tests live in `vitest/unit/services/tmdb-api-resilience.test.js`.
 
-### TD-004: Normalize invalid TMDB fields while preserving partial UI - implemented
+### TD-004: Normalize invalid TMDB fields while preserving partial UI - ✅ implemented
 
 - Status: Implemented and merged.
 - Missing, `null`, empty-string, and zero values continue to use the existing localized N/A, placeholder, and hidden-section fallbacks. They do not trigger the error dialog.
@@ -70,7 +70,7 @@ The following known technical debt items should be considered when planning rela
 - This may produce incorrect certifications or watch-provider data for locales such as `en`.
 - Treat region as an explicit parameter with documented fallback behavior.
 
-### TD-007: Remove redundant coverage tooling - implemented
+### TD-007: Remove redundant coverage tooling - ✅ implemented
 
 - `@vitest/coverage-v8` was removed because the Vitest configuration uses the Istanbul coverage provider.
 - `@vitest/coverage-istanbul` and `vite-plugin-istanbul` remain required for the current coverage workflow.

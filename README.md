@@ -1,3 +1,14 @@
+[![React 19](https://img.shields.io/badge/React-19-20232A?logo=react&logoColor=61DAFB)](https://react.dev/)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Sass](https://img.shields.io/badge/Sass-CC6699?logo=sass&logoColor=white)](https://sass-lang.com/)
+[![Zod](https://img.shields.io/badge/Zod-3068B7?logo=zod&logoColor=white)](https://zod.dev/)
+[![Vitest](https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Cypress](https://img.shields.io/badge/Cypress-17202C?logo=cypress&logoColor=white)](https://www.cypress.io/)
+<br>
+[![Node.js tested: v26.6.0](https://img.shields.io/badge/Node.js%20tested-v26.6.0-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 # TMDB Next.js Frontend
 
 A Next.js frontend for browsing movies and TV shows from the TMDB API.
@@ -160,3 +171,11 @@ npm run start
 - [Security tests](docs/testing/security-tests.md)
 - [Manual accessibility audit checklist](docs/testing/accessibility-audit-checklist.md)
 - [Accessibility test plan](cypress/accessibility/accessibility-testplan.md)
+
+## Roadmap
+
+See the [technical debt](docs/backlog/technical-debt.md) for the full overview.
+
+## License
+
+[MIT](./LICENSE)
